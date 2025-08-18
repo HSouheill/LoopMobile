@@ -13,12 +13,11 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // 1. Gradient background from left to right with a light blue theme
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color.fromARGB(255, 103, 155, 218), // A light blue color
-            Color.fromARGB(255, 27, 55, 147), // A slightly lighter blue color
+            Color.fromARGB(255, 103, 155, 218),
+            Color.fromARGB(255, 27, 55, 147),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -27,46 +26,43 @@ class BottomNavBar extends StatelessWidget {
       child: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: onTap,
-        // The background color of the bar itself must be transparent
         backgroundColor: Colors.transparent,
-        // The elevation should be 0 to avoid a shadow
         elevation: 0,
-        // Only unselected labels are visible to make the bar thinner
         showSelectedLabels: false,
         showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed, // ensures all items are the same size
-        selectedItemColor: Color.fromARGB(255, 27, 55, 147), // Color of the selected label and icon (not visible)
-        unselectedItemColor: Colors.white, // Color of unselected labels and icons
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color.fromARGB(255, 27, 55, 147),
+        unselectedItemColor: Colors.white,
         items: [
           BottomNavigationBarItem(
-            icon: _buildIcon(Icons.search, 0),
-            label: "Search",
+            icon: _buildIcon(Icons.people, 0),
+            label: "Agents",
           ),
           BottomNavigationBarItem(
-            icon: _buildIcon(Icons.notifications, 1),
-            label: "Notifications",
+            icon: _buildIcon(Icons.apartment, 1),
+            label: "Listings",
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.home, 2),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: _buildIcon(Icons.person, 3),
-            label: "Profile",
+            icon: _buildIcon(Icons.design_services, 3),
+            label: "Services",
           ),
           BottomNavigationBarItem(
-            icon: _buildIcon(Icons.settings, 4),
-            label: "Settings",
+            icon: _buildIcon(Icons.chat, 4),
+            label: "Chat",
           ),
         ],
       ),
     );
   }
 
-  // Helper method to build the icon with the circular white background for the selected item
   Widget _buildIcon(IconData iconData, int index) {
     if (index == currentIndex) {
       return Container(
+        // margin: const EdgeInsets.only(left: 0, top: 12, right: 0, bottom: 0),
         padding: const EdgeInsets.all(12),
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -74,11 +70,10 @@ class BottomNavBar extends StatelessWidget {
         ),
         child: Icon(
           iconData,
-          color: Color.fromARGB(255, 27, 55, 147), // Icon color for the selected item
+          color: const Color.fromARGB(255, 27, 55, 147),
         ),
       );
     } else {
-      // The icon for unselected items
       return Icon(iconData);
     }
   }

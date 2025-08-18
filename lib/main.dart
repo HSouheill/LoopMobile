@@ -35,19 +35,19 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 2; // start at index 0
 
   final List<Widget> _pages = const [
-  UnderConstructionPage(pageName: "Search"),
-  UnderConstructionPage(pageName: "Notifications"),
+  UnderConstructionPage(pageName: "Agents"),
+  UnderConstructionPage(pageName: "Listings"),
   HomePage(), // index 2 → center
-  UnderConstructionPage(pageName: "Profile"),
-  UnderConstructionPage(pageName: "Settings"),
+  UnderConstructionPage(pageName: "Services"),
+  UnderConstructionPage(pageName: "Chat"),
 ];
 
 final List<String> _pageTitles = const [
-  'Search',
-  'Notifications',
+  'SeAgentsarch',
+  'Listings',
   'Home',   // index 2
-  'Profile',
-  'Settings',
+  'Services',
+  'Chat',
 ];
 
 
