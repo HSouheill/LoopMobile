@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
 ];
 
 final List<String> _pageTitles = const [
-  'SeAgentsarch',
+  'Agents',
   'Listings',
   'Home',   // index 2
   'Services',
@@ -54,7 +54,14 @@ final List<String> _pageTitles = const [
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppHeader(title: _pageTitles[_currentIndex]),
+      appBar: AppHeader(
+      name: _pageTitles[_currentIndex],
+      location: "Beirut", // or any location string
+      subtitle: "Tap me",
+      onSubtitleTap: () {
+        print("Subtitle tapped");
+      },
+    ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
