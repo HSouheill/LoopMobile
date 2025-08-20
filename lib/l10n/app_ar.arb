@@ -1,0 +1,17 @@
+{
+  "@@locale": "ar",
+  "underConstructionPage": "🚧 صفحة {pageName} قيد الإنشاء",
+  "@underConstructionPage": {
+    "description": "نص لصفحة قيد الإنشاء",
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "agents": "وكلاء",
+  "listings": "قوائم",
+  "home": "الرئيسية",
+  "services": "خدمات",
+  "chat": "محادثة"
+}

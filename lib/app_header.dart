@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'main.dart'; // Import main.dart to access MyApp's state
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String name;
-  final String? subtitle; // optional button/text under name
+  final String? subtitle;
   final String location;
   final VoidCallback? onSubtitleTap;
 
@@ -23,16 +25,12 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 70,
       title: Row(
         children: [
-          // Profile picture
           CircleAvatar(
             radius: 22,
-            backgroundImage: NetworkImage(
-              'https://i.pravatar.cc/150?img=3', // placeholder
-            ),
+            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
             backgroundColor: Colors.grey[200],
           ),
           const SizedBox(width: 12),
-          // Name + optional subtitle
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +58,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           const Spacer(),
-          // Location icon + text
           Row(
             children: [
               const Icon(Icons.location_on_outlined, color: Colors.black87),
@@ -72,7 +69,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           const SizedBox(width: 16),
-          // Notification icon with badge
           Stack(
             children: [
               IconButton(
@@ -97,10 +93,25 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           const SizedBox(width: 8),
-          // Globe/dropdown icon
-          IconButton(
+          PopupMenuButton<String>(
             icon: const Icon(Icons.language, color: Colors.black87),
-            onPressed: () {},
+            onSelected: (String result) {
+              if (result == 'en') {
+                MyApp.of(context).setLocale(const Locale('en'));
+              } else if (result == 'ar') {
+                MyApp.of(context).setLocale(const Locale('ar'));
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'en',
+                child: Text('English'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'ar',
+                child: Text('Arabic'),
+              ),
+            ],
           ),
         ],
       ),

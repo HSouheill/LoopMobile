@@ -2,13 +2,30 @@ import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'under_construction.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+  // A static method to easily access the state from anywhere in the app
+  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en'); // Default to English
+
+  void setLocale(Locale newLocale) {
+    setState(() {
+      _locale = newLocale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +36,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
+      // Add these for localization
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: _locale, // Use the state variable
       home: const MainScreen(),
     );
   }
@@ -35,33 +56,32 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 2; // start at index 0
 
   final List<Widget> _pages = const [
-  UnderConstructionPage(pageName: "Agents"),
-  UnderConstructionPage(pageName: "Listings"),
-  HomePage(), // index 2 → center
-  UnderConstructionPage(pageName: "Services"),
-  UnderConstructionPage(pageName: "Chat"),
-];
+    UnderConstructionPage(pageName: "Agents"),
+    UnderConstructionPage(pageName: "Listings"),
+    HomePage(), // index 2 → center
+    UnderConstructionPage(pageName: "Services"),
+    UnderConstructionPage(pageName: "Chat"),
+  ];
 
-final List<String> _pageTitles = const [
-  'Agents',
-  'Listings',
-  'Home',   // index 2
-  'Services',
-  'Chat',
-];
-
+  final List<String> _pageTitles = const [
+    'Agents',
+    'Listings',
+    'Home', // index 2
+    'Services',
+    'Chat',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppHeader(
-      name: _pageTitles[_currentIndex],
-      location: "Beirut", // or any location string
-      subtitle: "Tap me",
-      onSubtitleTap: () {
-        print("Subtitle tapped");
-      },
-    ),
+        name: _pageTitles[_currentIndex],
+        location: "Beirut", // or any location string
+        subtitle: "Tap me",
+        onSubtitleTap: () {
+          print("Subtitle tapped");
+        },
+      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
@@ -101,8 +121,7 @@ class HomePage extends StatelessWidget {
               child: ListTile(
                 leading: Icon(Icons.star, color: Colors.amber.shade700),
                 title: Text('Template Item ${index + 1}'),
-                subtitle:
-                    const Text('This is a description for the list item.'),
+                subtitle: const Text('This is a description for the list item.'),
               ),
             );
           }),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Import localization file
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -12,6 +13,8 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!; // Access localized strings
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -36,23 +39,23 @@ class BottomNavBar extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.people, 0),
-            label: "Agents",
+            label: localizations.agents,
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.apartment, 1),
-            label: "Listings",
+            label: localizations.listings,
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.home, 2),
-            label: "Home",
+            label: localizations.home,
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.design_services, 3),
-            label: "Services",
+            label: localizations.services,
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.chat, 4),
-            label: "Chat",
+            label: localizations.chat,
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UnderConstructionPage extends StatelessWidget {
   final String pageName;
@@ -6,9 +7,13 @@ class UnderConstructionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the localized strings for the current language
+    final localizations = AppLocalizations.of(context)!;
+    
     return Center(
       child: Text(
-        '$pageName Page is under construction 🚧',
+        // Use the localized string and pass the pageName as a variable
+        localizations.underConstructionPage(pageName),
         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),

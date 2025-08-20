@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "underConstructionPage": "{pageName} Page is under construction 🚧",
+  "@underConstructionPage": {
+    "description": "Text for a page that is under construction.",
+    "placeholders": {
+      "pageName": {
+        "type": "String"
+      }
+    }
+  },
+  "agents": "Agents",
+  "listings": "Listings",
+  "home": "Home",
+  "services": "Services",
+  "chat": "Chat"
+}
