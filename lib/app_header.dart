@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'main.dart'; // Import main.dart to access MyApp's state
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -11,7 +10,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   const AppHeader({
     super.key,
     required this.name,
-    this.subtitle,
+    this.subtitle, 
     required this.location,
     this.onSubtitleTap,
   });
