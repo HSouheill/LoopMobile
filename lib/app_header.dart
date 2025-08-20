@@ -105,11 +105,11 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'en',
-                child: Text('English'),
+                child: Text('EN'),
               ),
               const PopupMenuItem<String>(
                 value: 'ar',
-                child: Text('Arabic'),
+                child: Text('AR'),
               ),
             ],
           ),
