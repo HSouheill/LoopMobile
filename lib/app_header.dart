@@ -10,7 +10,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   const AppHeader({
     super.key,
     required this.name,
-    this.subtitle, 
+    this.subtitle,
     required this.location,
     this.onSubtitleTap,
   });
@@ -43,17 +43,20 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               if (subtitle != null)
-                GestureDetector(
-                  onTap: onSubtitleTap,
-                  child: Text(
-                    subtitle!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
+              TextButton(
+                onPressed: onSubtitleTap ?? () => Navigator.pushNamed(context, '/loginLanding'),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  foregroundColor: Colors.blue,
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    decoration: TextDecoration.underline,
                   ),
                 ),
+                child: Text(subtitle!),
+              ),
             ],
           ),
           const Spacer(),

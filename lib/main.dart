@@ -3,6 +3,7 @@ import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'under_construction.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
+import 'routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale, // Use the state variable
+      routes: appRoutes(),
       home: const MainScreen(),
     );
   }
@@ -63,25 +65,14 @@ class _MainScreenState extends State<MainScreen> {
     UnderConstructionPage(pageName: "Chat"),
   ];
 
-  final List<String> _pageTitles = const [
-    'Agents',
-    'Listings',
-    'Home', // index 2
-    'Services',
-    'Chat',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppHeader(
-        name: _pageTitles[_currentIndex],
-        location: "Beirut", // or any location string
-        subtitle: "Tap me",
-        onSubtitleTap: () {
-          print("Subtitle tapped");
-        },
-      ),
+      name: 'Guest',
+      location: "Beirut",
+      subtitle: "Login",
+    ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
