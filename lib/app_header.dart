@@ -44,7 +44,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
               if (subtitle != null)
               TextButton(
-                onPressed: onSubtitleTap ?? () => Navigator.pushNamed(context, '/loginLanding'),
+                onPressed: onSubtitleTap ?? () => Navigator.pushNamed(context, '/preLogin'),
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(0, 0),
