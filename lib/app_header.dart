@@ -43,20 +43,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               if (subtitle != null)
-              TextButton(
-                onPressed: onSubtitleTap ?? () => Navigator.pushNamed(context, '/preLogin'),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(0, 0),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: Colors.blue,
-                  textStyle: const TextStyle(
-                    fontSize: 12,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-                child: Text(subtitle!),
-              ),
+                _buildSubtitleWidget(),
             ],
           ),
           const Spacer(),
@@ -66,7 +53,10 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               const SizedBox(width: 4),
               Text(
                 location,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
@@ -118,6 +108,52 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildSubtitleWidget() {
+    // Show rounded button for "Login", regular underlined text for others
+    if (subtitle?.toLowerCase() == 'login') {
+      return Container(
+        margin: const EdgeInsets.only(top: 2),
+        child: ElevatedButton(
+          onPressed: onSubtitleTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            minimumSize: const Size(0, 0),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 2,
+          ),
+          child: Text(
+            subtitle!,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Regular underlined text button for other subtitles
+      return TextButton(
+        onPressed: onSubtitleTap,
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(0, 0),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          foregroundColor: Colors.blue,
+          textStyle: const TextStyle(
+            fontSize: 12,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+        child: Text(subtitle!),
+      );
+    }
   }
 
   @override

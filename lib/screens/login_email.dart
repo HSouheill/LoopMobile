@@ -1,6 +1,6 @@
+// File: lib/screens/login_email.dart
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import '../widgets/auth_button.dart';
 
 class LoginEmailPage extends StatefulWidget {
   const LoginEmailPage({super.key});
@@ -221,10 +221,9 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                               ),
                               const Spacer(),
                               GestureDetector(
+                                // Updated to navigate to the new page
                                 onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Forgot password feature coming soon')),
-                                  );
+                                  Navigator.pushNamed(context, '/forgotPassword');
                                 },
                                 child: const Text(
                                   'Forgot Password?',

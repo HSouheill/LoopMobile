@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'under_construction.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
 
 void main() {
@@ -55,7 +55,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 2; // start at index 0
+  int _currentIndex = 2; // start at index 2
 
   final List<Widget> _pages = const [
     UnderConstructionPage(pageName: "Agents"),
@@ -65,14 +65,20 @@ class _MainScreenState extends State<MainScreen> {
     UnderConstructionPage(pageName: "Chat"),
   ];
 
+  // Handle subtitle tap action in main page
+  void _handleSubtitleTap() {
+    Navigator.pushNamed(context, '/preLogin');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppHeader(
-      name: 'Guest',
-      location: "Beirut",
-      subtitle: "Login",
-    ),
+        name: 'Guest',
+        location: "Beirut",
+        subtitle: "Login",
+        onSubtitleTap: _handleSubtitleTap, // Pass the action from main page
+      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
