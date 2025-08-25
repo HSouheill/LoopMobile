@@ -7,15 +7,17 @@ class LoginLandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Transparent app bar to match your design
       backgroundColor: Colors.white,
       body: Stack(
-        children: [
-          // Background image (full screen)
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/city_bg.jpg', // swap to your asset path or network image
-              fit: BoxFit.cover,
+         children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: SizedBox(
+              width: double.infinity, // This makes the box stretch to full width
+              child: Image.asset(
+                'assets/Background.png',
+                fit: BoxFit.cover, // Ensures the image covers the full width without distortion
+              ),
             ),
           ),
           // Bottom sheet style container
@@ -43,7 +45,6 @@ class LoginLandingPage extends StatelessWidget {
                     label: 'Log in with Email Address',
                     leadingIcon: Icons.mail_outline,
                     onPressed: () => Navigator.pushNamed(context, '/loginEmail'),
-                    // style hint: primary
                     filled: true,
                   ),
                   const SizedBox(height: 12),
@@ -52,7 +53,6 @@ class LoginLandingPage extends StatelessWidget {
                     label: 'Log In With Google',
                     leadingIcon: Icons.g_mobiledata,
                     onPressed: () {
-                      // TODO: add google sign-in
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google Sign-in (stub)')));
                     },
                     filled: false,
@@ -63,7 +63,6 @@ class LoginLandingPage extends StatelessWidget {
                     label: 'Log In With Apple',
                     leadingIcon: Icons.apple,
                     onPressed: () {
-                      // TODO: add apple sign-in
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Apple Sign-in (stub)')));
                     },
                     filled: false,
@@ -74,9 +73,7 @@ class LoginLandingPage extends StatelessWidget {
                     children: [
                       const Text("Don't have an account? "),
                       GestureDetector(
-                        onTap: () {
-                          // TODO: navigate to sign up
-                        },
+                        onTap: () {},
                         child: const Text(
                           'Sign up',
                           style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
