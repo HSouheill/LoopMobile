@@ -1,7 +1,10 @@
+// File: lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'under_construction.dart';
+import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
 
@@ -56,6 +59,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 2; // start at index 2
+  bool _isLoading = true;
+  bool _isLoggedIn = false;
 
   final List<Widget> _pages = const [
     UnderConstructionPage(pageName: "Agents"),
@@ -65,19 +70,73 @@ class _MainScreenState extends State<MainScreen> {
     UnderConstructionPage(pageName: "Chat"),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    final isAuthenticated = await AuthService.checkAuthStatus();
+    setState(() {
+      _isLoggedIn = isAuthenticated;
+      _isLoading = false;
+    });
+  }
+
   // Handle subtitle tap action in main page
   void _handleSubtitleTap() {
-    Navigator.pushNamed(context, '/preLogin');
+    if (_isLoggedIn) {
+      // Navigate to dashboard or user profile
+      Navigator.pushNamed(context, '/dashboard');
+    } else {
+      // Navigate to login
+      Navigator.pushNamed(context, '/preLogin').then((_) {
+        // Refresh auth status when returning from login
+        _checkAuthStatus();
+      });
+    }
+  }
+
+  // Handle logout
+  void _handleLogout() async {
+    await AuthService.signOut();
+    setState(() {
+      _isLoggedIn = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logged out successfully')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // Get user data for header
+    final user = AuthService.currentUser;
+    final headerName = _isLoggedIn && user != null ? user.fullName : 'Guest';
+    final headerLocation = _isLoggedIn && user != null && user.city != null 
+        ? user.city! 
+        : (_isLoggedIn && user != null && user.location != null 
+            ? user.location!
+            : "");
+    final headerSubtitle = _isLoggedIn ? "Go to Dashboard" : "Login";
+
     return Scaffold(
       appBar: AppHeader(
-        name: 'Guest',
-        location: "Beirut",
-        subtitle: "Login",
-        onSubtitleTap: _handleSubtitleTap, // Pass the action from main page
+        name: headerName,
+        location: headerLocation,
+        subtitle: headerSubtitle,
+        onSubtitleTap: _handleSubtitleTap,
+        isLoggedIn: _isLoggedIn,
+        onLogout: _isLoggedIn ? _handleLogout : null,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
@@ -93,6 +152,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = AuthService.currentUser;
+    final isLoggedIn = AuthService.isLoggedIn;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -100,14 +162,16 @@ class HomePage extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           Text(
-            'Welcome to the Homepage!',
+            isLoggedIn ? 'Welcome back, ${user?.fullName ?? 'User'}!' : 'Welcome to the Homepage!',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 10),
           Text(
-            'This is a template page to show how content can be structured.',
+            isLoggedIn 
+                ? 'Here are your personalized recommendations and updates.'
+                : 'This is a template page to show how content can be structured.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 20),
@@ -117,8 +181,12 @@ class HomePage extends StatelessWidget {
               elevation: 4,
               child: ListTile(
                 leading: Icon(Icons.star, color: Colors.amber.shade700),
-                title: Text('Template Item ${index + 1}'),
-                subtitle: const Text('This is a description for the list item.'),
+                title: Text('${isLoggedIn ? 'Personal' : 'Template'} Item ${index + 1}'),
+                subtitle: Text(
+                  isLoggedIn 
+                      ? 'This is a personalized item for ${user?.fullName ?? 'you'}.'
+                      : 'This is a description for the list item.'
+                ),
               ),
             );
           }),

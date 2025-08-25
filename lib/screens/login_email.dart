@@ -1,4 +1,3 @@
-// File: lib/screens/login_email.dart
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
@@ -24,18 +23,44 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    final ok = await AuthService.signInWithEmail(_emailCtrl.text.trim(), _passCtrl.text);
-    setState(() => _loading = false);
-    if (ok) {
+ Future<void> _submit() async {
+  // Validate the form before attempting to submit.
+  if (!_formKey.currentState!.validate()) return;
+  
+  setState(() => _loading = true);
+  
+  // Pass the isPhone parameter based on the selected tab
+  final success = await AuthService.signIn(
+    _emailCtrl.text.trim(), 
+    _passCtrl.text,
+    isPhone: !_isEmailSelected, // true when "Using Phone Number" is selected
+  );
+  
+  setState(() => _loading = false);
+  
+  if (success) {
+    // If login is successful, navigate and show a success message.
+    if (mounted) {
       Navigator.of(context).popUntil((route) => route.isFirst);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signed in successfully')));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign in failed')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Welcome back, ${AuthService.currentUser?.name ?? 'User'}!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  } else {
+    // If login fails, show an error message.
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid credentials. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +68,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background image
+          // Background image or gradient
           Align(
             alignment: Alignment.topCenter,
             child: SizedBox(
@@ -51,6 +76,19 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
               child: Image.asset(
                 'assets/Background.png',
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback if image doesn't exist
+                  return Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.blue.shade100, Colors.white],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -166,7 +204,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                             child: TextFormField(
                               controller: _emailCtrl,
                               decoration: InputDecoration(
-                                hintText: _isEmailSelected ? 'Email or Phone Number' : 'Phone Number',
+                                hintText: _isEmailSelected ? 'Email or Username' : 'Phone Number',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(
                                   _isEmailSelected ? Icons.mail_outline : Icons.phone_outlined,
@@ -178,7 +216,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                               keyboardType: _isEmailSelected ? TextInputType.emailAddress : TextInputType.phone,
                               validator: (v) {
                                 if (v == null || v.isEmpty) return 'This field is required';
-                                if (_isEmailSelected && !v.contains('@')) return 'Enter a valid email';
+                                if (!_isEmailSelected && v.length < 8) return 'Enter a valid phone number';
                                 return null;
                               },
                             ),
@@ -221,7 +259,6 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                               ),
                               const Spacer(),
                               GestureDetector(
-                                // Updated to navigate to the new page
                                 onTap: () {
                                   Navigator.pushNamed(context, '/forgotPassword');
                                 },
@@ -237,7 +274,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                           ),
                           const SizedBox(height: 24),
                           
-                          // Next button
+                          // Login button
                           SizedBox(
                             width: double.infinity,
                             height: 50,

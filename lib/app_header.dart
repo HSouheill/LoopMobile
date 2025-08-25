@@ -1,3 +1,5 @@
+// File: lib/app_header.dart
+
 import 'package:flutter/material.dart';
 import 'main.dart'; // Import main.dart to access MyApp's state
 
@@ -6,6 +8,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String? subtitle;
   final String location;
   final VoidCallback? onSubtitleTap;
+  final bool isLoggedIn;
+  final VoidCallback? onLogout;
 
   const AppHeader({
     super.key,
@@ -13,6 +17,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     this.subtitle,
     required this.location,
     this.onSubtitleTap,
+    this.isLoggedIn = false,
+    this.onLogout,
   });
 
   @override
@@ -26,7 +32,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
+            backgroundImage: isLoggedIn 
+                ? NetworkImage('https://i.pravatar.cc/150?img=${name.hashCode % 70 + 1}')
+                : const NetworkImage('https://i.pravatar.cc/150?img=3'),
             backgroundColor: Colors.grey[200],
           ),
           const SizedBox(width: 12),
@@ -105,8 +113,88 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
+          // Small logout button when logged in
+          if (isLoggedIn) ...[
+            
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.account_circle_outlined, color: Colors.black87),
+              onSelected: (String result) {
+                switch (result) {
+                  case 'profile':
+                    Navigator.pushNamed(context, '/profile');
+                    break;
+                  case 'settings':
+                    Navigator.pushNamed(context, '/settings');
+                    break;
+                  case 'logout':
+                    _showLogoutDialog(context);
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'profile',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_outline, size: 18),
+                      SizedBox(width: 8),
+                      Text('Profile'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'settings',
+                  child: Row(
+                    children: [
+                      Icon(Icons.settings_outlined, size: 18),
+                      SizedBox(width: 8),
+                      Text('Settings'),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout_outlined, size: 18, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Logout', style: TextStyle(color: Colors.red)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                onLogout?.call();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 
