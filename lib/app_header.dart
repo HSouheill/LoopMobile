@@ -5,16 +5,16 @@ import 'main.dart'; // Import main.dart to access MyApp's state
 import 'services/auth_service.dart'; // Import AuthService to access user data
 import 'environment.dart';
 
-class AppHeader extends StatelessWidget implements PreferredSizeWidget {
+class AppHeaderWithRefresh extends StatelessWidget implements PreferredSizeWidget {
   final String name;
   final String? subtitle;
   final String location;
   final VoidCallback? onSubtitleTap;
   final bool isLoggedIn;
   final VoidCallback? onLogout;
-  final String? profileImageUrl; // Add a new parameter to pass the image URL
+  final VoidCallback? onProfileTap;
 
-  const AppHeader({
+  const AppHeaderWithRefresh({
     super.key,
     required this.name,
     this.subtitle,
@@ -22,7 +22,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     this.onSubtitleTap,
     this.isLoggedIn = false,
     this.onLogout,
-    this.profileImageUrl, // Initialize the new parameter
+    this.onProfileTap,
   });
 
   @override
@@ -40,8 +40,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           GestureDetector(
             onTap: () {
               // Navigate to profile page when profile image is clicked
-              if (isLoggedIn) {
-                Navigator.pushNamed(context, '/profile');
+              if (isLoggedIn && onProfileTap != null) {
+                onProfileTap!();
               }
             },
             child: Container(
@@ -92,7 +92,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          // const SizedBox(width: 4),
           Stack(
             children: [
               IconButton(
@@ -116,7 +115,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          // const SizedBox(width: 0),
           PopupMenuButton<String>(
             icon: const Icon(Icons.language, color: Colors.black87),
             onSelected: (String result) {

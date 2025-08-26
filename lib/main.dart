@@ -109,6 +109,18 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  // Handle profile navigation with refresh
+  void _handleProfileNavigation() {
+    Navigator.pushNamed(context, '/profile').then((result) {
+      // If result is true, it means we need to refresh the UI
+      if (result == true) {
+        setState(() {
+          // This will trigger a rebuild of the header with updated user data
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -130,13 +142,14 @@ class _MainScreenState extends State<MainScreen> {
     final headerSubtitle = _isLoggedIn ? "Go to Dashboard" : "Login";
 
     return Scaffold(
-      appBar: AppHeader(
+      appBar: AppHeaderWithRefresh(
         name: headerName,
         location: headerLocation,
         subtitle: headerSubtitle,
         onSubtitleTap: _handleSubtitleTap,
         isLoggedIn: _isLoggedIn,
         onLogout: _isLoggedIn ? _handleLogout : null,
+        onProfileTap: _isLoggedIn ? _handleProfileNavigation : null,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(

@@ -17,6 +17,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isUpdatingImage = false;
+  bool _didUpdateProfile = false; // Add this line
   
 Future<void> _pickAndUploadImage() async {
   try {
@@ -68,6 +69,12 @@ Future<void> _pickAndUploadImage() async {
             backgroundColor: Colors.green,
           ),
         );
+
+        // Update the UI to show the new image immediately
+        setState(() {
+          _didUpdateProfile = true; // Set the flag to true
+          // This will rebuild the profile screen with the updated image
+        });
       }
     } else {
       throw Exception(responseData['message'] ?? 'Failed to upload image');
@@ -202,7 +209,16 @@ Future<void> _updateProfileImage(String filename, String userId) async {
       );
     }
 
-    return Scaffold(
+// Added this to update header on profile update
+  return PopScope<bool>(
+    canPop: false, // Prevent the default back action
+    onPopInvokedWithResult: (bool didPop, bool? result) {
+      // If the pop didn't already happen (canPop=false), manually pop with our result.
+      if (!didPop) {
+        Navigator.pop(context, _didUpdateProfile);
+      }
+    },
+    child: Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         backgroundColor: Colors.white,
@@ -236,7 +252,7 @@ Future<void> _updateProfileImage(String filename, String userId) async {
                         ],
                       ),
                       child: _isUpdatingImage
-                          ? const CircularProgressIndicator()
+                          ? const Center(child: CircularProgressIndicator())
                           : CircleAvatar(
                               radius: 58,
                               backgroundImage: user.profileImage != null
@@ -367,6 +383,7 @@ Future<void> _updateProfileImage(String filename, String userId) async {
             const SizedBox(height: 20),
           ],
         ),
+      ),
       ),
     );
   }
