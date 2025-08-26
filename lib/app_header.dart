@@ -37,12 +37,29 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 70,
       title: Row(
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundImage: isLoggedIn && user != null && user.profileImage != null
-                ? NetworkImage('${Environment.apiUrl}assets/${user.profileImage}')
-                : const NetworkImage('https://i.pravatar.cc/150?img=3') as ImageProvider,
-            backgroundColor: Colors.grey[200],
+          GestureDetector(
+            onTap: () {
+              // Navigate to profile page when profile image is clicked
+              if (isLoggedIn) {
+                Navigator.pushNamed(context, '/profile');
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isLoggedIn ? Colors.blue.withOpacity(0.3) : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: CircleAvatar(
+                radius: 22,
+                backgroundImage: isLoggedIn && user != null && user.profileImage != null
+                    ? NetworkImage('${Environment.apiUrl}assets/${user.profileImage}')
+                    : const NetworkImage('https://i.pravatar.cc/150?img=3') as ImageProvider,
+                backgroundColor: Colors.grey[200],
+              ),
+            ),
           ),
           const SizedBox(width: 12),
           Column(
@@ -120,17 +137,13 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          // Small logout button when logged in
+          // Settings menu when logged in (removed profile option)
           if (isLoggedIn) ...[
-            
             const SizedBox(width: 8),
             PopupMenuButton<String>(
-              icon: const Icon(Icons.account_circle_outlined, color: Colors.black87),
+              icon: const Icon(Icons.more_vert, color: Colors.black87),
               onSelected: (String result) {
                 switch (result) {
-                  case 'profile':
-                    Navigator.pushNamed(context, '/profile');
-                    break;
                   case 'settings':
                     Navigator.pushNamed(context, '/settings');
                     break;
@@ -140,16 +153,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                const PopupMenuItem<String>(
-                  value: 'profile',
-                  child: Row(
-                    children: [
-                      Icon(Icons.person_outline, size: 18),
-                      SizedBox(width: 8),
-                      Text('Profile'),
-                    ],
-                  ),
-                ),
                 const PopupMenuItem<String>(
                   value: 'settings',
                   child: Row(

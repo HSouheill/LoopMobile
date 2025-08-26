@@ -1,3 +1,5 @@
+// File: lib/services/auth_service.dart
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -162,6 +164,12 @@ class AuthService {
       print('Error loading auth data: $e');
     }
     return false;
+  }
+
+  // Update current user and persist to storage
+  static Future<void> updateCurrentUser(User updatedUser) async {
+    _currentUser = updatedUser;
+    await _storeAuthData();
   }
 
   // Sign out
