@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../environment.dart';
 
+// Updated User class with profileImage field
 class User {
   final String id;
   final String name;
@@ -12,6 +13,7 @@ class User {
   final String? city;
   final String role;
   final bool active;
+  final String? profileImage; // Add this field
 
   User({
     required this.id,
@@ -22,6 +24,7 @@ class User {
     this.city,
     required this.role,
     required this.active,
+    this.profileImage, // Add this parameter
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -34,6 +37,7 @@ class User {
       city: json['city'],
       role: json['role'] ?? 'user',
       active: json['active'] ?? true,
+      profileImage: json['profileImage'], // Add this line
     );
   }
 
@@ -47,7 +51,33 @@ class User {
       'city': city,
       'role': role,
       'active': active,
+      'profileImage': profileImage, // Add this line
     };
+  }
+
+  // Method to create a copy with updated profile image
+  User copyWith({
+    String? id,
+    String? name,
+    String? fullName,
+    String? email,
+    String? location,
+    String? city,
+    String? role,
+    bool? active,
+    String? profileImage,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      location: location ?? this.location,
+      city: city ?? this.city,
+      role: role ?? this.role,
+      active: active ?? this.active,
+      profileImage: profileImage ?? this.profileImage,
+    );
   }
 }
 

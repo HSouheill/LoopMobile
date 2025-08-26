@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'main.dart'; // Import main.dart to access MyApp's state
+import 'services/auth_service.dart'; // Import AuthService to access user data
+import 'environment.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String name;
@@ -10,6 +12,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onSubtitleTap;
   final bool isLoggedIn;
   final VoidCallback? onLogout;
+  final String? profileImageUrl; // Add a new parameter to pass the image URL
 
   const AppHeader({
     super.key,
@@ -19,10 +22,14 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     this.onSubtitleTap,
     this.isLoggedIn = false,
     this.onLogout,
+    this.profileImageUrl, // Initialize the new parameter
   });
 
   @override
   Widget build(BuildContext context) {
+    // Get the current user from AuthService
+    final user = AuthService.currentUser;
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
@@ -32,9 +39,9 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundImage: isLoggedIn 
-                ? NetworkImage('https://i.pravatar.cc/150?img=${name.hashCode % 70 + 1}')
-                : const NetworkImage('https://i.pravatar.cc/150?img=3'),
+            backgroundImage: isLoggedIn && user != null && user.profileImage != null
+                ? NetworkImage('${Environment.apiUrl}assets/${user.profileImage}')
+                : const NetworkImage('https://i.pravatar.cc/150?img=3') as ImageProvider,
             backgroundColor: Colors.grey[200],
           ),
           const SizedBox(width: 12),
