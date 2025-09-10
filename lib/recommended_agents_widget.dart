@@ -10,6 +10,7 @@ class Agent {
   final String location;
   final double rating;
   final int reviewCount;
+  final String? customText; // Optional custom text field
 
   Agent({
     required this.imageUrl,
@@ -18,6 +19,7 @@ class Agent {
     required this.location,
     required this.rating,
     required this.reviewCount,
+    this.customText,
   });
 }
 
@@ -25,11 +27,13 @@ class Agent {
 class RecommendedAgentsWidget extends StatelessWidget {
   final String title;
   final List<Agent> agents;
+  final bool showPropertyCount; // Toggle between property count and custom text
 
   const RecommendedAgentsWidget({
     super.key,
     required this.title,
     required this.agents,
+    this.showPropertyCount = true, // Default to showing property count
   });
 
   @override
@@ -66,7 +70,10 @@ class RecommendedAgentsWidget extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: agents.length,
               itemBuilder: (context, index) {
-                return AgentCard(agent: agents[index]);
+                return AgentCard(
+                  agent: agents[index],
+                  showPropertyCount: showPropertyCount,
+                );
               },
             ),
           ),
@@ -79,8 +86,13 @@ class RecommendedAgentsWidget extends StatelessWidget {
 // Widget for a single agent card
 class AgentCard extends StatelessWidget {
   final Agent agent;
+  final bool showPropertyCount;
 
-  const AgentCard({super.key, required this.agent});
+  const AgentCard({
+    super.key, 
+    required this.agent,
+    required this.showPropertyCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +171,12 @@ class AgentCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                _buildInfoRow(Icons.business_center_outlined,
-                    '${agent.propertyCount} Properties'),
+                // Conditional rendering of property count or custom text
+                if (showPropertyCount)
+                  _buildInfoRow(Icons.business_center_outlined,
+                      '${agent.propertyCount} Properties')
+                else
+                  _buildCustomTextRow(agent.customText ?? 'No description available'),
                 const SizedBox(height: 4),
                 _buildInfoRow(Icons.location_on_outlined, agent.location),
                 const SizedBox(height: 4),
@@ -189,6 +205,23 @@ class AgentCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  // Custom text row without icon, positioned where the property count icon would be
+  Widget _buildCustomTextRow(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 0), // Align with icon position
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.grey.shade700, 
+          fontSize: 13, // Slightly larger than the regular info text (12)
+          fontWeight: FontWeight.w500, // Make it slightly bolder
+        ),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 2, // Allow up to 2 lines for the custom text
+      ),
     );
   }
 }
