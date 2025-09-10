@@ -1,5 +1,3 @@
-// File: lib/main.dart
-
 import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
@@ -7,6 +5,12 @@ import 'under_construction.dart';
 import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
+import 'search_and_categories_widget.dart';
+import 'image_slider_widget.dart';
+import 'latest_updates_widget.dart'; // Import the new widget
+import 'featured_listings_widget.dart'; // Import the featured listings widget
+import 'support_card_widget.dart'; // Import the new support card widget
+import 'recommended_agents_widget.dart'; // Import the new widget
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +23,8 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 
   // A static method to easily access the state from anywhere in the app
-  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>()!;
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
 }
 
 class _MyAppState extends State<MyApp> {
@@ -134,9 +139,9 @@ class _MainScreenState extends State<MainScreen> {
     // Get user data for header
     final user = AuthService.currentUser;
     final headerName = _isLoggedIn && user != null ? user.fullName : 'Guest';
-    final headerLocation = _isLoggedIn && user != null && user.city != null 
-        ? user.city! 
-        : (_isLoggedIn && user != null && user.location != null 
+    final headerLocation = _isLoggedIn && user != null && user.city != null
+        ? user.city!
+        : (_isLoggedIn && user != null && user.location != null
             ? user.location!
             : "");
     final headerSubtitle = _isLoggedIn ? "Go to Dashboard" : "Login";
@@ -168,41 +173,137 @@ class HomePage extends StatelessWidget {
     final user = AuthService.currentUser;
     final isLoggedIn = AuthService.isLoggedIn;
 
+    final List<String> sliderImages = [
+      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg2OTE4MDAtaW1hZ2UtMDVhLXJtNTA1XzEtbDA5YWp5c3UucG5n.png',
+      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg1NjkzMjEtaW1hZ2VfMS1renAycXhwOC5wbmc.png',
+    ];
+
+    // Example data for the latest updates widget
+    final List<MarketUpdate> marketUpdates = [
+      MarketUpdate(
+        title:
+            'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
+        time: '1 Hour ago',
+      ),
+      MarketUpdate(
+        title:
+            'New report shows rising demand for sustainable housing in urban centers.',
+        time: '3 Hours ago',
+      ),
+      MarketUpdate(
+        title:
+            'Local council approves new zoning laws for mixed-use developments.',
+        time: 'Yesterday',
+      ),
+      MarketUpdate(
+        title:
+            'Property values in the city\'s downtown core see record growth.',
+        time: '2 days ago',
+      ),
+    ];
+
+    // Sample property listings data
+    final List<PropertyListing> featuredProperties = [
+      PropertyListing(
+        imageUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Modern Family House with Garden',
+        price: '\$750,000/Month',
+        agentName: 'Sarah Johnson',
+        location: 'Beverly Hills, CA',
+        isFeatured: true,
+      ),
+      PropertyListing(
+        imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Luxury Downtown Penthouse',
+        price: '\$1,250,000',
+        agentName: 'Michael Chen',
+        location: 'Manhattan, NY',
+        isFeatured: true,
+      ),
+      PropertyListing(
+        imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Charming Victorian Home',
+        price: '\$895,000',
+        agentName: 'Emma Davis',
+        location: 'San Francisco, CA',
+        isFeatured: true,
+      ),
+      PropertyListing(
+        imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Contemporary Waterfront Villa',
+        price: '\$2,100,000',
+        agentName: 'David Rodriguez',
+        location: 'Miami Beach, FL',
+        isFeatured: true,
+      ),
+      PropertyListing(
+        imageUrl: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Cozy Suburban Family Home',
+        price: '\$485,000',
+        agentName: 'Lisa Thompson',
+        location: 'Austin, TX',
+        isFeatured: true,
+      ),
+    ];
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SearchAndCategoriesWidget(),
           const SizedBox(height: 20),
-          Text(
-            isLoggedIn ? 'Welcome back, ${user?.fullName ?? 'User'}!' : 'Welcome to the Homepage!',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            isLoggedIn 
-                ? 'Here are your personalized recommendations and updates.'
-                : 'This is a template page to show how content can be structured.',
-            style: Theme.of(context).textTheme.bodyLarge,
+          ImageSliderWidget(imageUrls: sliderImages),
+          const SizedBox(height: 20),
+          LatestUpdatesWidget(updates: marketUpdates),
+          const SizedBox(height: 20),
+          FeaturedListingsWidget(
+            title: 'Featured Listings',
+            listings: featuredProperties,
           ),
           const SizedBox(height: 20),
-          ...List.generate(5, (index) {
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              elevation: 4,
-              child: ListTile(
-                leading: Icon(Icons.star, color: Colors.amber.shade700),
-                title: Text('${isLoggedIn ? 'Personal' : 'Template'} Item ${index + 1}'),
-                subtitle: Text(
-                  isLoggedIn 
-                      ? 'This is a personalized item for ${user?.fullName ?? 'you'}.'
-                      : 'This is a description for the list item.'
+          const SupportCardWidget(), // Call the new widget here
+          const SizedBox(height: 20), // Add some spacing below it
+          
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isLoggedIn
+                      ? 'Welcome back, ${user?.fullName ?? 'User'}!'
+                      : 'Welcome to the Homepage!',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-              ),
-            );
-          }),
+                const SizedBox(height: 10),
+                Text(
+                  isLoggedIn
+                      ? 'Here are your personalized recommendations and updates.'
+                      : 'This is a template page to show how content can be structured.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 20),
+                ...List.generate(5, (index) {
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    elevation: 4,
+                    child: ListTile(
+                      leading: Icon(Icons.star, color: Colors.amber.shade700),
+                      title: Text(
+                          '${isLoggedIn ? 'Personal' : 'Template'} Item ${index + 1}'),
+                      subtitle: Text(
+                        isLoggedIn
+                            ? 'This is a personalized item for ${user?.fullName ?? 'you'}.'
+                            : 'This is a description for the list item.',
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
         ],
       ),
     );
