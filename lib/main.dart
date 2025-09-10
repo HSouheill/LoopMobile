@@ -284,6 +284,39 @@ class HomePage extends StatelessWidget {
       ),
     ];
 
+    final List<Agent> individualServicesAgents = [
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Sam The Plumber',
+        propertyCount: 0,
+        location: 'Beirut, Lebanon',
+        rating: 4.5,
+        reviewCount: 42,
+        customText: 'Plumbing, repairs',
+      ),
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Lina Painter',
+        propertyCount: 0,
+        location: 'Jounieh, Mount Lebanon',
+        rating: 4.6,
+        reviewCount: 37,
+        customText: 'Interior painting',
+      ),
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Fadi Electric',
+        propertyCount: 0,
+        location: 'Hazmieh, Mount Lebanon',
+        rating: 4.7,
+        reviewCount: 58,
+        customText: 'Electrical fixes',
+      ),
+    ];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,46 +350,15 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isLoggedIn
-                      ? 'Welcome back, ${user?.fullName ?? 'User'}!'
-                      : 'Welcome to the Homepage!',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  isLoggedIn
-                      ? 'Here are your personalized recommendations and updates.'
-                      : 'This is a template page to show how content can be structured.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 20),
-                ...List.generate(5, (index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    elevation: 4,
-                    child: ListTile(
-                      leading: Icon(Icons.star, color: Colors.amber.shade700),
-                      title: Text(
-                          '${isLoggedIn ? 'Personal' : 'Template'} Item ${index + 1}'),
-                      subtitle: Text(
-                        isLoggedIn
-                            ? 'This is a personalized item for ${user?.fullName ?? 'you'}.'
-                            : 'This is a description for the list item.',
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
+// Individual Services section using customText instead of property count
+          RecommendedAgentsWidget(
+            title: 'Individual Services',
+            agents: individualServicesAgents,
+            showPropertyCount: false,
           ),
+          const SizedBox(height: 10),
+
+          // Welcome / sample section removed as requested
         ],
       ),
     );

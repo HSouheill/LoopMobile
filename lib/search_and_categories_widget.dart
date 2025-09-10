@@ -9,31 +9,34 @@ class SearchAndCategoriesWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         children: [
-          // Search Bar
+          // Search Bar (transparent, no borders, hint color matches icon)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.transparent, // transparent background
               borderRadius: BorderRadius.circular(30.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
+              // removed boxShadow to eliminate borders/shadow
             ),
             child: Row(
               children: [
                 const Icon(Icons.search, color: Colors.blue),
                 const SizedBox(width: 8.0),
-                const Expanded(
+                Expanded(
                   child: TextField(
-                    decoration: InputDecoration(
+                    cursorColor: Colors.blue,
+                    decoration: const InputDecoration(
                       hintText: 'Search...',
+                      // remove all borders
                       border: InputBorder.none,
-                      hintStyle: TextStyle(color: Colors.black54),
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      // keep background transparent
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
+                      // placeholder color same as icon
+                      hintStyle: TextStyle(color: Colors.blue),
                     ),
                   ),
                 ),
@@ -46,7 +49,7 @@ class SearchAndCategoriesWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 4.0),
           // Horizontal separator line
           Container(
             height: 1.0,
