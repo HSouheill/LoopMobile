@@ -87,17 +87,8 @@ class AgentCard extends StatelessWidget {
     return Container(
       width: 200, // Card width
       margin: const EdgeInsets.only(right: 16.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+      decoration: const BoxDecoration(
+        color: Colors.transparent, // Transparent background
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,8 +128,8 @@ class AgentCard extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.white.withOpacity(0.8),
                   radius: 16,
-                  child:
-                      const Icon(Icons.favorite_border, color: Colors.blue, size: 20),
+                  child: const Icon(Icons.favorite_border,
+                      color: Colors.blue, size: 20),
                 ),
               ),
               Positioned(
@@ -147,7 +138,8 @@ class AgentCard extends StatelessWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.white.withOpacity(0.8),
                   radius: 16,
-                  child: Icon(Icons.shortcut, color: Colors.blue.shade700, size: 20),
+                  child: Icon(Icons.shortcut,
+                      color: Colors.blue.shade700, size: 20),
                 ),
               ),
             ],

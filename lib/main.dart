@@ -7,9 +7,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
 import 'search_and_categories_widget.dart';
 import 'image_slider_widget.dart';
-import 'latest_updates_widget.dart'; // Import the new widget
-import 'featured_listings_widget.dart'; // Import the featured listings widget
-import 'support_card_widget.dart'; // Import the new support card widget
+import 'latest_updates_widget.dart';
+import 'featured_listings_widget.dart';
+import 'support_card_widget.dart';
 import 'recommended_agents_widget.dart'; // Import the new widget
 
 void main() {
@@ -22,7 +22,6 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  // A static method to easily access the state from anywhere in the app
   static _MyAppState of(BuildContext context) =>
       context.findAncestorStateOfType<_MyAppState>()!;
 }
@@ -45,10 +44,9 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      // Add these for localization
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: _locale, // Use the state variable
+      locale: _locale,
       routes: appRoutes(),
       home: const MainScreen(),
     );
@@ -89,21 +87,16 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  // Handle subtitle tap action in main page
   void _handleSubtitleTap() {
     if (_isLoggedIn) {
-      // Navigate to dashboard or user profile
       Navigator.pushNamed(context, '/dashboard');
     } else {
-      // Navigate to login
       Navigator.pushNamed(context, '/preLogin').then((_) {
-        // Refresh auth status when returning from login
         _checkAuthStatus();
       });
     }
   }
 
-  // Handle logout
   void _handleLogout() async {
     await AuthService.signOut();
     setState(() {
@@ -114,14 +107,10 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Handle profile navigation with refresh
   void _handleProfileNavigation() {
     Navigator.pushNamed(context, '/profile').then((result) {
-      // If result is true, it means we need to refresh the UI
       if (result == true) {
-        setState(() {
-          // This will trigger a rebuild of the header with updated user data
-        });
+        setState(() {});
       }
     });
   }
@@ -136,7 +125,6 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
 
-    // Get user data for header
     final user = AuthService.currentUser;
     final headerName = _isLoggedIn && user != null ? user.fullName : 'Guest';
     final headerLocation = _isLoggedIn && user != null && user.city != null
@@ -178,7 +166,6 @@ class HomePage extends StatelessWidget {
       'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg1NjkzMjEtaW1hZ2VfMS1renAycXhwOC5wbmc.png',
     ];
 
-    // Example data for the latest updates widget
     final List<MarketUpdate> marketUpdates = [
       MarketUpdate(
         title:
@@ -202,10 +189,10 @@ class HomePage extends StatelessWidget {
       ),
     ];
 
-    // Sample property listings data
     final List<PropertyListing> featuredProperties = [
       PropertyListing(
-        imageUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        imageUrl:
+            'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         title: 'Modern Family House with Garden',
         price: '\$750,000/Month',
         agentName: 'Sarah Johnson',
@@ -213,36 +200,53 @@ class HomePage extends StatelessWidget {
         isFeatured: true,
       ),
       PropertyListing(
-        imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        imageUrl:
+            'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        title: 'Modern Family House with Garden',
+        price: '\$750,000/Month',
+        agentName: 'Sarah Johnson',
+        location: 'Beverly Hills, CA',
+        isFeatured: true,
+      ),
+      PropertyListing(
+        imageUrl:
+            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         title: 'Luxury Downtown Penthouse',
         price: '\$1,250,000',
         agentName: 'Michael Chen',
         location: 'Manhattan, NY',
         isFeatured: true,
       ),
-      PropertyListing(
-        imageUrl: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Charming Victorian Home',
-        price: '\$895,000',
-        agentName: 'Emma Davis',
-        location: 'San Francisco, CA',
-        isFeatured: true,
+    ];
+
+    // Data for the Recommended Agents widget
+    final List<Agent> recommendedAgents = [
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'John Real Estate',
+        propertyCount: 38,
+        location: 'Hazmieh, Mount Lebanon',
+        rating: 4.7,
+        reviewCount: 128,
       ),
-      PropertyListing(
-        imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Contemporary Waterfront Villa',
-        price: '\$2,100,000',
-        agentName: 'David Rodriguez',
-        location: 'Miami Beach, FL',
-        isFeatured: true,
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Jane Property Group',
+        propertyCount: 52,
+        location: 'Beirut, Lebanon',
+        rating: 4.9,
+        reviewCount: 210,
       ),
-      PropertyListing(
-        imageUrl: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Cozy Suburban Family Home',
-        price: '\$485,000',
-        agentName: 'Lisa Thompson',
-        location: 'Austin, TX',
-        isFeatured: true,
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Elite Homes',
+        propertyCount: 25,
+        location: 'Jounieh, Mount Lebanon',
+        rating: 4.6,
+        reviewCount: 95,
       ),
     ];
 
@@ -261,9 +265,16 @@ class HomePage extends StatelessWidget {
             listings: featuredProperties,
           ),
           const SizedBox(height: 20),
-          const SupportCardWidget(), // Call the new widget here
-          const SizedBox(height: 20), // Add some spacing below it
-          
+          const SupportCardWidget(),
+          const SizedBox(height: 20),
+
+          // Call the new Recommended Agents widget here
+          RecommendedAgentsWidget(
+            title: 'Recommended Agents',
+            agents: recommendedAgents,
+          ),
+          const SizedBox(height: 20),
+
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
