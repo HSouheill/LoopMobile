@@ -250,30 +250,72 @@ class HomePage extends StatelessWidget {
       ),
     ];
 
+    // Data for the Companies Services widget (uses customText instead of property count)
+    final List<Agent> companiesServicesAgents = [
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'Alpha Maintenance Co.',
+        propertyCount: 0,
+        location: 'Beirut, Lebanon',
+        rating: 4.8,
+        reviewCount: 152,
+        customText: 'Electrical, plumbing',
+      ),
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'BrightClean Services',
+        propertyCount: 0,
+        location: 'Jounieh, Mount Lebanon',
+        rating: 4.6,
+        reviewCount: 89,
+        customText: 'Deep Cleaning',
+      ),
+      Agent(
+        imageUrl:
+            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        name: 'SecureGuard Systems',
+        propertyCount: 0,
+        location: 'Hazmieh, Mount Lebanon',
+        rating: 4.7,
+        reviewCount: 110,
+        customText: 'CCTV',
+      ),
+    ];
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SearchAndCategoriesWidget(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           ImageSliderWidget(imageUrls: sliderImages),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           LatestUpdatesWidget(updates: marketUpdates),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           FeaturedListingsWidget(
             title: 'Featured Listings',
             listings: featuredProperties,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           const SupportCardWidget(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Call the new Recommended Agents widget here
           RecommendedAgentsWidget(
             title: 'Recommended Agents',
             agents: recommendedAgents,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
+
+          // Companies Services section using customText instead of property count
+          RecommendedAgentsWidget(
+            title: 'Companies Services',
+            agents: companiesServicesAgents,
+            showPropertyCount: false,
+          ),
+          const SizedBox(height: 10),
 
           Padding(
             padding: const EdgeInsets.all(16.0),
