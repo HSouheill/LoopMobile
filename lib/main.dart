@@ -13,6 +13,7 @@ import 'widgets/support_card_widget.dart';
 import 'widgets/recommended_agents_widget.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
+import 'screens/services/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -71,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
     AgentsPage(),
     ListingsPage(),
     HomePage(), // index 2 → center
-    UnderConstructionPage(pageName: "Services"),
+    ServicesPage(),
     UnderConstructionPage(pageName: "Chat"),
   ];
 

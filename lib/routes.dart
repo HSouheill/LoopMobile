@@ -5,6 +5,7 @@ import 'screens/auth_pages/pre_login_page.dart';
 import 'screens/auth_pages/forgot_password.dart'; // Import the new forgot password page
 import 'screens/dashboards/dashboard.dart';
 import 'screens/profile/profile.dart';
+import 'screens/services/jobs.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -14,5 +15,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/forgotPassword': (_) => const ForgotPasswordPage(), // Add the new route
     '/dashboard': (context) => const DashboardPage(),
     '/profile': (context) => const ProfileScreen(),
+    '/jobs': (context) => const JobsPage(),
   };
 }

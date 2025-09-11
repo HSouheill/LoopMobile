@@ -3,8 +3,8 @@ import '../../widgets/search_and_categories_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/recommended_agents_widget.dart';
 
-class ServicesPage extends StatelessWidget {
-  const ServicesPage({super.key});
+class JobsPage extends StatelessWidget {
+  const JobsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
