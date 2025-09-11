@@ -178,42 +178,42 @@ class ServicesPage extends StatelessWidget {
           const SizedBox(height: 10),
           ImageSliderWidget(imageUrls: sliderImages),
           const SizedBox(height: 20),
-          
+
           // Explore Jobs Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
                   Navigator.pushNamed(context, '/jobs');
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 250,
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF007BFF), Color(0xFF0056b3)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(50.0),
+                    boxShadow: [], // Keeps it consistent with SupportCard (no shadow)
                   ),
-                  elevation: 2,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.work_outline, size: 24),
-                    SizedBox(width: 8),
-                    Text(
+                  child: const Center(
+                    child: Text(
                       'Explore Jobs',
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
+
           const SizedBox(height: 20),
 
           // Featured Services
