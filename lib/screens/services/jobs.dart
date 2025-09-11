@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_and_categories_widget.dart';
 import '../../widgets/image_slider_widget.dart';
-import '../../widgets/recommended_agents_widget.dart';
+import '../../widgets/featured_jobs_widget.dart'; // Import your existing widget
 
 class JobsPage extends StatelessWidget {
   const JobsPage({super.key});
@@ -9,245 +9,163 @@ class JobsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> sliderImages = [
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1486312338219-ce68e2c6b9f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+      'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
     ];
 
-    // Featured Services data
-    final List<Agent> featuredServices = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Premium Home Renovation',
-        propertyCount: 0,
+    // Featured Jobs data
+    final List<Job> featuredJobs = [
+      Job(
+        title: 'Senior Software Engineer',
+        companyName: 'TechVision Solutions',
         location: 'Beirut, Lebanon',
-        rating: 4.9,
-        reviewCount: 234,
-        customText: 'Full renovation services',
-      ),
-      Agent(
+        jobType: 'Full-time',
         imageUrl:
-            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Elite Cleaning Solutions',
-        propertyCount: 0,
+            'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Digital Marketing Manager',
+        companyName: 'Creative Media Hub',
         location: 'Jounieh, Mount Lebanon',
-        rating: 4.8,
-        reviewCount: 189,
-        customText: 'Deep cleaning specialists',
-      ),
-      Agent(
+        jobType: 'Full-time',
         imageUrl:
-            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Smart Security Systems',
-        propertyCount: 0,
+            'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'UI/UX Designer',
+        companyName: 'Design Studio Pro',
         location: 'Hazmieh, Mount Lebanon',
-        rating: 4.9,
-        reviewCount: 156,
-        customText: 'Advanced security solutions',
-      ),
-    ];
-
-    // Top Rated Services data
-    final List<Agent> topRatedServices = [
-      Agent(
+        jobType: 'Contract',
         imageUrl:
-            'https://images.pexels.com/photos/4792509/pexels-photo-4792509.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Master Electricians',
-        propertyCount: 0,
-        location: 'Beirut, Lebanon',
-        rating: 5.0,
-        reviewCount: 298,
-        customText: 'Electrical installations',
+            'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
       ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Pro Plumbing Services',
-        propertyCount: 0,
-        location: 'Dbayeh, Mount Lebanon',
-        rating: 4.9,
-        reviewCount: 267,
-        customText: 'Emergency plumbing',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Garden Masters',
-        propertyCount: 0,
+      Job(
+        title: 'Data Analyst',
+        companyName: 'Analytics Corp',
         location: 'Antelias, Mount Lebanon',
-        rating: 4.9,
-        reviewCount: 178,
-        customText: 'Landscaping & design',
+        jobType: 'Full-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
       ),
     ];
 
-    // Companies Services data
-    final List<Agent> companiesServices = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Alpha Maintenance Co.',
-        propertyCount: 0,
+    // Top Rated Jobs data
+    final List<Job> topRatedJobs = [
+      Job(
+        title: 'Project Manager',
+        companyName: 'Elite Consulting Group',
         location: 'Beirut, Lebanon',
-        rating: 4.8,
-        reviewCount: 152,
-        customText: 'Electrical, plumbing',
-      ),
-      Agent(
+        jobType: 'Full-time',
         imageUrl:
-            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'BrightClean Services',
-        propertyCount: 0,
-        location: 'Jounieh, Mount Lebanon',
-        rating: 4.6,
-        reviewCount: 89,
-        customText: 'Deep Cleaning',
+            'https://images.pexels.com/photos/3184287/pexels-photo-3184287.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
       ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'SecureGuard Systems',
-        propertyCount: 0,
-        location: 'Hazmieh, Mount Lebanon',
-        rating: 4.7,
-        reviewCount: 110,
-        customText: 'CCTV',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/4792509/pexels-photo-4792509.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'TechFix Solutions',
-        propertyCount: 0,
-        location: 'Sin El Fil, Mount Lebanon',
-        rating: 4.5,
-        reviewCount: 98,
-        customText: 'IT support & repair',
-      ),
-    ];
-
-    // Individual Services data
-    final List<Agent> individualServices = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Sam The Plumber',
-        propertyCount: 0,
-        location: 'Beirut, Lebanon',
-        rating: 4.5,
-        reviewCount: 42,
-        customText: 'Plumbing, repairs',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Lina Painter',
-        propertyCount: 0,
-        location: 'Jounieh, Mount Lebanon',
-        rating: 4.6,
-        reviewCount: 37,
-        customText: 'Interior painting',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Fadi Electric',
-        propertyCount: 0,
-        location: 'Hazmieh, Mount Lebanon',
-        rating: 4.7,
-        reviewCount: 58,
-        customText: 'Electrical fixes',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/4792462/pexels-photo-4792462.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Maria Cleaner',
-        propertyCount: 0,
+      Job(
+        title: 'Sales Representative',
+        companyName: 'Global Trading Co.',
         location: 'Dbayeh, Mount Lebanon',
-        rating: 4.4,
-        reviewCount: 31,
-        customText: 'House cleaning',
+        jobType: 'Full-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Content Writer',
+        companyName: 'WordCraft Agency',
+        location: 'Sin El Fil, Mount Lebanon',
+        jobType: 'Part-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184454/pexels-photo-3184454.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Financial Advisor',
+        companyName: 'Premier Finance',
+        location: 'Kaslik, Mount Lebanon',
+        jobType: 'Full-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184298/pexels-photo-3184298.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
       ),
     ];
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SearchAndCategoriesWidget(),
-          const SizedBox(height: 10),
-          ImageSliderWidget(imageUrls: sliderImages),
-          const SizedBox(height: 20),
-          
-          // Explore Jobs Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/jobs');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.work_outline, size: 24),
-                    SizedBox(width: 8),
-                    Text(
-                      'Explore Jobs',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    // For You Jobs data (personalized recommendations)
+    final List<Job> forYouJobs = [
+      Job(
+        title: 'Mobile App Developer',
+        companyName: 'AppTech Innovations',
+        location: 'Beirut, Lebanon',
+        jobType: 'Remote',
+        imageUrl:
+            'https://images.pexels.com/photos/3184317/pexels-photo-3184317.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Graphic Designer',
+        companyName: 'Visual Arts Studio',
+        location: 'Jounieh, Mount Lebanon',
+        jobType: 'Contract',
+        imageUrl:
+            'https://images.pexels.com/photos/3184432/pexels-photo-3184432.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Customer Service Rep',
+        companyName: 'Service Excellence Ltd',
+        location: 'Hazmieh, Mount Lebanon',
+        jobType: 'Part-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+      Job(
+        title: 'Social Media Specialist',
+        companyName: 'Digital Reach Agency',
+        location: 'Dbayeh, Mount Lebanon',
+        jobType: 'Full-time',
+        imageUrl:
+            'https://images.pexels.com/photos/3184394/pexels-photo-3184394.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      ),
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Jobs',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SearchAndCategoriesWidget(),
+            const SizedBox(height: 10),
+            ImageSliderWidget(imageUrls: sliderImages),
+            const SizedBox(height: 20),
+
+            // Featured Jobs
+            FeaturedJobsWidget(
+              title: 'Featured Jobs',
+              jobs: featuredJobs,
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          // Featured Services
-          RecommendedAgentsWidget(
-            title: 'Featured Services',
-            agents: featuredServices,
-            showPropertyCount: false,
-          ),
-          const SizedBox(height: 10),
+            // Top Rated Jobs
+            FeaturedJobsWidget(
+              title: 'Top Rated',
+              jobs: topRatedJobs,
+            ),
+            const SizedBox(height: 20),
 
-          // Top Rated Services
-          RecommendedAgentsWidget(
-            title: 'Top Rated',
-            agents: topRatedServices,
-            showPropertyCount: false,
-          ),
-          const SizedBox(height: 10),
-
-          // Companies Services
-          RecommendedAgentsWidget(
-            title: 'Companies',
-            agents: companiesServices,
-            showPropertyCount: false,
-          ),
-          const SizedBox(height: 10),
-
-          // Individual Services
-          RecommendedAgentsWidget(
-            title: 'Individual Services',
-            agents: individualServices,
-            showPropertyCount: false,
-          ),
-          const SizedBox(height: 20),
-        ],
+            // For You Jobs (Personalized recommendations)
+            FeaturedJobsWidget(
+              title: 'For You',
+              jobs: forYouJobs,
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
