@@ -1,7 +1,7 @@
 // File: lib/screens/dashboard.dart
 
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});

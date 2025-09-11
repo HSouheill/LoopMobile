@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
-import 'under_construction.dart';
+import 'widgets/under_construction.dart';
 import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
-import 'search_and_categories_widget.dart';
-import 'image_slider_widget.dart';
-import 'latest_updates_widget.dart';
-import 'featured_listings_widget.dart';
-import 'support_card_widget.dart';
-import 'recommended_agents_widget.dart'; // Import the new widget
+import 'widgets/search_and_categories_widget.dart';
+import 'widgets/image_slider_widget.dart';
+import 'widgets/latest_updates_widget.dart';
+import 'widgets/featured_listings_widget.dart';
+import 'widgets/support_card_widget.dart';
+import 'widgets/recommended_agents_widget.dart'; // Import the new widget
 
 void main() {
   runApp(const MyApp());

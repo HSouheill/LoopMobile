@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../services/auth_service.dart';
-import '../environment.dart';
+import '../../services/auth_service.dart';
+import '../../environment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'screens/login_landing.dart';
-import 'screens/login_email.dart';
-import 'screens/pre_login_page.dart';
-import 'screens/forgot_password.dart'; // Import the new forgot password page
-import 'screens/dashboard.dart';
-import 'screens/profile.dart';
+import 'screens/auth_pages/login_landing.dart';
+import 'screens/auth_pages/login_email.dart';
+import 'screens/auth_pages/pre_login_page.dart';
+import 'screens/auth_pages/forgot_password.dart'; // Import the new forgot password page
+import 'screens/dashboards/dashboard.dart';
+import 'screens/profile/profile.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {

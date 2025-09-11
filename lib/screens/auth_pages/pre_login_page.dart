@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/auth_button.dart';
+import '../../widgets/auth_button.dart';
 
 class PreLoginPage extends StatelessWidget {
   const PreLoginPage({super.key});
