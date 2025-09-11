@@ -10,7 +10,9 @@ import 'widgets/image_slider_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
-import 'widgets/recommended_agents_widget.dart'; // Import the new widget
+import 'widgets/recommended_agents_widget.dart';
+import 'screens/listings/listings.dart';
+import 'screens/agents/agents.dart';
 
 void main() {
   runApp(const MyApp());
@@ -66,8 +68,8 @@ class _MainScreenState extends State<MainScreen> {
   bool _isLoggedIn = false;
 
   final List<Widget> _pages = const [
-    UnderConstructionPage(pageName: "Agents"),
-    UnderConstructionPage(pageName: "Listings"),
+    AgentsPage(),
+    ListingsPage(),
     HomePage(), // index 2 → center
     UnderConstructionPage(pageName: "Services"),
     UnderConstructionPage(pageName: "Chat"),
