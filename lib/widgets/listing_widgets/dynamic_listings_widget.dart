@@ -1,25 +1,25 @@
-// widgets/featured_listings_widget.dart
 import 'package:flutter/material.dart';
-import '../services/listing_service.dart';
-import '../screens/listings/listings.dart';
+import '/services/listing_service.dart';
+import '../../screens/listings/category_listings_page.dart';
+import 'featured_listings_widget.dart' as flw; // reuse shared card UI
 
-class FeaturedListingsWidget extends StatefulWidget {
-  final String title;
+class DynamicListingsWidget extends StatefulWidget {
+  final ListingCategory category;
+  final int limit;
   final VoidCallback? onSeeAll;
-  final bool isMainPage;
 
-  const FeaturedListingsWidget({
+  const DynamicListingsWidget({
     super.key,
-    required this.title,
+    required this.category,
+    this.limit = 3,
     this.onSeeAll,
-    this.isMainPage = true,
   });
 
   @override
-  State<FeaturedListingsWidget> createState() => _FeaturedListingsWidgetState();
+  State<DynamicListingsWidget> createState() => _DynamicListingsWidgetState();
 }
 
-class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
+class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
   List<PropertyListing> listings = [];
   bool isLoading = true;
   String? error;
@@ -27,30 +27,61 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
   @override
   void initState() {
     super.initState();
-    _loadFeaturedListings();
+    _loadListings();
   }
 
-  Future<void> _loadFeaturedListings() async {
+  Future<void> _loadListings() async {
     try {
       setState(() {
         isLoading = true;
         error = null;
       });
 
-      final response = await ListingService.getFeaturedListings(
-        limit: widget.isMainPage ? 3 : 10,
-      );
-      
+      ListingsResponse response;
+
+      switch (widget.category) {
+        case ListingCategory.featured:
+          response = await ListingService.getFeaturedListings(limit: widget.limit);
+          break;
+        case ListingCategory.newListings:
+          response = await ListingService.getNewListings(limit: widget.limit);
+          break;
+        case ListingCategory.apartments:
+        case ListingCategory.chalets:
+        case ListingCategory.commercial:
+          response = await ListingService.getListingsByType(
+            type: widget.category.apiType!,
+            limit: widget.limit,
+          );
+          break;
+      }
+
+      if (!mounted) return;
       setState(() {
         listings = response.listings;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         error = e.toString();
         isLoading = false;
       });
     }
+  }
+
+  void _handleSeeAll() {
+    if (widget.onSeeAll != null) {
+      widget.onSeeAll!();
+      return;
+    }
+    // Open paginated page for the selected category
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CategoryListingsPage(category: widget.category),
+      ),
+    );
   }
 
   @override
@@ -63,16 +94,15 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.title,
+                widget.category.displayName,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (widget.isMainPage)
-                TextButton(
-                  onPressed: widget.onSeeAll,
-                  child: const Text('See all'),
-                ),
+              TextButton(
+                onPressed: _handleSeeAll,
+                child: const Text('See all'),
+              ),
             ],
           ),
         ),
@@ -92,18 +122,24 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    'Failed to load listings',
+                    'Failed to load ${widget.category.displayName.toLowerCase()}',
                     style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    error!,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    textAlign: TextAlign.center,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      error!,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _loadFeaturedListings,
+                    onPressed: _loadListings,
                     child: const Text('Retry'),
                   ),
                 ],
@@ -111,10 +147,20 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
             ),
           )
         else if (listings.isEmpty)
-          const SizedBox(
+          SizedBox(
             height: 330,
             child: Center(
-              child: Text('No featured listings found'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.home_outlined, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No ${widget.category.displayName.toLowerCase()} found',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
           )
         else
@@ -122,13 +168,15 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
             height: 330,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               itemCount: listings.length,
               itemBuilder: (context, index) {
                 final listing = listings[index];
-                return PropertyListingCard(listing: listing);
+                return flw.PropertyListingCard(listing: listing);
               },
             ),
           ),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -150,7 +198,6 @@ class PropertyListingCard extends StatelessWidget {
       child: Card(
         color: Colors.transparent,
         elevation: 0,
-        shape: null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -182,10 +229,11 @@ class PropertyListingCard extends StatelessWidget {
                       );
                     },
                     errorBuilder: (context, error, stackTrace) {
-                      return const SizedBox(
+                      return Container(
                         height: 150,
-                        child: Center(
-                          child: Icon(Icons.error, color: Colors.red),
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
                         ),
                       );
                     },
@@ -223,6 +271,26 @@ class PropertyListingCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (listing.isFeatured)
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'Featured',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Expanded(
@@ -242,6 +310,7 @@ class PropertyListingCard extends StatelessWidget {
                       listing.price,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -256,6 +325,7 @@ class PropertyListingCard extends StatelessWidget {
                             listing.agentName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.grey),
                           ),
                         ),
                       ],

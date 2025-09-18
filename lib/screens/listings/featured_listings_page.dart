@@ -1,7 +1,7 @@
 // screens/listings/featured_listings_page.dart
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
-import '../../widgets/featured_listings_widget.dart';
+import '../../widgets/listing_widgets/featured_listings_widget.dart';
 
 class FeaturedListingsPage extends StatefulWidget {
   const FeaturedListingsPage({super.key});

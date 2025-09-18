@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_and_categories_widget.dart';
-import './dynamic_listings_widget.dart';
+import '../../widgets/listing_widgets/dynamic_listings_widget.dart';
 import '../../services/listing_service.dart';
 
 class ListingsPage extends StatefulWidget {

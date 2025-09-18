@@ -8,7 +8,7 @@ import 'routes.dart';
 import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
 import 'widgets/latest_updates_widget.dart';
-import 'widgets/featured_listings_widget.dart';
+import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
 import 'widgets/recommended_agents_widget.dart';
 import 'screens/listings/listings.dart';

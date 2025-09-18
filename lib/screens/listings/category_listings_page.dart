@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '/services/listing_service.dart';
 import '/services/listing_service.dart' show ListingCategory; // import enum from service
-import '../../widgets/featured_listings_widget.dart' as flw; // reuse shared card UI
+import '../../widgets/listing_widgets/featured_listings_widget.dart' as flw; // reuse shared card UI
 
 class CategoryListingsPage extends StatefulWidget {
   final ListingCategory category;
