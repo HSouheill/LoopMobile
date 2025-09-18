@@ -1,6 +1,7 @@
 // widgets/featured_listings_widget.dart
 import 'package:flutter/material.dart';
 import '../services/listing_service.dart';
+import '../screens/listings/listings.dart';
 
 class FeaturedListingsWidget extends StatefulWidget {
   final String title;
@@ -69,9 +70,7 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
               ),
               if (widget.isMainPage)
                 TextButton(
-                  onPressed: widget.onSeeAll ?? () {
-                    Navigator.pushNamed(context, '/featured-listings');
-                  },
+                  onPressed: widget.onSeeAll,
                   child: const Text('See all'),
                 ),
             ],

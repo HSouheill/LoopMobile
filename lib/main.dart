@@ -118,6 +118,13 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // Add this method to handle navigation from widgets
+  void navigateToTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -164,6 +171,9 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
     final isLoggedIn = AuthService.isLoggedIn;
+
+    // Find the MainScreen to get the navigation callback
+    final mainScreenState = context.findAncestorStateOfType<_MainScreenState>();
 
     final List<String> sliderImages = [
       'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg2OTE4MDAtaW1hZ2UtMDVhLXJtNTA1XzEtbDA5YWp5c3UucG5n.png',
@@ -288,10 +298,11 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 10),
           LatestUpdatesWidget(updates: marketUpdates),
           const SizedBox(height: 10),
-          // Updated to use API data
-          const FeaturedListingsWidget(
+          // Updated to use callback for navigation
+          FeaturedListingsWidget(
             title: 'Featured Listings',
             isMainPage: true,
+            onSeeAll: () => mainScreenState?.navigateToTab(1), // Navigate to ListingsPage (index 1)
           ),
           const SizedBox(height: 10),
           const SupportCardWidget(),

@@ -7,6 +7,7 @@ import 'screens/dashboards/dashboard.dart';
 import 'screens/profile/profile.dart';
 import 'screens/services/jobs.dart';
 import 'screens/listings/featured_listings_page.dart';
+import 'screens/listings/listings.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -18,5 +19,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
     '/featured-listings': (context) => const FeaturedListingsPage(),
+    '/listings': (context) => const ListingsPage(),
   };
 }
