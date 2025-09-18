@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '/services/listing_service.dart';
 import './category_listings_page.dart';
+import '../../widgets/featured_listings_widget.dart' as flw; // reuse shared card UI
 
 class DynamicListingsWidget extends StatefulWidget {
   final ListingCategory category;
@@ -171,7 +172,7 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
               itemCount: listings.length,
               itemBuilder: (context, index) {
                 final listing = listings[index];
-                return PropertyListingCard(listing: listing);
+                return flw.PropertyListingCard(listing: listing);
               },
             ),
           ),

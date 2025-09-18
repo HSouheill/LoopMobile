@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '/services/listing_service.dart';
-import './dynamic_listings_widget.dart'; // for PropertyListingCard & ListingCategory types
+import '/services/listing_service.dart' show ListingCategory; // import enum from service
+import '../../widgets/featured_listings_widget.dart' as flw; // reuse shared card UI
 
 class CategoryListingsPage extends StatefulWidget {
   final ListingCategory category;
@@ -114,72 +115,18 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
                               Center(child: Text('No listings found')),
                             ],
                           )
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(12),
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(16),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
                             itemCount: listings.length,
                             itemBuilder: (context, index) {
                               final listing = listings[index];
-                              // Reuse the same listing card from dynamic_listings_widget.dart
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12.0),
-                                child: SizedBox(
-                                  height: 140,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(12),
-                                          child: Image.network(
-                                            listing.imageUrl,
-                                            height: double.infinity,
-                                            width: double.infinity,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Container(
-                                                color: Colors.grey[300],
-                                                child: const Center(child: Icon(Icons.broken_image)),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              listing.title,
-                                              style: Theme.of(context).textTheme.titleMedium,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(listing.price, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                            const SizedBox(height: 8),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.location_on, size: 14, color: Colors.blue),
-                                                const SizedBox(width: 6),
-                                                Expanded(
-                                                  child: Text(
-                                                    listing.location,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(color: Colors.blue),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              );
+                              return flw.PropertyListingCard(listing: listing);
                             },
                           ),
                   ),
