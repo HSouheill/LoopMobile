@@ -200,6 +200,21 @@ class PropertyListing {
   final bool isFeatured;
   final String? type;
   final String? listingFor;
+  // Extended fields for single listing page
+  final List<String>? images;
+  final String? currency;
+  final num? priceValue;
+  final DateTime? createdAt;
+  final String? description;
+  final List<String>? amenityList;
+  final num? size;
+  final int? bedrooms;
+  final int? bathrooms;
+  final int? floor;
+  final String? condition;
+  final int? buildingAge;
+  final String? papers;
+  final DateTime? availableFrom;
   
   PropertyListing({
     required this.id,
@@ -211,21 +226,41 @@ class PropertyListing {
     this.isFeatured = false,
     this.type,
     this.listingFor,
+    this.images,
+    this.currency,
+    this.priceValue,
+    this.createdAt,
+    this.description,
+    this.amenityList,
+    this.size,
+    this.bedrooms,
+    this.bathrooms,
+    this.floor,
+    this.condition,
+    this.buildingAge,
+    this.papers,
+    this.availableFrom,
   });
   
   factory PropertyListing.fromJson(Map<String, dynamic> json) {
     // Handle images array - take first image or use placeholder
     String imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
+    List<String>? images;
     if (json['images'] != null && json['images'] is List && (json['images'] as List).isNotEmpty) {
-      imageUrl = json['images'][0].toString();
+      final imgs = (json['images'] as List).map((e) => e.toString()).toList();
+      images = imgs;
+      imageUrl = imgs.first;
     }
     
     // Handle price formatting
     String priceStr = '\$0';
+    num? priceValue;
+    String? currency;
     if (json['price'] != null) {
       final price = json['price'];
       if (price is num) {
         priceStr = '\$${_formatNumber(price.toInt())}';
+        priceValue = price;
       } else {
         priceStr = price.toString();
       }
@@ -234,12 +269,16 @@ class PropertyListing {
         priceStr += '/Month';
       }
     }
+    if (json['currency'] != null) {
+      currency = json['currency'].toString();
+    }
     
     // Handle daily price for rentals
     if (json['dailyPrice'] != null && json['listingFor']?.toString().toLowerCase() == 'rent') {
       final dailyPrice = json['dailyPrice'];
       if (dailyPrice is num && dailyPrice > 0) {
         priceStr = '\$${_formatNumber(dailyPrice.toInt())}/Day';
+        priceValue = dailyPrice;
       }
     }
     
@@ -268,6 +307,38 @@ class PropertyListing {
       }
     }
     
+    // Parse optional fields for single listing page
+    DateTime? createdAt;
+    if (json['createdAt'] != null) {
+      try {
+        createdAt = DateTime.tryParse(json['createdAt'].toString());
+      } catch (_) {}
+    }
+    DateTime? availableFrom;
+    if (json['availableFrom'] != null) {
+      try {
+        availableFrom = DateTime.tryParse(json['availableFrom'].toString());
+      } catch (_) {}
+    }
+    String? description = json['description']?.toString();
+    List<String>? amenityList;
+    final amenities = json['amenities'] ?? json['amenityList'];
+    if (amenities is List) {
+      amenityList = amenities.map((e) => e.toString()).toList();
+    }
+    num? size;
+    if (json['size'] is num) size = json['size'];
+    int? bedrooms;
+    if (json['bedrooms'] is num) bedrooms = (json['bedrooms'] as num).toInt();
+    int? bathrooms;
+    if (json['bathrooms'] is num) bathrooms = (json['bathrooms'] as num).toInt();
+    int? floor;
+    if (json['floor'] is num) floor = (json['floor'] as num).toInt();
+    String? condition = json['condition']?.toString();
+    int? buildingAge;
+    if (json['buildingAge'] is num) buildingAge = (json['buildingAge'] as num).toInt();
+    String? papers = json['papers']?.toString();
+    
     return PropertyListing(
       id: json['_id']?.toString() ?? '',
       imageUrl: imageUrl,
@@ -278,6 +349,20 @@ class PropertyListing {
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),
+      images: images,
+      currency: currency,
+      priceValue: priceValue,
+      createdAt: createdAt,
+      description: description,
+      amenityList: amenityList,
+      size: size,
+      bedrooms: bedrooms,
+      bathrooms: bathrooms,
+      floor: floor,
+      condition: condition,
+      buildingAge: buildingAge,
+      papers: papers,
+      availableFrom: availableFrom,
     );
   }
   

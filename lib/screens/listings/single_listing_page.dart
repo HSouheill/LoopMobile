@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '/services/listing_service.dart';
+import 'package:intl/intl.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -15,13 +17,35 @@ class _SingleListingPageState extends State<SingleListingPage> {
   int _currentImageIndex = 0;
   bool _isExpanded = false;
 
-  // Sample additional images - in real app, these would come from the listing data
-  List<String> get _allImages => [
-    widget.listing.imageUrl,
-    // Add more sample images - replace with actual listing images
-    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500',
-    'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=500',
-  ];
+  // Get all images from the listing
+  List<String> get _allImages {
+    if (widget.listing.images != null && widget.listing.images!.isNotEmpty) {
+      return widget.listing.images!;
+    }
+    // Fallback to main image if no additional images
+    return [widget.listing.imageUrl];
+  }
+
+  String get _formattedPrice {
+    if (widget.listing.priceValue != null) {
+      final currency = widget.listing.currency ?? 'USD';
+      final price = widget.listing.priceValue;
+      final formatter = NumberFormat.currency(symbol: currency == 'USD' ? '\$' : currency);
+      return formatter.format(price);
+    }
+    return widget.listing.price;
+  }
+
+  String get _formattedDate {
+    if (widget.listing.createdAt != null) {
+      return DateFormat('EEEE, d MMMM yyyy').format(widget.listing.createdAt!);
+    }
+    return 'Date not available';
+  }
+
+  String get _propertyCode {
+    return widget.listing.id;
+  }
 
   @override
   void dispose() {
@@ -250,7 +274,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            widget.listing.price,
+                            _formattedPrice,
                             style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -308,14 +332,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           ),
                           const SizedBox(height: 16),
                           
-                          // Property details list
-                          _buildPropertyDetail('Size: 120 sqm'),
-                          _buildPropertyDetail('2 Bedrooms, 2 Bathrooms + Guest Toilet'),
-                          _buildPropertyDetail('Fully equipped kitchen'),
-                          _buildPropertyDetail('AC & Heating system'),
-                          _buildPropertyDetail('1 Underground parking space'),
-                          _buildPropertyDetail('Elevator & Generator'),
-                          _buildPropertyDetail('Close to ABC Mall, Sassine Square, and all main attractions'),
+                          // Dynamic property details
+                          ...(_buildPropertyDetailsList()),
                         ],
                       ),
                     ),
@@ -323,66 +341,123 @@ class _SingleListingPageState extends State<SingleListingPage> {
                     const SizedBox(height: 32),
                     
                     // Description Section
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  shape: BoxShape.circle,
+                    if (widget.listing.description != null && widget.listing.description!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
                                 ),
-                                child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Description',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              widget.listing.description!,
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 16,
+                                height: 1.5,
                               ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'Description',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                              maxLines: _isExpanded ? null : 3,
+                              overflow: _isExpanded ? null : TextOverflow.ellipsis,
+                            ),
+                            if (widget.listing.description!.length > 150) ...[
+                              const SizedBox(height: 12),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _isExpanded = !_isExpanded;
+                                  });
+                                },
+                                child: Text(
+                                  _isExpanded ? 'Read Less' : 'Read More',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Situated on a quiet street yet just minutes away from popular cafes, shops, schools, and hospitals, the apartment features a bright...',
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 16,
-                              height: 1.5,
-                            ),
-                            maxLines: _isExpanded ? null : 3,
-                            overflow: _isExpanded ? null : TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 12),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _isExpanded = !_isExpanded;
-                              });
-                            },
-                            child: Text(
-                              _isExpanded ? 'Read Less' : 'Read More',
-                              style: const TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Amenities Section (if available)
+                    if (widget.listing.amenityList != null && widget.listing.amenityList!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.star_outline, color: Colors.grey, size: 20),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Amenities',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 8,
+                              children: widget.listing.amenityList!.map((amenity) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                                  ),
+                                  child: Text(
+                                    _formatAmenityName(amenity),
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
                     
                     const SizedBox(height: 32),
                     
@@ -390,33 +465,42 @@ class _SingleListingPageState extends State<SingleListingPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: _propertyCode));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Property code copied to clipboard')),
+                            );
+                          },
+                          child: RichText(
+                            text: TextSpan(
+                              style: const TextStyle(fontSize: 16, color: Colors.black87),
+                              children: [
+                                const TextSpan(
+                                  text: 'Property Code: ',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(text: _propertyCode),
+                                const TextSpan(text: ' '),
+                                WidgetSpan(
+                                  child: Icon(Icons.copy, size: 16, color: Colors.blue),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 16, color: Colors.black87),
                             children: [
                               const TextSpan(
-                                text: 'Property Code: ',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const TextSpan(text: 'APT-DXB-9234 '),
-                              WidgetSpan(
-                                child: Icon(Icons.copy, size: 16, color: Colors.blue),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        RichText(
-                          text: const TextSpan(
-                            style: TextStyle(fontSize: 16, color: Colors.black87),
-                            children: [
-                              TextSpan(
                                 text: 'Listed Date: ',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               TextSpan(
-                                text: 'Thursday, 8 April 2025',
-                                style: TextStyle(color: Colors.blue),
+                                text: _formattedDate,
+                                style: const TextStyle(color: Colors.blue),
                               ),
                             ],
                           ),
@@ -432,7 +516,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // Call functionality
+                              // Call functionality using contactPhone
+                              // You can implement url_launcher here
                             },
                             icon: const Icon(Icons.phone, color: Colors.white),
                             label: const Text('Call', style: TextStyle(color: Colors.white)),
@@ -449,7 +534,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // WhatsApp functionality
+                              // WhatsApp functionality using contactPhone
+                              // You can implement url_launcher here
                             },
                             icon: const Icon(Icons.message, color: Colors.white),
                             label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
@@ -474,6 +560,66 @@ class _SingleListingPageState extends State<SingleListingPage> {
         ],
       ),
     );
+  }
+  
+  List<Widget> _buildPropertyDetailsList() {
+    List<Widget> details = [];
+    
+    // Size
+    if (widget.listing.size != null) {
+      details.add(_buildPropertyDetail('Size: ${widget.listing.size} sqm'));
+    }
+    
+    // Bedrooms and Bathrooms
+    String roomInfo = '';
+    if (widget.listing.bedrooms != null && widget.listing.bathrooms != null) {
+      roomInfo = '${widget.listing.bedrooms} Bedrooms, ${widget.listing.bathrooms} Bathrooms';
+    } else if (widget.listing.bedrooms != null) {
+      roomInfo = '${widget.listing.bedrooms} Bedrooms';
+    } else if (widget.listing.bathrooms != null) {
+      roomInfo = '${widget.listing.bathrooms} Bathrooms';
+    }
+    if (roomInfo.isNotEmpty) {
+      details.add(_buildPropertyDetail(roomInfo));
+    }
+    
+    // Property type
+    if (widget.listing.type != null) {
+      details.add(_buildPropertyDetail('Type: ${widget.listing.type!.toUpperCase()}'));
+    }
+    
+    // Floor
+    if (widget.listing.floor != null) {
+      details.add(_buildPropertyDetail('Floor: ${widget.listing.floor}'));
+    }
+    
+    // Condition
+    if (widget.listing.condition != null) {
+      details.add(_buildPropertyDetail('Condition: ${widget.listing.condition!.toUpperCase()}'));
+    }
+    
+    // Building age
+    if (widget.listing.buildingAge != null) {
+      details.add(_buildPropertyDetail('Building Age: ${widget.listing.buildingAge} years'));
+    }
+    
+    // Papers
+    if (widget.listing.papers != null) {
+      details.add(_buildPropertyDetail('Papers: ${_formatPapers(widget.listing.papers!)}'));
+    }
+    
+    // Listing type
+    if (widget.listing.listingFor != null) {
+      details.add(_buildPropertyDetail('Available for: ${widget.listing.listingFor!.toUpperCase()}'));
+    }
+    
+    // Available from
+    if (widget.listing.availableFrom != null) {
+      final availableDate = DateFormat('MMMM yyyy').format(widget.listing.availableFrom!);
+      details.add(_buildPropertyDetail('Available from: $availableDate'));
+    }
+    
+    return details;
   }
   
   Widget _buildPropertyDetail(String detail) {
@@ -505,5 +651,38 @@ class _SingleListingPageState extends State<SingleListingPage> {
         ],
       ),
     );
+  }
+  
+  String _formatAmenityName(String amenity) {
+    // Convert camelCase to readable format
+    String formatted = amenity.replaceAllMapped(
+      RegExp(r'([A-Z])'),
+      (match) => ' ${match.group(1)}',
+    );
+    
+    // Capitalize first letter and handle special cases
+    formatted = formatted.trim();
+    if (formatted.isNotEmpty) {
+      formatted = formatted[0].toUpperCase() + formatted.substring(1);
+    }
+    
+    // Handle special cases
+    formatted = formatted.replaceAll('24 7', '24/7');
+    formatted = formatted.replaceAll('A C', 'AC');
+    
+    return formatted;
+  }
+  
+  String _formatPapers(String papers) {
+    switch (papers.toLowerCase()) {
+      case 'title_deed':
+        return 'Title Deed';
+      case 'contract':
+        return 'Contract';
+      case 'permit':
+        return 'Building Permit';
+      default:
+        return papers.toUpperCase();
+    }
   }
 }

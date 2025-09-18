@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '/services/listing_service.dart';
 import '../../screens/listings/category_listings_page.dart';
 import 'featured_listings_widget.dart' as flw; // reuse shared card UI
-// Add this import to your existing files where PropertyListingCard is used
-import '../../screens/listings/single_listing_page.dart';
 
 class DynamicListingsWidget extends StatefulWidget {
   final ListingCategory category;
