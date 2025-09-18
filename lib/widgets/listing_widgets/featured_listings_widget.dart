@@ -1,7 +1,7 @@
 // widgets/featured_listings_widget.dart
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
-import '../../screens/listings/listings.dart';
+import '../../screens/listings/single_listing_page.dart';
 
 class FeaturedListingsWidget extends StatefulWidget {
   final String title;
@@ -144,142 +144,184 @@ class PropertyListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 250,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Card(
-        color: Colors.transparent,
-        elevation: 0,
-        shape: null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16.0),
-                    topRight: Radius.circular(16.0),
-                  ),
-                  child: Image.network(
-                    listing.imageUrl,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return SizedBox(
-                        height: 150,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                : null,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SingleListingPage(listing: listing),
+          ),
+        );
+      },
+      child: Container(
+        width: 250,
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                    child: Image.network(
+                      listing.imageUrl,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return SizedBox(
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
                           ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 150,
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Add to favorites functionality - prevent navigation
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return const SizedBox(
-                        height: 150,
-                        child: Center(
-                          child: Icon(Icons.error, color: Colors.red),
+                        child: const Icon(
+                          Icons.favorite_border,
+                          color: Colors.black,
+                          size: 20,
                         ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.black,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade600,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: const Icon(
-                      Icons.share,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      listing.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      listing.price,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Icon(Icons.person, size: 16, color: Colors.grey),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            listing.agentName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Share functionality - prevent navigation
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade600,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: const Icon(
+                          Icons.share,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (listing.isFeatured)
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'Featured',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, size: 16, color: Colors.blue),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Text(
-                            listing.location,
-                            style: const TextStyle(color: Colors.blue),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+                ],
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        listing.title,
+                        style: Theme.of(context).textTheme.titleMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        listing.price,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
                         ),
-                      ],
-                    ),
-                  ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(Icons.person, size: 16, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              listing.agentName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 16, color: Colors.blue),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              listing.location,
+                              style: const TextStyle(color: Colors.blue),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
