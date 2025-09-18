@@ -1,9 +1,10 @@
 // Enhanced services/listing_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../environment.dart';
 
 class ListingService {
-  static const String baseUrl = 'http://10.0.3.198:3000/api/listings';
+  static final String baseUrl = '${Environment.apiUrl}listings';
   
   static Future<ListingsResponse> getFeaturedListings({int limit = 3}) async {
     try {
