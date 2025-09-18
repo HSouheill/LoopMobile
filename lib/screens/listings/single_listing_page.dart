@@ -17,6 +17,14 @@ class _SingleListingPageState extends State<SingleListingPage> {
   int _currentImageIndex = 0;
   bool _isExpanded = false;
 
+  String? get _agentEmail {
+    final name = widget.listing.agentName;
+    if (name.isNotEmpty && name.contains('@')) {
+      return name;
+    }
+    return null;
+    }
+
   // Get all images from the listing
   List<String> get _allImages {
     if (widget.listing.images != null && widget.listing.images!.isNotEmpty) {
@@ -152,29 +160,59 @@ class _SingleListingPageState extends State<SingleListingPage> {
                     ),
                   ],
                   
-                  // Page indicators
-                  if (_allImages.length > 1)
-                    Positioned(
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: _allImages.asMap().entries.map((entry) {
-                          return Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentImageIndex == entry.key
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.4),
+                  // Title & Location overlay at bottom of image
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.6),
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.listing.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                          );
-                        }).toList(),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  widget.listing.location,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -189,34 +227,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            actions: [
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.favorite_border, color: Colors.white),
-                  onPressed: () {
-                    // Add to favorites functionality
-                  },
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.share, color: Colors.white),
-                  onPressed: () {
-                    // Share functionality
-                  },
-                ),
-              ),
-            ],
+            actions: const [],
           ),
           
           // Content
@@ -234,53 +245,48 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title and Location
-                    Text(
-                      widget.listing.title,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.grey, size: 16),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            widget.listing.location,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 24),
                     
                     // Price
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
-                      ),
-                      child: Row(
+                    Center(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                             _formattedPrice,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
                             ),
                           ),
+                          const SizedBox(height: 8),
+                          if (_agentEmail != null) ...[
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: _agentEmail!));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Email copied to clipboard')),
+                                );
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.person, size: 18, color: Colors.green),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _agentEmail!,
+                                    style: const TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 16,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -288,23 +294,23 @@ class _SingleListingPageState extends State<SingleListingPage> {
                     const SizedBox(height: 24),
                     
                     // Agent Info
-                    Row(
-                      children: [
-                        const Icon(Icons.person, color: Colors.green, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          widget.listing.agentName,
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     const Icon(Icons.person, color: Colors.green, size: 20),
+                    //     const SizedBox(width: 8),
+                    //     Text(
+                    //       widget.listing.agentName,
+                    //       style: const TextStyle(
+                    //         color: Colors.green,
+                    //         fontSize: 16,
+                    //         fontWeight: FontWeight.w500,
+                    //         decoration: TextDecoration.underline,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     
-                    const SizedBox(height: 32),
+                    // const SizedBox(height: 32),
                     
                     // Property Details Section
                     Container(
