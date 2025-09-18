@@ -353,7 +353,7 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-// Individual Services section using customText instead of property count
+          // Individual Services section using customText instead of property count
           RecommendedAgentsWidget(
             title: 'Individual Services',
             agents: individualServicesAgents,
