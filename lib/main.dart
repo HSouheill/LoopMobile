@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = const [
     AgentsPage(),
-    ListingsPage(),
+    // ListingsPage(),
     HomePage(), // index 2 → center
     ServicesPage(),
     UnderConstructionPage(pageName: "Chat"),
@@ -156,6 +156,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
+// Updated HomePage class in main.dart
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -171,62 +172,27 @@ class HomePage extends StatelessWidget {
 
     final List<MarketUpdate> marketUpdates = [
       MarketUpdate(
-        title:
-            'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
+        title: 'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
         time: '1 Hour ago',
       ),
       MarketUpdate(
-        title:
-            'New report shows rising demand for sustainable housing in urban centers.',
+        title: 'New report shows rising demand for sustainable housing in urban centers.',
         time: '3 Hours ago',
       ),
       MarketUpdate(
-        title:
-            'Local council approves new zoning laws for mixed-use developments.',
+        title: 'Local council approves new zoning laws for mixed-use developments.',
         time: 'Yesterday',
       ),
       MarketUpdate(
-        title:
-            'Property values in the city\'s downtown core see record growth.',
+        title: 'Property values in the city\'s downtown core see record growth.',
         time: '2 days ago',
-      ),
-    ];
-
-    final List<PropertyListing> featuredProperties = [
-      PropertyListing(
-        imageUrl:
-            'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Modern Family House with Garden',
-        price: '\$750,000/Month',
-        agentName: 'Sarah Johnson',
-        location: 'Beverly Hills, CA',
-        isFeatured: true,
-      ),
-      PropertyListing(
-        imageUrl:
-            'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Modern Family House with Garden',
-        price: '\$750,000/Month',
-        agentName: 'Sarah Johnson',
-        location: 'Beverly Hills, CA',
-        isFeatured: true,
-      ),
-      PropertyListing(
-        imageUrl:
-            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        title: 'Luxury Downtown Penthouse',
-        price: '\$1,250,000',
-        agentName: 'Michael Chen',
-        location: 'Manhattan, NY',
-        isFeatured: true,
       ),
     ];
 
     // Data for the Recommended Agents widget
     final List<Agent> recommendedAgents = [
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'John Real Estate',
         propertyCount: 38,
         location: 'Hazmieh, Mount Lebanon',
@@ -234,8 +200,7 @@ class HomePage extends StatelessWidget {
         reviewCount: 128,
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Jane Property Group',
         propertyCount: 52,
         location: 'Beirut, Lebanon',
@@ -243,8 +208,7 @@ class HomePage extends StatelessWidget {
         reviewCount: 210,
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Elite Homes',
         propertyCount: 25,
         location: 'Jounieh, Mount Lebanon',
@@ -256,8 +220,7 @@ class HomePage extends StatelessWidget {
     // Data for the Companies Services widget (uses customText instead of property count)
     final List<Agent> companiesServicesAgents = [
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Alpha Maintenance Co.',
         propertyCount: 0,
         location: 'Beirut, Lebanon',
@@ -266,8 +229,7 @@ class HomePage extends StatelessWidget {
         customText: 'Electrical, plumbing',
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'BrightClean Services',
         propertyCount: 0,
         location: 'Jounieh, Mount Lebanon',
@@ -276,8 +238,7 @@ class HomePage extends StatelessWidget {
         customText: 'Deep Cleaning',
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'SecureGuard Systems',
         propertyCount: 0,
         location: 'Hazmieh, Mount Lebanon',
@@ -289,8 +250,7 @@ class HomePage extends StatelessWidget {
 
     final List<Agent> individualServicesAgents = [
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Sam The Plumber',
         propertyCount: 0,
         location: 'Beirut, Lebanon',
@@ -299,8 +259,7 @@ class HomePage extends StatelessWidget {
         customText: 'Plumbing, repairs',
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Lina Painter',
         propertyCount: 0,
         location: 'Jounieh, Mount Lebanon',
@@ -309,8 +268,7 @@ class HomePage extends StatelessWidget {
         customText: 'Interior painting',
       ),
       Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl: 'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Fadi Electric',
         propertyCount: 0,
         location: 'Hazmieh, Mount Lebanon',
@@ -330,21 +288,20 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 10),
           LatestUpdatesWidget(updates: marketUpdates),
           const SizedBox(height: 10),
-          FeaturedListingsWidget(
+          // Updated to use API data
+          const FeaturedListingsWidget(
             title: 'Featured Listings',
-            listings: featuredProperties,
+            isMainPage: true,
           ),
           const SizedBox(height: 10),
           const SupportCardWidget(),
           const SizedBox(height: 10),
-
           // Call the new Recommended Agents widget here
           RecommendedAgentsWidget(
             title: 'Recommended Agents',
             agents: recommendedAgents,
           ),
           const SizedBox(height: 10),
-
           // Companies Services section using customText instead of property count
           RecommendedAgentsWidget(
             title: 'Companies Services',
@@ -352,7 +309,6 @@ class HomePage extends StatelessWidget {
             showPropertyCount: false,
           ),
           const SizedBox(height: 10),
-
           // Individual Services section using customText instead of property count
           RecommendedAgentsWidget(
             title: 'Individual Services',
@@ -360,8 +316,6 @@ class HomePage extends StatelessWidget {
             showPropertyCount: false,
           ),
           const SizedBox(height: 10),
-
-          // Welcome / sample section removed as requested
         ],
       ),
     );
