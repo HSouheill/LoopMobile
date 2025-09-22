@@ -1,6 +1,7 @@
-// lib/recommended_agents_widget.dart
+// lib/widgets/agent_widgets/recommended_agents_widget.dart
 
 import 'package:flutter/material.dart';
+import '../environment.dart';
 
 // Data model for an agent
 class Agent {
@@ -10,7 +11,7 @@ class Agent {
   final String location;
   final double rating;
   final int reviewCount;
-  final String? customText; // Optional custom text field
+  final String? customText;
 
   Agent({
     required this.imageUrl,
@@ -21,6 +22,119 @@ class Agent {
     required this.reviewCount,
     this.customText,
   });
+
+  // Enhanced factory constructor for JSON parsing
+  factory Agent.fromJson(Map<String, dynamic> json) {
+    // Debug print the JSON being parsed
+    print('DEBUG: Parsing agent JSON: $json');
+    
+    return Agent(
+      // Handle the actual backend field names
+      imageUrl: _buildImageUrl(_getStringValue(json, ['profileImage', 'imageUrl', 'image_url', 'avatar'])) ?? '',
+      name: _buildFullName(json) ?? _getStringValue(json, ['name', 'fullName', 'agentName']) ?? 'Unknown Agent',
+      propertyCount: _getIntValue(json, ['propertyCount', 'property_count', 'properties']) ?? 0,
+      location: _buildLocation(json) ?? _getStringValue(json, ['location', 'city', 'area']) ?? '',
+      rating: _getDoubleValue(json, ['rating', 'averageRating', 'score']) ?? 4.5, // Default rating
+      reviewCount: _getIntValue(json, ['reviewCount', 'review_count', 'totalReviews']) ?? 0,
+      customText: _getStringValue(json, ['customText', 'custom_text', 'description', 'bio']),
+    );
+  }
+
+  // Helper method to build full image URL
+  static String? _buildImageUrl(String? filename) {
+    if (filename == null || filename.isEmpty) {
+      return null;
+    }
+    
+    // If it's already a full URL, return as is
+    if (filename.startsWith('http://') || filename.startsWith('https://')) {
+      return filename;
+    }
+    
+    // Build full URL - you'll need to adjust this based on your backend setup
+    // For now, using a placeholder. Replace with your actual image server URL
+    return '${Environment.apiUrl}assets/$filename';
+  }
+
+  // Helper method to build full name from firstName and lastName
+  static String? _buildFullName(Map<String, dynamic> json) {
+    final firstName = json['firstName']?.toString();
+    final lastName = json['lastName']?.toString();
+    
+    if (firstName != null && lastName != null) {
+      return '$firstName $lastName';
+    } else if (firstName != null) {
+      return firstName;
+    } else if (lastName != null) {
+      return lastName;
+    }
+    return null;
+  }
+
+  // Helper method to build location from city, district, country
+  static String? _buildLocation(Map<String, dynamic> json) {
+    final city = json['city']?.toString();
+    final district = json['district']?.toString();
+    final country = json['country']?.toString();
+    
+    List<String> locationParts = [];
+    if (city != null) locationParts.add(city);
+    if (district != null) locationParts.add(district);
+    if (country != null) locationParts.add(country);
+    
+    return locationParts.isNotEmpty ? locationParts.join(', ') : null;
+  }
+
+  // Helper method to get string value from multiple possible keys
+  static String? _getStringValue(Map<String, dynamic> json, List<String> keys) {
+    for (String key in keys) {
+      if (json.containsKey(key) && json[key] != null) {
+        return json[key].toString();
+      }
+    }
+    return null;
+  }
+
+  // Helper method to get int value from multiple possible keys
+  static int? _getIntValue(Map<String, dynamic> json, List<String> keys) {
+    for (String key in keys) {
+      if (json.containsKey(key) && json[key] != null) {
+        if (json[key] is int) return json[key];
+        if (json[key] is double) return json[key].toInt();
+        if (json[key] is String) {
+          return int.tryParse(json[key]);
+        }
+      }
+    }
+    return null;
+  }
+
+  // Helper method to get double value from multiple possible keys
+  static double? _getDoubleValue(Map<String, dynamic> json, List<String> keys) {
+    for (String key in keys) {
+      if (json.containsKey(key) && json[key] != null) {
+        if (json[key] is double) return json[key];
+        if (json[key] is int) return json[key].toDouble();
+        if (json[key] is String) {
+          return double.tryParse(json[key]);
+        }
+      }
+    }
+    return null;
+  }
+
+  // Optional: Add toJson method if you need to send data back to API
+  Map<String, dynamic> toJson() {
+    return {
+      'imageUrl': imageUrl,
+      'name': name,
+      'propertyCount': propertyCount,
+      'location': location,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'customText': customText,
+    };
+  }
 }
 
 // The main widget that holds the title and the horizontal list
@@ -113,26 +227,48 @@ class AgentCard extends StatelessWidget {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: Image.network(
-                  agent.imageUrl,
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  // Loading and error builders for better UX
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const SizedBox(
-                      height: 120,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox(
-                      height: 120,
-                      child: Icon(Icons.broken_image, size: 40),
-                    );
-                  },
-                ),
+                child: agent.imageUrl.trim().isNotEmpty
+                    ? Image.network(
+                        agent.imageUrl,
+                        height: 140, // increased slightly for better visual
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        // Loading and error builders for better UX
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const SizedBox(
+                            height: 140,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 140,
+                            color: Colors.grey.shade200,
+                            child: const Center(
+                              child: Icon(Icons.person, size: 40, color: Colors.grey),
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        height: 140, // placeholder height matches real image height
+                        width: double.infinity,
+                        color: Colors.grey.shade200,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(
+                                radius: 32,
+                                backgroundColor: Colors.grey.shade300,
+                                child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                              ),
+                             
+                            ],
+                          ),
+                        ),
+                      ),
               ),
               Positioned(
                 top: 8,
