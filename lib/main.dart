@@ -182,19 +182,23 @@ class HomePage extends StatelessWidget {
 
     final List<MarketUpdate> marketUpdates = [
       MarketUpdate(
-        title: 'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
+        title:
+            'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
         time: '1 Hour ago',
       ),
       MarketUpdate(
-        title: 'New report shows rising demand for sustainable housing in urban centers.',
+        title:
+            'New report shows rising demand for sustainable housing in urban centers.',
         time: '3 Hours ago',
       ),
       MarketUpdate(
-        title: 'Local council approves new zoning laws for mixed-use developments.',
+        title:
+            'Local council approves new zoning laws for mixed-use developments.',
         time: 'Yesterday',
       ),
       MarketUpdate(
-        title: 'Property values in the city\'s downtown core see record growth.',
+        title:
+            'Property values in the city\'s downtown core see record growth.',
         time: '2 days ago',
       ),
     ];
@@ -202,7 +206,8 @@ class HomePage extends StatelessWidget {
     // Data for the Recommended Agents widget
     final List<Agent> recommendedAgents = [
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'John Real Estate',
         propertyCount: 38,
         location: 'Hazmieh, Mount Lebanon',
@@ -210,7 +215,8 @@ class HomePage extends StatelessWidget {
         reviewCount: 128,
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Jane Property Group',
         propertyCount: 52,
         location: 'Beirut, Lebanon',
@@ -218,7 +224,8 @@ class HomePage extends StatelessWidget {
         reviewCount: 210,
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Elite Homes',
         propertyCount: 25,
         location: 'Jounieh, Mount Lebanon',
@@ -230,7 +237,8 @@ class HomePage extends StatelessWidget {
     // Data for the Companies Services widget (uses customText instead of property count)
     final List<Agent> companiesServicesAgents = [
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Alpha Maintenance Co.',
         propertyCount: 0,
         location: 'Beirut, Lebanon',
@@ -239,7 +247,8 @@ class HomePage extends StatelessWidget {
         customText: 'Electrical, plumbing',
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'BrightClean Services',
         propertyCount: 0,
         location: 'Jounieh, Mount Lebanon',
@@ -248,7 +257,8 @@ class HomePage extends StatelessWidget {
         customText: 'Deep Cleaning',
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'SecureGuard Systems',
         propertyCount: 0,
         location: 'Hazmieh, Mount Lebanon',
@@ -260,7 +270,8 @@ class HomePage extends StatelessWidget {
 
     final List<Agent> individualServicesAgents = [
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Sam The Plumber',
         propertyCount: 0,
         location: 'Beirut, Lebanon',
@@ -269,7 +280,8 @@ class HomePage extends StatelessWidget {
         customText: 'Plumbing, repairs',
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Lina Painter',
         propertyCount: 0,
         location: 'Jounieh, Mount Lebanon',
@@ -278,7 +290,8 @@ class HomePage extends StatelessWidget {
         customText: 'Interior painting',
       ),
       Agent(
-        imageUrl: 'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        imageUrl:
+            'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
         name: 'Fadi Electric',
         propertyCount: 0,
         location: 'Hazmieh, Mount Lebanon',
@@ -302,7 +315,8 @@ class HomePage extends StatelessWidget {
           FeaturedListingsWidget(
             title: 'Featured Listings',
             isMainPage: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(1), // Navigate to ListingsPage (index 1)
+            onSeeAll: () => mainScreenState
+                ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
           ),
           const SizedBox(height: 10),
           const SupportCardWidget(),
