@@ -18,114 +18,143 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isUpdatingImage = false;
   bool _didUpdateProfile = false; // Add this line
-  
-Future<void> _pickAndUploadImage() async {
-  try {
-    // Show image source selection dialog
-    final ImageSource? source = await _showImageSourceDialog();
-    if (source == null) return;
 
-    // Pick image from selected source
-    final XFile? image = await _picker.pickImage(
-      source: source,
-      maxWidth: 1000,
-      maxHeight: 1000,
-      imageQuality: 80,
-    );
+  final List<Map<String, dynamic>> menuItems = [
+    {
+      'icon': Icons.headset_mic,
+      'text': 'Help & Support',
+      'color': Color(0xFF0048FF),
+    },
+    {
+      'icon': Icons.book_online,
+      'text': 'Terms & Conditions',
+      'color': Color(0xFF34C759),
+    },
+    {
+      'icon': Icons.person,
+      'text': 'Favorites',
+      'color': Color(0xFFFF9500),
+    },
+    {
+      'icon': Icons.history,
+      'text': 'Referrals',
+      'color': Color(0xFFAF52DE),
+    },
+    {
+      'icon': Icons.star,
+      'text': 'Dashboard',
+      'color': Color(0xFFFF3B30),
+    },
+  ];
 
-    if (image == null) return;
+  Future<void> _pickAndUploadImage() async {
+    try {
+      // Show image source selection dialog
+      final ImageSource? source = await _showImageSourceDialog();
+      if (source == null) return;
 
-    setState(() {
-      _isUpdatingImage = true;
-    });
+      // Pick image from selected source
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        imageQuality: 80,
+      );
 
-    // Create multipart request to upload image to your backend endpoint
-    final uri = Uri.parse('${Environment.apiUrl}upload');
-    final request = http.MultipartRequest('POST', uri);
-    
-    // Add the image file (your backend expects 'image' field name)
-    request.files.add(await http.MultipartFile.fromPath('image', image.path));
+      if (image == null) return;
 
-    // Send upload request
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
-    final responseData = jsonDecode(responseBody);
+      setState(() {
+        _isUpdatingImage = true;
+      });
 
-    if (response.statusCode == 200) {
-      // Get the user ID from the AuthService
-      final userId = AuthService.currentUser?.id;
+      // Create multipart request to upload image to your backend endpoint
+      final uri = Uri.parse('${Environment.apiUrl}upload');
+      final request = http.MultipartRequest('POST', uri);
 
-      if (userId == null) {
-        throw Exception('User ID not found. Please log in again.');
+      // Add the image file (your backend expects 'image' field name)
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+
+      // Send upload request
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final responseData = jsonDecode(responseBody);
+
+      if (response.statusCode == 200) {
+        // Get the user ID from the AuthService
+        final userId = AuthService.currentUser?.id;
+
+        if (userId == null) {
+          throw Exception('User ID not found. Please log in again.');
+        }
+
+        // Update profile image via the backend endpoint, passing the user ID
+        await _updateProfileImage(responseData['filename'], userId);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile image updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Update the UI to show the new image immediately
+          setState(() {
+            _didUpdateProfile = true; // Set the flag to true
+            // This will rebuild the profile screen with the updated image
+          });
+        }
+      } else {
+        throw Exception(responseData['message'] ?? 'Failed to upload image');
       }
-
-      // Update profile image via the backend endpoint, passing the user ID
-      await _updateProfileImage(responseData['filename'], userId);
-      
+    } catch (e) {
+      print('Error uploading image: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile image updated successfully!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Text('Error updating profile image: ${e.toString()}'),
+            backgroundColor: Colors.red,
           ),
         );
-
-        // Update the UI to show the new image immediately
+      }
+    } finally {
+      if (mounted) {
         setState(() {
-          _didUpdateProfile = true; // Set the flag to true
-          // This will rebuild the profile screen with the updated image
+          _isUpdatingImage = false;
         });
       }
-    } else {
-      throw Exception(responseData['message'] ?? 'Failed to upload image');
     }
-  } catch (e) {
-    print('Error uploading image: $e');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error updating profile image: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+  }
+
+  Future<void> _updateProfileImage(String filename, String userId) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/update-profile-image');
+      final response = await http.post(
+        url,
+        headers: AuthService.getAuthHeaders(),
+        body: jsonEncode({
+          'filename': filename,
+          'userId': userId, // Pass the user ID to the backend
+        }),
       );
-    }
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isUpdatingImage = false;
-      });
-    }
-  }
-}
 
-Future<void> _updateProfileImage(String filename, String userId) async {
-  try {
-    final url = Uri.parse('${Environment.apiUrl}users/update-profile-image');
-    final response = await http.post(
-      url,
-      headers: AuthService.getAuthHeaders(),
-      body: jsonEncode({
-        'filename': filename,
-        'userId': userId, // Pass the user ID to the backend
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Update the current user data
-      final currentUser = AuthService.currentUser;
-      if (currentUser != null) {
-        final updatedUser = currentUser.copyWith(profileImage: filename);
-        await AuthService.updateCurrentUser(updatedUser);
+      if (response.statusCode == 200) {
+        // Update the current user data
+        final currentUser = AuthService.currentUser;
+        if (currentUser != null) {
+          final updatedUser = currentUser.copyWith(profileImage: filename);
+          await AuthService.updateCurrentUser(updatedUser);
+        }
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(
+            errorData['message'] ?? 'Failed to update profile image');
       }
-    } else {
-      final errorData = jsonDecode(response.body);
-      throw Exception(errorData['message'] ?? 'Failed to update profile image');
+    } catch (e) {
+      print('Error updating profile image: $e');
+      rethrow;
     }
-  } catch (e) {
-    print('Error updating profile image: $e');
-    rethrow;
   }
-}
 
   Future<ImageSource?> _showImageSourceDialog() async {
     return showDialog<ImageSource>(
@@ -185,7 +214,8 @@ Future<void> _updateProfileImage(String filename, String userId) async {
                 await AuthService.signOut();
                 if (mounted) {
                   // Navigate back to main screen and refresh
-                  Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
                 }
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -200,7 +230,7 @@ Future<void> _updateProfileImage(String filename, String userId) async {
   @override
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
-    
+
     if (user == null) {
       return const Scaffold(
         body: Center(
@@ -210,180 +240,303 @@ Future<void> _updateProfileImage(String filename, String userId) async {
     }
 
 // Added this to update header on profile update
-  return PopScope<bool>(
-    canPop: false, // Prevent the default back action
-    onPopInvokedWithResult: (bool didPop, bool? result) {
-      // If the pop didn't already happen (canPop=false), manually pop with our result.
-      if (!didPop) {
-        Navigator.pop(context, _didUpdateProfile);
-      }
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 1,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            
-            // Profile Image Section
-            Center(
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: _isUpdatingImage ? null : _pickAndUploadImage,
+    return PopScope<bool>(
+      canPop: false, // Prevent the default back action
+      onPopInvokedWithResult: (bool didPop, bool? result) {
+        // If the pop didn't already happen (canPop=false), manually pop with our result.
+        if (!didPop) {
+          Navigator.pop(context, _didUpdateProfile);
+        }
+      },
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(150),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Background image
+                Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage("/profileBackgroundImage.png"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+
+                // Back arrow - top left
+                Positioned(
+                  top: 30,
+                  left: 16,
+                  child: SizedBox(
+                    width: 25,
+                    height: 25,
                     child: Container(
-                      width: 120,
-                      height: 120,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade300, width: 3),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Color(0xFF0048FF),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(
+                          Icons.arrow_back_rounded,
+                          color: Color(0xFF0048FF),
+                          size: 16,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Settings icon - top right
+                Positioned(
+                  top: 75,
+                  right: 16,
+                  child: SizedBox(
+                    width: 23,
+                    height: 23,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF0048FF),
+                        borderRadius: BorderRadius.circular(50.0),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(
+                          Icons.mode_edit_outline_sharp,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        onPressed: () {
+                          // Handle settings click
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Profile Image Section
+                Positioned(
+                  bottom: -50,
+                  left: 16,
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: _isUpdatingImage ? null : _pickAndUploadImage,
+                        child: Container(
+                          width: 90,
+                          height: 90,
+                          child: _isUpdatingImage
+                              ? const Center(child: CircularProgressIndicator())
+                              : CircleAvatar(
+                                  radius: 58,
+                                  backgroundImage: user.profileImage != null
+                                      ? NetworkImage(
+                                          '${Environment.apiUrl}assets/${user.profileImage}')
+                                      : const NetworkImage(
+                                              'https://i.pravatar.cc/150?img=3')
+                                          as ImageProvider,
+                                  backgroundColor: Colors.grey[200],
+                                ),
+                        ),
+                      ),
+
+                      // Camera icon overlay
+                      if (!_isUpdatingImage)
+                        Positioned(
+                          bottom: 2,
+                          right: 2,
+                          child: SizedBox(
+                            width: 22, // desired width
+                            height: 22, // desired height
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF0048FF),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: IconButton(
+                                padding:
+                                    EdgeInsets.zero, // remove default padding
+                                constraints:
+                                    const BoxConstraints(), // remove default min constraints
+                                icon: const Icon(
+                                  Icons.mode_edit_outline_sharp,
+                                  color: Colors.white,
+                                  size: 14, // icon size
+                                ),
+                                onPressed: () {
+                                  // handle click
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+
+              // User Information Cards
+              _buildInfoCard('Full Name', user.fullName, Icons.person),
+              _buildInfoCard('Email', user.email, Icons.email),
+              if (user.location != null && user.location!.isNotEmpty)
+                _buildInfoCard('Location', user.location!, Icons.location_on),
+              if (user.city != null && user.city!.isNotEmpty)
+                _buildInfoCard('City', user.city!, Icons.location_city),
+              _buildInfoCard('Role', user.role.toUpperCase(), Icons.badge),
+
+              const SizedBox(height: 40),
+
+              // Horizontal ScrollView
+              SizedBox(
+                height: 100, // Set the height for the scrollable area
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: menuItems.length,
+                  itemBuilder: (context, index) {
+                    final item = menuItems[index];
+                    return Container(
+                      width: 80, // Width for each item
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 8), // Space between items
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: item['color'],
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                item['icon'],
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            item['text'],
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
-                      child: _isUpdatingImage
-                          ? const Center(child: CircularProgressIndicator())
-                          : CircleAvatar(
-                              radius: 58,
-                              backgroundImage: user.profileImage != null
-                                  ? NetworkImage('${Environment.apiUrl}assets/${user.profileImage}')
-                                  : const NetworkImage('https://i.pravatar.cc/150?img=3') as ImageProvider,
-                              backgroundColor: Colors.grey[200],
-                            ),
-                    ),
-                  ),
-                  
-                  // Camera icon overlay
-                  if (!_isUpdatingImage)
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 16),
-            
-            if (!_isUpdatingImage)
-              Text(
-                'Tap to change photo',
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 14,
+                    );
+                  },
                 ),
               ),
-            
-            const SizedBox(height: 30),
-            
-            // User Information Cards
-            _buildInfoCard('Full Name', user.fullName, Icons.person),
-            _buildInfoCard('Email', user.email, Icons.email),
-            if (user.location != null && user.location!.isNotEmpty)
-              _buildInfoCard('Location', user.location!, Icons.location_on),
-            if (user.city != null && user.city!.isNotEmpty)
-              _buildInfoCard('City', user.city!, Icons.location_city),
-            _buildInfoCard('Role', user.role.toUpperCase(), Icons.badge),
-            
-            const SizedBox(height: 40),
-            
-            // Settings Section
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.settings, color: Colors.grey),
-                    title: const Text('Settings'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/settings');
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.help_outline, color: Colors.grey),
-                    title: const Text('Help & Support'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // Navigate to help page
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.info_outline, color: Colors.grey),
-                    title: const Text('About'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // Navigate to about page
-                    },
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 30),
-            
-            // Logout Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _showLogoutDialog,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 2,
+
+              const SizedBox(height: 40),
+
+              // Settings Section
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 8),
-                    Text(
-                      'Logout',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    ListTile(
+                      leading: const Icon(Icons.settings, color: Colors.grey),
+                      title: const Text('Settings'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.help_outline, color: Colors.grey),
+                      title: const Text('Help & Support'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        // Navigate to help page
+                      },
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading:
+                          const Icon(Icons.info_outline, color: Colors.grey),
+                      title: const Text('About'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        // Navigate to about page
+                      },
                     ),
                   ],
                 ),
               ),
-            ),
-            
-            const SizedBox(height: 20),
-          ],
+
+              const SizedBox(height: 30),
+
+              // Logout Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _showLogoutDialog,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout),
+                      SizedBox(width: 8),
+                      Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
