@@ -142,12 +142,14 @@ class RecommendedAgentsWidget extends StatelessWidget {
   final String title;
   final List<Agent> agents;
   final bool showPropertyCount; // Toggle between property count and custom text
+  final VoidCallback? onSeeAll;
 
   const RecommendedAgentsWidget({
     super.key,
     required this.title,
     required this.agents,
     this.showPropertyCount = true, // Default to showing property count
+    this.onSeeAll,
   });
 
   @override
@@ -168,12 +170,11 @@ class RecommendedAgentsWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  // TODO: Handle "See all" tap
-                },
-                child: const Text('See all'),
-              ),
+              if (onSeeAll != null)
+                TextButton(
+                  onPressed: onSeeAll,
+                  child: const Text('See all'),
+                ),
             ],
           ),
           const SizedBox(height: 12),

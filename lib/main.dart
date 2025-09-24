@@ -325,6 +325,7 @@ class HomePage extends StatelessWidget {
           RecommendedAgentsWidget(
             title: 'Recommended Agents',
             agents: recommendedAgents,
+            onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),
           const SizedBox(height: 10),
           // Companies Services section using customText instead of property count
