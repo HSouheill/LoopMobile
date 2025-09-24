@@ -6,6 +6,7 @@ import '../../services/auth_service.dart';
 import '../../environment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,6 +20,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isUpdatingImage = false;
   bool _didUpdateProfile = false; // Add this line
 
+// user inforamtion icon and input field
+  late TextEditingController emailController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final user = AuthService.currentUser;
+
+    emailController = TextEditingController(
+      text: user != null ? user.email : '',
+    );
+  }
+
+// List for the 5 items in the horizontal scroll view
   final List<Map<String, dynamic>> menuItems = [
     {
       'icon': Icons.headset_mic,
@@ -26,24 +42,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'color': Color(0xFF0048FF),
     },
     {
-      'icon': Icons.book_online,
+      'icon': Icons.description,
       'text': 'Terms & Conditions',
-      'color': Color(0xFF34C759),
-    },
-    {
-      'icon': Icons.person,
-      'text': 'Favorites',
-      'color': Color(0xFFFF9500),
-    },
-    {
-      'icon': Icons.history,
-      'text': 'Referrals',
-      'color': Color(0xFFAF52DE),
+      'color': Color(0xFF0048FF),
     },
     {
       'icon': Icons.star,
+      'text': 'Favorites',
+      'color': Color(0xFF0048FF),
+    },
+    {
+      'icon': Icons.extension,
+      'text': 'Referrals',
+      'color': Color(0xFF0048FF),
+    },
+    {
+      'icon': Icons.apps,
       'text': 'Dashboard',
-      'color': Color(0xFFFF3B30),
+      'color': Color(0xFF0048FF),
     },
   ];
 
@@ -241,299 +257,215 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // Added this to update header on profile update
     return PopScope<bool>(
-      canPop: false, // Prevent the default back action
+      canPop: false,
       onPopInvokedWithResult: (bool didPop, bool? result) {
-        // If the pop didn't already happen (canPop=false), manually pop with our result.
         if (!didPop) {
           Navigator.pop(context, _didUpdateProfile);
         }
       },
       child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(150),
-          child: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            flexibleSpace: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // Background image
-                Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage("/profileBackgroundImage.png"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-
-                // Back arrow - top left
-                Positioned(
-                  top: 30,
-                  left: 16,
-                  child: SizedBox(
-                    width: 25,
-                    height: 25,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Color(0xFF0048FF),
-                          width: 1,
+        body: SingleChildScrollView(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  // AppBar section
+                  SizedBox(
+                    height: 150,
+                    child: Stack(
+                      children: [
+                        // Background image
+                        Container(
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage("/profileBackgroundImage.png"),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(
-                          Icons.arrow_back_rounded,
-                          color: Color(0xFF0048FF),
-                          size: 16,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ),
-                ),
 
-                // Settings icon - top right
-                Positioned(
-                  top: 75,
-                  right: 16,
-                  child: SizedBox(
-                    width: 23,
-                    height: 23,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFF0048FF),
-                        borderRadius: BorderRadius.circular(50.0),
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(
-                          Icons.mode_edit_outline_sharp,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        onPressed: () {
-                          // Handle settings click
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Profile Image Section
-                Positioned(
-                  bottom: -50,
-                  left: 16,
-                  child: Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: _isUpdatingImage ? null : _pickAndUploadImage,
-                        child: Container(
-                          width: 90,
-                          height: 90,
-                          child: _isUpdatingImage
-                              ? const Center(child: CircularProgressIndicator())
-                              : CircleAvatar(
-                                  radius: 58,
-                                  backgroundImage: user.profileImage != null
-                                      ? NetworkImage(
-                                          '${Environment.apiUrl}assets/${user.profileImage}')
-                                      : const NetworkImage(
-                                              'https://i.pravatar.cc/150?img=3')
-                                          as ImageProvider,
-                                  backgroundColor: Colors.grey[200],
-                                ),
-                        ),
-                      ),
-
-                      // Camera icon overlay
-                      if (!_isUpdatingImage)
+                        // Back arrow
                         Positioned(
-                          bottom: 2,
-                          right: 2,
+                          top: 30,
+                          left: 16,
                           child: SizedBox(
-                            width: 22, // desired width
-                            height: 22, // desired height
+                            width: 25,
+                            height: 25,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Color(0xFF0048FF),
-                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Color(0xFF0048FF),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(50.0),
                               ),
                               child: IconButton(
-                                padding:
-                                    EdgeInsets.zero, // remove default padding
-                                constraints:
-                                    const BoxConstraints(), // remove default min constraints
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
                                 icon: const Icon(
-                                  Icons.mode_edit_outline_sharp,
-                                  color: Colors.white,
-                                  size: 14, // icon size
+                                  Icons.arrow_back_rounded,
+                                  color: Color(0xFF0048FF),
+                                  size: 16,
                                 ),
                                 onPressed: () {
-                                  // handle click
+                                  Navigator.pop(context);
                                 },
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              const SizedBox(height: 30),
 
-              // User Information Cards
-              _buildInfoCard('Full Name', user.fullName, Icons.person),
-              _buildInfoCard('Email', user.email, Icons.email),
-              if (user.location != null && user.location!.isNotEmpty)
-                _buildInfoCard('Location', user.location!, Icons.location_on),
-              if (user.city != null && user.city!.isNotEmpty)
-                _buildInfoCard('City', user.city!, Icons.location_city),
-              _buildInfoCard('Role', user.role.toUpperCase(), Icons.badge),
-
-              const SizedBox(height: 40),
-
-              // Horizontal ScrollView
-              SizedBox(
-                height: 100, // Set the height for the scrollable area
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: menuItems.length,
-                  itemBuilder: (context, index) {
-                    final item = menuItems[index];
-                    return Container(
-                      width: 80, // Width for each item
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 8), // Space between items
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: item['color'],
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                item['icon'],
-                                size: 18,
-                                color: Colors.white,
+                        // Settings icon
+                        Positioned(
+                          top: 75,
+                          right: 16,
+                          child: SizedBox(
+                            width: 23,
+                            height: 23,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF0048FF),
+                                borderRadius: BorderRadius.circular(50.0),
+                              ),
+                              child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(
+                                  Icons.mode_edit_outline_sharp,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                                onPressed: () {},
                               ),
                             ),
                           ),
-                          SizedBox(height: 6),
-                          Text(
-                            item['text'],
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 35), // space for profile image
+
+                  // User Info and other content
+                  // _buildInfoCard('Full Name', user.fullName, Icons.person),
+                  // if (user.location != null && user.location!.isNotEmpty)
+                  //   _buildInfoCard(
+                  //       'Location', user.location!, Icons.location_on),
+                  // if (user.city != null && user.city!.isNotEmpty)
+                  //   _buildInfoCard('City', user.city!, Icons.location_city),
+                  // _buildInfoCard('Role', user.role.toUpperCase(), Icons.badge),
+
+                  // const SizedBox(height: 30),
+
+                  //User Info
+                  _buildInfoCard(
+                      'Email', emailController, Icons.email_outlined),
+
+                  const SizedBox(height: 20),
+
+                  DynamicGradientButton(
+                    buttonText: 'Edit Email & Number', // Your custom text
+                    onTap: () {
+                      // This code runs when the button is tapped
+                      print('Button tapped!');
+                      // You can add navigation, API calls, or other logic here
+                    },
+                  ),
+
+                  const SizedBox(height: 30),
+
+// new password and rewrite password section
+                  Column(
+                    children: [
+                      BuildNewPassword(
+                          Icons.lock_open_outlined, "Enter new password",
+                          obscureText: true),
+                      BuildNewPassword(Icons.lock_outline, "Re-enter password"),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  DynamicGradientButton(
+                    buttonText: 'Change Password', // Your custom text
+                    onTap: () {
+                      // This code runs when the button is tapped
+                      print('Button tapped!');
+                      // You can add navigation, API calls, or other logic here
+                    },
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18.5, vertical: 7.0),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Horizontal ScrollView containing 5 items with icon and text
+                  horizontalScroll(),
+
+                  const SizedBox(height: 40),
+
+                  // Logout Button
+                  logOutButton(),
+
+                  const SizedBox(height: 20),
+                ],
               ),
 
-              const SizedBox(height: 40),
-
-              // Settings Section
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
+              // Profile Image overlapping the app bar
+              Positioned(
+                top: 100, // adjust to overlap properly
+                left: 16,
+                child: Stack(
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.settings, color: Colors.grey),
-                      title: const Text('Settings'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/settings');
-                      },
+                    GestureDetector(
+                      onTap: _isUpdatingImage ? null : _pickAndUploadImage,
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        child: _isUpdatingImage
+                            ? const Center(child: CircularProgressIndicator())
+                            : CircleAvatar(
+                                radius: 58,
+                                backgroundImage: user.profileImage != null
+                                    ? NetworkImage(
+                                        '${Environment.apiUrl}assets/${user.profileImage}')
+                                    : const NetworkImage(
+                                            'https://i.pravatar.cc/150?img=3')
+                                        as ImageProvider,
+                                backgroundColor: Colors.grey[200],
+                              ),
+                      ),
                     ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading:
-                          const Icon(Icons.help_outline, color: Colors.grey),
-                      title: const Text('Help & Support'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        // Navigate to help page
-                      },
-                    ),
-                    const Divider(height: 1),
-                    ListTile(
-                      leading:
-                          const Icon(Icons.info_outline, color: Colors.grey),
-                      title: const Text('About'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        // Navigate to about page
-                      },
-                    ),
+                    if (!_isUpdatingImage)
+                      Positioned(
+                        bottom: 2,
+                        right: 2,
+                        child: SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFF0048FF),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(
+                                Icons.mode_edit_outline_sharp,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              onPressed: () {},
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 30),
-
-              // Logout Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _showLogoutDialog,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 2,
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.logout),
-                      SizedBox(width: 8),
-                      Text(
-                        'Logout',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -541,43 +473,202 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoCard(String label, String value, IconData icon) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
+  SizedBox logOutButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _showLogoutDialog,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 2,
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.grey.shade600, size: 22),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
+            Icon(Icons.logout),
+            SizedBox(width: 8),
+            Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  SizedBox horizontalScroll() {
+    return SizedBox(
+      height: 120,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(left: 5),
+        itemCount: menuItems.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 25),
+        itemBuilder: (context, index) {
+          final item = menuItems[index];
+
+          // Determine the route based on index
+          String route = '';
+          switch (index) {
+            case 0:
+              route = '/help-and-support';
+              break;
+            case 1:
+              route = '/terms-and-conditions';
+              break;
+            case 2:
+              route = '/favorites';
+              break;
+            case 3:
+              route = '/referrals';
+              break;
+            case 4:
+              route = '/profile-dashboard';
+              break;
+          }
+
+          return InkWell(
+            onTap: () {
+              if (route.isNotEmpty) {
+                Navigator.pushNamed(context, route);
+              }
+            },
+            child: Container(
+              width: 60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 35,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: item['color'],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      item['icon'],
+                      size: 24,
+                      color:
+                          index == 2 ? const Color(0xFFFFBA00) : Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 32,
+                    child: Text(
+                      item['text'],
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+// Email widget
+  Widget _buildInfoCard(
+      String label, TextEditingController controller, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 0),
+      padding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
+      decoration: BoxDecoration(
+        color: Color(0xF5F5F5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Row: icon + input field
+          Row(
+            children: [
+              Icon(icon, color: Color(0xFF0048FF), size: 22),
+              const SizedBox(width: 42),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: label,
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF1E1E1E),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Divider
+          const Divider(
+            color: Color(0xFF0048FF),
+            thickness: 1.5,
+            height: 0,
+          ),
+        ],
+      ),
+    );
+  }
+
+// New password and rewrite password widget
+  Widget BuildNewPassword(IconData icon, String hintText,
+      {bool obscureText = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: const Color(0xFF0048FF)),
+              const SizedBox(width: 35),
+              Expanded(
+                child: TextField(
+                  obscureText: obscureText, // for hidden text (like password)
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    border: InputBorder.none, // removes underline
+                    hintStyle: const TextStyle(color: Colors.grey),
+                  ),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(
+            color: Color(0xFF0048FF),
+            thickness: 1.5,
+            height: 0,
+          ),
+        ],
       ),
     );
   }
