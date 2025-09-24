@@ -13,7 +13,6 @@ class SingleAgentPage extends StatefulWidget {
 
 class _SingleAgentPageState extends State<SingleAgentPage> {
   PageController _pageController = PageController();
-  int _currentImageIndex = 0;
   bool _isExpanded = false;
 
   // Get all images from the agent (for now just the profile image, but can be extended)
@@ -23,16 +22,6 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     }
     // Fallback to placeholder
     return [];
-  }
-
-  String get _formattedDate {
-    // Since Agent model doesn't have createdAt, we'll use a placeholder
-    return 'Member since 2024';
-  }
-
-  String get _agentId {
-    // Use name as ID for now, but this could be enhanced with actual ID
-    return widget.agent.name.replaceAll(' ', '_').toLowerCase();
   }
 
   @override
@@ -81,12 +70,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                   // Image PageView
                   PageView.builder(
                     controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                    itemCount: _allImages.length > 0 ? _allImages.length : 1,
+                    itemCount: _allImages.isNotEmpty ? _allImages.length : 1,
                     itemBuilder: (context, index) {
                       if (_allImages.isNotEmpty) {
                         return Image.network(
@@ -116,7 +100,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                     ),
                   ),
 
-                  // Top-left back button (circular, semi-transparent) - preserved look
+                  // Top-left back button
                   Positioned(
                     left: 12,
                     top: topPadding + 6,
@@ -132,75 +116,82 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                     ),
                   ),
 
-                  // Social icons on top-right (small circular buttons)
+                  // Agent avatar and details at the bottom of the image
                   Positioned(
-                    right: 12,
-                    top: topPadding + 10,
-                    child: Row(
-                      children: [
-                        _socialCircle(Icons.phone, size: 34),
-                        const SizedBox(width: 8),
-                        _socialCircle(Icons.message, size: 34),
-                        const SizedBox(width: 8),
-                        _socialCircle(Icons.facebook, size: 34),
-                      ],
-                    ),
-                  ),
-
-                  // Title & Location overlay at bottom-left of image
-                  Positioned(
-                    left: 16,
+                    left: 20,
                     bottom: 24,
-                    right: 120, // leave space for rating and social icons
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.agent.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, color: Colors.white70, size: 14),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                widget.agent.location,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Rating stars aligned near the name (to the right)
-                  Positioned(
                     right: 20,
-                    bottom: 56,
-                    child: Column(
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        _buildStars(widget.agent.rating),
-                        const SizedBox(height: 6),
-                        Text(
-                          '${widget.agent.rating.toStringAsFixed(1)}',
-                          style: const TextStyle(
-                            color: Colors.amber,
-                            fontWeight: FontWeight.bold,
+                        // Circular avatar with a white border
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: widget.agent.imageUrl.isNotEmpty
+                                ? Image.network(
+                                    widget.agent.imageUrl,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(Icons.person, size: 40, color: Colors.grey);
+                                    },
+                                  )
+                                : const Icon(Icons.person, size: 40, color: Colors.grey),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Name, Location, and Rating
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                widget.agent.name,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on, color: Colors.white, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    widget.agent.location,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    '|',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildStars(widget.agent.rating),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -211,324 +202,141 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
             ),
           ),
 
-          // Content - white rounded card overlapping the header
+          // Content - white rounded card
           SliverToBoxAdapter(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // The white card
-                Container(
-                  // pull up so it visually overlaps exactly under the header with no gap
-                  margin: const EdgeInsets.only(top: 0),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                    // note: no shadow so the avatar's shadow remains dominant and clean
-                  ),
-                  child: Padding(
-                    // top padding leaves room for avatar which sits visually on top
-                    padding: const EdgeInsets.fromLTRB(24, 56, 24, 24),
-                    child: Column(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // About Section
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // small centered rating strip under the avatar (keeps existing info)
-                        Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.star, color: Colors.amber, size: 20),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${widget.agent.rating}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.amber,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '(${widget.agent.reviewCount} reviews)',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.blue.withOpacity(0.18)),
-                                ),
-                                child: Text(
-                                  '${widget.agent.propertyCount} Properties',
-                                  style: const TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 22),
-
-                        // Agent Details Section
-                        Container(
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.person, color: Colors.grey, size: 20),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'Agent Details',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.04),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Icon(Icons.share, size: 18, color: Colors.grey),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 14),
-                              // Dynamic agent details
-                              ...(_buildAgentDetailsList()),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 18),
-
-                        // Description Section
-                        if (widget.agent.customText != null && widget.agent.customText!.isNotEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(18),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Text(
-                                      'About',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  widget.agent.customText!,
+                                const Icon(Icons.info_outline, color: Colors.black, size: 24),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'About',
                                   style: TextStyle(
-                                    color: Colors.grey[700],
-                                    fontSize: 15,
-                                    height: 1.5,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  maxLines: _isExpanded ? null : 3,
-                                  overflow: _isExpanded ? null : TextOverflow.ellipsis,
                                 ),
-                                if (widget.agent.customText!.length > 150) ...[
-                                  const SizedBox(height: 10),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _isExpanded = !_isExpanded;
-                                      });
-                                    },
-                                    child: Text(
-                                      _isExpanded ? 'Read Less' : 'Read More',
-                                      style: const TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ],
                             ),
-                          ),
-
-                        const SizedBox(height: 18),
-
-                        // Agent ID and Member Since
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Clipboard.setData(ClipboardData(text: _agentId));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Agent ID copied to clipboard')),
-                                );
-                              },
-                              child: RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(fontSize: 16, color: Colors.black87),
-                                  children: [
-                                    const TextSpan(
-                                      text: 'Agent ID: ',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    TextSpan(text: _agentId),
-                                    const TextSpan(text: ' '),
-                                    const WidgetSpan(
-                                      child: Icon(Icons.copy, size: 16, color: Colors.blue),
-                                    ),
-                                  ],
+                            // Social media icons
+                            Row(
+                              children: [
+                                _socialIcon(
+                                  icon: 'assets/whatsapp_icon.png',
+                                  color: Colors.green,
                                 ),
-                              ),
+                                const SizedBox(width: 8),
+                                _socialIcon(
+                                  icon: 'assets/instagram_icon.png',
+                                  color: Colors.purple,
+                                ),
+                                const SizedBox(width: 8),
+                                _socialIcon(
+                                  icon: 'assets/facebook_icon.png',
+                                  color: Colors.blue,
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 8),
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(fontSize: 16, color: Colors.black87),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          widget.agent.customText ?? 'No description available.',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
+                          maxLines: _isExpanded ? null : 3,
+                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                        ),
+                        if ((widget.agent.customText?.length ?? 0) > 150)
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isExpanded = !_isExpanded;
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Row(
                                 children: [
-                                  const TextSpan(
-                                    text: 'Member Since: ',
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  Text(
+                                    _isExpanded ? 'Read Less' : 'Read More',
+                                    style: const TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                  TextSpan(
-                                    text: _formattedDate,
-                                    style: const TextStyle(color: Colors.blue),
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 14,
+                                    color: Colors.green,
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                      ],
+                    ),
 
-                        const SizedBox(height: 18),
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
 
-                        // Contact Buttons (full width)
+                    // Details Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
                           children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Call functionality coming soon')),
-                                  );
-                                },
-                                icon: const Icon(Icons.phone, color: Colors.white),
-                                label: const Text('Call', style: TextStyle(color: Colors.white)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('WhatsApp functionality coming soon')),
-                                  );
-                                },
-                                icon: const Icon(Icons.message, color: Colors.white),
-                                label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
+                            const Icon(Icons.search, color: Colors.black, size: 24),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Details',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Avatar placed AFTER the card so it's painted on top (overlapping)
-                Positioned(
-                  top: -36, // lifts avatar to overlap header and card
-                  left: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.18),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
+                        const SizedBox(height: 16),
+                        _buildDetailRow(
+                          icon: Icons.email,
+                          label: 'Email:',
+                          value: 'johnsmith@email.com',
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDetailRow(
+                          icon: Icons.map,
+                          label: 'Service Areas:',
+                          value: 'Beirut, Baabda, Keserwan, Metn',
                         ),
                       ],
                     ),
-                    child: CircleAvatar(
-                      radius: 42,
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage: (widget.agent.imageUrl.isNotEmpty)
-                          ? NetworkImage(widget.agent.imageUrl)
-                          : null,
-                      child: widget.agent.imageUrl.isEmpty
-                          ? const Icon(Icons.person, size: 44, color: Colors.white)
-                          : null,
-                    ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -536,22 +344,21 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     );
   }
 
-  Widget _socialCircle(IconData icon, {double size = 36}) {
+  Widget _socialIcon({required String icon, required Color color}) {
     return Container(
-      width: size,
-      height: size,
+      width: 40,
+      height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: color.withOpacity(0.1),
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
-      child: Icon(icon, size: size * 0.46, color: Colors.grey[700]),
+      child: Center(
+        child: Icon(
+          Icons.circle, // Placeholder for actual network icon
+          color: color,
+          size: 24,
+        ),
+      ),
     );
   }
 
@@ -581,58 +388,23 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     );
   }
 
-  List<Widget> _buildAgentDetailsList() {
-    List<Widget> details = [];
-
-    // Name
-    details.add(_buildAgentDetail('Name: ${widget.agent.name}'));
-
-    // Location
-    details.add(_buildAgentDetail('Service Areas: ${widget.agent.location}'));
-
-    // Property Count
-    details.add(_buildAgentDetail('Properties Listed: ${widget.agent.propertyCount}'));
-
-    // Rating
-    details.add(_buildAgentDetail('Rating: ${widget.agent.rating} stars'));
-
-    // Review Count
-    details.add(_buildAgentDetail('Total Reviews: ${widget.agent.reviewCount}'));
-
-    // Member Since (placeholder)
-    details.add(_buildAgentDetail('Member Since: 2024'));
-
-    return details;
-  }
-
-  Widget _buildAgentDetail(String detail) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 6),
-            width: 7,
-            height: 7,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              shape: BoxShape.circle,
+  Widget _buildDetailRow({required IconData icon, required String label, required String value}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.circle, size: 8, color: Colors.blue),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            '$label $value',
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 15,
+              height: 1.5,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              detail,
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 15,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
