@@ -84,8 +84,12 @@ class AgentService {
   }
 
   // Get featured agents
-  static Future<List<Agent>> getFeaturedAgents({String sort = 'featured'}) async {
-    return getAgents({'isFeatured': 'true', 'sort': sort});
+  static Future<List<Agent>> getFeaturedAgents({String sort = 'featured', int? limit}) async {
+    final params = <String, String>{'isFeatured': 'true', 'sort': sort};
+    if (limit != null) {
+      params['limit'] = limit.toString();
+    }
+    return getAgents(params);
   }
 
   // Get top rated agents

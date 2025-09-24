@@ -11,6 +11,7 @@ import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
 import 'widgets/recommended_agents_widget.dart';
+import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
@@ -169,8 +170,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthService.currentUser;
-    final isLoggedIn = AuthService.isLoggedIn;
+    // Using AuthService directly where needed; no local vars required
 
     // Find the MainScreen to get the navigation callback
     final mainScreenState = context.findAncestorStateOfType<_MainScreenState>();
@@ -203,36 +203,7 @@ class HomePage extends StatelessWidget {
       ),
     ];
 
-    // Data for the Recommended Agents widget
-    final List<Agent> recommendedAgents = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'John Real Estate',
-        propertyCount: 38,
-        location: 'Hazmieh, Mount Lebanon',
-        rating: 4.7,
-        reviewCount: 128,
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Jane Property Group',
-        propertyCount: 52,
-        location: 'Beirut, Lebanon',
-        rating: 4.9,
-        reviewCount: 210,
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Elite Homes',
-        propertyCount: 25,
-        location: 'Jounieh, Mount Lebanon',
-        rating: 4.6,
-        reviewCount: 95,
-      ),
-    ];
+    // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
 
     // Data for the Companies Services widget (uses customText instead of property count)
     final List<Agent> companiesServicesAgents = [
@@ -321,10 +292,10 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 10),
           const SupportCardWidget(),
           const SizedBox(height: 10),
-          // Call the new Recommended Agents widget here
-          RecommendedAgentsWidget(
+          // Recommended Agents (featured, fetched from API, limited to 3 on main)
+          FeaturedAgentsWidget(
             title: 'Recommended Agents',
-            agents: recommendedAgents,
+            isMainPage: true,
             onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),
           const SizedBox(height: 10),
