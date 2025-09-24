@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../environment.dart';
+import '../../screens/agents/single_agent_page.dart';
 
 // Data model for an agent
 class Agent {
@@ -211,7 +212,16 @@ class AgentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SingleAgentPage(agent: agent),
+          ),
+        );
+      },
+      child: Container(
       width: 200, // Card width
       margin: const EdgeInsets.only(right: 16.0),
       decoration: const BoxDecoration(
@@ -325,6 +335,7 @@ class AgentCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
