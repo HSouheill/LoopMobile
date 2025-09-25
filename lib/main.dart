@@ -143,7 +143,9 @@ class _MainScreenState extends State<MainScreen> {
         : (_isLoggedIn && user != null && user.location != null
             ? user.location!
             : "");
-    final headerSubtitle = _isLoggedIn ? "Go to Dashboard" : "Login";
+    final headerSubtitle = _isLoggedIn 
+        ? (user?.role == 'user' ? null : "Go to Dashboard")
+        : "Login";
 
     return Scaffold(
       appBar: AppHeaderWithRefresh(
