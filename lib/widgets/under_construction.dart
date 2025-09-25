@@ -9,7 +9,7 @@ class UnderConstructionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the localized strings for the current language
     final localizations = AppLocalizations.of(context)!;
-    
+
     return Center(
       child: Text(
         // Use the localized string and pass the pageName as a variable
