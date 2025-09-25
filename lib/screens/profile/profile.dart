@@ -280,7 +280,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("/profileBackgroundImage.png"),
+                              image: AssetImage("assets/profileBackgroundImage.png"),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -616,7 +616,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min, // wrap content tightly
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.logout),
+              Icon(Icons.logout, color: Colors.white),
               SizedBox(width: 8),
               Text(
                 'Logout',
@@ -652,7 +652,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisSize: MainAxisSize.min, // wrap content tightly
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.delete),
+              Icon(Icons.delete, color: Colors.white),
               SizedBox(width: 8),
               Text(
                 'Delete Account',
