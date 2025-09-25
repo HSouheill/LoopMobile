@@ -7,6 +7,7 @@ import '../../environment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/profile_widgets/dynamic_section.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -365,6 +366,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   const SizedBox(height: 20),
 
+                  // Phone input (below Email)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0.0, vertical: 8.0),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Color(0xFF0048FF), // 👈 divider color
+                            width: 1.5, // thickness of divider
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize:
+                            MainAxisSize.max, // Let the Row fill the Container
+                        children: [
+                          // Phone Icon
+                          const Icon(
+                            Icons.phone,
+                            color: Color(0xFF2563FF),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 14.0),
+
+                          // Country Code and Flag
+                          // This section is now a fixed-width Row
+                          Row(
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(width: 6.0),
+                              const Text(
+                                '+961',
+                                style: TextStyle(
+                                  color: Color(0XFF1E1E1E),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.arrow_drop_down,
+                                color: Color(0xFF1E1E1E),
+                                size: 20,
+                              ),
+                            ],
+                          ),
+
+                          // Vertical Separator
+                          Container(
+                            height: 20,
+                            width: 1.5,
+                            color: Color(0xFF2563FF),
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                          ),
+
+                          const SizedBox(width: 20.0),
+                          // Phone Number Input Field
+                          const Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: '00 123 456',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              keyboardType: TextInputType.phone,
+                              style: TextStyle(
+                                color: Color(0xFF1E1E1E),
+                                fontWeight: FontWeight
+                                    .w400, // optional: adjust font size
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
                   DynamicGradientButton(
                     buttonText: 'Edit Email & Number', // Your custom text
                     onTap: () {
@@ -386,7 +477,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
 
                   DynamicGradientButton(
                     buttonText: 'Change Password', // Your custom text
@@ -404,10 +495,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Horizontal ScrollView containing 5 items with icon and text
                   horizontalScroll(),
 
-                  const SizedBox(height: 40),
+                  // Dynamic settings section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: DynamicSection(
+                      title: 'Notification Settings',
+                      rows: const [
+                        {"text": "New Messages"},
+                        {"text": "Listing Approval"},
+                        {"text": "Service Requests"},
+                        {"text": "Promotions"},
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: DynamicSection(
+                      title: 'Privacy Settings',
+                      rows: const [
+                        {"text": "Hide Social Links"},
+                        {"text": "Hide Contact Info"},
+                      ],
+                    ),
+                  ),
+
+                  // ! Manage links is missing in figma
+
+                  const SizedBox(height: 20),
+
+                  logOutButton(),
+
+                  deleteAccountButton(() {
+                    // your delete account logic here
+                  }),
 
                   // Logout Button
-                  logOutButton(),
 
                   const SizedBox(height: 20),
                 ],
@@ -473,33 +596,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  SizedBox logOutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _showLogoutDialog,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 2,
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.logout),
-            SizedBox(width: 8),
-            Text(
-              'Logout',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+  Widget logOutButton() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20), // left padding
+      child: Align(
+        alignment: Alignment.centerLeft, // align button to the left
+        child: ElevatedButton(
+          onPressed: _showLogoutDialog,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50.0),
             ),
-          ],
+            elevation: 2,
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min, // wrap content tightly
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.logout),
+              SizedBox(width: 8),
+              Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget deleteAccountButton(VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Align(
+        alignment: Alignment.centerLeft, // align the button to the left
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50.0),
+            ),
+            elevation: 2,
+          ),
+          child: const Row(
+            mainAxisSize: MainAxisSize.min, // wrap content tightly
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.delete),
+              SizedBox(width: 8),
+              Text(
+                'Delete Account',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -507,7 +670,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   SizedBox horizontalScroll() {
     return SizedBox(
-      height: 120,
+      height: 100,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 5),
