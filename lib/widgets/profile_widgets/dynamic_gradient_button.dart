@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 class DynamicGradientButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback? onTap;
-  final EdgeInsetsGeometry? padding; // Add this line
+  final EdgeInsetsGeometry? padding;
+  final TextStyle? textStyle; // <--- new
 
   const DynamicGradientButton({
     Key? key,
     required this.buttonText,
     this.onTap,
-    this.padding, // Add this line
+    this.padding,
+    this.textStyle, // <--- new
   }) : super(key: key);
 
   @override
@@ -19,7 +21,6 @@ class DynamicGradientButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // Use the provided padding, or a default value if none is given
         padding: padding ??
             const EdgeInsets.symmetric(horizontal: 13.0, vertical: 7.0),
         decoration: BoxDecoration(
@@ -46,11 +47,12 @@ class DynamicGradientButton extends StatelessWidget {
         child: Text(
           buttonText,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 11.0,
-            fontWeight: FontWeight.w400,
-          ),
+          style: textStyle ??
+              const TextStyle(
+                color: Colors.white,
+                fontSize: 11.0,
+                fontWeight: FontWeight.w400,
+              ),
         ),
       ),
     );

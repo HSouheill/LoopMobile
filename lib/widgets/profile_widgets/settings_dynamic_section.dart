@@ -44,31 +44,40 @@ class _DynamicSectionState extends State<DynamicSection> {
             final index = entry.key;
             final row = entry.value;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 0.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 40,
-                    height: 10,
-                    child: Transform.scale(
-                      scale: 0.7,
-                      child: Switch(
-                        value: switchStates[index],
-                        onChanged: (value) {
-                          setState(() {
-                            switchStates[index] = value;
-                          });
-                        },
-                        activeTrackColor: const Color(0xFF0048FF),
-                        inactiveTrackColor: const Color(0xFFADADAD),
-                        activeColor: const Color(0xFFFFFFFF),
-                        inactiveThumbColor: const Color(0xFFFFFFFF),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    width: 70, // keeps the track wide
+                    child: Transform.translate(
+                      offset: const Offset(-12, 0), // shift left
+                      child: Transform.scale(
+                        scaleX: 0.8,
+                        scaleY: 0.6,
+                        child: SwitchTheme(
+                          data: SwitchThemeData(
+                            trackOutlineColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                          ),
+                          child: Switch(
+                            value: switchStates[index],
+                            onChanged: (value) {
+                              setState(() {
+                                switchStates[index] = value;
+                              });
+                            },
+                            activeTrackColor: const Color(0xFF0048FF),
+                            inactiveTrackColor: const Color(0xFFADADAD),
+                            activeColor: const Color(0xFFFFFFFF),
+                            inactiveThumbColor: const Color(0xFFFFFFFF),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
                   Text(
                     row["text"] ?? "",
                     style: const TextStyle(
