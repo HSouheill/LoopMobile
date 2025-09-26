@@ -300,7 +300,6 @@ class HomePage extends StatelessWidget {
             isMainPage: true,
             onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),
-          const SizedBox(height: 10),
           // Companies Services section using customText instead of property count
           RecommendedAgentsWidget(
             title: 'Companies Services',
