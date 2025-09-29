@@ -181,7 +181,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
           const SizedBox(height: 12),
           // Horizontal list of agent cards
           SizedBox(
-            height: 250, // Adjust height as needed
+            height: 280, // Increased height to accommodate 2-line subtitles
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: agents.length,

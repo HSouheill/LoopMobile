@@ -63,27 +63,23 @@ class ServicesPage extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Featured Services
-          DynamicServicesWidget(
+          const DynamicServicesWidget(
             category: ServiceCategory.featured,
-            limit: 3,
           ),
 
           // Top Rated Services
-          DynamicServicesWidget(
+          const DynamicServicesWidget(
             category: ServiceCategory.topRated,
-            limit: 3,
           ),
 
           // Company Services
-          DynamicServicesWidget(
+          const DynamicServicesWidget(
             category: ServiceCategory.companies,
-            limit: 3,
           ),
 
           // Individual Services
-          DynamicServicesWidget(
+          const DynamicServicesWidget(
             category: ServiceCategory.individual,
-            limit: 3,
           ),
           const SizedBox(height: 20),
         ],

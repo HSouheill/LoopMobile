@@ -114,27 +114,9 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
+          const SizedBox(
             height: 250,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.limit,
-              itemBuilder: (context, index) => Container(
-                width: 200,
-                margin: const EdgeInsets.only(right: 16),
-                child: Card(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey[200],
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            child: Center(child: CircularProgressIndicator()),
           ),
         ],
       ),

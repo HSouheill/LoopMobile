@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/service_service.dart';
+import '../../widgets/vertical_services_widget.dart';
 import '../../widgets/recommended_agents_widget.dart';
 
 class CategoryServicesPage extends StatefulWidget {
@@ -124,8 +125,8 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                         : SingleChildScrollView(
                             child: Column(
                               children: [
-                                // Use RecommendedAgentsWidget for consistent design
-                                RecommendedAgentsWidget(
+                                // Use VerticalServicesWidget for stacked card layout
+                                VerticalServicesWidget(
                                   title: title,
                                   agents: agents,
                                   showPropertyCount: false,

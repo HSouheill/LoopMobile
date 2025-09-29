@@ -27,6 +27,8 @@ import 'screens/dashboards/service_provider_individual_dashboard.dart';
 import 'screens/dashboards/service_provider_company_dashboard.dart';
 import 'screens/profile/profile.dart';
 import 'screens/services/jobs.dart';
+import 'screens/services/category_services_page.dart';
+import 'services/service_service.dart';
 import 'screens/listings/featured_listings_page.dart';
 import 'screens/listings/listings.dart';
 import 'screens/profile/help_and_support.dart';
@@ -65,6 +67,10 @@ Map<String, WidgetBuilder> appRoutes() {
     '/service-provider-company-dashboard': (context) => const ServiceProviderCompanyDashboardPage(),
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
+    '/featured-services': (context) => const CategoryServicesPage(category: ServiceCategory.featured),
+    '/top-rated-services': (context) => const CategoryServicesPage(category: ServiceCategory.topRated),
+    '/company-services': (context) => const CategoryServicesPage(category: ServiceCategory.companies),
+    '/individual-services': (context) => const CategoryServicesPage(category: ServiceCategory.individual),
     '/featured-listings': (context) => const FeaturedListingsPage(),
     '/listings': (context) => const ListingsPage(),
     '/help-and-support': (context) => const HelpAndSupportPage(),
