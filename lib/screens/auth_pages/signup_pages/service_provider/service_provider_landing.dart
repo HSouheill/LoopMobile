@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../widgets/auth_button.dart';
+import '../../../dashboards/service_provider_individual_dashboard.dart';
+import '../../../dashboards/service_provider_company_dashboard.dart';
 
-class SignupOptionsPage extends StatelessWidget {
-  const SignupOptionsPage({super.key});
+class ServiceProviderLandingPage extends StatelessWidget {
+  const ServiceProviderLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,61 +36,7 @@ class SignupOptionsPage extends StatelessWidget {
             ),
           ),
 
-          // Top text overlay
-          Positioned(
-            top: 60,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Real ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Estate',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                RichText(
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Real ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Luxury',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+        
 
           // Bottom sheet style container
           Align(
@@ -121,7 +68,7 @@ class SignupOptionsPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 16),
                       const Text(
-                        'Sign up as',
+                        'Sign Up as Service Provider',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -132,35 +79,34 @@ class SignupOptionsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // User signup option
+                  // Service Provider Individual option
                   _buildSignupOption(
                     icon: Icons.person_outline,
-                    label: 'User',
+                    label: 'Individual Service Provider',
+                    description: 'For Freelancers or Self-employed Providers',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User signup coming soon')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ServiceProviderIndividualDashboardPage(),
+                        ),
                       );
                     },
                   ),
                   const SizedBox(height: 12),
 
-                  // Real Estate signup option
+                  // Service Provider Company option
                   _buildSignupOption(
                     icon: Icons.business_outlined,
-                    label: 'Real Estate',
+                    label: 'Service Provider Company',
+                    description: 'For Businesses with a team or registered office',
                     onTap: () {
-                      Navigator.pushNamed(context, '/realEstateLanding');
-                    },
-                    hasBadge: true,
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Service Provider signup option
-                  _buildSignupOption(
-                    icon: Icons.home_work_outlined,
-                    label: 'Service Provider',
-                    onTap: () {
-                      Navigator.pushNamed(context, '/serviceProviderLanding');
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ServiceProviderCompanyDashboardPage(),
+                        ),
+                      );
                     },
                   ),
 
@@ -196,27 +142,58 @@ class SignupOptionsPage extends StatelessWidget {
   Widget _buildSignupOption({
     required IconData icon,
     required String label,
+    required String description,
     required VoidCallback onTap,
-    bool hasBadge = false,
   }) {
-    // Use the shared AuthButton so it matches PreLoginPage styling.
-    // Wrap in a SizedBox to keep the same height as the previous options.
-    return Stack(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: AuthButton(
-            label: label,
-            leadingIcon: icon,
-            onPressed: onTap,
-            filled: false, // matches the 'Sign Up' in PreLoginPage (unfilled)
-          ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue.shade200),
         ),
-
-        // Optional badge (keeps the previous hasBadge behavior)
-      
-      ],
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Colors.blue.shade700,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.blue.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.blue.shade700,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

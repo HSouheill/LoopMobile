@@ -4,6 +4,8 @@ import 'screens/auth_pages/login_email.dart';
 import 'screens/auth_pages/pre_login_page.dart';
 import 'screens/auth_pages/forgot_password.dart'; // Import the new forgot password page
 import 'screens/auth_pages/signup_pages/signup_options.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_landing.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_landing.dart';
 import 'screens/dashboards/dashboard.dart';
 import 'screens/dashboards/agent_individual_dashboard.dart';
 import 'screens/dashboards/agent_company_dashboard.dart';
@@ -26,6 +28,8 @@ Map<String, WidgetBuilder> appRoutes() {
     '/preLogin': (context) => const PreLoginPage(),
     '/forgotPassword': (_) => const ForgotPasswordPage(), // Add the new route
     '/signupOptions': (_) => const SignupOptionsPage(),
+    '/realEstateLanding': (_) => const RealEstateLandingPage(),
+    '/serviceProviderLanding': (_) => const ServiceProviderLandingPage(),
     '/dashboard': (context) => const DashboardPage(),
     '/agent-individual-dashboard': (context) => const AgentIndividualDashboardPage(),
     '/agent-company-dashboard': (context) => const AgentCompanyDashboardPage(),
