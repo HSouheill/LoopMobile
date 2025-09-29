@@ -12,9 +12,10 @@ class RealEstateSignupPage2 extends StatefulWidget {
 
 class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
   final _formKey = GlobalKey<FormState>();
-  final _licenseNumberCtrl = TextEditingController();
-  final _experienceCtrl = TextEditingController();
-  String _selectedSpecialization = '';
+  String _selectedCountry = '';
+  String _selectedDistrict = '';
+  String _selectedGovernance = '';
+  String _selectedCity = '';
 
   @override
   void initState() {
@@ -38,13 +39,6 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
   String _password = '';
   bool _isLoading = false;
 
-  @override
-  void dispose() {
-    _licenseNumberCtrl.dispose();
-    _experienceCtrl.dispose();
-    super.dispose();
-  }
-
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -62,6 +56,10 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
             'password': _password,
             'role': 'agent-individual',
             'phone': '+961000000000', // Default phone for now
+            'country': _selectedCountry,
+            'governance': _selectedGovernance,
+            'district': _selectedDistrict,
+            'city': _selectedCity,
           }),
         );
 
@@ -184,54 +182,7 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          // License Number
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextFormField(
-                              controller: _licenseNumberCtrl,
-                              decoration: InputDecoration(
-                                hintText: 'Real Estate License Number',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.badge, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              ),
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Years of Experience
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextFormField(
-                              controller: _experienceCtrl,
-                              decoration: InputDecoration(
-                                hintText: 'Years of Experience',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.work_outline, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (int.tryParse(v) == null) return 'Enter valid number';
-                                return null;
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Specialization
+                          // Select Country
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[50],
@@ -239,23 +190,16 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                               border: Border.all(color: Colors.grey[200]!),
                             ),
                             child: DropdownButtonFormField<String>(
-                              value: _selectedSpecialization.isEmpty ? null : _selectedSpecialization,
+                              value: _selectedCountry.isEmpty ? null : _selectedCountry,
                               decoration: InputDecoration(
-                                hintText: 'Select Specialization',
+                                hintText: 'Select Country',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.category, color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                 suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
                               ),
-                              items: [
-                                'Residential Sales',
-                                'Commercial Sales',
-                                'Property Management',
-                                'Real Estate Investment',
-                                'Luxury Properties',
-                                'First-time Buyers'
-                              ].map((String value) {
+                              items: ['Lebanon', 'United States', 'United Kingdom', 'France', 'Germany', 'Canada'].map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
@@ -263,7 +207,106 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  _selectedSpecialization = newValue ?? '';
+                                  _selectedCountry = newValue ?? '';
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Select District
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
+                              decoration: InputDecoration(
+                                hintText: 'Select District',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                              ),
+                              items: ['Beirut', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Bekaa', 'Nabatieh'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedDistrict = newValue ?? '';
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Select Governance
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedGovernance.isEmpty ? null : _selectedGovernance,
+                              decoration: InputDecoration(
+                                hintText: 'Select Governance',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.business, color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                              ),
+                              items: ['Central Government', 'Local Government', 'Regional Government'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedGovernance = newValue ?? '';
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          // Select City
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedCity.isEmpty ? null : _selectedCity,
+                              decoration: InputDecoration(
+                                hintText: 'Select City',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                              ),
+                              items: ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Zahle', 'Jounieh'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedCity = newValue ?? '';
                                 });
                               },
                               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,

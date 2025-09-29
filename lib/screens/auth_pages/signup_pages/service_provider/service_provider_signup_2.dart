@@ -12,9 +12,10 @@ class ServiceProviderSignupPage2 extends StatefulWidget {
 
 class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2> {
   final _formKey = GlobalKey<FormState>();
-  final _experienceCtrl = TextEditingController();
-  String _selectedServiceType = '';
-  List<String> _selectedSkills = [];
+  String _selectedCountry = '';
+  String _selectedDistrict = '';
+  String _selectedGovernance = '';
+  String _selectedCity = '';
 
   @override
   void initState() {
@@ -38,37 +39,6 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
   String _password = '';
   bool _isLoading = false;
 
-  final List<String> _availableSkills = [
-    'Plumbing',
-    'Electrical Work',
-    'Carpentry',
-    'Painting',
-    'Cleaning',
-    'Gardening',
-    'HVAC',
-    'Roofing',
-    'Flooring',
-    'Appliance Repair',
-    'Handyman Services',
-    'Moving Services'
-  ];
-
-  @override
-  void dispose() {
-    _experienceCtrl.dispose();
-    super.dispose();
-  }
-
-  void _toggleSkill(String skill) {
-    setState(() {
-      if (_selectedSkills.contains(skill)) {
-        _selectedSkills.remove(skill);
-      } else {
-        _selectedSkills.add(skill);
-      }
-    });
-  }
-
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -86,6 +56,10 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
             'password': _password,
             'role': 'service-provider-individual',
             'phone': '+961000000000', // Default phone for now
+            'country': _selectedCountry,
+            'governance': _selectedGovernance,
+            'district': _selectedDistrict,
+            'city': _selectedCity,
           }),
         );
 
@@ -207,9 +181,8 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                     Form(
                       key: _formKey,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Service Type
+                          // Select Country
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[50],
@@ -217,23 +190,16 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                               border: Border.all(color: Colors.grey[200]!),
                             ),
                             child: DropdownButtonFormField<String>(
-                              value: _selectedServiceType.isEmpty ? null : _selectedServiceType,
+                              value: _selectedCountry.isEmpty ? null : _selectedCountry,
                               decoration: InputDecoration(
-                                hintText: 'Select Service Type',
+                                hintText: 'Select Country',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.build, color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                 suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
                               ),
-                              items: [
-                                'Home Maintenance',
-                                'Cleaning Services',
-                                'Repair Services',
-                                'Installation Services',
-                                'Consultation Services',
-                                'Emergency Services'
-                              ].map((String value) {
+                              items: ['Lebanon', 'United States', 'United Kingdom', 'France', 'Germany', 'Canada'].map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
@@ -241,7 +207,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  _selectedServiceType = newValue ?? '';
+                                  _selectedCountry = newValue ?? '';
                                 });
                               },
                               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
@@ -249,68 +215,102 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                           ),
                           const SizedBox(height: 16),
                           
-                          // Years of Experience
+                          // Select District
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[50],
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.grey[200]!),
                             ),
-                            child: TextFormField(
-                              controller: _experienceCtrl,
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
                               decoration: InputDecoration(
-                                hintText: 'Years of Experience',
+                                hintText: 'Select District',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.work_outline, color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
                               ),
-                              keyboardType: TextInputType.number,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (int.tryParse(v) == null) return 'Enter valid number';
-                                return null;
+                              items: ['Beirut', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Bekaa', 'Nabatieh'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedDistrict = newValue ?? '';
+                                });
                               },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
                             ),
                           ),
                           const SizedBox(height: 16),
                           
-                          // Skills Selection
-                          Text(
-                            'Select Your Skills',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
+                          // Select Governance
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedGovernance.isEmpty ? null : _selectedGovernance,
+                              decoration: InputDecoration(
+                                hintText: 'Select Governance',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.business, color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                              ),
+                              items: ['Central Government', 'Local Government', 'Regional Government'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedGovernance = newValue ?? '';
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _availableSkills.map((skill) {
-                              final isSelected = _selectedSkills.contains(skill);
-                              return GestureDetector(
-                                onTap: () => _toggleSkill(skill),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? Colors.blue : Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isSelected ? Colors.blue : Colors.grey[300]!,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    skill,
-                                    style: TextStyle(
-                                      color: isSelected ? Colors.white : Colors.grey[700],
-                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                          const SizedBox(height: 16),
+                          
+                          // Select City
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedCity.isEmpty ? null : _selectedCity,
+                              decoration: InputDecoration(
+                                hintText: 'Select City',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                              ),
+                              items: ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Zahle', 'Jounieh'].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedCity = newValue ?? '';
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                            ),
                           ),
                           const SizedBox(height: 24),
                           
