@@ -383,11 +383,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 style: TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Sign up feature coming soon')),
-                                  );
-                                },
+                                onTap: () => Navigator.pushNamed(context, '/signupOptions'),
                                 child: const Text(
                                   'Sign up',
                                   style: TextStyle(

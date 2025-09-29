@@ -56,11 +56,7 @@ class PreLoginPage extends StatelessWidget {
                   AuthButton(
                     label: 'Sign Up',
                     leadingIcon: Icons.person_add_alt,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Sign up functionality goes here!')),
-                      );
-                    },
+                    onPressed: () => Navigator.pushNamed(context, '/signupOptions'),
                     filled: false,
                   ),
                   const SizedBox(height: 8),

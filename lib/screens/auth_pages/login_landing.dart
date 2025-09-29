@@ -73,7 +73,7 @@ class LoginLandingPage extends StatelessWidget {
                     children: [
                       const Text("Don't have an account? "),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () => Navigator.pushNamed(context, '/signupOptions'),
                         child: const Text(
                           'Sign up',
                           style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
