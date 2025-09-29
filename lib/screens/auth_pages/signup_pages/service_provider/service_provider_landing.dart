@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../dashboards/service_provider_individual_dashboard.dart';
-import '../../../dashboards/service_provider_company_dashboard.dart';
 
 class ServiceProviderLandingPage extends StatelessWidget {
   const ServiceProviderLandingPage({super.key});
@@ -96,12 +94,7 @@ class ServiceProviderLandingPage extends StatelessWidget {
                     label: 'Service Provider Company',
                     description: 'For Businesses with a team or registered office',
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ServiceProviderCompanyDashboardPage(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, '/serviceProviderCompanySignup1');
                     },
                   ),
 
