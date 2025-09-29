@@ -103,34 +103,6 @@ class RealEstateLandingPage extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // NEXT button (filled color, rounded edges)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Replace '/signupNext' with the route or behavior you want.
-                        Navigator.pushNamed(context, '/signupNext');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 4,
-                      ),
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
 
                   // Already have an account link
                   Row(

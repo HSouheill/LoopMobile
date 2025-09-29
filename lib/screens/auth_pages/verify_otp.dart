@@ -15,7 +15,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   final _otpCtrl = TextEditingController();
   bool _isLoading = false;
   String _phone = '';
-  String _pendingId = '';
 
   @override
   void initState() {
@@ -25,7 +24,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null) {
         _phone = args['phone'] ?? '';
-        _pendingId = args['pendingId'] ?? '';
       }
     });
   }
@@ -53,16 +51,22 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
         );
 
         if (response.statusCode == 201) {
-          final data = json.decode(response.body);
           if (mounted) {
+            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Account created successfully!'),
+                content: Text('Account created successfully! Please sign in to continue.'),
                 backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
               ),
             );
-            // Navigate to appropriate dashboard based on role
-            Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+            
+            // Navigate to main page after success
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+              }
+            });
           }
         } else {
           final errorData = json.decode(response.body);

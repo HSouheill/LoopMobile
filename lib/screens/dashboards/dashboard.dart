@@ -11,7 +11,7 @@ class DashboardPage extends StatelessWidget {
     final user = AuthService.currentUser;
 
     // Route to appropriate dashboard based on user role
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (user != null) {
         String route;
         switch (user.role) {
@@ -32,6 +32,19 @@ class DashboardPage extends StatelessWidget {
             return;
         }
         Navigator.pushReplacementNamed(context, route);
+      } else {
+        // If no user is found, try to load auth data
+        final hasAuth = await AuthService.loadAuthData();
+        if (!hasAuth) {
+          // No authentication found, redirect to login
+          Navigator.pushReplacementNamed(context, '/preLogin');
+        } else {
+          // Auth data loaded, rebuild to trigger routing logic
+          if (context.mounted) {
+            // Force a rebuild by navigating to self, which will trigger the routing logic above
+            Navigator.pushReplacementNamed(context, '/dashboard');
+          }
+        }
       }
     });
 

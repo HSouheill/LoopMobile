@@ -32,7 +32,6 @@ class _UserSignupPage3State extends State<UserSignupPage3> {
         _dateOfBirth = args['dateOfBirth'] ?? '';
         _gender = args['gender'] ?? '';
         _phone = args['phone'] ?? '';
-        _referralCode = args['referralCode'] ?? '';
       }
     });
   }
@@ -44,7 +43,6 @@ class _UserSignupPage3State extends State<UserSignupPage3> {
   String _dateOfBirth = '';
   String _gender = '';
   String _phone = '';
-  String _referralCode = '';
   bool _isLoading = false;
 
   Future<void> _completeSignup() async {

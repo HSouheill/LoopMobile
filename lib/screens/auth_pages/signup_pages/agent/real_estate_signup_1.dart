@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../utils/password_validator.dart';
 
 class RealEstateSignupPage1 extends StatefulWidget {
   const RealEstateSignupPage1({super.key});
@@ -203,7 +204,7 @@ class _RealEstateSignupPage1State extends State<RealEstateSignupPage1> {
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
                               obscureText: true,
-                              validator: (v) => (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
+                              validator: PasswordValidator.validatePassword,
                             ),
                           ),
                           const SizedBox(height: 16),

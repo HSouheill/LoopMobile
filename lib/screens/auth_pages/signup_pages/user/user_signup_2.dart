@@ -11,7 +11,6 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
   final _formKey = GlobalKey<FormState>();
   final _dateOfBirthCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  final _referralCodeCtrl = TextEditingController();
   String _selectedGender = '';
   String _selectedCountryCode = '+961';
 
@@ -40,7 +39,6 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
   void dispose() {
     _dateOfBirthCtrl.dispose();
     _phoneCtrl.dispose();
-    _referralCodeCtrl.dispose();
     super.dispose();
   }
 
@@ -54,7 +52,6 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
         'dateOfBirth': _dateOfBirthCtrl.text.trim(),
         'gender': _selectedGender,
         'phone': '$_selectedCountryCode ${_phoneCtrl.text.trim()}',
-        'referralCode': _referralCodeCtrl.text.trim(),
       });
     }
   }
@@ -264,26 +261,6 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                 ),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Referral Code
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextFormField(
-                              controller: _referralCodeCtrl,
-                              decoration: InputDecoration(
-                                hintText: 'Referral Code',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: 24),
                           
