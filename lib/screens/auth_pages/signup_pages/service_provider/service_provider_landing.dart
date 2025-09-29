@@ -85,12 +85,7 @@ class ServiceProviderLandingPage extends StatelessWidget {
                     label: 'Individual Service Provider',
                     description: 'For Freelancers or Self-employed Providers',
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ServiceProviderIndividualDashboardPage(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, '/serviceProviderSignup1');
                     },
                   ),
                   const SizedBox(height: 12),

@@ -6,6 +6,18 @@ import 'screens/auth_pages/forgot_password.dart'; // Import the new forgot passw
 import 'screens/auth_pages/signup_pages/signup_options.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_landing.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_landing.dart';
+import 'screens/auth_pages/signup_pages/user/user_signup_1.dart';
+import 'screens/auth_pages/signup_pages/user/user_signup_2.dart';
+import 'screens/auth_pages/signup_pages/user/user_signup_3.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_signup_1.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_signup_2.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup_1.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup_2.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_1.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_2.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_1.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_2.dart';
+import 'screens/auth_pages/verify_otp.dart';
 import 'screens/dashboards/dashboard.dart';
 import 'screens/dashboards/agent_individual_dashboard.dart';
 import 'screens/dashboards/agent_company_dashboard.dart';
@@ -30,6 +42,18 @@ Map<String, WidgetBuilder> appRoutes() {
     '/signupOptions': (_) => const SignupOptionsPage(),
     '/realEstateLanding': (_) => const RealEstateLandingPage(),
     '/serviceProviderLanding': (_) => const ServiceProviderLandingPage(),
+    '/userSignup1': (_) => const UserSignupPage1(),
+    '/userSignup2': (_) => const UserSignupPage2(),
+    '/userSignup3': (_) => const UserSignupPage3(),
+    '/realEstateSignup1': (_) => const RealEstateSignupPage1(),
+    '/realEstateSignup2': (_) => const RealEstateSignupPage2(),
+    '/serviceProviderSignup1': (_) => const ServiceProviderSignupPage1(),
+    '/serviceProviderSignup2': (_) => const ServiceProviderSignupPage2(),
+    '/realEstateCompanySignup1': (_) => const RealEstateCompanySignupPage1(),
+    '/realEstateCompanySignup2': (_) => const RealEstateCompanySignupPage2(),
+    '/serviceProviderCompanySignup1': (_) => const ServiceProviderCompanySignupPage1(),
+    '/serviceProviderCompanySignup2': (_) => const ServiceProviderCompanySignupPage2(),
+    '/verifyOtp': (_) => const VerifyOtpPage(),
     '/dashboard': (context) => const DashboardPage(),
     '/agent-individual-dashboard': (context) => const AgentIndividualDashboardPage(),
     '/agent-company-dashboard': (context) => const AgentCompanyDashboardPage(),

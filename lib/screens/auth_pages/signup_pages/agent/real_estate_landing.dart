@@ -86,12 +86,7 @@ class RealEstateLandingPage extends StatelessWidget {
                     label: 'Real Estate Agent',
                     description: 'For Freelancers or Self-employed Providers',
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AgentIndividualDashboardPage(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, '/realEstateSignup1');
                     },
                   ),
                   const SizedBox(height: 12),
@@ -102,12 +97,7 @@ class RealEstateLandingPage extends StatelessWidget {
                     label: 'Real Estate Company',
                     description: 'For Businesses with a team or registered office',
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AgentCompanyDashboardPage(),
-                        ),
-                      );
+                      Navigator.pushNamed(context, '/realEstateCompanySignup1');
                     },
                   ),
 

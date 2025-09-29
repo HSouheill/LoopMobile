@@ -137,9 +137,7 @@ class SignupOptionsPage extends StatelessWidget {
                     icon: Icons.person_outline,
                     label: 'User',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('User signup coming soon')),
-                      );
+                      Navigator.pushNamed(context, '/userSignup1');
                     },
                   ),
                   const SizedBox(height: 12),
