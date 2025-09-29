@@ -12,10 +12,12 @@ class RealEstateSignupPage2 extends StatefulWidget {
 
 class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
   final _formKey = GlobalKey<FormState>();
+  final _phoneCtrl = TextEditingController();
   String _selectedCountry = '';
   String _selectedDistrict = '';
   String _selectedGovernance = '';
   String _selectedCity = '';
+  String _selectedCountryCode = '+961';
 
   @override
   void initState() {
@@ -39,6 +41,12 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
   String _password = '';
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -55,7 +63,7 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
             'email': _email,
             'password': _password,
             'role': 'agent-individual',
-            'phone': '+961000000000', // Default phone for now
+            'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
             'country': _selectedCountry,
             'governance': _selectedGovernance,
             'district': _selectedDistrict,
@@ -75,7 +83,7 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
             // Navigate to OTP verification page
             Navigator.pushNamed(context, '/verifyOtp', arguments: {
               'pendingId': data['pendingId'],
-              'phone': '+961000000000',
+              'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
             });
           }
         } else {
@@ -182,6 +190,67 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          // Phone Number
+                          Row(
+                            children: [
+                              Container(
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                ),
+                                child: DropdownButtonFormField<String>(
+                                  value: _selectedCountryCode,
+                                  decoration: InputDecoration(
+                                    hintText: '+961',
+                                    hintStyle: TextStyle(color: Colors.grey[400]),
+                                    prefixIcon: Icon(Icons.phone, color: Colors.grey[400]),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                                  ),
+                                  items: ['+961', '+1', '+44', '+33', '+49'].map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedCountryCode = newValue ?? '+961';
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[50],
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey[200]!),
+                                  ),
+                                  child: TextFormField(
+                                    controller: _phoneCtrl,
+                                    decoration: InputDecoration(
+                                      hintText: '00 123 456',
+                                      hintStyle: TextStyle(color: Colors.grey[400]),
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    ),
+                                    keyboardType: TextInputType.phone,
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) return 'Required';
+                                      if (v.length < 8) return 'Invalid phone';
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          
                           // Select Country
                           Container(
                             decoration: BoxDecoration(

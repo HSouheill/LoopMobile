@@ -51,7 +51,7 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
         'password': _password,
         'dateOfBirth': _dateOfBirthCtrl.text.trim(),
         'gender': _selectedGender,
-        'phone': '$_selectedCountryCode ${_phoneCtrl.text.trim()}',
+        'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
       });
     }
   }

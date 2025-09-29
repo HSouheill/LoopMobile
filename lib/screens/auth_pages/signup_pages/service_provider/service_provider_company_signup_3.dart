@@ -3,26 +3,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../../environment.dart';
 
-class ServiceProviderSignupPage2 extends StatefulWidget {
-  const ServiceProviderSignupPage2({super.key});
+class ServiceProviderCompanySignupPage3 extends StatefulWidget {
+  const ServiceProviderCompanySignupPage3({super.key});
 
   @override
-  State<ServiceProviderSignupPage2> createState() => _ServiceProviderSignupPage2State();
+  State<ServiceProviderCompanySignupPage3> createState() => _ServiceProviderCompanySignupPage3State();
 }
 
-class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2> {
+class _ServiceProviderCompanySignupPage3State extends State<ServiceProviderCompanySignupPage3> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneCtrl = TextEditingController();
   String _selectedCountry = '';
   String _selectedDistrict = '';
   String _selectedGovernance = '';
   String _selectedCity = '';
-  String _selectedCountryCode = '+961';
 
   @override
   void initState() {
     super.initState();
-    // Get data from previous page
+    // Get data from previous pages
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null) {
@@ -31,6 +29,8 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
         _lastName = args['lastName'] ?? '';
         _email = args['email'] ?? '';
         _password = args['password'] ?? '';
+        _companyName = args['companyName'] ?? '';
+        _phone = args['phone'] ?? '';
       }
     });
   }
@@ -39,13 +39,9 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
   String _lastName = '';
   String _email = '';
   String _password = '';
+  String _companyName = '';
+  String _phone = '';
   bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _phoneCtrl.dispose();
-    super.dispose();
-  }
 
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
@@ -62,8 +58,9 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
             'lastName': _lastName,
             'email': _email,
             'password': _password,
-            'role': 'service-provider-individual',
-            'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
+            'role': 'service-provider-company',
+            'phone': _phone,
+            'companyName': _companyName,
             'country': _selectedCountry,
             'governance': _selectedGovernance,
             'district': _selectedDistrict,
@@ -83,7 +80,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
             // Navigate to OTP verification page
             Navigator.pushNamed(context, '/verifyOtp', arguments: {
               'pendingId': data['pendingId'],
-              'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
+              'phone': _phone,
             });
           }
         } else {
@@ -165,7 +162,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Back button and title
+                    // Back button and title with location icon
                     Row(
                       children: [
                         GestureDetector(
@@ -181,6 +178,20 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                             color: Colors.black,
                           ),
                         ),
+                        const Spacer(),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Live Location',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -190,67 +201,6 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                       key: _formKey,
                       child: Column(
                         children: [
-                          // Phone Number
-                          Row(
-                            children: [
-                              Container(
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey[200]!),
-                                ),
-                                child: DropdownButtonFormField<String>(
-                                  value: _selectedCountryCode,
-                                  decoration: InputDecoration(
-                                    hintText: '+961',
-                                    hintStyle: TextStyle(color: Colors.grey[400]),
-                                    prefixIcon: Icon(Icons.phone, color: Colors.grey[400]),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                                  ),
-                                  items: ['+961', '+1', '+44', '+33', '+49'].map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _selectedCountryCode = newValue ?? '+961';
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.grey[200]!),
-                                  ),
-                                  child: TextFormField(
-                                    controller: _phoneCtrl,
-                                    decoration: InputDecoration(
-                                      hintText: '00 123 456',
-                                      hintStyle: TextStyle(color: Colors.grey[400]),
-                                      border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                    ),
-                                    keyboardType: TextInputType.phone,
-                                    validator: (v) {
-                                      if (v == null || v.isEmpty) return 'Required';
-                                      if (v.length < 8) return 'Invalid phone';
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          
                           // Select Country
                           Container(
                             decoration: BoxDecoration(

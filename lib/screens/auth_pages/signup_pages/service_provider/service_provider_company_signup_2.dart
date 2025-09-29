@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../../environment.dart';
 
 class ServiceProviderCompanySignupPage2 extends StatefulWidget {
   const ServiceProviderCompanySignupPage2({super.key});
@@ -14,11 +11,7 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
   final _formKey = GlobalKey<FormState>();
   final _companyNameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  final _experienceCtrl = TextEditingController();
   String _selectedCountryCode = '+961';
-  String _selectedServiceType = '';
-  List<String> _selectedSkills = [];
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -41,100 +34,23 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
   String _email = '';
   String _password = '';
 
-  final List<String> _availableSkills = [
-    'Plumbing',
-    'Electrical Work',
-    'Carpentry',
-    'Painting',
-    'Cleaning',
-    'Gardening',
-    'HVAC',
-    'Roofing',
-    'Flooring',
-    'Appliance Repair',
-    'Handyman Services',
-    'Moving Services'
-  ];
-
   @override
   void dispose() {
     _companyNameCtrl.dispose();
     _phoneCtrl.dispose();
-    _experienceCtrl.dispose();
     super.dispose();
   }
 
-  void _toggleSkill(String skill) {
-    setState(() {
-      if (_selectedSkills.contains(skill)) {
-        _selectedSkills.remove(skill);
-      } else {
-        _selectedSkills.add(skill);
-      }
-    });
-  }
-
-  Future<void> _completeSignup() async {
+  void _next() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      try {
-        final response = await http.post(
-          Uri.parse('${Environment.apiUrl}users/signup'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'firstName': _firstName,
-            'lastName': _lastName,
-            'email': _email,
-            'password': _password,
-            'role': 'service-provider-company',
-            'phone': '$_selectedCountryCode ${_phoneCtrl.text.trim()}',
-            'companyName': _companyNameCtrl.text.trim(),
-          }),
-        );
-
-        if (response.statusCode == 202) {
-          final data = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('OTP sent to your phone. Please verify to complete signup.'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Navigate to OTP verification page
-            Navigator.pushNamed(context, '/verifyOtp', arguments: {
-              'pendingId': data['pendingId'],
-              'phone': '$_selectedCountryCode ${_phoneCtrl.text.trim()}',
-            });
-          }
-        } else {
-          final errorData = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(errorData['message'] ?? 'Signup failed'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Network error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      Navigator.pushNamed(context, '/serviceProviderCompanySignup3', arguments: {
+        'firstName': _firstName,
+        'lastName': _lastName,
+        'email': _email,
+        'password': _password,
+        'companyName': _companyNameCtrl.text.trim(),
+        'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
+      });
     }
   }
 
@@ -213,7 +129,6 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                     Form(
                       key: _formKey,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Company Name
                           Container(
@@ -295,119 +210,14 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          
-                          // Years of Experience
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: TextFormField(
-                              controller: _experienceCtrl,
-                              decoration: InputDecoration(
-                                hintText: 'Years of Experience',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.work_outline, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (int.tryParse(v) == null) return 'Enter valid number';
-                                return null;
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Service Type
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedServiceType.isEmpty ? null : _selectedServiceType,
-                              decoration: InputDecoration(
-                                hintText: 'Select Service Type',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.build, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
-                              ),
-                              items: [
-                                'Home Maintenance',
-                                'Cleaning Services',
-                                'Repair Services',
-                                'Installation Services',
-                                'Consultation Services',
-                                'Emergency Services'
-                              ].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedServiceType = newValue ?? '';
-                                });
-                              },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Skills Selection
-                          Text(
-                            'Select Your Company Skills',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _availableSkills.map((skill) {
-                              final isSelected = _selectedSkills.contains(skill);
-                              return GestureDetector(
-                                onTap: () => _toggleSkill(skill),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? Colors.blue : Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: isSelected ? Colors.blue : Colors.grey[300]!,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    skill,
-                                    style: TextStyle(
-                                      color: isSelected ? Colors.white : Colors.grey[700],
-                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
                           const SizedBox(height: 24),
                           
-                          // Complete Signup button
+                          // Next button
                           SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _completeSignup,
+                              onPressed: _next,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
@@ -416,22 +226,13 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                                 ),
                                 elevation: 0,
                               ),
-                              child: _isLoading 
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Complete Signup',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),

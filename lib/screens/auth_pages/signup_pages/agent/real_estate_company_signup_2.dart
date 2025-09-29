@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../../environment.dart';
 
 class RealEstateCompanySignupPage2 extends StatefulWidget {
   const RealEstateCompanySignupPage2({super.key});
@@ -12,11 +9,9 @@ class RealEstateCompanySignupPage2 extends StatefulWidget {
 
 class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPage2> {
   final _formKey = GlobalKey<FormState>();
-  String _selectedCountry = '';
-  String _selectedDistrict = '';
-  String _selectedGovernance = '';
-  String _selectedCity = '';
-  bool _isLoading = false;
+  final _companyNameCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  String _selectedCountryCode = '+961';
 
   @override
   void initState() {
@@ -39,86 +34,23 @@ class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPa
   String _email = '';
   String _password = '';
 
-  Future<void> _completeSignup() async {
+  @override
+  void dispose() {
+    _companyNameCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
+  void _next() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      try {
-        final url = '${Environment.apiUrl}users/signup';
-        print('Making API call to: $url');
-        final response = await http.post(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'firstName': _firstName,
-            'lastName': _lastName,
-            'email': _email,
-            'password': _password,
-            'role': 'agent-company',
-            'phone': '+961000000000', // Default phone for now
-            'country': _selectedCountry,
-            'governance': _selectedGovernance,
-            'district': _selectedDistrict,
-            'city': _selectedCity,
-          }),
-        );
-
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
-        if (response.statusCode == 202) {
-          final data = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('OTP sent to your phone. Please verify to complete signup.'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Navigate to OTP verification page
-            Navigator.pushNamed(context, '/verifyOtp', arguments: {
-              'pendingId': data['pendingId'],
-              'phone': '+961000000000',
-            });
-          }
-        } else {
-          final errorData = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(errorData['message'] ?? 'Signup failed'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          String errorMessage = 'Network error occurred';
-          if (e.toString().contains('unexpected character')) {
-            errorMessage = 'Server response error. Please try again.';
-          } else if (e.toString().contains('Connection refused')) {
-            errorMessage = 'Cannot connect to server. Please check your internet connection.';
-          } else if (e.toString().contains('SocketException')) {
-            errorMessage = 'Network connection failed. Please check your internet connection.';
-          } else {
-            errorMessage = 'Network error: ${e.toString()}';
-          }
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorMessage),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      Navigator.pushNamed(context, '/realEstateCompanySignup3', arguments: {
+        'firstName': _firstName,
+        'lastName': _lastName,
+        'email': _email,
+        'password': _password,
+        'companyName': _companyNameCtrl.text.trim(),
+        'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
+      });
     }
   }
 
@@ -198,144 +130,94 @@ class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPa
                       key: _formKey,
                       child: Column(
                         children: [
-                          // Select Country
+                          // Company Name
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[50],
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.grey[200]!),
                             ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedCountry.isEmpty ? null : _selectedCountry,
+                            child: TextFormField(
+                              controller: _companyNameCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Select Country',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
-                              ),
-                              items: ['Lebanon', 'United States', 'United Kingdom', 'France', 'Germany', 'Canada'].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedCountry = newValue ?? '';
-                                });
-                              },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Select District
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
-                              decoration: InputDecoration(
-                                hintText: 'Select District',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
-                              ),
-                              items: ['Beirut', 'Mount Lebanon', 'North Lebanon', 'South Lebanon', 'Bekaa', 'Nabatieh'].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedDistrict = newValue ?? '';
-                                });
-                              },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Select Governance
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedGovernance.isEmpty ? null : _selectedGovernance,
-                              decoration: InputDecoration(
-                                hintText: 'Select Governance',
+                                hintText: 'Company Name',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.business, color: Colors.grey[400]),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
                               ),
-                              items: ['Central Government', 'Local Government', 'Regional Government'].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedGovernance = newValue ?? '';
-                                });
-                              },
                               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
                             ),
                           ),
                           const SizedBox(height: 16),
                           
-                          // Select City
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedCity.isEmpty ? null : _selectedCity,
-                              decoration: InputDecoration(
-                                hintText: 'Select City',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                          // Phone Number
+                          Row(
+                            children: [
+                              Container(
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey[200]!),
+                                ),
+                                child: DropdownButtonFormField<String>(
+                                  value: _selectedCountryCode,
+                                  decoration: InputDecoration(
+                                    hintText: '+961',
+                                    hintStyle: TextStyle(color: Colors.grey[400]),
+                                    prefixIcon: Icon(Icons.phone, color: Colors.grey[400]),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                                  ),
+                                  items: ['+961', '+1', '+44', '+33', '+49'].map((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedCountryCode = newValue ?? '+961';
+                                    });
+                                  },
+                                ),
                               ),
-                              items: ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Zahle', 'Jounieh'].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedCity = newValue ?? '';
-                                });
-                              },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[50],
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey[200]!),
+                                  ),
+                                  child: TextFormField(
+                                    controller: _phoneCtrl,
+                                    decoration: InputDecoration(
+                                      hintText: '00 123 456',
+                                      hintStyle: TextStyle(color: Colors.grey[400]),
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    ),
+                                    keyboardType: TextInputType.phone,
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) return 'Required';
+                                      if (v.length < 8) return 'Invalid phone';
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 24),
                           
-                          // Complete Signup button
+                          // Next button
                           SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _completeSignup,
+                              onPressed: _next,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
@@ -344,22 +226,13 @@ class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPa
                                 ),
                                 elevation: 0,
                               ),
-                              child: _isLoading 
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Complete Signup',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),

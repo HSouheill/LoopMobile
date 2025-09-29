@@ -15,8 +15,10 @@ import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup_2.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_1.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_2.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_3.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_1.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_2.dart';
+import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_3.dart';
 import 'screens/auth_pages/verify_otp.dart';
 import 'screens/dashboards/dashboard.dart';
 import 'screens/dashboards/agent_individual_dashboard.dart';
@@ -51,8 +53,10 @@ Map<String, WidgetBuilder> appRoutes() {
     '/serviceProviderSignup2': (_) => const ServiceProviderSignupPage2(),
     '/realEstateCompanySignup1': (_) => const RealEstateCompanySignupPage1(),
     '/realEstateCompanySignup2': (_) => const RealEstateCompanySignupPage2(),
+    '/realEstateCompanySignup3': (_) => const RealEstateCompanySignupPage3(),
     '/serviceProviderCompanySignup1': (_) => const ServiceProviderCompanySignupPage1(),
     '/serviceProviderCompanySignup2': (_) => const ServiceProviderCompanySignupPage2(),
+    '/serviceProviderCompanySignup3': (_) => const ServiceProviderCompanySignupPage3(),
     '/verifyOtp': (_) => const VerifyOtpPage(),
     '/dashboard': (context) => const DashboardPage(),
     '/agent-individual-dashboard': (context) => const AgentIndividualDashboardPage(),
