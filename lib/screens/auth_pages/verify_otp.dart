@@ -21,7 +21,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
     super.initState();
     // Get data from previous page
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null) {
         _phone = args['phone'] ?? '';
       }
@@ -37,7 +38,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   Future<void> _verifyOtp() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
+
       try {
         final response = await http.post(
           Uri.parse('${Environment.apiUrl}users/verifyOtp'),
@@ -50,30 +51,31 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
           }),
         );
 
+        // MODIFIED BLOCK
         if (response.statusCode == 201) {
           if (mounted) {
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Account created successfully! Please sign in to continue.'),
+                content: Text(
+                    'Verification successful! Redirecting to main screen.'),
                 backgroundColor: Colors.green,
                 duration: Duration(seconds: 2),
               ),
             );
-            
-            // Navigate to main page after success
-            Future.delayed(const Duration(seconds: 2), () {
-              if (mounted) {
-                Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-              }
-            });
+
+            // Navigate immediately to main page
+            // The SnackBar will briefly show over the new screen.
+            // Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+            Navigator.of(context).popUntil((route) => route.isFirst);
           }
         } else {
           final errorData = json.decode(response.body);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(errorData['message'] ?? 'OTP verification failed'),
+                content:
+                    Text(errorData['message'] ?? 'OTP verification failed'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -125,7 +127,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
               ),
             ),
           ),
-          
+
           // Bottom sheet style container
           Align(
             alignment: Alignment.bottomCenter,
@@ -139,7 +141,10 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                   topRight: Radius.circular(30),
                 ),
                 boxShadow: [
-                  BoxShadow(blurRadius: 10, color: Colors.black12, offset: Offset(0, -4)),
+                  BoxShadow(
+                      blurRadius: 10,
+                      color: Colors.black12,
+                      offset: Offset(0, -4)),
                 ],
               ),
               child: SingleChildScrollView(
@@ -166,7 +171,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Instructions
                     Text(
                       'Enter the OTP sent to $_phone',
@@ -176,7 +181,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    
+
                     // Form
                     Form(
                       key: _formKey,
@@ -194,9 +199,11 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                               decoration: InputDecoration(
                                 hintText: 'Enter OTP',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.security, color: Colors.grey[400]),
+                                prefixIcon: Icon(Icons.security,
+                                    color: Colors.grey[400]),
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 16),
                               ),
                               keyboardType: TextInputType.number,
                               validator: (v) {
@@ -207,7 +214,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Verify button
                           SizedBox(
                             width: double.infinity,
@@ -222,12 +229,14 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: _isLoading 
+                              child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
                                         strokeWidth: 2,
                                       ),
                                     )
@@ -241,7 +250,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
+
                           // Resend OTP link
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -254,7 +263,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('OTP resend functionality coming soon'),
+                                      content: Text(
+                                          'OTP resend functionality coming soon'),
                                       backgroundColor: Colors.orange,
                                     ),
                                   );
