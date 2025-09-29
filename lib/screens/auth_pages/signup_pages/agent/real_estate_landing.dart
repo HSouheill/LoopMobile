@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../dashboards/agent_individual_dashboard.dart';
-import '../../../dashboards/agent_company_dashboard.dart';
 
 class RealEstateLandingPage extends StatelessWidget {
   const RealEstateLandingPage({super.key});
