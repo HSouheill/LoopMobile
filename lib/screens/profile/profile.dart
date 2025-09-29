@@ -7,7 +7,7 @@ import '../../environment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
-import '../../widgets/profile_widgets/dynamic_section.dart';
+import '../../widgets/profile_widgets/settings_dynamic_section.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -280,7 +280,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("assets/profileBackgroundImage.png"),
+                              image: AssetImage(
+                                  "assets/profileBackgroundImage.png"),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -291,8 +292,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           top: 30,
                           left: 16,
                           child: SizedBox(
-                            width: 25,
-                            height: 25,
+                            width: 30,
+                            height: 30,
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -308,7 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 icon: const Icon(
                                   Icons.arrow_back_rounded,
                                   color: Color(0xFF0048FF),
-                                  size: 16,
+                                  size: 22,
                                 ),
                                 onPressed: () {
                                   Navigator.pop(context);
