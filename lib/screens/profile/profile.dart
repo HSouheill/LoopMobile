@@ -280,7 +280,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("assets/profileBackgroundImage.png"),
+                              image: AssetImage(
+                                  "assets/profileBackgroundImage.png"),
                               fit: BoxFit.cover,
                             ),
                           ),
