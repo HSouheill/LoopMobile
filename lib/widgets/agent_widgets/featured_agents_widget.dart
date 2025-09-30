@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/agent_service.dart';
+import 'agent_service.dart';
 import '../recommended_agents_widget.dart';
 
 class FeaturedAgentsWidget extends StatefulWidget {

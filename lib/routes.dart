@@ -36,6 +36,8 @@ import 'screens/profile/terms_and_conditions/terms_and_conditions.dart';
 import 'screens/profile/favorites.dart';
 import 'screens/profile/referrals.dart';
 import 'screens/profile/profile-dashboard.dart';
+import 'screens/dashboards/service_provider_individual_dashboard_screens/edit_my_service.dart';
+import 'screens/dashboards/service_provider_individual_dashboard_screens/add_service.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -61,10 +63,13 @@ Map<String, WidgetBuilder> appRoutes() {
     '/serviceProviderCompanySignup3': (_) => const ServiceProviderCompanySignupPage3(),
     '/verifyOtp': (_) => const VerifyOtpPage(),
     '/dashboard': (context) => const DashboardPage(),
-    '/agent-individual-dashboard': (context) => const AgentIndividualDashboardPage(),
+    '/agent-individual-dashboard': (context) =>
+        const AgentIndividualDashboardPage(),
     '/agent-company-dashboard': (context) => const AgentCompanyDashboardPage(),
-    '/service-provider-individual-dashboard': (context) => const ServiceProviderIndividualDashboardPage(),
-    '/service-provider-company-dashboard': (context) => const ServiceProviderCompanyDashboardPage(),
+    '/service-provider-individual-dashboard': (context) =>
+        const ServiceProviderIndividualDashboardPage(),
+    '/service-provider-company-dashboard': (context) =>
+        const ServiceProviderCompanyDashboardPage(),
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
     '/featured-services': (context) => const CategoryServicesPage(category: ServiceCategory.featured),
@@ -78,5 +83,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/favorites': (context) => const FavoritesPage(),
     '/referrals': (context) => const ReferralsPage(),
     '/profile-dashboard': (context) => const ProfileDashboardPage(),
+    '/edit-my-service': (context) => const EditMyService(),
+    '/add-service': (context) => const AddService(),
   };
 }

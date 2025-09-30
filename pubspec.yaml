@@ -34,4 +34,6 @@ flutter:
   assets:
     - assets/Background.png
     - assets/profileBackgroundImage.png
+    - assets/serverProviderBackground.png
+    - assets/defaultProfileImage.png
   #   - images/a_dot_ham.jpeg

@@ -1,6 +1,6 @@
 // lib/widgets/agent_widgets/dynamic_agents_widget.dart
 import 'package:flutter/material.dart';
-import '../../services/agent_service.dart';
+import 'agent_widgets/agent_service.dart';
 import './recommended_agents_widget.dart';
 
 // Enum for different agent categories/filters
@@ -39,7 +39,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
   // Get title based on category
   String get title {
     if (widget.customTitle != null) return widget.customTitle!;
-    
+
     switch (widget.category) {
       case AgentCategory.featured:
         return 'Featured Agents';
@@ -64,7 +64,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
 
   Future<void> _loadAgents() async {
     if (!mounted) return;
-    
+
     setState(() {
       isLoading = true;
       error = '';
@@ -119,7 +119,6 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
                     ),
                     const SizedBox(height: 8),
                     // Filter chips
-                   
                   ],
                 ),
               ),
@@ -135,7 +134,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Content area
           if (isLoading)
             const SizedBox(
@@ -149,7 +148,8 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red.shade400, size: 48),
+                    Icon(Icons.error_outline,
+                        color: Colors.red.shade400, size: 48),
                     const SizedBox(height: 16),
                     Text(
                       error,
@@ -204,7 +204,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
 
   Widget _buildFilterChip(String value, String label) {
     final isSelected = selectedFilter == value;
-    
+
     return GestureDetector(
       onTap: () => _onFilterChanged(value),
       child: Container(

@@ -92,17 +92,18 @@ class AuthService {
   static bool get isLoggedIn => _currentUser != null && _token != null;
 
   // Sign in with email, username, or phone number
-  static Future<bool> signIn(String input, String password, {bool isPhone = false}) async {
+  static Future<bool> signIn(String input, String password,
+      {bool isPhone = false}) async {
     try {
       Map<String, String> bodyData;
-      
+
       if (isPhone) {
         // Phone number login
         bodyData = {'phone': input, 'password': password};
       } else {
         // Determine if the input is an email or a username based on the '@' symbol
         final isEmail = input.contains('@');
-        bodyData = isEmail 
+        bodyData = isEmail
             ? {'email': input.toLowerCase(), 'password': password}
             : {'name': input, 'password': password};
       }
@@ -120,10 +121,10 @@ class AuthService {
         final data = jsonDecode(response.body);
         _token = data['token'];
         _currentUser = User.fromJson(data['user']);
-        
+
         // Store in SharedPreferences for persistent login
         await _storeAuthData();
-        
+
         return true;
       } else {
         // Handle error response from the server
@@ -176,7 +177,7 @@ class AuthService {
   static Future<void> signOut() async {
     _currentUser = null;
     _token = null;
-    
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
     await prefs.remove('user_data');
