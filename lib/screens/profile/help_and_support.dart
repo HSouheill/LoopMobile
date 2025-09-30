@@ -299,11 +299,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                       },
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30, vertical: 5),
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15, // new font size
-                        fontWeight: FontWeight.w600, // new weight
-                      ),
+                      textColor: Colors.white,
+                      textSize: 15,
                     ),
                   ),
                 ],
