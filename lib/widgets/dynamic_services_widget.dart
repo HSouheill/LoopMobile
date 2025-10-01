@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/service_service.dart';
 import '../models/service_provider.dart';
 import '../screens/services/service_provider_detail_page.dart';
+import '../screens/services/category_services_page.dart';
 import 'recommended_agents_widget.dart';
 
 class DynamicServicesWidget extends StatefulWidget {
@@ -97,6 +98,20 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
     );
   }
 
+  void _handleSeeAll() {
+    if (widget.onSeeAll != null) {
+      widget.onSeeAll!();
+      return;
+    }
+    // Open paginated page for the selected category
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CategoryServicesPage(category: widget.category),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -115,7 +130,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
       title: widget.category.displayName,
       agents: agents,
       showPropertyCount: false, // Services don't have property count
-      onSeeAll: widget.showSeeAll ? widget.onSeeAll : null,
+      onSeeAll: widget.showSeeAll ? _handleSeeAll : null,
       onAgentTap: _onAgentTap,
     );
   }
