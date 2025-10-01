@@ -10,8 +10,9 @@ import 'widgets/image_slider_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
-import 'widgets/recommended_agents_widget.dart';
 import 'widgets/agent_widgets/featured_agents_widget.dart';
+import 'widgets/dynamic_services_widget.dart';
+import 'services/service_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
@@ -207,72 +208,6 @@ class HomePage extends StatelessWidget {
 
     // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
 
-    // Data for the Companies Services widget (uses customText instead of property count)
-    final List<Agent> companiesServicesAgents = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Alpha Maintenance Co.',
-        propertyCount: 0,
-        location: 'Beirut, Lebanon',
-        rating: 4.8,
-        reviewCount: 152,
-        customText: 'Electrical, plumbing',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'BrightClean Services',
-        propertyCount: 0,
-        location: 'Jounieh, Mount Lebanon',
-        rating: 4.6,
-        reviewCount: 89,
-        customText: 'Deep Cleaning',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/7567843/pexels-photo-7567843.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'SecureGuard Systems',
-        propertyCount: 0,
-        location: 'Hazmieh, Mount Lebanon',
-        rating: 4.7,
-        reviewCount: 110,
-        customText: 'CCTV',
-      ),
-    ];
-
-    final List<Agent> individualServicesAgents = [
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Sam The Plumber',
-        propertyCount: 0,
-        location: 'Beirut, Lebanon',
-        rating: 4.5,
-        reviewCount: 42,
-        customText: 'Plumbing, repairs',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/1680143/pexels-photo-1680143.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Lina Painter',
-        propertyCount: 0,
-        location: 'Jounieh, Mount Lebanon',
-        rating: 4.6,
-        reviewCount: 37,
-        customText: 'Interior painting',
-      ),
-      Agent(
-        imageUrl:
-            'https://images.pexels.com/photos/3815587/pexels-photo-3815587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-        name: 'Fadi Electric',
-        propertyCount: 0,
-        location: 'Hazmieh, Mount Lebanon',
-        rating: 4.7,
-        reviewCount: 58,
-        customText: 'Electrical fixes',
-      ),
-    ];
 
     return SingleChildScrollView(
       child: Column(
@@ -300,18 +235,20 @@ class HomePage extends StatelessWidget {
             isMainPage: true,
             onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),
-          // Companies Services section using customText instead of property count
-          RecommendedAgentsWidget(
-            title: 'Companies Services',
-            agents: companiesServicesAgents,
-            showPropertyCount: false,
+          // Companies Services section - now fetched dynamically
+          DynamicServicesWidget(
+            category: ServiceCategory.companies,
+            limit: 3,
+            showSeeAll: true,
+            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
           ),
           const SizedBox(height: 10),
-          // Individual Services section using customText instead of property count
-          RecommendedAgentsWidget(
-            title: 'Individual Services',
-            agents: individualServicesAgents,
-            showPropertyCount: false,
+          // Individual Services section - now fetched dynamically
+          DynamicServicesWidget(
+            category: ServiceCategory.individual,
+            limit: 3,
+            showSeeAll: true,
+            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
           ),
           const SizedBox(height: 10),
         ],

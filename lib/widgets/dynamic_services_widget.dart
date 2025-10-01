@@ -6,12 +6,14 @@ class DynamicServicesWidget extends StatefulWidget {
   final ServiceCategory category;
   final int limit;
   final bool showSeeAll;
+  final VoidCallback? onSeeAll;
 
   const DynamicServicesWidget({
     super.key,
     required this.category,
     this.limit = 3,
     this.showSeeAll = true,
+    this.onSeeAll,
   });
 
   @override
@@ -94,9 +96,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
       title: widget.category.displayName,
       agents: agents,
       showPropertyCount: false, // Services don't have property count
-      onSeeAll: widget.showSeeAll ? () {
-        Navigator.pushNamed(context, widget.category.routeName);
-      } : null,
+      onSeeAll: widget.showSeeAll ? widget.onSeeAll : null,
     );
   }
 
