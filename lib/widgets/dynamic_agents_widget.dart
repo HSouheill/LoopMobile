@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'agent_widgets/agent_service.dart';
 import './recommended_agents_widget.dart';
+import '../screens/agents/category_agents_page.dart';
 
 // Enum for different agent categories/filters
 enum AgentCategory {
@@ -13,11 +14,15 @@ enum AgentCategory {
 class DynamicAgentsWidget extends StatefulWidget {
   final AgentCategory category;
   final String? customTitle; // Optional custom title override
+  final int limit; // Add limit parameter like listings
+  final VoidCallback? onSeeAll; // Add onSeeAll callback
 
   const DynamicAgentsWidget({
     super.key,
     required this.category,
     this.customTitle,
+    this.limit = 3, // Default to 3 like listings
+    this.onSeeAll,
   });
 
   @override
@@ -28,7 +33,6 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
   List<Agent> agents = [];
   bool isLoading = false;
   String error = '';
-  String selectedFilter = 'featured'; // Default filter
 
   @override
   void initState() {
@@ -52,14 +56,19 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
 
   // Get filter parameters based on category
   Map<String, String> get filterParams {
+    final params = <String, String>{'limit': widget.limit.toString()};
     switch (widget.category) {
       case AgentCategory.featured:
-        return {'isFeatured': 'true', 'sort': selectedFilter};
+        params.addAll({'isFeatured': 'true', 'sort': 'featured'});
+        break;
       case AgentCategory.topRated:
-        return {'sort': selectedFilter, 'minRating': '4.5'};
+        params.addAll({'sort': 'featured', 'minRating': '4.5'});
+        break;
       case AgentCategory.forYou:
-        return {'sort': selectedFilter, 'personalized': 'true'};
+        params.addAll({'sort': 'featured', 'personalized': 'true'});
+        break;
     }
+    return params;
   }
 
   Future<void> _loadAgents() async {
@@ -88,11 +97,19 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     }
   }
 
-  void _onFilterChanged(String newFilter) {
-    setState(() {
-      selectedFilter = newFilter;
-    });
-    _loadAgents();
+
+  void _handleSeeAll() {
+    if (widget.onSeeAll != null) {
+      widget.onSeeAll!();
+      return;
+    }
+    // Navigate to paginated agents page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryAgentsPage(category: widget.category),
+      ),
+    );
   }
 
   @override
@@ -123,12 +140,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                  // TODO: Navigate to full agents list page
-                  // Navigator.push(context, MaterialPageRoute(
-                  //   builder: (context) => AllAgentsPage(category: widget.category)
-                  // ));
-                },
+                onPressed: _handleSeeAll,
                 child: const Text('See all'),
               ),
             ],
@@ -202,29 +214,4 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     );
   }
 
-  Widget _buildFilterChip(String value, String label) {
-    final isSelected = selectedFilter == value;
-
-    return GestureDetector(
-      onTap: () => _onFilterChanged(value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade300,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey.shade700,
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
-  }
 }
