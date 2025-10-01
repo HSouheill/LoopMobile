@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/service_service.dart';
+import '../../models/service_provider.dart';
+import '../../screens/services/service_provider_detail_page.dart';
 import '../../widgets/vertical_services_widget.dart';
 import '../../widgets/recommended_agents_widget.dart';
 
@@ -12,6 +14,7 @@ class FeaturedServicesPage extends StatefulWidget {
 
 class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
   List<Agent> agents = [];
+  List<ServiceProvider> serviceProviders = [];
   bool isLoading = true;
   String? error;
   int currentPage = 1;
@@ -41,22 +44,24 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
         });
       }
 
-      final response = await ServiceService.getAllServices(
+      final response = await ServiceService.getAllServiceProviders(
         page: page,
         limit: itemsPerPage,
         isFeatured: true,
         sort: 'date_desc',
       );
 
-      // Convert services to agents
-      final agentList = response.services.map((service) {
-        return Agent.fromJson(service.toAgentJson());
+      // Convert service providers to agents
+      final agentList = response.users.map((provider) {
+        return Agent.fromJson(provider.toAgentJson());
       }).toList();
 
       setState(() {
         if (append) {
+          serviceProviders.addAll(response.users);
           agents.addAll(agentList);
         } else {
+          serviceProviders = response.users;
           agents = agentList;
         }
         currentPage = response.meta.page;
@@ -100,6 +105,21 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
         );
       }
     }
+  }
+
+  void _onAgentTap(Agent agent) {
+    // Find the corresponding ServiceProvider
+    final serviceProvider = serviceProviders.firstWhere(
+      (provider) => provider.displayName == agent.name,
+      orElse: () => serviceProviders.first,
+    );
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderDetailPage(serviceProvider: serviceProvider),
+      ),
+    );
   }
 
   @override
@@ -217,6 +237,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
             title: 'Featured Services',
             agents: agents,
             showPropertyCount: false,
+            onAgentTap: _onAgentTap,
           ),
           const SizedBox(height: 20),
         ],

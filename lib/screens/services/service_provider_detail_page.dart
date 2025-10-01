@@ -1,0 +1,534 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../../models/service_provider.dart';
+
+class ServiceProviderDetailPage extends StatefulWidget {
+  final ServiceProvider serviceProvider;
+
+  const ServiceProviderDetailPage({super.key, required this.serviceProvider});
+
+  @override
+  State<ServiceProviderDetailPage> createState() => _ServiceProviderDetailPageState();
+}
+
+class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
+  PageController _pageController = PageController();
+  bool _isExpanded = false;
+
+  // Get all images from the service provider (profile image + service images)
+  List<String> get _allImages {
+    List<String> images = [];
+    
+    // Add service images
+    for (var service in widget.serviceProvider.services) {
+      if (service.image.isNotEmpty) {
+        images.add(service.image);
+      }
+    }
+    
+    // If no service images, add a placeholder
+    if (images.isEmpty) {
+      images.add('https://via.placeholder.com/300x200?text=No+Image');
+    }
+    
+    return images;
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Helper to render stars
+  Widget _buildStars(double rating) {
+    final int full = rating.floor();
+    final bool hasHalf = (rating - full) >= 0.5;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        if (i < full) {
+          return const Icon(Icons.star, color: Colors.amber, size: 18);
+        } else if (i == full && hasHalf) {
+          return const Icon(Icons.star_half, color: Colors.amber, size: 18);
+        } else {
+          return const Icon(Icons.star_border, color: Colors.amber, size: 18);
+        }
+      }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: CustomScrollView(
+        slivers: [
+          // Image Slider AppBar
+          SliverAppBar(
+            expandedHeight: 320,
+            pinned: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Image PageView
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: _allImages.length,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        _allImages[index],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return _buildPlaceholderImage();
+                        },
+                      );
+                    },
+                  ),
+
+                  // Dark gradient bottom overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.center,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Top-left back button
+                  Positioned(
+                    left: 12,
+                    top: topPadding + 6,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.45),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ),
+
+                  // Provider details at the bottom of the image
+                  Positioned(
+                    left: 20,
+                    bottom: 24,
+                    right: 20,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Circular avatar
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: _allImages.isNotEmpty
+                                ? Image.network(
+                                    _allImages.first,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(Icons.business, size: 40, color: Colors.grey);
+                                    },
+                                  )
+                                : const Icon(Icons.business, size: 40, color: Colors.grey),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Name, Location, and Rating
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                widget.serviceProvider.displayName,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on, color: Colors.white, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    widget.serviceProvider.location,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    '|',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _buildStars(widget.serviceProvider.averageRating),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Content - white rounded card
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // About Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.info_outline, color: Colors.black, size: 24),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'About',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Social media icons
+                            Row(
+                              children: [
+                                _socialIcon(
+                                  icon: Icons.phone,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 8),
+                                _socialIcon(
+                                  icon: Icons.email,
+                                  color: Colors.blue,
+                                ),
+                                const SizedBox(width: 8),
+                                _socialIcon(
+                                  icon: Icons.business,
+                                  color: Colors.purple,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          widget.serviceProvider.role == 'service-provider-company' 
+                              ? 'Professional ${widget.serviceProvider.displayName} providing quality services in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.'
+                              : '${widget.serviceProvider.firstName} ${widget.serviceProvider.lastName} is a professional service provider based in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[700],
+                            height: 1.5,
+                          ),
+                          maxLines: _isExpanded ? null : 3,
+                          overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isExpanded = !_isExpanded;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Row(
+                              children: [
+                                Text(
+                                  _isExpanded ? 'Read Less' : 'Read More',
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 14,
+                                  color: Colors.green,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
+
+                    // Services Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.work, color: Colors.black, size: 24),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Services',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        if (widget.serviceProvider.services.isEmpty)
+                          const Text(
+                            'No services available',
+                            style: TextStyle(color: Colors.grey),
+                          )
+                        else
+                          ...widget.serviceProvider.services.map((service) => 
+                            _buildServiceCard(service)
+                          ).toList(),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
+
+                    // Contact Details Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.contact_phone, color: Colors.black, size: 24),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Contact Details',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDetailRow(
+                          icon: Icons.email,
+                          label: 'Email:',
+                          value: widget.serviceProvider.email,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDetailRow(
+                          icon: Icons.phone,
+                          label: 'Phone:',
+                          value: widget.serviceProvider.phone,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDetailRow(
+                          icon: Icons.location_on,
+                          label: 'Location:',
+                          value: widget.serviceProvider.location,
+                        ),
+                        if (widget.serviceProvider.companyName != null) ...[
+                          const SizedBox(height: 12),
+                          _buildDetailRow(
+                            icon: Icons.business,
+                            label: 'Company:',
+                            value: widget.serviceProvider.companyName!,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceCard(Service service) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (service.image.isNotEmpty)
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: NetworkImage(service.image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              if (service.image.isNotEmpty) const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      service.subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Text(
+                          service.location,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _socialIcon({required IconData icon, required Color color}) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Icon(
+          icon,
+          color: color,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      color: Colors.grey[300],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundColor: Colors.grey[400],
+              child: const Icon(Icons.business, size: 80, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No image available',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow({required IconData icon, required String label, required String value}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.circle, size: 8, color: Colors.blue),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            '$label $value',
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

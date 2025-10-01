@@ -144,6 +144,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
   final List<Agent> agents;
   final bool showPropertyCount; // Toggle between property count and custom text
   final VoidCallback? onSeeAll;
+  final Function(Agent)? onAgentTap; // Custom navigation callback
 
   const RecommendedAgentsWidget({
     super.key,
@@ -151,6 +152,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
     required this.agents,
     this.showPropertyCount = true, // Default to showing property count
     this.onSeeAll,
+    this.onAgentTap,
   });
 
   @override
@@ -189,6 +191,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
                 return AgentCard(
                   agent: agents[index],
                   showPropertyCount: showPropertyCount,
+                  onTap: onAgentTap,
                 );
               },
             ),
@@ -203,23 +206,29 @@ class RecommendedAgentsWidget extends StatelessWidget {
 class AgentCard extends StatelessWidget {
   final Agent agent;
   final bool showPropertyCount;
+  final Function(Agent)? onTap;
 
   const AgentCard({
     super.key, 
     required this.agent,
     required this.showPropertyCount,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SingleAgentPage(agent: agent),
-          ),
-        );
+        if (onTap != null) {
+          onTap!(agent);
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SingleAgentPage(agent: agent),
+            ),
+          );
+        }
       },
       child: Container(
       width: 200, // Card width

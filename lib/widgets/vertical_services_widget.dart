@@ -6,6 +6,7 @@ class VerticalServicesWidget extends StatelessWidget {
   final List<Agent> agents;
   final bool showPropertyCount;
   final VoidCallback? onSeeAll;
+  final Function(Agent)? onAgentTap;
 
   const VerticalServicesWidget({
     super.key,
@@ -13,6 +14,7 @@ class VerticalServicesWidget extends StatelessWidget {
     required this.agents,
     this.showPropertyCount = false,
     this.onSeeAll,
+    this.onAgentTap,
   });
 
   @override
@@ -58,6 +60,7 @@ class VerticalServicesWidget extends StatelessWidget {
               return AgentCard(
                 agent: agent,
                 showPropertyCount: showPropertyCount,
+                onTap: onAgentTap,
               );
             },
           ),

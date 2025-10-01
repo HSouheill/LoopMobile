@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/service_service.dart';
+import '../../models/service_provider.dart';
+import '../../screens/services/service_provider_detail_page.dart';
 import '../../widgets/vertical_services_widget.dart';
 import '../../widgets/recommended_agents_widget.dart';
 
@@ -18,7 +20,8 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
   bool isLoading = false;
   String? error;
   List<Agent> agents = [];
-  ServiceMeta? meta;
+  List<ServiceProvider> serviceProviders = [];
+  ServiceProviderMeta? meta;
 
   @override
   void initState() {
@@ -33,11 +36,11 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
     });
 
     try {
-      ServicesResponse resp;
+      ServiceProvidersResponse resp;
 
       if (widget.category == ServiceCategory.featured) {
         // featured: use isFeatured param
-        resp = await ServiceService.getAllServices(
+        resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,
           limit: limit,
           isFeatured: true,
@@ -45,29 +48,29 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
         );
       } else if (widget.category == ServiceCategory.topRated) {
         // top rated: use topRated param
-        resp = await ServiceService.getAllServices(
+        resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,
           limit: limit,
-          topRated: true,
           sort: 'rating_desc',
         );
       } else {
         // types (company / individual)
-        resp = await ServiceService.getAllServices(
+        resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,
           limit: limit,
-          type: widget.category.apiType,
+          providerType: widget.category.providerType,
           sort: 'date_desc',
         );
       }
 
-      // Convert services to agents
-      final agentList = resp.services.map((service) {
-        return Agent.fromJson(service.toAgentJson());
+      // Convert service providers to agents
+      final agentList = resp.users.map((provider) {
+        return Agent.fromJson(provider.toAgentJson());
       }).toList();
 
       if (!mounted) return;
       setState(() {
+        serviceProviders = resp.users;
         agents = agentList;
         meta = resp.meta;
         page = resp.meta.page;
@@ -90,6 +93,21 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
 
   Future<void> _onRefresh() async {
     await _fetchPage(pageToFetch: 1);
+  }
+
+  void _onAgentTap(Agent agent) {
+    // Find the corresponding ServiceProvider
+    final serviceProvider = serviceProviders.firstWhere(
+      (provider) => provider.displayName == agent.name,
+      orElse: () => serviceProviders.first,
+    );
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderDetailPage(serviceProvider: serviceProvider),
+      ),
+    );
   }
 
   @override
@@ -130,6 +148,7 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                                   title: title,
                                   agents: agents,
                                   showPropertyCount: false,
+                                  onAgentTap: _onAgentTap,
                                 ),
                                 const SizedBox(height: 20),
                               ],

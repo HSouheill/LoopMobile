@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/service_service.dart';
+import '../models/service_provider.dart';
+import '../screens/services/service_provider_detail_page.dart';
 import 'recommended_agents_widget.dart';
 
 class DynamicServicesWidget extends StatefulWidget {
@@ -22,51 +24,53 @@ class DynamicServicesWidget extends StatefulWidget {
 
 class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
   List<Agent> agents = [];
+  List<ServiceProvider> serviceProviders = [];
   bool isLoading = true;
   String? error;
 
   @override
   void initState() {
     super.initState();
-    _loadServices();
+    _loadServiceProviders();
   }
 
-  Future<void> _loadServices() async {
+  Future<void> _loadServiceProviders() async {
     try {
       setState(() {
         isLoading = true;
         error = null;
       });
 
-      ServicesResponse response;
+      ServiceProvidersResponse response;
       
       switch (widget.category) {
         case ServiceCategory.featured:
-          response = await ServiceService.getFeaturedServices(limit: widget.limit);
+          response = await ServiceService.getFeaturedServiceProviders(limit: widget.limit);
           break;
         case ServiceCategory.topRated:
-          response = await ServiceService.getTopRatedServices(limit: widget.limit);
+          response = await ServiceService.getTopRatedServiceProviders(limit: widget.limit);
           break;
         case ServiceCategory.companies:
-          response = await ServiceService.getServicesByType(
-            type: 'company',
+          response = await ServiceService.getServiceProvidersByType(
+            providerType: 'company',
             limit: widget.limit,
           );
           break;
         case ServiceCategory.individual:
-          response = await ServiceService.getServicesByType(
-            type: 'individual',
+          response = await ServiceService.getServiceProvidersByType(
+            providerType: 'individual',
             limit: widget.limit,
           );
           break;
       }
 
-      // Convert services to agents
-      final agentList = response.services.map((service) {
-        return Agent.fromJson(service.toAgentJson());
+      // Store service providers and convert to agents
+      final agentList = response.users.map((provider) {
+        return Agent.fromJson(provider.toAgentJson());
       }).toList();
 
       setState(() {
+        serviceProviders = response.users;
         agents = agentList;
         isLoading = false;
       });
@@ -76,6 +80,21 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
         isLoading = false;
       });
     }
+  }
+
+  void _onAgentTap(Agent agent) {
+    // Find the corresponding ServiceProvider
+    final serviceProvider = serviceProviders.firstWhere(
+      (provider) => provider.displayName == agent.name,
+      orElse: () => serviceProviders.first,
+    );
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderDetailPage(serviceProvider: serviceProvider),
+      ),
+    );
   }
 
   @override
@@ -97,6 +116,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
       agents: agents,
       showPropertyCount: false, // Services don't have property count
       onSeeAll: widget.showSeeAll ? widget.onSeeAll : null,
+      onAgentTap: _onAgentTap,
     );
   }
 
@@ -152,7 +172,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: _loadServices,
+                      onPressed: _loadServiceProviders,
                       child: const Text('Retry'),
                     ),
                   ],
