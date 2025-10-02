@@ -6,6 +6,7 @@ class MessageCard extends StatelessWidget {
   final String date;
   final String? imageUrl;
   final bool isChecked;
+  final String? unreadCount; // 👈 added for flexibility
 
   const MessageCard({
     super.key,
@@ -14,6 +15,7 @@ class MessageCard extends StatelessWidget {
     required this.date,
     this.imageUrl,
     this.isChecked = false,
+    this.unreadCount, // 👈 optional unread messages
   });
 
   @override
@@ -37,12 +39,11 @@ class MessageCard extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // ✅ Middle Column
+          // ✅ Middle Column (Name + Message preview)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // First row (title)
                 Text(
                   fullName,
                   style: const TextStyle(
@@ -50,96 +51,76 @@ class MessageCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
-                // Second row: check + subtitle
-                Row(
-                  children: [
-                    // Circular check
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(
-                            0xFFF5F5F5), // background for both cases
-                        border: Border.all(
-                          color: isChecked
-                              ? const Color(0xFF0048FF) // checked border
-                              : const Color(0xFF858585), // unchecked border
-                          width: 1,
-                        ),
-                      ),
-                      child: Icon(
-                        isChecked
-                            ? Icons.done_all
-                            : Icons.check, // double check vs single
-                        size: 8,
-                        color: isChecked
-                            ? const Color(0xFF0048FF) // blue when checked
-                            : const Color(0xFF858585), // gray when unchecked
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        date,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
 
-          // ✅ Right column (15% width)
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.15,
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.end, // aligns everything to the right
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Right-aligned text
-                Text(
-                  date,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
+          // ✅ Right Column (Date + unread bubble if not checked)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                date,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+              if (!isChecked && unreadCount != null) ...[
+                const SizedBox(height: 4),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0048FF),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Text(
+                    unreadCount!,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                // Only show this if not checked
-                if (!isChecked) ...[
-                  const SizedBox(height: 4),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0048FF),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Text(
-                      "65", // replace with dynamic text
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
               ],
-            ),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class MessageCardList extends StatelessWidget {
+  final List<Map<String, dynamic>> items;
+
+  const MessageCardList({super.key, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: items.map((item) {
+        return MessageCard(
+          fullName: item['fullName'] ?? '',
+          message: item['message'] ?? '',
+          date: item['date'] ?? '',
+          imageUrl: item['imageUrl'] ?? '',
+          isChecked: item['isChecked'] ?? false,
+          unreadCount: item['unreadCount'],
+        );
+      }).toList(),
     );
   }
 }

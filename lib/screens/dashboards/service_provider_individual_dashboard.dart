@@ -122,13 +122,12 @@ class _ServiceProviderIndividualDashboardPageState
 
                 // Dynamic Service Card
                 //! Maybe we have to add the slider when we click on Boost in dynamic_service_card.dart
-                DynamicServiceCard(
-                  leftText: "Service Name",
-                  imageUrl: "", // replace with your image URL
-                ),
-                DynamicServiceCard(
-                  leftText: "Service Name",
-                  imageUrl: "", // replace with your image URL
+
+                DynamicServiceCardList(
+                  items: [
+                    {'leftText': 'Service Name1', 'imageUrl': ''},
+                    {'leftText': 'Service Name2', 'imageUrl': ''},
+                  ],
                 ),
 
                 const SizedBox(height: 40),
@@ -193,19 +192,25 @@ class _ServiceProviderIndividualDashboardPageState
 
                 const SizedBox(height: 15),
                 // Dynamic Message Cards
-                MessageCard(
-                  fullName: "John Doe",
-                  message: "Hello, how are you?",
-                  date: "12:45 am",
-                  imageUrl: "",
-                  isChecked: false,
-                ),
-                MessageCard(
-                  fullName: "John Doe",
-                  message: "Hello, how are you?",
-                  date: "12:45 am",
-                  imageUrl: "",
-                  isChecked: true,
+
+                MessageCardList(
+                  items: [
+                    {
+                      "fullName": "John Doe",
+                      "message": "Hello, how are you?",
+                      "date": "12:45 am",
+                      "imageUrl": "",
+                      "isChecked": false,
+                      "unreadCount": "65", // shown only if isChecked == false
+                    },
+                    {
+                      "fullName": "Jane Smith",
+                      "message": "Let’s meet tomorrow.",
+                      "date": "1:20 pm",
+                      "imageUrl": "",
+                      "isChecked": true,
+                    },
+                  ],
                 ),
 
                 const SizedBox(height: 30),
@@ -481,9 +486,12 @@ class UserPlanSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            StatCard(title: "Total Chats", value: "12"),
-            SizedBox(width: 25), // 👈 adjust spacing
-            StatCard(title: "Profile Views:", value: "12314"),
+            StatCardList(
+              items: [
+                {"title": "Total Chats:", "value": "12"},
+                {"title": "Profile Views:", "value": "12314"},
+              ],
+            ),
           ],
         ),
 
