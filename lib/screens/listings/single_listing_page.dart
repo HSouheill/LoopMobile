@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -17,13 +18,20 @@ class _SingleListingPageState extends State<SingleListingPage> {
   int _currentImageIndex = 0;
   bool _isExpanded = false;
 
-  String? get _agentEmail {
-    final name = widget.listing.agentName;
-    if (name.isNotEmpty && name.contains('@')) {
-      return name;
+  String get _ownerDisplayName {
+    if (widget.listing.ownerFirstName != null && widget.listing.ownerLastName != null) {
+      return '${widget.listing.ownerFirstName} ${widget.listing.ownerLastName}';
+    } else if (widget.listing.ownerFirstName != null) {
+      return widget.listing.ownerFirstName!;
+    } else if (widget.listing.ownerEmail != null) {
+      return widget.listing.ownerEmail!;
     }
-    return null;
-    }
+    return widget.listing.agentName;
+  }
+  
+  String? get _ownerPhone {
+    return widget.listing.ownerPhone ?? widget.listing.contactPhone;
+  }
 
   // Get all images from the listing
   List<String> get _allImages {
@@ -53,6 +61,116 @@ class _SingleListingPageState extends State<SingleListingPage> {
 
   String get _propertyCode {
     return widget.listing.id;
+  }
+
+  // -------------------- Helpers --------------------
+  String _normalizeForTel(String raw) {
+    if (raw.isEmpty) return '';
+    // remove spaces and common formatting characters (keep + if present)
+    String s = raw.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+
+    // convert leading 00 to +
+    if (s.startsWith('00')) {
+      s = '+${s.substring(2)}';
+    }
+
+    // If it doesn't start with + and starts with 0 -> assume local Lebanese number
+    if (!s.startsWith('+')) {
+      if (s.startsWith('0')) {
+        s = '+961${s.substring(1)}';
+      } else {
+        // no leading 0 or +: assume Lebanese (change if you want a different default)
+        s = '+961$s';
+      }
+    }
+
+    return s;
+  }
+
+  String _normalizeForWhatsApp(String raw) {
+    if (raw.isEmpty) return '';
+    // remove everything except digits
+    String digits = raw.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // if starts with 00 -> drop it
+    if (digits.startsWith('00')) {
+      digits = digits.substring(2);
+    }
+
+    // if starts with 0 -> replace with country code 961 (Lebanon)
+    if (digits.startsWith('0')) {
+      digits = '961${digits.substring(1)}';
+    }
+
+    // if it doesn't start with country code (961), assume Lebanon
+    if (!digits.startsWith('961')) {
+      digits = '961$digits';
+    }
+
+    return digits;
+  }
+
+  // -------------------- Updated call method --------------------
+  Future<void> _makeCall() async {
+    final phoneNumber = _ownerPhone;
+    if (phoneNumber == null || phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number not available')),
+      );
+      return;
+    }
+
+    final String tel = _normalizeForTel(phoneNumber);
+    final Uri phoneUri = Uri(scheme: 'tel', path: tel);
+
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri, mode: LaunchMode.platformDefault);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not make call')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error making call: $e')),
+      );
+    }
+  }
+
+  // -------------------- Updated WhatsApp method --------------------
+  Future<void> _openWhatsApp() async {
+    final phoneNumber = _ownerPhone;
+    if (phoneNumber == null || phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number not available')),
+      );
+      return;
+    }
+
+    final String waNumber = _normalizeForWhatsApp(phoneNumber);
+
+    // Try opening the native app first
+    final Uri appUri = Uri.parse('whatsapp://send?phone=$waNumber');
+
+    // Fallback: web wa.me
+    final Uri webUri = Uri.parse('https://wa.me/$waNumber');
+
+    try {
+      if (await canLaunchUrl(appUri)) {
+        await launchUrl(appUri, mode: LaunchMode.externalApplication);
+      } else if (await canLaunchUrl(webUri)) {
+        await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open WhatsApp')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error opening WhatsApp: $e')),
+      );
+    }
   }
 
   @override
@@ -262,31 +380,21 @@ class _SingleListingPageState extends State<SingleListingPage> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          if (_agentEmail != null) ...[
-                            GestureDetector(
-                              onTap: () {
-                                Clipboard.setData(ClipboardData(text: _agentEmail!));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Email copied to clipboard')),
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.person, size: 18, color: Colors.green),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    _agentEmail!,
-                                    style: const TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 16,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ],
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.person, size: 18, color: Colors.green),
+                              const SizedBox(width: 6),
+                              Text(
+                                _ownerDisplayName,
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -521,10 +629,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              // Call functionality using contactPhone
-                              // You can implement url_launcher here
-                            },
+                            onPressed: _makeCall,
                             icon: const Icon(Icons.phone, color: Colors.white),
                             label: const Text('Call', style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(
@@ -539,10 +644,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              // WhatsApp functionality using contactPhone
-                              // You can implement url_launcher here
-                            },
+                            onPressed: _openWhatsApp,
                             icon: const Icon(Icons.message, color: Colors.white),
                             label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(

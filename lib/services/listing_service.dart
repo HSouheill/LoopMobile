@@ -215,6 +215,14 @@ class PropertyListing {
   final int? buildingAge;
   final String? papers;
   final DateTime? availableFrom;
+  // Owner information
+  final String? ownerFirstName;
+  final String? ownerLastName;
+  final String? ownerEmail;
+  final String? ownerPhone;
+  // Contact information
+  final String? contactPhone;
+  final String? contactEmail;
   
   PropertyListing({
     required this.id,
@@ -240,6 +248,12 @@ class PropertyListing {
     this.buildingAge,
     this.papers,
     this.availableFrom,
+    this.ownerFirstName,
+    this.ownerLastName,
+    this.ownerEmail,
+    this.ownerPhone,
+    this.contactPhone,
+    this.contactEmail,
   });
   
   factory PropertyListing.fromJson(Map<String, dynamic> json) {
@@ -295,17 +309,37 @@ class PropertyListing {
       }
     }
     
-    // Handle owner/agent name
+    // Handle owner/agent name and owner information
     String agentName = 'Unknown Agent';
+    String? ownerFirstName;
+    String? ownerLastName;
+    String? ownerEmail;
+    String? ownerPhone;
+    
     if (json['owner'] != null) {
       final owner = json['owner'];
       if (owner is Map<String, dynamic>) {
-        agentName = owner['username']?.toString() ?? 
-                   owner['fullName']?.toString() ?? 
-                   owner['email']?.toString() ?? 
-                   'Unknown Agent';
+        ownerFirstName = owner['firstName']?.toString();
+        ownerLastName = owner['lastName']?.toString();
+        ownerEmail = owner['email']?.toString();
+        ownerPhone = owner['phone']?.toString();
+        
+        // Set agent name to full name if available, otherwise fallback to email
+        if (ownerFirstName != null && ownerLastName != null) {
+          agentName = '$ownerFirstName $ownerLastName';
+        } else if (ownerFirstName != null) {
+          agentName = ownerFirstName;
+        } else if (ownerEmail != null) {
+          agentName = ownerEmail;
+        } else {
+          agentName = 'Unknown Agent';
+        }
       }
     }
+    
+    // Handle contact information
+    String? contactPhone = json['contactPhone']?.toString();
+    String? contactEmail = json['contactEmail']?.toString();
     
     // Parse optional fields for single listing page
     DateTime? createdAt;
@@ -363,6 +397,12 @@ class PropertyListing {
       buildingAge: buildingAge,
       papers: papers,
       availableFrom: availableFrom,
+      ownerFirstName: ownerFirstName,
+      ownerLastName: ownerLastName,
+      ownerEmail: ownerEmail,
+      ownerPhone: ownerPhone,
+      contactPhone: contactPhone,
+      contactEmail: contactEmail,
     );
   }
   
