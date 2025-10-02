@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import '../models/review.dart';
 import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;
+import 'review_submission_widget.dart';
 
-class AgentListingsReviewsWidget extends StatelessWidget {
+class AgentListingsReviewsWidget extends StatefulWidget {
   final AgentWithListingsAndReviews agent;
+  final VoidCallback? onReviewSubmitted;
 
   const AgentListingsReviewsWidget({
     super.key,
     required this.agent,
+    this.onReviewSubmitted,
   });
 
+  @override
+  State<AgentListingsReviewsWidget> createState() => _AgentListingsReviewsWidgetState();
+}
+
+class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,7 +47,7 @@ class AgentListingsReviewsWidget extends StatelessWidget {
             const Icon(Icons.home, color: Colors.black, size: 24),
             const SizedBox(width: 8),
             Text(
-              "${agent.firstName}'s Listings",
+              "${widget.agent.firstName}'s Listings",
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -50,7 +58,7 @@ class AgentListingsReviewsWidget extends StatelessWidget {
         const SizedBox(height: 16),
         
         // Listings
-        if (agent.listings.isEmpty)
+        if (widget.agent.listings.isEmpty)
           Container(
             height: 200,
             margin: const EdgeInsets.symmetric(vertical: 16),
@@ -94,9 +102,9 @@ class AgentListingsReviewsWidget extends StatelessWidget {
             height: 330,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: agent.listings.length,
+              itemCount: widget.agent.listings.length,
               itemBuilder: (context, index) {
-                final listing = agent.listings[index];
+                final listing = widget.agent.listings[index];
                 return flw.PropertyListingCard(listing: listing);
               },
             ),
@@ -126,7 +134,7 @@ class AgentListingsReviewsWidget extends StatelessWidget {
         const SizedBox(height: 16),
         
         // Reviews
-        if (agent.reviews.isEmpty)
+        if (widget.agent.reviews.isEmpty)
           Container(
             height: 200,
             margin: const EdgeInsets.symmetric(vertical: 16),
@@ -169,10 +177,10 @@ class AgentListingsReviewsWidget extends StatelessWidget {
           Column(
             children: [
               // Show up to 3 reviews
-              ...agent.reviews.take(3).map((review) => _buildReviewCard(context, review)),
+              ...widget.agent.reviews.take(3).map((review) => _buildReviewCard(context, review)),
               
               // Read More button if there are more than 3 reviews
-              if (agent.reviews.length > 3)
+              if (widget.agent.reviews.length > 3)
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
                   child: Center(
@@ -192,6 +200,14 @@ class AgentListingsReviewsWidget extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+          
+          // Review Submission Widget
+          ReviewSubmissionWidget(
+            agentId: widget.agent.id,
+            onReviewSubmitted: () {
+              widget.onReviewSubmitted?.call();
+            },
           ),
       ],
     );

@@ -500,7 +500,10 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
       );
     }
 
-    return AgentListingsReviewsWidget(agent: _agentData!);
+    return AgentListingsReviewsWidget(
+      agent: _agentData!,
+      onReviewSubmitted: _loadAgentData,
+    );
   }
 
 }
