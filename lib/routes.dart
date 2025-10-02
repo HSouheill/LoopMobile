@@ -38,6 +38,7 @@ import 'screens/profile/referrals.dart';
 import 'screens/profile/profile-dashboard.dart';
 import 'screens/dashboards/service_provider_individual_dashboard_screens/edit_my_service.dart';
 import 'screens/dashboards/service_provider_individual_dashboard_screens/add_service.dart';
+import 'screens/dashboards/agent_individual_dashboard_screens/inactive_listings_screen.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -58,9 +59,12 @@ Map<String, WidgetBuilder> appRoutes() {
     '/realEstateCompanySignup1': (_) => const RealEstateCompanySignupPage1(),
     '/realEstateCompanySignup2': (_) => const RealEstateCompanySignupPage2(),
     '/realEstateCompanySignup3': (_) => const RealEstateCompanySignupPage3(),
-    '/serviceProviderCompanySignup1': (_) => const ServiceProviderCompanySignupPage1(),
-    '/serviceProviderCompanySignup2': (_) => const ServiceProviderCompanySignupPage2(),
-    '/serviceProviderCompanySignup3': (_) => const ServiceProviderCompanySignupPage3(),
+    '/serviceProviderCompanySignup1': (_) =>
+        const ServiceProviderCompanySignupPage1(),
+    '/serviceProviderCompanySignup2': (_) =>
+        const ServiceProviderCompanySignupPage2(),
+    '/serviceProviderCompanySignup3': (_) =>
+        const ServiceProviderCompanySignupPage3(),
     '/verifyOtp': (_) => const VerifyOtpPage(),
     '/dashboard': (context) => const DashboardPage(),
     '/agent-individual-dashboard': (context) =>
@@ -72,10 +76,14 @@ Map<String, WidgetBuilder> appRoutes() {
         const ServiceProviderCompanyDashboardPage(),
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
-    '/featured-services': (context) => const CategoryServicesPage(category: ServiceCategory.featured),
-    '/top-rated-services': (context) => const CategoryServicesPage(category: ServiceCategory.topRated),
-    '/company-services': (context) => const CategoryServicesPage(category: ServiceCategory.companies),
-    '/individual-services': (context) => const CategoryServicesPage(category: ServiceCategory.individual),
+    '/featured-services': (context) =>
+        const CategoryServicesPage(category: ServiceCategory.featured),
+    '/top-rated-services': (context) =>
+        const CategoryServicesPage(category: ServiceCategory.topRated),
+    '/company-services': (context) =>
+        const CategoryServicesPage(category: ServiceCategory.companies),
+    '/individual-services': (context) =>
+        const CategoryServicesPage(category: ServiceCategory.individual),
     '/featured-listings': (context) => const FeaturedListingsPage(),
     '/listings': (context) => const ListingsPage(),
     '/help-and-support': (context) => const HelpAndSupportPage(),
@@ -85,5 +93,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/profile-dashboard': (context) => const ProfileDashboardPage(),
     '/edit-my-service': (context) => const EditMyService(),
     '/add-service': (context) => const AddService(),
+    '/inactive-listings': (context) => const InactiveListings(),
   };
 }

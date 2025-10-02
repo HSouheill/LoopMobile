@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import './widgets/statistics_card.dart';
+import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../screens/dashboards/widgets/dynamic_service_card.dart';
+import '../../screens/dashboards/widgets/message_card.dart';
+import './widgets/add_social_account_card.dart';
+import './widgets/inactive_listing_card_list.dart';
 
 class AgentIndividualDashboardPage extends StatelessWidget {
   const AgentIndividualDashboardPage({super.key});
@@ -9,210 +15,959 @@ class AgentIndividualDashboardPage extends StatelessWidget {
     final user = AuthService.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Agent Dashboard'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.green.shade400, Colors.green.shade600],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: AppBar(
+          title: Container(
+            padding: const EdgeInsets.only(top: 15, left: 50),
+            child: const Text(
+              "Agent Dashboard",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
+          centerTitle: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF82A6FF),
+                  Color(0xFF487CFF),
+                  Color(0xFF3770FF),
+                  Color(0xFF0048FF),
+                ],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+              ),
+            ),
+          ),
+          leading: Container(
+            margin: const EdgeInsets.only(top: 15),
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Color(0xFF0048FF), width: 1),
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Color(0xFF0048FF),
+                    size: 20,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ),
+          titleSpacing: 0,
+        ),
+      ),
+      // To allow scrolling for more listings, wrap the Column in a SingleChildScrollView
+      body: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Stats",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  StatCardList(
+                    items: [
+                      {"title": "Total Listing:", "value": "42"},
+                      {"title": "Profile Views:", "value": "4212"},
+                      {"title": "Active Listing:", "value": "42"},
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+
+              Center(
+                child: DynamicGradientButton(
+                  buttonText: "+  Add New Listing",
+                  onTap: () {},
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  textSize: 16,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // NEW ROW: Inactive Listings title + See all button
+              SizedBox(
+                height: 40,
+                child: Stack(
+                  children: [
+                    const Center(
+                      child: Text(
+                        "Inactive Listings",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/inactive-listings');
+                          },
+                          child: const Text(
+                            "See all",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF1E1E1E),
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Horizontal scrollable cards
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 4),
+                    InactiveListingCardList(
+                      items: [
+                        {
+                          "daysLeft": "12",
+                          "backgroundImage": "https://i.imgur.com/G5qWJ4p.jpeg",
+                          "description": "Apartment in Achrafieh",
+                          "price": "900",
+                        },
+                        {
+                          "daysLeft": "8",
+                          "backgroundImage": "https://i.imgur.com/UM9Z7xk.jpeg",
+                          "description": "Studio in Hamra",
+                          "price": "700",
+                        },
+                        {
+                          "daysLeft": "20",
+                          "backgroundImage": "https://i.imgur.com/6JfO9hZ.jpeg",
+                          "description": "Duplex in Byblos",
+                          "price": "1500",
+                        },
+                      ],
+                    )
+                  ],
+                ),
+              ),
+
+              // ---------------------------------
+              // NEW ROW: Listings Left + Upgrade Plan
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Welcome back,',
-                    style: const TextStyle(
-                      color: Colors.white70,
+                  // Left Column
+                  Row(
+                    children: const [
+                      Text(
+                        "5", // 👈 replace with dynamic variable later
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF0048FF),
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        "Listings Left",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF0048FF),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 20),
+
+                  // Right Column
+                  GestureDetector(
+                    onTap: () {
+                      // action for "Upgrade Plan"
+                    },
+                    child: const Text(
+                      "Upgrade Plan",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFEA4435),
+                        decoration: TextDecoration.underline,
+                        decorationColor: Color(0xFFEA4435),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "My Listings",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+              DynamicServiceCardList(
+                items: [
+                  {
+                    'leftText': 'Service Name1',
+                    'imageUrl': 'https://example.com/image1.jpg'
+                  },
+                  {
+                    'leftText': 'Service Name2',
+                    'imageUrl': 'https://example.com/image2.jpg'
+                  },
+                  {
+                    'leftText': 'Service Name3',
+                    'imageUrl': 'https://example.com/image3.jpg'
+                  },
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              const Text(
+                "Messages",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+
+              MessageCardList(
+                items: [
+                  {
+                    "fullName": "John Doe",
+                    "message": "Hello, how are you?",
+                    "date": "12:45 am",
+                    "imageUrl": "",
+                    "isChecked": false,
+                    "unreadCount": "65", // shown only if isChecked == false
+                  },
+                  {
+                    "fullName": "Jane Smith",
+                    "message": "Let’s meet tomorrow.",
+                    "date": "1:20 pm",
+                    "imageUrl": "",
+                    "isChecked": true,
+                  },
+                  {
+                    "fullName": "Alex Brown",
+                    "message": "Please check the report.",
+                    "date": "3:00 pm",
+                    "imageUrl": "",
+                    "isChecked": false,
+                    "unreadCount": "12",
+                  },
+                ],
+              ),
+
+              GestureDetector(
+                onTap: () {
+                  // action when tapped
+                  print("Show All clicked");
+                },
+                child: const Text(
+                  "Show All",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF0048FF), // text color
+                    decoration: TextDecoration.underline, // underline
+                    decorationColor: Color(0xFF0048FF), // underline color
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              const Text(
+                "Rating & reviews",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              _buildRatingsList(context, ratingsList),
+
+              const SizedBox(height: 20),
+
+// Example rating rows
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Plans & Subscription",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // 👈 Align children at the top
+                children: [
+                  // First Column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Current Subscription",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 4), // spacing between the two rows
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(
+                                1), // space between border and icon
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0XFF1E1E1E), // border color
+                                width: 1, // border thickness
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.priority_high,
+                              size: 10,
+                              color: Color(0xFF1E1E1E),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Text(
+                            "12", // 👈 replace with dynamic variable for days left
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0XFF0048FF),
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Text(
+                            "days left",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0XFF0048FF),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.32),
+
+                  // Wrap Basic in a Column to respect top alignment
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Basic",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0048FF),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              Column(
+                children: planCards,
+              ),
+
+              const SizedBox(height: 15),
+
+              Column(
+                children: [
+                  const SizedBox(height: 4), // spacing between rows
+
+                  const SizedBox(height: 15),
+                  billingHistorySection(context),
+                  const SizedBox(height: 20),
+                ],
+              ),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "Links",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
                       fontSize: 16,
                     ),
                   ),
-                  Text(
-                    user?.name ?? 'Agent',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Individual Agent',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Stats section
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard('Active Listings', '12', Icons.home, Colors.blue),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard('Pending Offers', '5', Icons.pending, Colors.orange),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 12),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard('Total Sales', '\$2.4M', Icons.attach_money, Colors.green),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard('Client Reviews', '4.8', Icons.star, Colors.purple),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Quick actions
-            const Text(
-              'Quick Actions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.5,
+
+              Column(
                 children: [
-                  _buildActionCard(
-                    'Add New Listing',
-                    Icons.add_home,
-                    Colors.green,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Add New Listing feature coming soon')),
-                    ),
-                  ),
-                  _buildActionCard(
-                    'Manage Listings',
-                    Icons.manage_accounts,
-                    Colors.blue,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Manage Listings feature coming soon')),
-                    ),
-                  ),
-                  _buildActionCard(
-                    'View Clients',
-                    Icons.people,
-                    Colors.purple,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('View Clients feature coming soon')),
-                    ),
-                  ),
-                  _buildActionCard(
-                    'Analytics',
-                    Icons.analytics,
-                    Colors.orange,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Analytics feature coming soon')),
-                    ),
+                  AddSocialAccountWidget(
+                    onSubmit: (name, url) {
+                      // Handle the submitted data here
+                      print('Name: $name');
+                      print('URL: $url');
+                    },
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: color, size: 20),
-                const Spacer(),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 32,
-                color: color,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              // ---------------------------------
             ],
           ),
         ),
       ),
     );
   }
+}
+
+class AgentPlanSection extends StatelessWidget {
+  final String planTitle;
+  final String planDescription;
+  final List<PlanStat> stats; // list of dynamic stat items
+
+  const AgentPlanSection({
+    super.key,
+    required this.planTitle,
+    required this.planDescription,
+    required this.stats,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+      width: screenWidth * 0.76,
+      height: 115,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                "assets/serverProviderBackground.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.4),
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 55, top: 15, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    planTitle,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: screenWidth * 0.76 * 0.5,
+                    child: Text(
+                      planDescription,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: stats
+                        .map(
+                          (stat) => _PlanStatRowItem(
+                            icon: stat.icon,
+                            value: stat.value,
+                            label: stat.label,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Data model for each stat
+class PlanStat {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  PlanStat({required this.icon, required this.value, required this.label});
+}
+
+/// 👇 Each column item is now horizontal
+class _PlanStatRowItem extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _PlanStatRowItem({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white, size: 14),
+        const SizedBox(width: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+final List<AgentPlanSection> planCards = [
+  AgentPlanSection(
+    planTitle: "Basic",
+    planDescription: "For Freelancers or Self-employed Providers",
+    stats: [
+      PlanStat(icon: Icons.list_alt_sharp, value: "4", label: "Listings"),
+      PlanStat(icon: Icons.calendar_month_outlined, value: "5", label: "Days"),
+      PlanStat(icon: Icons.currency_exchange, value: "\$", label: "19"),
+    ],
+  ),
+  AgentPlanSection(
+    planTitle: "Standard",
+    planDescription: "Ideal for Small Agencies with Moderate Needs",
+    stats: [
+      PlanStat(icon: Icons.list_alt_sharp, value: "12", label: "Listings"),
+      PlanStat(icon: Icons.calendar_month_outlined, value: "30", label: "Days"),
+      PlanStat(icon: Icons.currency_exchange, value: "\$", label: "49"),
+    ],
+  ),
+  AgentPlanSection(
+    planTitle: "Unlimited",
+    planDescription: "For High-volume Professionals & Teams",
+    stats: [
+      PlanStat(icon: Icons.list_alt_sharp, value: "12", label: "Listings"),
+      PlanStat(icon: Icons.calendar_month_outlined, value: "30", label: "Days"),
+      PlanStat(icon: Icons.currency_exchange, value: "\$", label: "49"),
+    ],
+  ),
+];
+
+Widget _buildRatingRow({
+  required BuildContext context,
+  required String imageUrl,
+  required String fullName,
+  required String message,
+  double rating = 4.5, // static rating
+}) {
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: SizedBox(
+      width: screenWidth * 0.95, // 95% of screen width
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Circular image container with border
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF0048FF), width: 1),
+            ),
+            child: ClipOval(
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Text column and stars
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top row: title + stars
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        fullName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                    ),
+                    _buildStars(rating), // stars on the extreme right
+                  ],
+                ),
+                const SizedBox(height: 2),
+                // Second row: subtitle with ellipsis
+                Text(
+                  message,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF1E1E1E),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis, // 👈 add this
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildStars(double rating) {
+  final int full = rating.floor();
+  final bool hasHalf = (rating - full) >= 0.5;
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: List.generate(5, (i) {
+      if (i < full) {
+        return const Icon(Icons.star, color: Colors.amber, size: 18);
+      } else if (i == full && hasHalf) {
+        return const Icon(Icons.star_half, color: Colors.amber, size: 18);
+      } else {
+        return const Icon(Icons.star_border, color: Colors.amber, size: 18);
+      }
+    }),
+  );
+}
+
+final List<Map<String, dynamic>> ratingsList = [
+  {
+    "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
+    "fullName": "John Doe",
+    "message": "Great service, highly recommended!",
+    "rating": 4.5,
+  },
+  {
+    "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
+    "fullName": "Jane Smith",
+    "message": "Very responsive and professional.",
+    "rating": 5.0,
+  },
+  {
+    "imageUrl": "https://i.imgur.com/6JfO9hZ.jpeg",
+    "fullName": "Alex Brown",
+    "message": "Good experience overall.",
+    "rating": 4.0,
+  },
+];
+
+Widget _buildRatingsList(
+    BuildContext context, List<Map<String, dynamic>> ratings) {
+  return Column(
+    children: ratings.map((item) {
+      return _buildRatingRow(
+        context: context,
+        imageUrl: item['imageUrl'],
+        fullName: item['fullName'],
+        message: item['message'],
+        rating: item['rating'],
+      );
+    }).toList(),
+  );
+}
+
+// Payment model
+class Payment {
+  final String totalPaid; // left text
+  final String dateTop; // top text on right column
+  final String dateBottom; // bottom text on right column
+
+  Payment({
+    required this.totalPaid,
+    required this.dateTop,
+    required this.dateBottom,
+  });
+}
+
+// Sample payment list
+final List<Payment> payments = [
+  Payment(totalPaid: "900", dateTop: "12 Oct 2025", dateBottom: "12:32 pm"),
+  Payment(totalPaid: "700", dateTop: "15 Oct 2025", dateBottom: "12:32 pm"),
+  Payment(totalPaid: "1500", dateTop: "20 Oct 2025", dateBottom: "12:32 pm"),
+];
+
+// Build each payment row
+Widget buildPaymentRow({
+  required BuildContext context,
+  required String totalPaid,
+  required String dateTop,
+  required String dateBottom,
+  double horizontalPaddingPercent = 0.1,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(
+        horizontal:
+            MediaQuery.of(context).size.width * horizontalPaddingPercent,
+        vertical: 6),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left Column: Date
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              dateTop,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              dateBottom,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+
+        // Right Column: Total Paid (static $ + dynamic value)
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "\$",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+            Text(
+              totalPaid, // dynamic number only
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+// Billing History Section (headers swapped)
+// Billing History Section (aligned like Payment row)
+Widget billingHistorySection(BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  return Column(
+    children: [
+      // Title with gradient lines
+      Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.27,
+              height: 1,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0x00666666),
+                      Color(0xFF666666),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              "Billing History",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: screenWidth * 0.27,
+              height: 1,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF666666),
+                      Color(0x00666666),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      // Header row: align like the payment rows
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              "Date",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+            Text(
+              "Total Paid",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1E1E1E),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      const SizedBox(height: 4),
+
+      // Payment rows (aligned same way)
+      Column(
+        children: payments
+            .map((p) => buildPaymentRow(
+                  context: context,
+                  totalPaid: p.totalPaid,
+                  dateTop: p.dateTop,
+                  dateBottom: p.dateBottom,
+                  horizontalPaddingPercent: 0.1, // same as header
+                ))
+            .toList(),
+      ),
+    ],
+  );
 }

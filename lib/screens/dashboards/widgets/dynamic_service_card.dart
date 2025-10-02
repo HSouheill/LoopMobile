@@ -75,12 +75,10 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
               const SizedBox(width: 12),
 
               // Middle & right columns or Cancel/Promote buttons
-              //! Maybe we have to add the slider
               Expanded(
                 child: boostPressed
                     ? Row(
                         children: [
-                          // Cancel button on the left
                           Expanded(
                             child: SizedBox(
                               width: double.infinity,
@@ -88,7 +86,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 buttonText: 'Cancel',
                                 onTap: () {
                                   setState(() {
-                                    boostPressed = false; // revert back
+                                    boostPressed = false;
                                   });
                                 },
                                 padding:
@@ -102,15 +100,12 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          // Promote button on the right
                           Expanded(
                             child: SizedBox(
                               width: double.infinity,
                               child: DynamicGradientButton(
                                 buttonText: 'Promote',
-                                onTap: () {
-                                  // TODO: Add your promote logic here
-                                },
+                                onTap: () {},
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8),
                               ),
@@ -120,7 +115,6 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                       )
                     : Row(
                         children: [
-                          // Middle column: Sold & Delete
                           Expanded(
                             child: Column(
                               children: [
@@ -157,8 +151,6 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                             ),
                           ),
                           const SizedBox(width: 12),
-
-                          // Right column: Boost & Edit
                           Expanded(
                             child: Column(
                               children: [
@@ -198,6 +190,25 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Wrapper widget to generate multiple cards
+class DynamicServiceCardList extends StatelessWidget {
+  final List<Map<String, String>> items;
+
+  const DynamicServiceCardList({super.key, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: items
+          .map((item) => DynamicServiceCard(
+                leftText: item['leftText'] ?? '',
+                imageUrl: item['imageUrl'] ?? '',
+              ))
+          .toList(),
     );
   }
 }

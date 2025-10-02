@@ -12,8 +12,18 @@ class StatCard extends StatelessWidget {
       width: 82,
       padding: const EdgeInsets.symmetric(vertical: 9),
       decoration: BoxDecoration(
-        color: const Color(0xFF0048FF),
         borderRadius: BorderRadius.circular(12),
+        gradient: const RadialGradient(
+          center: Alignment(1.018, 1.3934),
+          radius: 2.4344,
+          colors: [
+            Color(0xFF82A6FF),
+            Color(0xFF487CFF),
+            Color(0xFF0048FF),
+            Color(0xFF0048FF),
+          ],
+          stops: [0.0, 0.3221, 0.5212, 0.2],
+        ),
       ),
       child: Column(
         children: [
@@ -36,6 +46,30 @@ class StatCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// 🔹 Wrapper widget to generate multiple StatCards
+class StatCardList extends StatelessWidget {
+  final List<Map<String, String>> items;
+
+  const StatCardList({super.key, required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: items.asMap().entries.map((entry) {
+        final index = entry.key;
+        final item = entry.value;
+        return Padding(
+          padding: EdgeInsets.only(right: index == items.length - 1 ? 0 : 10),
+          child: StatCard(
+            title: item['title'] ?? '',
+            value: item['value'] ?? '',
+          ),
+        );
+      }).toList(),
     );
   }
 }
