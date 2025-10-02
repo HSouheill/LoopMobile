@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/review.dart';
+import '../environment.dart';
 
 class ReviewCardWidget extends StatelessWidget {
   final Review review;
@@ -41,7 +42,7 @@ class ReviewCardWidget extends StatelessWidget {
                   radius: 20,
                   backgroundColor: Colors.grey[300],
                   backgroundImage: review.userProfileImage.isNotEmpty
-                      ? NetworkImage(review.userProfileImage)
+                      ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
                       : null,
                   child: review.userProfileImage.isEmpty
                       ? const Icon(Icons.person, color: Colors.grey)

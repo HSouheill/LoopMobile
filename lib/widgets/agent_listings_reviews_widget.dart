@@ -129,6 +129,40 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const Spacer(),
+            if (widget.agent.reviews.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/all-reviews',
+                    arguments: {
+                      'objectId': widget.agent.id,
+                      'table': 'user',
+                      'objectName': widget.agent.fullName,
+                    },
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'See All ${widget.agent.reviewCount} Reviews',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.blue,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 16),
@@ -179,45 +213,6 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
               // Show up to 3 reviews
               ...widget.agent.reviews.take(3).map((review) => _buildReviewCard(context, review)),
               
-              // See All Reviews button
-              if (widget.agent.reviews.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/all-reviews',
-                          arguments: {
-                            'objectId': widget.agent.id,
-                            'table': 'user',
-                            'objectName': widget.agent.fullName,
-                          },
-                        );
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'See All ${widget.agent.reviewCount} Reviews',
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.blue,
-                            size: 14,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
           
