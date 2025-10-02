@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/review.dart';
+import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;
 
 class AgentListingsReviewsWidget extends StatelessWidget {
@@ -213,7 +214,7 @@ class AgentListingsReviewsWidget extends StatelessWidget {
             radius: 20,
             backgroundColor: Colors.grey[300],
             backgroundImage: review.userProfileImage.isNotEmpty
-                ? NetworkImage(review.userProfileImage)
+                ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
                 : null,
             child: review.userProfileImage.isEmpty
                 ? const Icon(Icons.person, color: Colors.grey, size: 20)
