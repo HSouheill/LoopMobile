@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widgets/recommended_agents_widget.dart';
+import '../../widgets/agent_listings_reviews_widget.dart';
+import '../../models/review.dart';
+import '../../services/agent_service.dart';
 
 class SingleAgentPage extends StatefulWidget {
   final Agent agent;
@@ -14,6 +17,9 @@ class SingleAgentPage extends StatefulWidget {
 class _SingleAgentPageState extends State<SingleAgentPage> {
   PageController _pageController = PageController();
   bool _isExpanded = false;
+  AgentWithListingsAndReviews? _agentData;
+  bool _isLoading = true;
+  String? _error;
 
   // Get all images from the agent (for now just the profile image, but can be extended)
   List<String> get _allImages {
@@ -25,9 +31,39 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadAgentData();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadAgentData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      // Use the agent ID from the agent object
+      final agentId = widget.agent.id;
+      
+      final agentData = await AgentService.getAgentWithReviewsAndListings(agentId);
+      
+      setState(() {
+        _agentData = agentData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   // helper to render stars similar to screenshot (five yellow stars; partial support)
@@ -334,6 +370,13 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                         ),
                       ],
                     ),
+
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
+
+                    // Agent Listings and Reviews Section
+                    _buildAgentListingsAndReviews(),
                   ],
                 ),
               ),
@@ -407,4 +450,57 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
       ],
     );
   }
+
+  Widget _buildAgentListingsAndReviews() {
+    if (_isLoading) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                'Failed to load agent data',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadAgentData,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_agentData == null) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: Text('No agent data available'),
+        ),
+      );
+    }
+
+    return AgentListingsReviewsWidget(agent: _agentData!);
+  }
+
 }

@@ -5,6 +5,7 @@ import 'widgets/dynamic_service_card.dart';
 import './widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/statistics_card.dart';
+import '../../environment.dart';
 
 class ServiceProviderIndividualDashboardPage extends StatefulWidget {
   const ServiceProviderIndividualDashboardPage({super.key});
@@ -295,7 +296,7 @@ class _ServiceProviderIndividualDashboardPageState
                     child: user!.profileImage != null &&
                             user!.profileImage!.isNotEmpty
                         ? Image.network(
-                            'http://localhost:3000/api/assets/${user!.profileImage!}',
+                            '${Environment.apiUrl}assets/${user!.profileImage!}',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset(

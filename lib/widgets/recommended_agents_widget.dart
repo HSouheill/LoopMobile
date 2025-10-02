@@ -6,6 +6,7 @@ import '../../screens/agents/single_agent_page.dart';
 
 // Data model for an agent
 class Agent {
+  final String id;
   final String imageUrl;
   final String name;
   final int propertyCount;
@@ -15,6 +16,7 @@ class Agent {
   final String? customText;
 
   Agent({
+    required this.id,
     required this.imageUrl,
     required this.name,
     required this.propertyCount,
@@ -31,6 +33,7 @@ class Agent {
     
     return Agent(
       // Handle the actual backend field names
+      id: _getStringValue(json, ['_id', 'id']) ?? '',
       imageUrl: _buildImageUrl(_getStringValue(json, ['profileImage', 'imageUrl', 'image_url', 'avatar'])) ?? '',
       name: _buildFullName(json) ?? _getStringValue(json, ['name', 'fullName', 'agentName']) ?? 'Unknown Agent',
       propertyCount: _getIntValue(json, ['propertyCount', 'property_count', 'properties']) ?? 0,
