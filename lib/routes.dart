@@ -39,6 +39,7 @@ import 'screens/profile/profile-dashboard.dart';
 import 'screens/dashboards/service_provider_individual_dashboard_screens/edit_my_service.dart';
 import 'screens/dashboards/service_provider_individual_dashboard_screens/add_service.dart';
 import 'screens/dashboards/agent_individual_dashboard_screens/inactive_listings_screen.dart';
+import 'screens/dashboards/agent_company_dashboard_screens/add_new_agent_screen.dart';
 import 'screens/reviews/all_reviews_screen.dart';
 import 'screens/search/search_results_page.dart';
 import 'screens/search/advanced_filters_page.dart';
@@ -97,6 +98,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/edit-my-service': (context) => const EditMyService(),
     '/add-service': (context) => const AddService(),
     '/inactive-listings': (context) => const InactiveListings(),
+    '/add-new-agent': (context) => const AddNewAgentScreen(),
     '/all-reviews': (context) {
       final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       return AllReviewsScreen(

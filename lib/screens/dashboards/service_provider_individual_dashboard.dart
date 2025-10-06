@@ -74,7 +74,7 @@ class _ServiceProviderIndividualDashboardPageState
                   ),
                 ),
 
-                const SizedBox(height: 60), // space for avatar
+                const SizedBox(height: 50), // space for avatar
 
                 // User info + button
                 userInfoAndEditButton(district, governance, context),
