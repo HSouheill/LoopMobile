@@ -1,7 +1,78 @@
 import 'package:flutter/material.dart';
+import '../screens/search/search_results_page.dart';
+import '../screens/search/advanced_filters_page.dart';
 
-class SearchAndCategoriesWidget extends StatelessWidget {
+class SearchAndCategoriesWidget extends StatefulWidget {
   const SearchAndCategoriesWidget({super.key});
+
+  @override
+  State<SearchAndCategoriesWidget> createState() => _SearchAndCategoriesWidgetState();
+}
+
+class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _performSearch() {
+    final query = _searchController.text.trim();
+    if (query.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            initialQuery: query,
+          ),
+        ),
+      );
+    } else {
+      // If no query, show a message or do nothing
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a search term'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _openAdvancedFilters() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdvancedFiltersPage(
+          initialQuery: _searchController.text.trim(),
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            initialQuery: result['query'],
+            initialFilters: result['filters'],
+          ),
+        ),
+      );
+    }
+  }
+
+  void _navigateToCategory(String category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchResultsPage(
+          initialCategory: category,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +94,9 @@ class SearchAndCategoriesWidget extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     cursorColor: Colors.blue,
+                    onSubmitted: (_) => _performSearch(),
                     decoration: const InputDecoration(
                       hintText: 'Search...',
                       // remove all borders
@@ -42,9 +115,7 @@ class SearchAndCategoriesWidget extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.tune, color: Colors.black87),
-                  onPressed: () {
-                    // Handle filter button press
-                  },
+                  onPressed: _openAdvancedFilters,
                 ),
               ],
             ),
@@ -62,15 +133,15 @@ class SearchAndCategoriesWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildCategoryIcon(
-                  Icons.house_siding, 'Chalets', Colors.blue, Colors.white),
+                  Icons.house_siding, 'Chalets', Colors.blue, Colors.white, 'chalet'),
               _buildCategoryIcon(
-                  Icons.villa, 'Villas', Colors.blue, Colors.white),
+                  Icons.villa, 'Villas', Colors.blue, Colors.white, 'villa'),
               _buildCategoryIcon(
-                  Icons.apartment, 'Apartments', Colors.blue, Colors.white),
+                  Icons.apartment, 'Apartments', Colors.blue, Colors.white, 'apartment'),
               _buildCategoryIcon(
-                  Icons.landscape, 'Land', Colors.blue, Colors.white),
+                  Icons.landscape, 'Land', Colors.blue, Colors.white, 'land'),
               _buildCategoryIcon(
-                  Icons.business, 'Commercial', Colors.blue, Colors.white),
+                  Icons.business, 'Commercial', Colors.blue, Colors.white, 'commercial'),
             ],
           ),
         ],
@@ -79,23 +150,26 @@ class SearchAndCategoriesWidget extends StatelessWidget {
   }
 
   Widget _buildCategoryIcon(
-      IconData icon, String label, Color backgroundColor, Color iconColor) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12.0),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: backgroundColor,
+      IconData icon, String label, Color backgroundColor, Color iconColor, String category) {
+    return GestureDetector(
+      onTap: () => _navigateToCategory(category),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: backgroundColor,
+            ),
+            child: Icon(icon, color: iconColor, size: 30),
           ),
-          child: Icon(icon, color: iconColor, size: 30),
-        ),
-        const SizedBox(height: 8.0),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12.0, color: Colors.black87),
-        ),
-      ],
+          const SizedBox(height: 8.0),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12.0, color: Colors.black87),
+          ),
+        ],
+      ),
     );
   }
 }

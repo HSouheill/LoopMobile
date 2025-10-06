@@ -91,6 +91,68 @@ class ListingService {
       throw Exception('Error fetching listings: $e');
     }
   }
+
+  static Future<ListingsResponse> searchListings({
+    String query = '',
+    String? category,
+    int page = 1,
+    int limit = 20,
+    String sort = 'score',
+    Map<String, dynamic>? filters,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'q': query,
+        'page': page.toString(),
+        'limit': limit.toString(),
+        'sort': sort,
+        if (category != null) 'type': category,
+      };
+
+      // Add filter parameters
+      if (filters != null) {
+        if (filters['listingFor'] != null) {
+          queryParams['listingFor'] = filters['listingFor'].toString();
+        }
+        if (filters['city'] != null) {
+          queryParams['city'] = filters['city'].toString();
+        }
+        if (filters['minPrice'] != null) {
+          queryParams['minPrice'] = filters['minPrice'].toString();
+        }
+        if (filters['maxPrice'] != null) {
+          queryParams['maxPrice'] = filters['maxPrice'].toString();
+        }
+        if (filters['condition'] != null) {
+          queryParams['condition'] = filters['condition'].toString();
+        }
+        // Add amenity filters
+        final amenityFilters = <String>[];
+        if (filters['parking'] == true) amenityFilters.add('parking');
+        if (filters['elevator'] == true) amenityFilters.add('elevator');
+        if (filters['pool'] == true) amenityFilters.add('sharedPool');
+        if (filters['garden'] == true) amenityFilters.add('garden');
+        if (filters['security'] == true) amenityFilters.add('security');
+        if (filters['furnished'] == true) amenityFilters.add('furnished');
+        
+        if (amenityFilters.isNotEmpty) {
+          queryParams['amenities'] = amenityFilters.join(',');
+        }
+      }
+      
+      final uri = Uri.parse('${Environment.apiUrl}listings/search').replace(queryParameters: queryParams);
+      final response = await http.get(uri);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ListingsResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to search listings: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error searching listings: $e');
+    }
+  }
 }
 
 enum ListingCategory {

@@ -40,6 +40,8 @@ import 'screens/dashboards/service_provider_individual_dashboard_screens/edit_my
 import 'screens/dashboards/service_provider_individual_dashboard_screens/add_service.dart';
 import 'screens/dashboards/agent_individual_dashboard_screens/inactive_listings_screen.dart';
 import 'screens/reviews/all_reviews_screen.dart';
+import 'screens/search/search_results_page.dart';
+import 'screens/search/advanced_filters_page.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -101,6 +103,21 @@ Map<String, WidgetBuilder> appRoutes() {
         objectId: args['objectId'],
         table: args['table'],
         objectName: args['objectName'],
+      );
+    },
+    '/search-results': (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      return SearchResultsPage(
+        initialQuery: args?['query'],
+        initialCategory: args?['category'],
+        initialFilters: args?['filters'],
+      );
+    },
+    '/advanced-filters': (context) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      return AdvancedFiltersPage(
+        initialQuery: args?['query'] ?? '',
+        initialFilters: args?['filters'],
       );
     },
   };
