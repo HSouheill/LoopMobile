@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
-import 'widgets/dynamic_service_card.dart';
 import './widgets/message_card.dart';
-import './widgets/add_social_account_card.dart';
 import './widgets/statistics_card.dart';
+import '../../environment.dart';
+import './service_provider_company_dashboard_screens/application_screen.dart';
 
 class ServiceProviderCompanyDashboardPage extends StatefulWidget {
   const ServiceProviderCompanyDashboardPage({super.key});
@@ -39,6 +39,8 @@ class _ServiceProviderCompanyDashboardPageState
       );
     }
 
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     // Split location into district and governance if it has a comma
     String district = '';
     String governance = '';
@@ -49,6 +51,39 @@ class _ServiceProviderCompanyDashboardPageState
     } else if (user!.location != null) {
       district = user!.location!;
     }
+
+    // Example dynamic job list
+    final jobs = [
+      {
+        "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
+        "title": "Software Engineer",
+        "contractType": "Full-Time",
+        "time": "Experience: 3+ years"
+      },
+      {
+        "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
+        "title": "UI/UX Designer",
+        "contractType": "Part-Time",
+        "time": "Remote work allowed"
+      },
+    ];
+
+    final applicationsList = [
+      {
+        "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
+        "name": "John Doe",
+        "experienceValue": "5",
+        "experienceUnit": "years",
+        "pdfNumber": "PDF-12345",
+      },
+      {
+        "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
+        "name": "Jane Smith",
+        "experienceValue": "2",
+        "experienceUnit": "years",
+        "pdfNumber": "PDF-98765",
+      },
+    ];
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -78,14 +113,39 @@ class _ServiceProviderCompanyDashboardPageState
                 // User info + button
                 userInfoAndEditButton(district, governance, context),
 
-                // ✅ New Active Plan section
+                // ✅ Active Plan Section
                 const UserPlanSection(),
 
                 // ✅ PDF Uploaded Section
                 const PdfUploadedSection(),
 
+                const SizedBox(height: 10),
+
+                // "+ Add New PDF" Button
+                Center(
+                  child: DynamicGradientButton(
+                    buttonText: "+ Add New PDF",
+                    onTap: () {
+                      Navigator.pushNamed(context, '/upload-pdf');
+                    },
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    textSize: 14,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                //! Pierre has to implement Job screen
+                // ✅ List New Jobs Section
+                listNewJobsSection(context, screenWidth, jobs),
+
+                //! Pierre has to implement Application screen
+                applicationsSection(context, screenWidth, applicationsList),
+
                 const SizedBox(height: 30),
 
+                // Messages Title
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
@@ -102,10 +162,10 @@ class _ServiceProviderCompanyDashboardPageState
 
                 const SizedBox(height: 15),
 
+                // Search & Divider
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🔎 Search Row with padding
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 26, vertical: 2),
@@ -119,20 +179,17 @@ class _ServiceProviderCompanyDashboardPageState
                               decoration: const InputDecoration(
                                 hintText: "Search ...",
                                 hintStyle: TextStyle(
-                                  color: Color(
-                                      0xFF0048FF), // ✅ custom placeholder color
+                                  color: Color(0xFF0048FF),
                                   fontSize: 14,
                                 ),
                                 border: InputBorder.none,
-                                isDense: true, // ✅ compact
+                                isDense: true,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-
-                    // Divider with less spacing
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 18.0),
                       child: Divider(
@@ -145,8 +202,8 @@ class _ServiceProviderCompanyDashboardPageState
                 ),
 
                 const SizedBox(height: 15),
-                // Dynamic Message Cards
 
+                // Message Cards
                 MessageCardList(
                   items: [
                     {
@@ -155,7 +212,7 @@ class _ServiceProviderCompanyDashboardPageState
                       "date": "12:45 am",
                       "imageUrl": "",
                       "isChecked": false,
-                      "unreadCount": "65", // shown only if isChecked == false
+                      "unreadCount": "65",
                     },
                     {
                       "fullName": "Jane Smith",
@@ -171,6 +228,7 @@ class _ServiceProviderCompanyDashboardPageState
               ],
             ),
 
+            // Back button
             Positioned(
               top: 30,
               left: 16,
@@ -181,7 +239,7 @@ class _ServiceProviderCompanyDashboardPageState
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
-                      color: Color(0xFF0048FF),
+                      color: const Color(0xFF0048FF),
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(50.0),
@@ -222,7 +280,7 @@ class _ServiceProviderCompanyDashboardPageState
                     child: user!.profileImage != null &&
                             user!.profileImage!.isNotEmpty
                         ? Image.network(
-                            'http://localhost:3000/api/assets/${user!.profileImage!}',
+                            '${Environment.apiUrl}assets/${user!.profileImage!}',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset(
@@ -250,16 +308,14 @@ class _ServiceProviderCompanyDashboardPageState
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // vertical alignment
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Left column: user info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // fit to content height
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // First row: Hi, firstname lastname
-                //! It is only displaying firstName, we need to display lastname also
                 Text(
                   'Hi, ${user!.fullName}',
                   style: const TextStyle(
@@ -268,16 +324,10 @@ class _ServiceProviderCompanyDashboardPageState
                   ),
                 ),
                 const SizedBox(height: 8),
-
-                // Second row: district + governance
                 if (district.isNotEmpty)
                   Row(
                     children: [
-                      const Icon(
-                        Icons.business,
-                        size: 12,
-                        color: Colors.grey,
-                      ),
+                      const Icon(Icons.business, size: 12, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
                         governance.isNotEmpty
@@ -288,16 +338,11 @@ class _ServiceProviderCompanyDashboardPageState
                       ),
                     ],
                   ),
-
-                // Third row: city
                 if (user!.city != null && user!.city!.isNotEmpty)
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 12,
-                        color: Colors.grey,
-                      ),
+                      const Icon(Icons.location_on_outlined,
+                          size: 12, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
                         user!.city!,
@@ -317,8 +362,8 @@ class _ServiceProviderCompanyDashboardPageState
               onTap: () {
                 Navigator.pushNamed(context, '/profile');
               },
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 17, vertical: 5.5), // optional
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 17, vertical: 5.5),
             ),
           ),
         ],
@@ -335,7 +380,6 @@ class UserPlanSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Active Plan Card
         Container(
           margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 6),
           width: 250,
@@ -347,15 +391,12 @@ class UserPlanSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: Stack(
               children: [
-                // Background image (now clipped to rounded corners)
                 Positioned.fill(
                   child: Image.asset(
                     "assets/serverProviderBackground.png",
                     fit: BoxFit.cover,
                   ),
                 ),
-
-                // Optional gradient overlay for readability
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -370,8 +411,6 @@ class UserPlanSection extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // Text info
                 Padding(
                   padding: const EdgeInsets.only(left: 75, top: 15),
                   child: Column(
@@ -408,8 +447,6 @@ class UserPlanSection extends StatelessWidget {
             ),
           ),
         ),
-
-        // Stats row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
@@ -421,14 +458,13 @@ class UserPlanSection extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 20),
       ],
     );
   }
 }
 
-// ✅ PDF Uploaded Section
+/// ✅ PDF Uploaded Section
 class PdfUploadedSection extends StatelessWidget {
   const PdfUploadedSection({super.key});
 
@@ -439,7 +475,7 @@ class PdfUploadedSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // align title left
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             "PDF Uploaded",
@@ -450,24 +486,30 @@ class PdfUploadedSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
-
-          // Card-like container centered
           Center(
             child: Material(
-              elevation: 2, // shadow
+              elevation: 2,
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,
               child: Container(
-                width: screenWidth * 0.75, // 👈 take 3/4 of screen width
+                width: screenWidth * 0.75,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF0048FF)),
+                  border: Border.all(color: const Color(0x570048FF)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.6),
+                      offset: const Offset(0, 4),
+                      blurRadius: 9.4,
+                      spreadRadius: -1,
+                    ),
+                  ],
                 ),
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween, // spread content
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: const [
                     Row(
                       children: [
@@ -500,4 +542,256 @@ class PdfUploadedSection extends StatelessWidget {
       ),
     );
   }
+}
+
+/// ✅ List New Jobs Section
+Widget listNewJobsSection(
+    BuildContext context, double screenWidth, List<Map<String, String>> jobs) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "List New Jobs",
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Column(
+          children: jobs.map((job) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Center(
+                child: Material(
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  child: Container(
+                    width: screenWidth * 0.90,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0x570048FF)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.6),
+                          offset: const Offset(0, 4),
+                          blurRadius: 9.4,
+                          spreadRadius: -1,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: NetworkImage(job['imageUrl'] ??
+                              'https://via.placeholder.com/50'),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                job['title'] ?? '',
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(height: 0),
+                              Row(
+                                children: [
+                                  const Text(
+                                    "Contract Type: ",
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w300,
+                                        color: Color(0xFF1E1E1E)),
+                                  ),
+                                  Text(
+                                    job['contractType'] ?? '',
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 0),
+                              Text(
+                                job['time'] ?? '',
+                                style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: DynamicGradientButton(
+            buttonText: "Post New Job",
+            onTap: () {
+              Navigator.pushNamed(context, '/all-jobs');
+            },
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            textSize: 14,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+/// ✅ Applications Section
+Widget applicationsSection(
+    BuildContext context, double screenWidth, List<Map<String, String>> jobs) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Applications",
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Column(
+          children: jobs.map((job) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Center(
+                child: Material(
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  child: Container(
+                    width: screenWidth * 0.90,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0x570048FF)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.6),
+                          offset: const Offset(0, 4),
+                          blurRadius: 9.4,
+                          spreadRadius: -1,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf,
+                          size: 40,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Name instead of Title
+                              Text(
+                                job['name'] ?? '',
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600),
+                              ),
+
+                              // Experience Row
+                              Row(
+                                children: [
+                                  const Text(
+                                    "Experience: ",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w300,
+                                      color: Color(0xFF1E1E1E),
+                                    ),
+                                  ),
+                                  // 🔹 First dynamic text (e.g. "Senior")
+                                  Text(
+                                    job['experienceValue'] ??
+                                        '', // <-- add a new key like "level"
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  // 🔹 Existing experience (e.g. "5 years")
+                                  Text(
+                                    job['experienceUnit'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // PDF Number
+                              Text(
+                                "PDF Number: ${job['pdfNumber'] ?? ''}",
+                                style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: DynamicGradientButton(
+            buttonText: "View All",
+            onTap: () {
+              Navigator.pushNamed(context, '/applications'); // ✅ your route
+            },
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+            textSize: 14,
+          ),
+        ),
+      ],
+    ),
+  );
 }
