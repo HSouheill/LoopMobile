@@ -1,147 +1,242 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import 'widgets/dynamic_service_card.dart';
+import './widgets/message_card.dart';
+import './widgets/add_social_account_card.dart';
+import './widgets/statistics_card.dart';
 
-class ServiceProviderCompanyDashboardPage extends StatelessWidget {
+class ServiceProviderCompanyDashboardPage extends StatefulWidget {
   const ServiceProviderCompanyDashboardPage({super.key});
 
   @override
+  State<ServiceProviderCompanyDashboardPage> createState() =>
+      _ServiceProviderCompanyDashboardPageState();
+}
+
+class _ServiceProviderCompanyDashboardPageState
+    extends State<ServiceProviderCompanyDashboardPage> {
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    await AuthService.checkAuthStatus();
+    setState(() {
+      user = AuthService.currentUser;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = AuthService.currentUser;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Split location into district and governance if it has a comma
+    String district = '';
+    String governance = '';
+    if (user!.location != null && user!.location!.contains(',')) {
+      final parts = user!.location!.split(',');
+      district = parts[0].trim();
+      governance = parts[1].trim();
+    } else if (user!.location != null) {
+      district = user!.location!;
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Service Company Dashboard'),
-        backgroundColor: Colors.deepOrange,
-        foregroundColor: Colors.white,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Stack(
+          clipBehavior: Clip.none,
           children: [
-            // Welcome section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.deepOrange.shade400, Colors.deepOrange.shade600],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome back,',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    user?.name ?? 'Service Company',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Service Provider Company',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Stats section
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: _buildStatCard('Team Members', '18', Icons.people, Colors.blue),
+                // AppBar background
+                SizedBox(
+                  height: 130,
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image:
+                            AssetImage("assets/serverProviderBackground.png"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard('Active Projects', '32', Icons.construction, Colors.green),
+
+                const SizedBox(height: 50), // space for avatar
+
+                // User info + button
+                userInfoAndEditButton(district, governance, context),
+
+                // ✅ New Active Plan section
+                const UserPlanSection(),
+
+                // ✅ PDF Uploaded Section
+                const PdfUploadedSection(),
+
+                const SizedBox(height: 30),
+
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "Messages",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
                 ),
+
+                const SizedBox(height: 15),
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 🔎 Search Row with padding
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 26, vertical: 2),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.search_sharp,
+                              color: Color(0xFF0048FF)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              decoration: const InputDecoration(
+                                hintText: "Search ...",
+                                hintStyle: TextStyle(
+                                  color: Color(
+                                      0xFF0048FF), // ✅ custom placeholder color
+                                  fontSize: 14,
+                                ),
+                                border: InputBorder.none,
+                                isDense: true, // ✅ compact
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Divider with less spacing
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 18.0),
+                      child: Divider(
+                        thickness: 1,
+                        height: 1,
+                        color: Color(0xFF0ACC00),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+                // Dynamic Message Cards
+
+                MessageCardList(
+                  items: [
+                    {
+                      "fullName": "John Doe",
+                      "message": "Hello, how are you?",
+                      "date": "12:45 am",
+                      "imageUrl": "",
+                      "isChecked": false,
+                      "unreadCount": "65", // shown only if isChecked == false
+                    },
+                    {
+                      "fullName": "Jane Smith",
+                      "message": "Let’s meet tomorrow.",
+                      "date": "1:20 pm",
+                      "imageUrl": "",
+                      "isChecked": true,
+                    },
+                  ],
+                ),
+
+                const SizedBox(height: 20),
               ],
             ),
-            
-            const SizedBox(height: 12),
-            
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard('Monthly Revenue', '\$28.5K', Icons.attach_money, Colors.orange),
+
+            Positioned(
+              top: 30,
+              left: 16,
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Color(0xFF0048FF),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Color(0xFF0048FF),
+                      size: 16,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard('Company Rating', '4.8', Icons.star, Colors.purple),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Quick actions
-            const Text(
-              'Company Management',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
-            
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1.5,
-                children: [
-                  _buildActionCard(
-                    'Manage Team',
-                    Icons.group,
-                    Colors.blue,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Manage Team feature coming soon')),
-                    ),
+
+            // Profile avatar overlapping AppBar
+            Positioned(
+              top: 75,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF0048FF),
+                    width: 2,
                   ),
-                  _buildActionCard(
-                    'Project Portfolio',
-                    Icons.folder,
-                    Colors.green,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Project Portfolio feature coming soon')),
-                    ),
+                ),
+                child: ClipOval(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: user!.profileImage != null &&
+                            user!.profileImage!.isNotEmpty
+                        ? Image.network(
+                            'http://localhost:3000/api/assets/${user!.profileImage!}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/defaultProfileImage.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            'assets/defaultProfileImage.png',
+                            fit: BoxFit.cover,
+                          ),
                   ),
-                  _buildActionCard(
-                    'Service Catalog',
-                    Icons.list_alt,
-                    Colors.orange,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Service Catalog feature coming soon')),
-                    ),
-                  ),
-                  _buildActionCard(
-                    'Company Analytics',
-                    Icons.analytics,
-                    Colors.purple,
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Company Analytics feature coming soon')),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -150,68 +245,258 @@ class ServiceProviderCompanyDashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+  Padding userInfoAndEditButton(
+      String district, String governance, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center, // vertical alignment
+        children: [
+          // Left column: user info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // fit to content height
               children: [
-                Icon(icon, color: color, size: 20),
-                const Spacer(),
+                // First row: Hi, firstname lastname
+                //! It is only displaying firstName, we need to display lastname also
                 Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 20,
+                  'Hi, ${user!.fullName}',
+                  style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Second row: district + governance
+                if (district.isNotEmpty)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.business,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        governance.isNotEmpty
+                            ? '$district, $governance'
+                            : district,
+                        style: const TextStyle(
+                            fontSize: 10, color: Color(0xFF0048FF)),
+                      ),
+                    ],
+                  ),
+
+                // Third row: city
+                if (user!.city != null && user!.city!.isNotEmpty)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        user!.city!,
+                        style: const TextStyle(
+                            fontSize: 10, color: Color(0xFF0048FF)),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+
+          // Right: Edit Profile button
+          Center(
+            child: DynamicGradientButton(
+              buttonText: 'Edit Profile',
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 17, vertical: 5.5), // optional
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ✅ Active Plan Section (static)
+class UserPlanSection extends StatelessWidget {
+  const UserPlanSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Active Plan Card
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 6),
+          width: 250,
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Stack(
+              children: [
+                // Background image (now clipped to rounded corners)
+                Positioned.fill(
+                  child: Image.asset(
+                    "assets/serverProviderBackground.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+
+                // Optional gradient overlay for readability
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black.withOpacity(0.4),
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Text info
+                Padding(
+                  padding: const EdgeInsets.only(left: 75, top: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "Active Plan:",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        "Basic",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Valid Until : 06 June 2025",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard(String title, IconData icon, Color color, VoidCallback onTap) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 32,
-                color: color,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
           ),
         ),
+
+        // Stats row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            StatCardList(
+              items: [
+                {"title": "Total Chats:", "value": "12"},
+                {"title": "Profile Views:", "value": "12314"},
+              ],
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+}
+
+// ✅ PDF Uploaded Section
+class PdfUploadedSection extends StatelessWidget {
+  const PdfUploadedSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // align title left
+        children: [
+          const Text(
+            "PDF Uploaded",
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 18,
+              color: Color(0xFF1E1E1E),
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Card-like container centered
+          Center(
+            child: Material(
+              elevation: 2, // shadow
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              child: Container(
+                width: screenWidth * 0.75, // 👈 take 3/4 of screen width
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF0048FF)),
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween, // spread content
+                  children: const [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf,
+                          size: 32,
+                          color: Colors.red,
+                        ),
+                        SizedBox(width: 14),
+                        Text(
+                          "View Portfolio",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 10,
+                      color: Colors.black,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
