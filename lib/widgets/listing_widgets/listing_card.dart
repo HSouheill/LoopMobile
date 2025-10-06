@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
+import '../../screens/listings/single_listing_page.dart';
 
 class ListingCard extends StatelessWidget {
   final PropertyListing listing;
@@ -18,8 +19,12 @@ class ListingCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          // Navigate to listing details page
-          // TODO: Implement navigation to listing details
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SingleListingPage(listing: listing),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12.0),
         child: Column(
