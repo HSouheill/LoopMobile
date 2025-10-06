@@ -307,7 +307,7 @@ class HomePage extends StatelessWidget {
             showSeeAll: true,
             onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
         ],
       ),
     );
