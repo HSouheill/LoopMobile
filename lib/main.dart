@@ -16,6 +16,7 @@ import 'services/service_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
+import 'screens/add_listing/widgets/add_listing_modal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,6 +56,20 @@ class _MyAppState extends State<MyApp> {
       routes: appRoutes(),
       home: const MainScreen(),
     );
+  }
+}
+
+// Custom FloatingActionButton location with adjustable vertical offset
+class _CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  final double offsetFromBottom;
+
+  _CustomFloatingActionButtonLocation(this.offsetFromBottom);
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2;
+    final double fabY = scaffoldGeometry.scaffoldSize.height - scaffoldGeometry.floatingActionButtonSize.height - offsetFromBottom;
+    return Offset(fabX, fabY);
   }
 }
 
@@ -127,6 +142,19 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // Method to show the modal when FAB is clicked
+  void _showAddModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return const AddListingModal();
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -148,7 +176,8 @@ class _MainScreenState extends State<MainScreen> {
         ? (user?.role == 'user' ? null : "Go to Dashboard")
         : "Login";
 
-    return Scaffold(
+      return Scaffold(
+      extendBody: true, // allow overlap with bottomNavigationBar
       appBar: AppHeaderWithRefresh(
         name: headerName,
         location: headerLocation,
@@ -163,6 +192,34 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
       ),
+
+      // ---------- replace previous FloatingActionButton with this ----------
+      floatingActionButton: Material(
+        elevation: 6,
+        color: const Color.fromARGB(255, 67, 91, 171),
+        shape: const RoundedRectangleBorder(
+          // top radius = half the width → perfect semicircle on top
+          borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
+        ),
+        child: InkWell(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+          onTap: _showAddModal,
+          child: const SizedBox(
+            width: 72,   // diameter
+            height: 36,  // half the diameter → gives a top semicircle
+            child: Center(
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      // center it horizontally above the bottom bar with custom vertical offset
+      floatingActionButtonLocation: _CustomFloatingActionButtonLocation(80), // Adjust the 60 value to move up/down
     );
   }
 }
