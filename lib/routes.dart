@@ -43,6 +43,9 @@ import 'screens/dashboards/agent_company_dashboard_screens/add_new_agent_screen.
 import 'screens/reviews/all_reviews_screen.dart';
 import 'screens/search/search_results_page.dart';
 import 'screens/search/advanced_filters_page.dart';
+import 'screens/add_listing/listing_type_selection_page.dart';
+import 'screens/add_listing/property_type_selection_page.dart';
+import 'screens/add_listing/add_listing_form_page.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -122,5 +125,8 @@ Map<String, WidgetBuilder> appRoutes() {
         initialFilters: args?['filters'],
       );
     },
+    '/listing-type-selection': (_) => const ListingTypeSelectionPage(),
+    '/property-type-selection': (_) => const PropertyTypeSelectionPage(),
+    '/add-listing-form': (_) => const AddListingFormPage(),
   };
 }

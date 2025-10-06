@@ -54,7 +54,7 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.orange,
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/add-listing');
+                    Navigator.pushNamed(context, '/listing-type-selection');
                   },
                 ),
                 const SizedBox(height: 15),
@@ -65,7 +65,7 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.green,
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/add-land');
+                    Navigator.pushNamed(context, '/listing-type-selection');
                   },
                 ),
                 const SizedBox(height: 15),
@@ -76,7 +76,7 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.blue,
                   onTap: () {
                     Navigator.pop(context);
-                    // Navigator.pushNamed(context, '/add-property');
+                    Navigator.pushNamed(context, '/listing-type-selection');
                   },
                 ),
               ],

@@ -2,31 +2,34 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../environment.dart';
+import 'auth_service.dart';
 
 class ListingService {
   static final String baseUrl = '${Environment.apiUrl}listings';
-  
+
   static Future<ListingsResponse> getFeaturedListings({int limit = 3}) async {
     try {
-      final url = Uri.parse('$baseUrl/get-all?isFeatured=true&limit=$limit&sort=date_desc');
+      final url = Uri.parse(
+          '$baseUrl/get-all?isFeatured=true&limit=$limit&sort=date_desc');
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ListingsResponse.fromJson(data);
       } else {
-        throw Exception('Failed to load featured listings: ${response.statusCode}');
+        throw Exception(
+            'Failed to load featured listings: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error fetching featured listings: $e');
     }
   }
-  
+
   static Future<ListingsResponse> getNewListings({int limit = 3}) async {
     try {
       final url = Uri.parse('$baseUrl/get-all?limit=$limit&sort=date_desc');
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ListingsResponse.fromJson(data);
@@ -37,27 +40,29 @@ class ListingService {
       throw Exception('Error fetching new listings: $e');
     }
   }
-  
+
   static Future<ListingsResponse> getListingsByType({
     required String type,
     int limit = 3,
     String sort = 'date_desc',
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/get-all?type=$type&limit=$limit&sort=$sort');
+      final url =
+          Uri.parse('$baseUrl/get-all?type=$type&limit=$limit&sort=$sort');
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ListingsResponse.fromJson(data);
       } else {
-        throw Exception('Failed to load $type listings: ${response.statusCode}');
+        throw Exception(
+            'Failed to load $type listings: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error fetching $type listings: $e');
     }
   }
-  
+
   static Future<ListingsResponse> getAllListings({
     int page = 1,
     int limit = 10,
@@ -77,10 +82,11 @@ class ListingService {
         if (city != null) 'city': city,
         if (listingFor != null) 'listingFor': listingFor,
       };
-      
-      final uri = Uri.parse('$baseUrl/get-all').replace(queryParameters: queryParams);
+
+      final uri =
+          Uri.parse('$baseUrl/get-all').replace(queryParameters: queryParams);
       final response = await http.get(uri);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ListingsResponse.fromJson(data);
@@ -134,15 +140,16 @@ class ListingService {
         if (filters['garden'] == true) amenityFilters.add('garden');
         if (filters['security'] == true) amenityFilters.add('security');
         if (filters['furnished'] == true) amenityFilters.add('furnished');
-        
+
         if (amenityFilters.isNotEmpty) {
           queryParams['amenities'] = amenityFilters.join(',');
         }
       }
-      
-      final uri = Uri.parse('${Environment.apiUrl}listings/search').replace(queryParameters: queryParams);
+
+      final uri = Uri.parse('${Environment.apiUrl}listings/search')
+          .replace(queryParameters: queryParams);
       final response = await http.get(uri);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ListingsResponse.fromJson(data);
@@ -178,7 +185,7 @@ extension ListingCategoryExtension on ListingCategory {
         return 'Commercial Buildings';
     }
   }
-  
+
   String? get apiType {
     switch (this) {
       case ListingCategory.featured:
@@ -193,7 +200,7 @@ extension ListingCategoryExtension on ListingCategory {
         return 'commercial';
     }
   }
-  
+
   String get routeName {
     switch (this) {
       case ListingCategory.featured:
@@ -208,17 +215,43 @@ extension ListingCategoryExtension on ListingCategory {
         return '/commercial';
     }
   }
+
+  // Create a new listing
+  static Future<bool> createListing(Map<String, dynamic> listingData) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/create');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+        body: jsonEncode(listingData),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Failed to create listing: ${response.statusCode}');
+        print('Response: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating listing: $e');
+      return false;
+    }
+  }
 }
 
 class ListingsResponse {
   final List<PropertyListing> listings;
   final ListingMeta meta;
-  
+
   ListingsResponse({
     required this.listings,
     required this.meta,
   });
-  
+
   factory ListingsResponse.fromJson(Map<String, dynamic> json) {
     return ListingsResponse(
       listings: (json['listings'] as List)
@@ -234,14 +267,14 @@ class ListingMeta {
   final int page;
   final int limit;
   final int pages;
-  
+
   ListingMeta({
     required this.total,
     required this.page,
     required this.limit,
     required this.pages,
   });
-  
+
   factory ListingMeta.fromJson(Map<String, dynamic> json) {
     return ListingMeta(
       total: json['total'] ?? 0,
@@ -285,7 +318,7 @@ class PropertyListing {
   // Contact information
   final String? contactPhone;
   final String? contactEmail;
-  
+
   PropertyListing({
     required this.id,
     required this.imageUrl,
@@ -317,47 +350,55 @@ class PropertyListing {
     this.contactPhone,
     this.contactEmail,
   });
-  
+
   factory PropertyListing.fromJson(Map<String, dynamic> json) {
     // Handle images array - take first image or use placeholder
     String imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
     List<String>? images;
-    if (json['images'] != null && json['images'] is List && (json['images'] as List).isNotEmpty) {
+    if (json['images'] != null &&
+        json['images'] is List &&
+        (json['images'] as List).isNotEmpty) {
       final imgs = (json['images'] as List).map((e) => e.toString()).toList();
       images = imgs;
       imageUrl = imgs.first;
     }
-    
-    // Handle price formatting
+
+    // Handle price formatting with payment frequency
     String priceStr = '\$0';
     num? priceValue;
     String? currency;
+    
     if (json['price'] != null) {
       final price = json['price'];
       if (price is num) {
-        priceStr = '\$${_formatNumber(price.toInt())}';
         priceValue = price;
+        priceStr = '\$${_formatNumber(price.toInt())}';
+        
+        // Add frequency suffix based on paymentFrequency field
+        final paymentFrequency = json['paymentFrequency']?.toString().toLowerCase();
+        final listingFor = json['listingFor']?.toString().toLowerCase();
+        
+        if (listingFor == 'rent') {
+          // For rent, show the frequency
+          if (paymentFrequency == 'daily') {
+            priceStr += '/Day';
+          } else if (paymentFrequency == 'yearly') {
+            priceStr += '/Year';
+          } else {
+            // Default to monthly for rent
+            priceStr += '/Month';
+          }
+        }
+        // For sale, just show the price with no suffix
       } else {
         priceStr = price.toString();
       }
-      // Add per month for rentals
-      if (json['listingFor']?.toString().toLowerCase() == 'rent') {
-        priceStr += '/Month';
-      }
     }
+    
     if (json['currency'] != null) {
       currency = json['currency'].toString();
     }
-    
-    // Handle daily price for rentals
-    if (json['dailyPrice'] != null && json['listingFor']?.toString().toLowerCase() == 'rent') {
-      final dailyPrice = json['dailyPrice'];
-      if (dailyPrice is num && dailyPrice > 0) {
-        priceStr = '\$${_formatNumber(dailyPrice.toInt())}/Day';
-        priceValue = dailyPrice;
-      }
-    }
-    
+
     // Handle location
     String locationStr = 'Unknown Location';
     if (json['location'] != null) {
@@ -370,14 +411,14 @@ class PropertyListing {
         locationStr = location.toString();
       }
     }
-    
+
     // Handle owner/agent name and owner information
     String agentName = 'Unknown Agent';
     String? ownerFirstName;
     String? ownerLastName;
     String? ownerEmail;
     String? ownerPhone;
-    
+
     if (json['owner'] != null) {
       final owner = json['owner'];
       if (owner is Map<String, dynamic>) {
@@ -385,7 +426,7 @@ class PropertyListing {
         ownerLastName = owner['lastName']?.toString();
         ownerEmail = owner['email']?.toString();
         ownerPhone = owner['phone']?.toString();
-        
+
         // Set agent name to full name if available, otherwise fallback to email
         if (ownerFirstName != null && ownerLastName != null) {
           agentName = '$ownerFirstName $ownerLastName';
@@ -398,11 +439,11 @@ class PropertyListing {
         }
       }
     }
-    
+
     // Handle contact information
     String? contactPhone = json['contactPhone']?.toString();
     String? contactEmail = json['contactEmail']?.toString();
-    
+
     // Parse optional fields for single listing page
     DateTime? createdAt;
     if (json['createdAt'] != null) {
@@ -427,14 +468,16 @@ class PropertyListing {
     int? bedrooms;
     if (json['bedrooms'] is num) bedrooms = (json['bedrooms'] as num).toInt();
     int? bathrooms;
-    if (json['bathrooms'] is num) bathrooms = (json['bathrooms'] as num).toInt();
+    if (json['bathrooms'] is num)
+      bathrooms = (json['bathrooms'] as num).toInt();
     int? floor;
     if (json['floor'] is num) floor = (json['floor'] as num).toInt();
     String? condition = json['condition']?.toString();
     int? buildingAge;
-    if (json['buildingAge'] is num) buildingAge = (json['buildingAge'] as num).toInt();
+    if (json['buildingAge'] is num)
+      buildingAge = (json['buildingAge'] as num).toInt();
     String? papers = json['papers']?.toString();
-    
+
     return PropertyListing(
       id: json['_id']?.toString() ?? '',
       imageUrl: imageUrl,
@@ -467,7 +510,7 @@ class PropertyListing {
       contactEmail: contactEmail,
     );
   }
-  
+
   static String _formatNumber(int number) {
     if (number >= 1000000) {
       return '${(number / 1000000).toStringAsFixed(1)}M';
