@@ -1,4 +1,5 @@
 import 'review.dart';
+import '../environment.dart';
 
 class ServiceProvider {
   final String id;
@@ -8,6 +9,7 @@ class ServiceProvider {
   final String phone;
   final String role;
   final String? companyName;
+  final String? userProfileImage;
   final String country;
   final String governance;
   final String district;
@@ -29,6 +31,7 @@ class ServiceProvider {
     required this.phone,
     required this.role,
     this.companyName,
+    this.userProfileImage,
     required this.country,
     required this.governance,
     required this.district,
@@ -52,6 +55,7 @@ class ServiceProvider {
       phone: json['phone']?.toString() ?? '',
       role: json['role']?.toString() ?? '',
       companyName: json['companyName']?.toString(),
+      userProfileImage: json['profileImage']?.toString(),
       country: json['country']?.toString() ?? '',
       governance: json['governance']?.toString() ?? '',
       district: json['district']?.toString() ?? '',
@@ -97,11 +101,29 @@ class ServiceProvider {
     return '${services.first.title} and ${services.length - 1} others...';
   }
 
-  // Get profile image (using first service image as fallback)
+  // Get profile image (using user profileImage first, then first service image as fallback)
   String get profileImage {
-    if (services.isNotEmpty && services.first.image.isNotEmpty) {
-      return services.first.image;
+    // First priority: user's profileImage
+    if (userProfileImage != null && userProfileImage!.isNotEmpty) {
+      // If it's already a full URL, return as is
+      if (userProfileImage!.startsWith('http://') || userProfileImage!.startsWith('https://')) {
+        return userProfileImage!;
+      }
+      // Build full URL with profileImage
+      return '${Environment.apiUrl}assets/$userProfileImage';
     }
+    
+    // Second priority: first service image
+    if (services.isNotEmpty && services.first.image.isNotEmpty) {
+      final image = services.first.image;
+      // If it's already a full URL, return as is
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        return image;
+      }
+      // Build full URL
+      return '${Environment.apiUrl}assets/$image';
+    }
+    
     return 'https://via.placeholder.com/300x200?text=No+Image';
   }
 
@@ -222,6 +244,7 @@ class ServiceProviderWithReviews {
   final String phone;
   final String role;
   final String? companyName;
+  final String? userProfileImage;
   final String country;
   final String governance;
   final String district;
@@ -243,6 +266,7 @@ class ServiceProviderWithReviews {
     required this.phone,
     required this.role,
     this.companyName,
+    this.userProfileImage,
     required this.country,
     required this.governance,
     required this.district,
@@ -271,6 +295,7 @@ class ServiceProviderWithReviews {
       phone: json['phone']?.toString() ?? '',
       role: json['role']?.toString() ?? '',
       companyName: json['companyName']?.toString(),
+      userProfileImage: json['profileImage']?.toString(),
       country: json['country']?.toString() ?? '',
       governance: json['governance']?.toString() ?? '',
       district: json['district']?.toString() ?? '',
@@ -314,11 +339,29 @@ class ServiceProviderWithReviews {
     return '${services.first.title} and ${services.length - 1} others...';
   }
 
-  // Get profile image (using first service image as fallback)
+  // Get profile image (using user profileImage first, then first service image as fallback)
   String get profileImage {
-    if (services.isNotEmpty && services.first.image.isNotEmpty) {
-      return services.first.image;
+    // First priority: user's profileImage
+    if (userProfileImage != null && userProfileImage!.isNotEmpty) {
+      // If it's already a full URL, return as is
+      if (userProfileImage!.startsWith('http://') || userProfileImage!.startsWith('https://')) {
+        return userProfileImage!;
+      }
+      // Build full URL with profileImage
+      return '${Environment.apiUrl}assets/$userProfileImage';
     }
+    
+    // Second priority: first service image
+    if (services.isNotEmpty && services.first.image.isNotEmpty) {
+      final image = services.first.image;
+      // If it's already a full URL, return as is
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        return image;
+      }
+      // Build full URL
+      return '${Environment.apiUrl}assets/$image';
+    }
+    
     return 'https://via.placeholder.com/300x200?text=No+Image';
   }
 }

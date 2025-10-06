@@ -24,19 +24,19 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   List<String> get _allImages {
     List<String> images = [];
     
-    // Add service images
-    for (var service in widget.serviceProvider.services) {
-      if (service.image.isNotEmpty) {
-        images.add(service.image);
-      }
+    // First priority: Add user's profile image (already assembled with full URL)
+    final profileImg = widget.serviceProvider.profileImage;
+    if (profileImg.isNotEmpty && !profileImg.contains('placeholder')) {
+      images.add(profileImg);
     }
     
-    // If no service images, add a placeholder
-    if (images.isEmpty) {
-      images.add('https://via.placeholder.com/300x200?text=No+Image');
+    // Return just profile image if we have it
+    if (images.isNotEmpty) {
+      return images;
     }
     
-    return images;
+    // Fallback to placeholder
+    return ['https://via.placeholder.com/300x200?text=No+Image'];
   }
 
   @override
