@@ -91,6 +91,72 @@ class ServiceService {
       throw Exception('Error fetching service providers: $e');
     }
   }
+
+  static Future<ServiceProviderWithReviews> getServiceProviderWithReviews(String serviceProviderId) async {
+    try {
+      // First try to get all service providers and find the specific one
+      final url = Uri.parse('$baseUrl/get-all-service-providers?withReviews=true&withServices=true&limit=100&page=1');
+     
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (data['users'] != null && data['users'].isNotEmpty) {
+          
+          // Find the specific service provider by ID
+          try {
+            final serviceProviderData = data['users'].firstWhere(
+              (provider) => provider['_id'] == serviceProviderId,
+            );
+        
+            return ServiceProviderWithReviews.fromJson(serviceProviderData);
+          } catch (e) {
+          
+            // If service provider not found in the list, try a direct API call
+            return await _getServiceProviderDirectly(serviceProviderId);
+          }
+        } else {
+          throw Exception('No service providers found in response');
+        }
+      } else {
+     
+        throw Exception('Failed to load service provider: ${response.statusCode}');
+      }
+    } catch (e) {
+    
+      // If the general call fails, try direct approach
+      try {
+        return await _getServiceProviderDirectly(serviceProviderId);
+      } catch (directError) {
+        throw Exception('Error fetching service provider: $e');
+      }
+    }
+  }
+
+  static Future<ServiceProviderWithReviews> _getServiceProviderDirectly(String serviceProviderId) async {
+    try {
+      // Try direct service provider endpoint if it exists
+      final url = Uri.parse('${Environment.apiUrl}users/$serviceProviderId?withReviews=true&withServices=true');
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['users'] != null && data['users'].isNotEmpty) {
+          return ServiceProviderWithReviews.fromJson(data['users'][0]);
+        } else if (data['_id'] != null) {
+          // If it's a single service provider object
+          return ServiceProviderWithReviews.fromJson(data);
+        } else {
+          throw Exception('No service provider data found');
+        }
+      } else {
+        throw Exception('Failed to load service provider directly: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching service provider directly: $e');
+    }
+  }
 }
 
 enum ServiceCategory {

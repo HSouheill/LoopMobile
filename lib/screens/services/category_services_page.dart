@@ -85,12 +85,13 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
   }
 
   void _onAgentTap(Agent agent) {
+    
     // Find the corresponding ServiceProvider
     final serviceProvider = serviceProviders.firstWhere(
       (provider) => provider.displayName == agent.name,
       orElse: () => serviceProviders.first,
     );
-    
+     
     Navigator.push(
       context,
       MaterialPageRoute(

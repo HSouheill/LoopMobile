@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../models/service_provider.dart';
+import '../../services/service_service.dart';
+import '../../widgets/service_provider_reviews_widget.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -14,6 +16,9 @@ class ServiceProviderDetailPage extends StatefulWidget {
 class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   PageController _pageController = PageController();
   bool _isExpanded = false;
+  ServiceProviderWithReviews? _serviceProviderData;
+  bool _isLoading = true;
+  String? _error;
 
   // Get all images from the service provider (profile image + service images)
   List<String> get _allImages {
@@ -35,9 +40,39 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadServiceProviderData();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadServiceProviderData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      // Use the service provider ID from the service provider object
+      final serviceProviderId = widget.serviceProvider.id;
+    
+      final serviceProviderData = await ServiceService.getServiceProviderWithReviews(serviceProviderId);
+       
+      setState(() {
+        _serviceProviderData = serviceProviderData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   // Helper to render stars
@@ -388,6 +423,13 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                         ],
                       ],
                     ),
+
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
+
+                    // Reviews Section
+                    _buildServiceProviderReviews(),
                   ],
                 ),
               ),
@@ -529,6 +571,61 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildServiceProviderReviews() {
+    if (_isLoading) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return SizedBox(
+        height: 200,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                'Failed to load reviews',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _error!,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadServiceProviderData,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_serviceProviderData == null) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: Text('No service provider data available'),
+        ),
+      );
+    }
+
+    return ServiceProviderReviewsWidget(
+      serviceProvider: _serviceProviderData!,
+      onReviewSubmitted: _loadServiceProviderData,
     );
   }
 }

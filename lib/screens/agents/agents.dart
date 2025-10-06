@@ -1,6 +1,6 @@
 // Updated agents_page.dart
 import 'package:flutter/material.dart';
-import '../../widgets/search_and_categories_widget.dart';
+import '../../widgets/search_only_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/dynamic_agents_widget.dart';
 
@@ -21,7 +21,7 @@ class AgentsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Search bar component
-          const SearchAndCategoriesWidget(),
+          const SearchOnlyWidget(),
           const SizedBox(height: 10),
           
           // Image slider

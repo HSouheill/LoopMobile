@@ -108,6 +108,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
   }
 
   void _onAgentTap(Agent agent) {
+   
     // Find the corresponding ServiceProvider
     final serviceProvider = serviceProviders.firstWhere(
       (provider) => provider.displayName == agent.name,

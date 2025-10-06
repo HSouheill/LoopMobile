@@ -1,3 +1,5 @@
+import 'review.dart';
+
 class ServiceProvider {
   final String id;
   final String firstName;
@@ -17,6 +19,7 @@ class ServiceProvider {
   final int propertyCount;
   final int reviewCount;
   final List<Service> services;
+  final List<Review> reviews;
 
   ServiceProvider({
     required this.id,
@@ -37,6 +40,7 @@ class ServiceProvider {
     required this.propertyCount,
     required this.reviewCount,
     required this.services,
+    this.reviews = const [],
   });
 
   factory ServiceProvider.fromJson(Map<String, dynamic> json) {
@@ -60,6 +64,9 @@ class ServiceProvider {
       reviewCount: (json['reviewCount'] ?? 0).toInt(),
       services: (json['services'] as List<dynamic>? ?? [])
           .map((service) => Service.fromJson(service))
+          .toList(),
+      reviews: (json['reviews'] as List<dynamic>? ?? [])
+          .map((review) => Review.fromJson(review))
           .toList(),
     );
   }
@@ -204,5 +211,114 @@ class ServiceProviderMeta {
       limit: json['limit'] ?? 10,
       pages: json['pages'] ?? 1,
     );
+  }
+}
+
+class ServiceProviderWithReviews {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String phone;
+  final String role;
+  final String? companyName;
+  final String country;
+  final String governance;
+  final String district;
+  final String city;
+  final bool isFeatured;
+  final DateTime createdAt;
+  final String referralCode;
+  final double averageRating;
+  final int propertyCount;
+  final int reviewCount;
+  final List<Service> services;
+  final List<Review> reviews;
+
+  ServiceProviderWithReviews({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.role,
+    this.companyName,
+    required this.country,
+    required this.governance,
+    required this.district,
+    required this.city,
+    required this.isFeatured,
+    required this.createdAt,
+    required this.referralCode,
+    required this.averageRating,
+    required this.propertyCount,
+    required this.reviewCount,
+    required this.services,
+    required this.reviews,
+  });
+
+  factory ServiceProviderWithReviews.fromJson(Map<String, dynamic> json) {
+   
+    final reviews = (json['reviews'] as List<dynamic>? ?? [])
+        .map((review) => Review.fromJson(review))
+        .toList();
+     
+    return ServiceProviderWithReviews(
+      id: json['_id']?.toString() ?? '',
+      firstName: json['firstName']?.toString() ?? '',
+      lastName: json['lastName']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      role: json['role']?.toString() ?? '',
+      companyName: json['companyName']?.toString(),
+      country: json['country']?.toString() ?? '',
+      governance: json['governance']?.toString() ?? '',
+      district: json['district']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
+      isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      referralCode: json['referralCode']?.toString() ?? '',
+      averageRating: (json['averageRating'] ?? 0.0).toDouble(),
+      propertyCount: (json['propertyCount'] ?? 0).toInt(),
+      reviewCount: (json['reviewCount'] ?? 0).toInt(),
+      services: (json['services'] as List<dynamic>? ?? [])
+          .map((service) => Service.fromJson(service))
+          .toList(),
+      reviews: reviews,
+    );
+  }
+
+  // Get display name (company name for companies, full name for individuals)
+  String get displayName {
+    if (role == 'service-provider-company' && companyName != null && companyName!.isNotEmpty) {
+      return companyName!;
+    }
+    return '$firstName $lastName';
+  }
+
+  // Get location string
+  String get location {
+    return '$city, $country';
+  }
+
+  // Get the latest service for subtitle
+  String get latestServiceTitle {
+    if (services.isEmpty) return 'No services available';
+    return services.first.title;
+  }
+
+  // Get subtitle with "others..." if there are more services
+  String get subtitle {
+    if (services.isEmpty) return 'No services available';
+    if (services.length == 1) return services.first.title;
+    return '${services.first.title} and ${services.length - 1} others...';
+  }
+
+  // Get profile image (using first service image as fallback)
+  String get profileImage {
+    if (services.isNotEmpty && services.first.image.isNotEmpty) {
+      return services.first.image;
+    }
+    return 'https://via.placeholder.com/300x200?text=No+Image';
   }
 }

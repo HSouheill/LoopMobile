@@ -84,6 +84,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
   }
 
   void _onAgentTap(Agent agent) {
+   
     // Find the corresponding ServiceProvider
     final serviceProvider = serviceProviders.firstWhere(
       (provider) => provider.displayName == agent.name,
