@@ -11,6 +11,7 @@ class User {
   final String name;
   final String fullName;
   final String email;
+  final String? phone;
   final String? location;
   final String? city;
   final String role;
@@ -22,6 +23,7 @@ class User {
     required this.name,
     required this.fullName,
     required this.email,
+    this.phone,
     this.location,
     this.city,
     required this.role,
@@ -35,6 +37,7 @@ class User {
       name: json['name'] ?? json['firstName'] ?? '',
       fullName: json['fullName'] ?? json['firstName'] ?? json['name'] ?? '',
       email: json['email'] ?? '',
+      phone: json['phone'],
       location: json['location'],
       city: json['city'],
       role: json['role'] ?? 'user',
@@ -49,6 +52,7 @@ class User {
       'name': name,
       'fullName': fullName,
       'email': email,
+      'phone': phone,
       'location': location,
       'city': city,
       'role': role,
@@ -63,6 +67,7 @@ class User {
     String? name,
     String? fullName,
     String? email,
+    String? phone,
     String? location,
     String? city,
     String? role,
@@ -74,6 +79,7 @@ class User {
       name: name ?? this.name,
       fullName: fullName ?? this.fullName,
       email: email ?? this.email,
+      phone: phone ?? this.phone,
       location: location ?? this.location,
       city: city ?? this.city,
       role: role ?? this.role,

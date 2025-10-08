@@ -23,6 +23,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // user inforamtion icon and input field
   late TextEditingController emailController;
+  late TextEditingController phoneController;
+
+  // Helper method to extract country code and phone number
+  Map<String, String> _extractPhoneParts(String? phoneNumber) {
+    if (phoneNumber == null || phoneNumber.isEmpty) {
+      return {'countryCode': '+961', 'phoneNumber': '', 'flag': '🇱🇧'};
+    }
+    
+    // Remove any spaces or special characters
+    String cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    
+    // Common country codes mapping
+    Map<String, String> countryCodes = {
+      '+961': '🇱🇧', // Lebanon
+      '+1': '🇺🇸',   // US/Canada
+      '+44': '🇬🇧',  // UK
+      '+33': '🇫🇷',  // France
+      '+49': '🇩🇪',  // Germany
+      '+39': '🇮🇹',  // Italy
+      '+34': '🇪🇸',  // Spain
+      '+966': '🇸🇦', // Saudi Arabia
+      '+971': '🇦🇪', // UAE
+      '+20': '🇪🇬',  // Egypt
+      '+90': '🇹🇷',  // Turkey
+      '+7': '🇷🇺',   // Russia
+      '+86': '🇨🇳',  // China
+      '+81': '🇯🇵',  // Japan
+      '+82': '🇰🇷',  // South Korea
+      '+91': '🇮🇳',  // India
+      '+55': '🇧🇷',  // Brazil
+      '+61': '🇦🇺',  // Australia
+    };
+    
+    // Try to find matching country code
+    for (String code in countryCodes.keys) {
+      if (cleanPhone.startsWith(code)) {
+        return {
+          'countryCode': code,
+          'phoneNumber': cleanPhone.substring(code.length),
+          'flag': countryCodes[code]!
+        };
+      }
+    }
+    
+    // Default to Lebanon if no match found
+    return {'countryCode': '+961', 'phoneNumber': cleanPhone, 'flag': '🇱🇧'};
+  }
 
   @override
   void initState() {
@@ -33,6 +80,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     emailController = TextEditingController(
       text: user != null ? user.email : '',
     );
+    
+    // Extract phone number without country code for the input field
+    final phoneParts = _extractPhoneParts(user?.phone);
+    phoneController = TextEditingController(
+      text: phoneParts['phoneNumber'] ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    phoneController.dispose();
+    super.dispose();
   }
 
 // List for the 5 items in the horizontal scroll view
@@ -368,91 +428,107 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
 
                   // Phone input (below Email)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25.0, right: 25.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 0.0, vertical: 8.0),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Color(0xFF0048FF), // 👈 divider color
-                            width: 1.5, // thickness of divider
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize:
-                            MainAxisSize.max, // Let the Row fill the Container
-                        children: [
-                          // Phone Icon
-                          const Icon(
-                            Icons.phone,
-                            color: Color(0xFF2563FF),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 14.0),
-
-                          // Country Code and Flag
-                          // This section is now a fixed-width Row
-                          Row(
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              const SizedBox(width: 6.0),
-                              const Text(
-                                '+961',
-                                style: TextStyle(
-                                  color: Color(0XFF1E1E1E),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.arrow_drop_down,
-                                color: Color(0xFF1E1E1E),
-                                size: 20,
-                              ),
-                            ],
-                          ),
-
-                          // Vertical Separator
-                          Container(
-                            height: 20,
-                            width: 1.5,
-                            color: Color(0xFF2563FF),
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                          ),
-
-                          const SizedBox(width: 20.0),
-                          // Phone Number Input Field
-                          const Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: '00 123 456',
-                                hintStyle: TextStyle(color: Colors.grey),
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                              keyboardType: TextInputType.phone,
-                              style: TextStyle(
-                                color: Color(0xFF1E1E1E),
-                                fontWeight: FontWeight
-                                    .w400, // optional: adjust font size
+                  Builder(
+                    builder: (context) {
+                      final user = AuthService.currentUser;
+                      final phoneParts = _extractPhoneParts(user?.phone);
+                      
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0.0, vertical: 8.0),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Color(0xFF0048FF), // 👈 divider color
+                                width: 1.5, // thickness of divider
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Row(
+                            mainAxisSize:
+                                MainAxisSize.max, // Let the Row fill the Container
+                            children: [
+                              // Phone Icon
+                              const Icon(
+                                Icons.phone,
+                                color: Color(0xFF2563FF),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 14.0),
+
+                              // Country Code and Flag
+                              // This section is now a fixed-width Row
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color.fromARGB(0, 76, 175, 79),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        phoneParts['flag']!,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6.0),
+                                  Text(
+                                    phoneParts['countryCode']!,
+                                    style: TextStyle(
+                                      color: Color(0XFF1E1E1E),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_drop_down,
+                                    color: Color(0xFF1E1E1E),
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
+
+                              // Vertical Separator
+                              Container(
+                                height: 20,
+                                width: 1.5,
+                                color: Color(0xFF2563FF),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10.0),
+                              ),
+
+                              const SizedBox(width: 20.0),
+                              // Phone Number Input Field
+                              Expanded(
+                                child: TextField(
+                                  controller: phoneController,
+                                  decoration: InputDecoration(
+                                    hintText: phoneParts['phoneNumber']!.isEmpty 
+                                        ? 'Enter your phone number' 
+                                        : '00 123 456',
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  keyboardType: TextInputType.phone,
+                                  style: TextStyle(
+                                    color: Color(0xFF1E1E1E),
+                                    fontWeight: FontWeight
+                                        .w400, // optional: adjust font size
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 30),
