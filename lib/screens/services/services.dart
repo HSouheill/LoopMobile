@@ -85,7 +85,7 @@ class ServicesPage extends StatelessWidget {
             category: ServiceCategory.individual,
             showSeeAll: true,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 100),
         ],
       ),
     );

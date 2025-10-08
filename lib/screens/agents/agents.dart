@@ -42,6 +42,8 @@ class AgentsPage extends StatelessWidget {
           const DynamicAgentsWidget(
             category: AgentCategory.forYou,
           ),
+
+          const SizedBox(height: 110),
         ],
       ),
     );

@@ -34,6 +34,8 @@ class _ListingsPageState extends State<ListingsPage> {
 
           // Commercial Buildings
           const DynamicListingsWidget(category: ListingCategory.commercial),
+
+          const SizedBox(height: 100),
         ],
       ),
     );
