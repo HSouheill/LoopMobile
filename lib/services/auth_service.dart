@@ -204,4 +204,38 @@ class AuthService {
       if (_token != null) 'Authorization': 'Bearer $_token',
     };
   }
+
+  // Change password for authenticated users
+  static Future<Map<String, dynamic>> changePassword(String newPassword) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/changePasswordAuthenticated');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          'newPassword': newPassword,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password changed successfully',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to change password',
+        };
+      }
+    } catch (e) {
+      print('Change password exception: $e');
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
 }

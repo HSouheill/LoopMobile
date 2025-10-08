@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/profile_widgets/settings_dynamic_section.dart';
+import '../../utils/password_validator.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,6 +25,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 // user inforamtion icon and input field
   late TextEditingController emailController;
   late TextEditingController phoneController;
+  
+  // Password change controllers
+  late TextEditingController newPasswordController;
+  late TextEditingController confirmPasswordController;
+  bool _isChangingPassword = false;
 
   // Helper method to extract country code and phone number
   Map<String, String> _extractPhoneParts(String? phoneNumber) {
@@ -86,12 +92,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneController = TextEditingController(
       text: phoneParts['phoneNumber'] ?? '',
     );
+    
+    // Initialize password controllers
+    newPasswordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
     emailController.dispose();
     phoneController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -302,6 +314,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  Future<void> _changePassword() async {
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    // Validate passwords match
+    if (newPassword != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate password strength
+    final passwordError = PasswordValidator.validatePassword(newPassword);
+    if (passwordError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(passwordError),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isChangingPassword = true;
+    });
+
+    try {
+      final result = await AuthService.changePassword(newPassword);
+      
+      if (mounted) {
+        if (result['success']) {
+          // Clear password fields
+          newPasswordController.clear();
+          confirmPasswordController.clear();
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error changing password: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isChangingPassword = false;
+        });
+      }
+    }
   }
 
   @override
@@ -549,20 +634,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       BuildNewPassword(
                           Icons.lock_open_outlined, "Enter new password",
-                          obscureText: true),
-                      BuildNewPassword(Icons.lock_outline, "Re-enter password"),
+                          obscureText: true, controller: newPasswordController),
+                      BuildNewPassword(Icons.lock_outline, "Re-enter password", 
+                          controller: confirmPasswordController),
                     ],
                   ),
 
                   const SizedBox(height: 20),
 
                   DynamicGradientButton(
-                    buttonText: 'Change Password', // Your custom text
-                    onTap: () {
-                      // This code runs when the button is tapped
-                      print('Button tapped!');
-                      // You can add navigation, API calls, or other logic here
-                    },
+                    buttonText: _isChangingPassword ? 'Changing...' : 'Change Password',
+                    onTap: _isChangingPassword ? null : _changePassword,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 18.5, vertical: 7.0),
                   ),
@@ -877,7 +959,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // New password and rewrite password widget
   Widget BuildNewPassword(IconData icon, String hintText,
-      {bool obscureText = false}) {
+      {bool obscureText = false, TextEditingController? controller}) {
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       child: Column(
@@ -889,6 +971,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(width: 35),
               Expanded(
                 child: TextField(
+                  controller: controller,
                   obscureText: obscureText, // for hidden text (like password)
                   decoration: InputDecoration(
                     hintText: hintText,
