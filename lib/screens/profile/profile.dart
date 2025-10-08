@@ -9,6 +9,8 @@ import 'dart:convert';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/profile_widgets/settings_dynamic_section.dart';
 import '../../utils/password_validator.dart';
+import '../../utils/phone_validator.dart';
+import '../../widgets/profile_widgets/otp_verification_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -30,6 +32,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController newPasswordController;
   late TextEditingController confirmPasswordController;
   bool _isChangingPassword = false;
+
+  // Edit contact variables
+  bool _isEditingContact = false;
+  String? _pendingEditId;
+  String? _newPhoneNumber;
 
   // Helper method to extract country code and phone number
   Map<String, String> _extractPhoneParts(String? phoneNumber) {
@@ -389,6 +396,262 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _editContact() async {
+    final currentUser = AuthService.currentUser;
+    if (currentUser == null) return;
+
+    final newEmail = emailController.text.trim();
+    final newPhone = phoneController.text.trim();
+    
+    // Validate email if provided
+    if (newEmail.isNotEmpty) {
+      final emailError = PhoneValidator.validateEmail(newEmail);
+      if (emailError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(emailError),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+    
+    // Validate phone if provided
+    if (newPhone.isNotEmpty) {
+      final phoneError = PhoneValidator.validatePhoneNumber(newPhone);
+      if (phoneError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(phoneError),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+    
+    // Check if there are any changes
+    final currentEmail = currentUser.email.toLowerCase();
+    final currentPhone = currentUser.phone ?? '';
+    final phoneParts = _extractPhoneParts(currentPhone);
+    final currentPhoneNumber = phoneParts['phoneNumber'] ?? '';
+    
+    if (newEmail.toLowerCase() == currentEmail && newPhone == currentPhoneNumber) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No changes detected'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isEditingContact = true;
+    });
+
+    try {
+      // Prepare data for API call
+      String? emailToSend = newEmail.toLowerCase() != currentEmail ? newEmail : null;
+      String? phoneToSend;
+      
+      if (newPhone != currentPhoneNumber && newPhone.isNotEmpty) {
+        // Combine country code with phone number
+        final phoneParts = _extractPhoneParts(currentUser.phone);
+        phoneToSend = '${phoneParts['countryCode']}$newPhone';
+        _newPhoneNumber = phoneToSend;
+      }
+
+      if (emailToSend == null && phoneToSend == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No changes detected'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Request OTP
+      final result = await AuthService.requestEditContact(
+        newEmail: emailToSend,
+        newPhone: phoneToSend,
+      );
+
+      if (mounted) {
+        if (result['success']) {
+          _pendingEditId = result['pendingEditId'];
+          
+          // Show OTP dialog
+          _showOtpDialog();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error requesting OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isEditingContact = false;
+        });
+      }
+    }
+  }
+
+  void _showOtpDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => OtpVerificationDialog(
+        phoneNumber: _newPhoneNumber ?? 'your phone',
+        onVerify: _verifyOtp,
+        onResend: _resendOtp,
+        isLoading: _isEditingContact,
+      ),
+    );
+  }
+
+  Future<void> _verifyOtp(String otp) async {
+    if (_pendingEditId == null) return;
+
+    setState(() {
+      _isEditingContact = true;
+    });
+
+    try {
+      final result = await AuthService.verifyEditOtp(
+        pendingEditId: _pendingEditId!,
+        otp: otp,
+      );
+
+      if (mounted) {
+        if (result['success']) {
+          // Close OTP dialog
+          Navigator.of(context).pop();
+          
+          // Update the UI with new user data
+          setState(() {
+            _didUpdateProfile = true;
+          });
+
+          // Update controllers with new values
+          final updatedUser = AuthService.currentUser;
+          if (updatedUser != null) {
+            emailController.text = updatedUser.email;
+            final phoneParts = _extractPhoneParts(updatedUser.phone);
+            phoneController.text = phoneParts['phoneNumber'] ?? '';
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error verifying OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isEditingContact = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    final currentUser = AuthService.currentUser;
+    if (currentUser == null) return;
+
+    final newEmail = emailController.text.trim();
+    final newPhone = phoneController.text.trim();
+    
+    setState(() {
+      _isEditingContact = true;
+    });
+
+    try {
+      // Prepare data for API call
+      String? emailToSend = newEmail.toLowerCase() != currentUser.email.toLowerCase() ? newEmail : null;
+      String? phoneToSend;
+      
+      if (newPhone.isNotEmpty) {
+        final phoneParts = _extractPhoneParts(currentUser.phone);
+        phoneToSend = '${phoneParts['countryCode']}$newPhone';
+        _newPhoneNumber = phoneToSend;
+      }
+
+      final result = await AuthService.requestEditContact(
+        newEmail: emailToSend,
+        newPhone: phoneToSend,
+      );
+
+      if (mounted) {
+        if (result['success']) {
+          _pendingEditId = result['pendingEditId'];
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('OTP resent successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error resending OTP: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isEditingContact = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
@@ -619,12 +882,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 30),
 
                   DynamicGradientButton(
-                    buttonText: 'Edit Email & Number', // Your custom text
-                    onTap: () {
-                      // This code runs when the button is tapped
-                      print('Button tapped!');
-                      // You can add navigation, API calls, or other logic here
-                    },
+                    buttonText: _isEditingContact ? 'Processing...' : 'Edit Email & Number',
+                    onTap: _isEditingContact ? null : _editContact,
                   ),
 
                   const SizedBox(height: 30),

@@ -238,4 +238,94 @@ class AuthService {
       };
     }
   }
+
+  // Request edit contact (email/phone) with OTP
+  static Future<Map<String, dynamic>> requestEditContact({
+    String? newEmail,
+    String? newPhone,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/request-edit-contact');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          if (newEmail != null) 'newEmail': newEmail,
+          if (newPhone != null) 'newPhone': newPhone,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 202) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'OTP sent successfully',
+          'pendingEditId': data['pendingEditId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to send OTP',
+        };
+      }
+    } catch (e) {
+      print('Request edit contact exception: $e');
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Verify OTP for edit contact
+  static Future<Map<String, dynamic>> verifyEditOtp({
+    required String pendingEditId,
+    required String otp,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/verify-edit-otp');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          'pendingEditId': pendingEditId,
+          'otp': otp,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 200) {
+        // Update current user with new data
+        if (data['user'] != null) {
+          _currentUser = User.fromJson(data['user']);
+          await _storeAuthData();
+        }
+        
+        // Update token if provided
+        if (data['token'] != null) {
+          _token = data['token'];
+          await _storeAuthData();
+        }
+
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Contact info updated successfully',
+          'user': data['user'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to verify OTP',
+        };
+      }
+    } catch (e) {
+      print('Verify edit OTP exception: $e');
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
 }
