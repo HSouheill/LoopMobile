@@ -19,16 +19,27 @@ class ListingCreateService {
       // Add authorization header
       request.headers['Authorization'] = 'Bearer ${AuthService.token}';
       
-      // Add text fields
-      // Handle nested objects by converting them to JSON strings
+      // Add text fields with proper handling for nested objects
       listingData.forEach((key, value) {
         if (key == 'images') {
           // Skip images field as we'll handle it separately
           return;
-        } else if (value is Map || value is List) {
-          // Convert complex types to JSON
+        } else if (key == 'location' && value is Map) {
+          // Flatten location object into separate fields
+          final location = value as Map<String, dynamic>;
+          location.forEach((locKey, locValue) {
+            if (locValue != null) {
+              request.fields['location[$locKey]'] = locValue.toString();
+            }
+          });
+        } else if (key == 'amenities' && value is Map) {
+          // Convert amenities map to JSON string
+          // Backend expects this as an object
           request.fields[key] = jsonEncode(value);
-        } else {
+        } else if (value is Map || value is List) {
+          // Convert other complex types to JSON
+          request.fields[key] = jsonEncode(value);
+        } else if (value != null) {
           // Add simple types directly
           request.fields[key] = value.toString();
         }
@@ -52,15 +63,11 @@ class ListingCreateService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 201) {
-        print('Listing created successfully');
         return true;
       } else {
-        print('Failed to create listing: ${response.statusCode}');
-        print('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error creating listing: $e');
       return false;
     }
   }
