@@ -351,6 +351,21 @@ class PropertyListing {
     this.contactEmail,
   });
 
+  // Helper method to build full image URL
+  static String _buildImageUrl(String? filename) {
+    if (filename == null || filename.isEmpty) {
+      return 'https://via.placeholder.com/300x200?text=No+Image';
+    }
+    
+    // If it's already a full URL, return as is
+    if (filename.startsWith('http://') || filename.startsWith('https://')) {
+      return filename;
+    }
+    
+    // Build full URL - merge with API URL
+    return '${Environment.apiUrl}assets/$filename';
+  }
+
   factory PropertyListing.fromJson(Map<String, dynamic> json) {
     // Handle images array - take first image or use placeholder
     String imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
@@ -358,9 +373,10 @@ class PropertyListing {
     if (json['images'] != null &&
         json['images'] is List &&
         (json['images'] as List).isNotEmpty) {
-      final imgs = (json['images'] as List).map((e) => e.toString()).toList();
-      images = imgs;
-      imageUrl = imgs.first;
+      final rawImages = (json['images'] as List).map((e) => e.toString()).toList();
+      // Build full URLs for all images
+      images = rawImages.map((img) => _buildImageUrl(img)).toList();
+      imageUrl = images.first;
     }
 
     // Handle price formatting with payment frequency
