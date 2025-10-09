@@ -17,6 +17,7 @@ class User {
   final String role;
   final bool active;
   final String? profileImage; // Add this field
+  final String? portfolioLink; // Add portfolio link field
 
   User({
     required this.id,
@@ -29,6 +30,7 @@ class User {
     required this.role,
     required this.active,
     this.profileImage, // Add this parameter
+    this.portfolioLink, // Add portfolio link parameter
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -43,6 +45,7 @@ class User {
       role: json['role'] ?? 'user',
       active: json['active'] ?? true,
       profileImage: json['profileImage'], // Add this line
+      portfolioLink: json['portfolioLink'], // Add portfolio link
     );
   }
 
@@ -58,6 +61,7 @@ class User {
       'role': role,
       'active': active,
       'profileImage': profileImage, // Add this line
+      'portfolioLink': portfolioLink, // Add portfolio link
     };
   }
 
@@ -73,6 +77,7 @@ class User {
     String? role,
     bool? active,
     String? profileImage,
+    String? portfolioLink,
   }) {
     return User(
       id: id ?? this.id,
@@ -85,6 +90,7 @@ class User {
       role: role ?? this.role,
       active: active ?? this.active,
       profileImage: profileImage ?? this.profileImage,
+      portfolioLink: portfolioLink ?? this.portfolioLink,
     );
   }
 }

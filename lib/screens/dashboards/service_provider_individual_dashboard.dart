@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
+import '../../services/portfolio_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import 'widgets/my_services_widget.dart';
 import './widgets/message_card.dart';
@@ -112,7 +116,7 @@ class _ServiceProviderIndividualDashboardPageState
                 UserPlanSection(agentInfo: agentInfo),
 
                 // ✅ PDF Uploaded Section
-                const PdfUploadedSection(),
+                PdfUploadedSection(agentInfo: agentInfo),
 
                 const SizedBox(height: 30),
 
@@ -561,73 +565,303 @@ class UserPlanSection extends StatelessWidget {
 }
 
 // ✅ PDF Uploaded Section
-class PdfUploadedSection extends StatelessWidget {
-  const PdfUploadedSection({super.key});
+class PdfUploadedSection extends StatefulWidget {
+  final Map<String, dynamic>? agentInfo;
+  
+  const PdfUploadedSection({super.key, this.agentInfo});
+
+  @override
+  State<PdfUploadedSection> createState() => _PdfUploadedSectionState();
+}
+
+class _PdfUploadedSectionState extends State<PdfUploadedSection> {
+  bool isLoading = false;
+
+  Future<void> _uploadPortfolioPDF() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          isLoading = true;
+        });
+
+        try {
+          File file = File(result.files.single.path!);
+          final response = await PortfolioService.uploadPortfolioPDF(file);
+
+          setState(() {
+            isLoading = false;
+          });
+
+          if (response['success']) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['message']),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Refresh the parent widget to update the user data without navigation
+            if (context.mounted) {
+              // Trigger a refresh of the parent dashboard
+              final parentState = context.findAncestorStateOfType<_ServiceProviderIndividualDashboardPageState>();
+              if (parentState != null) {
+                parentState._refreshData();
+              }
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['message']),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        } catch (uploadError) {
+          setState(() {
+            isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error uploading file: ${uploadError.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error selecting file: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _deletePortfolioPDF() async {
+    // Show confirmation dialog
+    bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Portfolio'),
+          content: const Text('Are you sure you want to delete your portfolio PDF?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final response = await PortfolioService.deletePortfolioPDF();
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Refresh the parent widget to update the user data without navigation
+        if (context.mounted) {
+          // Trigger a refresh of the parent dashboard
+          final parentState = context.findAncestorStateOfType<_ServiceProviderIndividualDashboardPageState>();
+          if (parentState != null) {
+            parentState._refreshData();
+          }
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _viewPortfolioPDF() async {
+    final portfolioLink = widget.agentInfo?['user']?['portfolioLink'];
+    if (portfolioLink != null && portfolioLink.isNotEmpty) {
+      final url = PortfolioService.getPortfolioUrl(portfolioLink);
+      if (url != null) {
+        final Uri uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open PDF'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final portfolioLink = widget.agentInfo?['user']?['portfolioLink'];
+    final hasPortfolio = portfolioLink != null && portfolioLink.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // align title left
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "PDF Uploaded",
+            "Portfolio PDF",
             style: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 18,
               color: Color(0xFF1E1E1E),
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 20),
 
-          // Card-like container centered
-          Center(
-            child: Material(
-              elevation: 2, // shadow
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-              child: Container(
-                width: screenWidth * 0.75, // 👈 take 3/4 of screen width
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF0048FF)),
-                ),
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween, // spread content
-                  children: const [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf,
-                          size: 32,
-                          color: Colors.red,
+          if (hasPortfolio) ...[
+            // Show existing portfolio
+            Center(
+              child: Material(
+                elevation: 2,
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                child: Container(
+                  width: screenWidth * 0.75,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF0048FF)),
+                  ),
+                  child: InkWell(
+                    onTap: _viewPortfolioPDF,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.picture_as_pdf,
+                              size: 32,
+                              color: Colors.red,
+                            ),
+                            SizedBox(width: 14),
+                            Text(
+                              "View Portfolio",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 14),
-                        Text(
-                          "View Portfolio",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Colors.black,
                         ),
                       ],
                     ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 10,
-                      color: Colors.black,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
+            const SizedBox(height: 15),
+          ],
+
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Add/Update button
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: DynamicGradientButton(
+                    buttonText: hasPortfolio ? "Update Portfolio" : "Add Portfolio",
+                    textSize: 12,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    onTap: isLoading ? null : _uploadPortfolioPDF,
+                  ),
+                ),
+              ),
+              
+              // Delete button (only show if portfolio exists)
+              if (hasPortfolio)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: isLoading ? null : _deletePortfolioPDF,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "Delete",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
+
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         ],
       ),
     );
