@@ -205,6 +205,64 @@ class ServiceService {
       throw Exception('Error fetching my services: $e');
     }
   }
+
+  // Create a new service
+  static Future<Map<String, dynamic>> createService(Map<String, dynamic> serviceData) async {
+    try {
+      final url = Uri.parse('$baseUrl/add-service');
+      
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+        body: jsonEncode(serviceData),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseData,
+        };
+      } else {
+        // Try to parse error response and provide user-friendly message
+        try {
+          final errorData = json.decode(response.body);
+          String userMessage = errorData['message'] ?? 'Failed to create service';
+          
+          // Make error messages more user-friendly
+          if (userMessage.contains('Title is required')) {
+            userMessage = 'Please enter a service title';
+          } else if (userMessage.contains('Invalid email format')) {
+            userMessage = 'Please enter a valid email address';
+          } else if (userMessage.contains('portfolioLink is not a valid URL')) {
+            userMessage = 'Please enter a valid portfolio URL';
+          } else if (userMessage.contains('Validation failed')) {
+            userMessage = 'Please check your input and try again';
+          }
+          
+          return {
+            'success': false,
+            'error': userMessage,
+            'statusCode': response.statusCode,
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'error': 'Failed to create service. Please try again.',
+            'statusCode': response.statusCode,
+          };
+        }
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Unable to connect to server. Please check your internet connection and try again.',
+      };
+    }
+  }
 }
 
 enum ServiceCategory {
