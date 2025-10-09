@@ -454,19 +454,35 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
         children: [
           Row(
             children: [
-              if (service.imageUrl.isNotEmpty)
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(service.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey[200],
                 ),
-              if (service.imageUrl.isNotEmpty) const SizedBox(width: 12),
+                child: service.imageUrl.isNotEmpty
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          service.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.work,
+                              size: 24,
+                              color: Colors.grey,
+                            );
+                          },
+                        ),
+                      )
+                    : const Icon(
+                        Icons.work,
+                        size: 24,
+                        color: Colors.grey,
+                      ),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
