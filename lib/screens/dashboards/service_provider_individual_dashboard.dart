@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../services/agent_info_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import 'widgets/dynamic_service_card.dart';
 import './widgets/message_card.dart';
@@ -18,11 +19,14 @@ class ServiceProviderIndividualDashboardPage extends StatefulWidget {
 class _ServiceProviderIndividualDashboardPageState
     extends State<ServiceProviderIndividualDashboardPage> {
   User? user;
+  Map<String, dynamic>? agentInfo;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadAgentInfo();
   }
 
   Future<void> _loadUser() async {
@@ -32,9 +36,31 @@ class _ServiceProviderIndividualDashboardPageState
     });
   }
 
+  Future<void> _loadAgentInfo() async {
+    try {
+      final info = await AgentInfoService.getAgentInfo();
+      setState(() {
+        agentInfo = info;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading agent info: $e');
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _loadAgentInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
+    if (user == null || isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -52,8 +78,10 @@ class _ServiceProviderIndividualDashboardPageState
     }
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Stack(
           clipBehavior: Clip.none,
           children: [
             Column(
@@ -80,7 +108,7 @@ class _ServiceProviderIndividualDashboardPageState
                 userInfoAndEditButton(district, governance, context),
 
                 // ✅ New Active Plan section
-                const UserPlanSection(),
+                UserPlanSection(agentInfo: agentInfo),
 
                 // ✅ PDF Uploaded Section
                 const PdfUploadedSection(),
@@ -315,6 +343,7 @@ class _ServiceProviderIndividualDashboardPageState
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -401,9 +430,29 @@ class _ServiceProviderIndividualDashboardPageState
   }
 }
 
-/// ✅ Active Plan Section (static)
+/// ✅ Active Plan Section (dynamic)
 class UserPlanSection extends StatelessWidget {
-  const UserPlanSection({super.key});
+  final Map<String, dynamic>? agentInfo;
+  
+  const UserPlanSection({super.key, this.agentInfo});
+
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -451,8 +500,8 @@ class UserPlanSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Active Plan:",
                         style: TextStyle(
                             color: Colors.white,
@@ -460,17 +509,17 @@ class UserPlanSection extends StatelessWidget {
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        "Basic",
-                        style: TextStyle(
+                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
-                        "Valid Until : 06 June 2025",
-                        style: TextStyle(
+                        "Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}",
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500),
@@ -486,11 +535,11 @@ class UserPlanSection extends StatelessWidget {
         // Stats row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             StatCardList(
               items: [
-                {"title": "Total Chats:", "value": "12"},
-                {"title": "Profile Views:", "value": "12314"},
+                {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
+                {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
               ],
             ),
           ],
