@@ -317,6 +317,98 @@ class ServiceService {
       };
     }
   }
+
+  // Edit a service (only name and description)
+  static Future<Map<String, dynamic>> editService(String serviceId, Map<String, dynamic> serviceData) async {
+    try {
+      final url = Uri.parse('$baseUrl/services/$serviceId');
+      
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+        body: jsonEncode(serviceData),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseData,
+        };
+      } else {
+        // Try to parse error response and provide user-friendly message
+        try {
+          final errorData = json.decode(response.body);
+          String userMessage = errorData['message'] ?? 'Failed to update service';
+          
+          return {
+            'success': false,
+            'error': userMessage,
+            'statusCode': response.statusCode,
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'error': 'Failed to update service. Please try again.',
+            'statusCode': response.statusCode,
+          };
+        }
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Unable to connect to server. Please check your internet connection and try again.',
+      };
+    }
+  }
+
+  // Delete a service
+  static Future<Map<String, dynamic>> deleteService(String serviceId) async {
+    try {
+      final url = Uri.parse('$baseUrl/services/$serviceId');
+      
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        return {
+          'success': true,
+          'data': responseData,
+        };
+      } else {
+        // Try to parse error response and provide user-friendly message
+        try {
+          final errorData = json.decode(response.body);
+          String userMessage = errorData['message'] ?? 'Failed to delete service';
+          
+          return {
+            'success': false,
+            'error': userMessage,
+            'statusCode': response.statusCode,
+          };
+        } catch (parseError) {
+          return {
+            'success': false,
+            'error': 'Failed to delete service. Please try again.',
+            'statusCode': response.statusCode,
+          };
+        }
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'Unable to connect to server. Please check your internet connection and try again.',
+      };
+    }
+  }
 }
 
 enum ServiceCategory {

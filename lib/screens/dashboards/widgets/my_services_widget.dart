@@ -37,6 +37,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
         limit: 20,
       );
 
+
       setState(() {
         if (loadMore) {
           services.addAll(response.services);
@@ -163,9 +164,13 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
         // Services list
         ...servicesToShow.map((service) => MyServiceCard(
           service: service,
-          onEdit: () {
-            // Navigate to edit service
-            Navigator.pushNamed(context, '/edit-my-service', arguments: service.id);
+          onEdit: () async {
+            // Navigate to edit service with service data
+            final result = await Navigator.pushNamed(context, '/edit-my-service', arguments: service);
+            // If the service was updated successfully, refresh the list
+            if (result == true) {
+              _refreshServices();
+            }
           },
           onDelete: () {
             _showDeleteConfirmation(service);
@@ -244,10 +249,9 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                // TODO: Implement delete service API call
-                _refreshServices();
+                await _deleteService(service);
               },
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
             ),
@@ -255,6 +259,27 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
         );
       },
     );
+  }
+
+  Future<void> _deleteService(MyService service) async {
+    try {
+      final result = await ServiceService.deleteService(service.id);
+      
+      if (result['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Service deleted successfully')),
+        );
+        _refreshServices();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['error'] ?? 'Failed to delete service')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   void _showBoostDialog(MyService service) {
