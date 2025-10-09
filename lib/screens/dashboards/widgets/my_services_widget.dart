@@ -13,7 +13,7 @@ class MyServicesWidget extends StatefulWidget {
 class _MyServicesWidgetState extends State<MyServicesWidget> {
   List<MyService> services = [];
   bool isLoading = true;
-  bool showAll = false;
+  int visibleServicesCount = 3; // Track how many services to show
   int currentPage = 1;
   int totalPages = 1;
   String? errorMessage;
@@ -58,14 +58,20 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
   Future<void> _refreshServices() async {
     setState(() {
       currentPage = 1;
-      showAll = false;
+      visibleServicesCount = 3; // Reset to original 3
     });
     await _loadServices();
   }
 
-  void _toggleShowAll() {
+  void _showMoreServices() {
     setState(() {
-      showAll = !showAll;
+      visibleServicesCount += 3; // Show 3 more services
+    });
+  }
+
+  void _showLessServices() {
+    setState(() {
+      visibleServicesCount = 3; // Return to original 3
     });
   }
 
@@ -147,8 +153,10 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
     }
 
     // Determine which services to show
-    final servicesToShow = showAll ? services : services.take(3).toList();
-    final hasMoreServices = services.length > 3;
+    final servicesToShow = services.take(visibleServicesCount).toList();
+    final hasMoreServices = services.length > visibleServicesCount;
+    final canShowMore = services.length > visibleServicesCount;
+    final canShowLess = visibleServicesCount > 3;
 
     return Column(
       children: [
@@ -168,21 +176,42 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
           },
         )),
 
-        // Show All / Show Less button
-        if (hasMoreServices) ...[
+        // Show More / Show Less buttons
+        if (hasMoreServices || canShowLess) ...[
           const SizedBox(height: 16),
-          Center(
-            child: DynamicGradientButton(
-              buttonText: showAll ? 'Show Less' : 'See All',
-              onTap: _toggleShowAll,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              textSize: 14,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Show More button
+              if (canShowMore)
+                DynamicGradientButton(
+                  buttonText: 'Show More',
+                  onTap: _showMoreServices,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  textSize: 14,
+                ),
+              
+              // Show Less button
+              if (canShowLess) ...[
+                if (canShowMore) const SizedBox(width: 16),
+                DynamicGradientButton(
+                  buttonText: 'Show Less',
+                  onTap: _showLessServices,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  textSize: 14,
+                  useGradient: false,
+                  backgroundColor: const Color(0xFFF9FBFF),
+                  borderColor: const Color(0xFF0048FF),
+                  borderWidth: 1.0,
+                  textColor: const Color(0xFF0048FF),
+                ),
+              ],
+            ],
           ),
         ],
 
         // Load more button (if there are more pages and showing all)
-        if (showAll && currentPage < totalPages) ...[
+        if (visibleServicesCount >= services.length && currentPage < totalPages) ...[
           const SizedBox(height: 16),
           Center(
             child: DynamicGradientButton(
