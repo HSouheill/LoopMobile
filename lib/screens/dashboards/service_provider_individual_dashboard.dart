@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
@@ -707,18 +708,79 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
     if (portfolioLink != null && portfolioLink.isNotEmpty) {
       final url = PortfolioService.getPortfolioUrl(portfolioLink);
       if (url != null) {
-        final Uri uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        } else {
+        try {
+          final Uri uri = Uri.parse(url);
+          
+          // Launch URL in browser
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(
+              uri, 
+              mode: LaunchMode.externalApplication,
+            );
+          } else {
+            // Fallback: try to launch without checking canLaunchUrl
+            try {
+              await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+            } catch (e) {
+              // Show error message with copy option
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Could not open PDF in browser. URL: $url'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'Copy URL',
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      try {
+                        await Clipboard.setData(ClipboardData(text: url));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('URL copied to clipboard'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to copy URL: ${e.toString()}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              );
+            }
+          }
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not open PDF'),
+            SnackBar(
+              content: Text('Error opening PDF: ${e.toString()}'),
               backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
             ),
           );
         }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Portfolio URL is not available'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No portfolio available'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
