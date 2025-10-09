@@ -454,19 +454,19 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
         children: [
           Row(
             children: [
-              if (service.image.isNotEmpty)
+              if (service.imageUrl.isNotEmpty)
                 Container(
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: DecorationImage(
-                      image: NetworkImage(service.image),
+                      image: NetworkImage(service.imageUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              if (service.image.isNotEmpty) const SizedBox(width: 12),
+              if (service.imageUrl.isNotEmpty) const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

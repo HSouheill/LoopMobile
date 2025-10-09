@@ -192,6 +192,21 @@ class Service {
       userId: json['userId']?.toString() ?? '',
     );
   }
+
+  // Get the full image URL with proper handling
+  String get imageUrl {
+    if (image.isEmpty) {
+      return 'https://via.placeholder.com/300x200?text=No+Image';
+    }
+    
+    // If it's already a full URL, return as is
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    
+    // Build full URL with environment base URL
+    return '${Environment.apiUrl}assets/$image';
+  }
 }
 
 class ServiceProvidersResponse {
