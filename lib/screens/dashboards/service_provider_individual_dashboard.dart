@@ -5,6 +5,7 @@ import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import 'widgets/my_services_widget.dart';
 import './widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
+import './widgets/social_links_display_widget.dart';
 import './widgets/statistics_card.dart';
 import '../../environment.dart';
 
@@ -254,12 +255,15 @@ class _ServiceProviderIndividualDashboardPageState
                 Column(
                   children: [
                     AddSocialAccountWidget(
-                      onSubmit: (name, url) {
-                        // Handle the submitted data here
-                        print('Name: $name');
-                        print('URL: $url');
-                      },
+                      onRefresh: _refreshData,
                     ),
+                    const SizedBox(height: 10),
+                    // Display existing social links
+                    if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+                      SocialLinksDisplayWidget(
+                        socialLinks: agentInfo!['user']['socialLinks'],
+                        onRefresh: _refreshData,
+                      ),
                   ],
                 ),
                 const SizedBox(height: 20),

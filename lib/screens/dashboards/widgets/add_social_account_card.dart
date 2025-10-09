@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../../services/social_links_service.dart';
 
 class AddSocialAccountWidget extends StatelessWidget {
   final Function(String name, String url)? onSubmit;
+  final VoidCallback? onRefresh;
 
-  const AddSocialAccountWidget({Key? key, this.onSubmit}) : super(key: key);
+  const AddSocialAccountWidget({Key? key, this.onSubmit, this.onRefresh}) : super(key: key);
 
   void _showAddSocialDialog(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController urlController = TextEditingController();
+    bool isLoading = false;
 
     showDialog(
       context: context,
@@ -72,12 +75,47 @@ class AddSocialAccountWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             DynamicGradientButton(
-              buttonText: 'Submit',
-              onTap: () {
-                if (onSubmit != null) {
-                  onSubmit!(nameController.text, urlController.text);
+              buttonText: isLoading ? 'Adding...' : 'Submit',
+              onTap: isLoading ? null : () async {
+                final name = nameController.text.trim();
+                final url = urlController.text.trim();
+                
+                if (name.isEmpty || url.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill in all fields')),
+                  );
+                  return;
                 }
-                Navigator.of(context).pop();
+
+                // Basic URL validation
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('URL must start with http:// or https://')),
+                  );
+                  return;
+                }
+
+                try {
+                  isLoading = true;
+                  await SocialLinksService.addSocialLink(name, url);
+                  if (onRefresh != null) {
+                    onRefresh!();
+                  }
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Social link added successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error adding social link: $e')),
+                    );
+                  }
+                } finally {
+                  isLoading = false;
+                }
               },
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
               useGradient: true,
