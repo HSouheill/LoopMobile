@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../environment.dart';
 import '../models/service_provider.dart';
+import '../models/my_service.dart';
+import 'auth_service.dart';
 
 class ServiceService {
   static final String baseUrl = '${Environment.apiUrl}agents-routes';
@@ -10,7 +12,10 @@ class ServiceService {
   static Future<ServiceProvidersResponse> getFeaturedServiceProviders({int limit = 3}) async {
     try {
       final url = Uri.parse('$baseUrl/get-all-service-providers?isFeatured=true&withServices=true&limit=$limit&sort=date_desc');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -26,7 +31,10 @@ class ServiceService {
   static Future<ServiceProvidersResponse> getTopRatedServiceProviders({int limit = 3}) async {
     try {
       final url = Uri.parse('$baseUrl/get-all-service-providers?withServices=true&limit=$limit&sort=rating_desc');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -46,7 +54,10 @@ class ServiceService {
   }) async {
     try {
       final url = Uri.parse('$baseUrl/get-all-service-providers?providerType=$providerType&withServices=true&limit=$limit&sort=$sort');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -79,7 +90,10 @@ class ServiceService {
       };
       
       final uri = Uri.parse('$baseUrl/get-all-service-providers').replace(queryParameters: queryParams);
-      final response = await http.get(uri);
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -97,7 +111,10 @@ class ServiceService {
       // First try to get all service providers and find the specific one
       final url = Uri.parse('$baseUrl/get-all-service-providers?withReviews=true&withServices=true&limit=100&page=1');
      
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -138,7 +155,10 @@ class ServiceService {
     try {
       // Try direct service provider endpoint if it exists
       final url = Uri.parse('${Environment.apiUrl}users/$serviceProviderId?withReviews=true&withServices=true');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -155,6 +175,34 @@ class ServiceService {
       }
     } catch (e) {
       throw Exception('Error fetching service provider directly: $e');
+    }
+  }
+
+  // Get my services with pagination
+  static Future<MyServicesResponse> getMyServices({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+      };
+      
+      final uri = Uri.parse('$baseUrl/my-services').replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return MyServicesResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to load my services: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching my services: $e');
     }
   }
 }

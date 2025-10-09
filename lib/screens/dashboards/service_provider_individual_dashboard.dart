@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
-import 'widgets/dynamic_service_card.dart';
+import 'widgets/my_services_widget.dart';
 import './widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/statistics_card.dart';
@@ -149,15 +149,8 @@ class _ServiceProviderIndividualDashboardPageState
                   ),
                 ),
 
-                // Dynamic Service Card
-                //! Maybe we have to add the slider when we click on Boost in dynamic_service_card.dart
-
-                DynamicServiceCardList(
-                  items: [
-                    {'leftText': 'Service Name1', 'imageUrl': ''},
-                    {'leftText': 'Service Name2', 'imageUrl': ''},
-                  ],
-                ),
+                // My Services Widget with real data and pagination
+                const MyServicesWidget(),
 
                 const SizedBox(height: 40),
 

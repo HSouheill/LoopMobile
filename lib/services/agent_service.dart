@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../environment.dart';
 import '../models/review.dart';
+import 'auth_service.dart';
 
 class AgentService {
   static final String baseUrl = '${Environment.apiUrl}agents-routes';
@@ -11,7 +12,10 @@ class AgentService {
       // First try to get all agents and find the specific one
       final url = Uri.parse('$baseUrl/get-all-agents?withReviews=true&withListings=true&limit=100&page=1');
       print('DEBUG: Fetching agents from URL: $url');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       print('DEBUG: Response status: ${response.statusCode}');
       
@@ -57,7 +61,10 @@ class AgentService {
     try {
       // Try direct agent endpoint if it exists
       final url = Uri.parse('${Environment.apiUrl}users/$agentId?withReviews=true&withListings=true');
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
