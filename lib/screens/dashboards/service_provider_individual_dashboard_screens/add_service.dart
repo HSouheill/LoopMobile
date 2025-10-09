@@ -35,12 +35,26 @@ class _AddServiceState extends State<AddService> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to select image. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -61,13 +75,27 @@ class _AddServiceState extends State<AddService> {
           'type': _selectedType,
         };
 
-        // Add image URL if image is selected (you might need to upload to a service first)
+        // Show appropriate loading message
         if (_selectedImage != null) {
-          // For now, we'll use a placeholder. In production, upload to your image service
-          serviceData['image'] = 'https://example.com/images/service.jpg';
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Uploading image and creating service...'),
+              backgroundColor: Colors.blue,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Creating service...'),
+              backgroundColor: Colors.blue,
+              duration: Duration(seconds: 2),
+            ),
+          );
         }
 
-        final result = await ServiceService.createService(serviceData);
+        // Create service with image upload
+        final result = await ServiceService.createService(serviceData, imageFile: _selectedImage);
         
         if (result['success']) {
           if (mounted) {
@@ -200,17 +228,50 @@ class _AddServiceState extends State<AddService> {
                             shape: BoxShape.circle,
                           ),
                           padding: const EdgeInsets.all(8),
-                          child: const Icon(
-                            Icons.add_a_photo_outlined,
+                          child: Icon(
+                            _selectedImage != null ? Icons.edit : Icons.add_a_photo_outlined,
                             color: Colors.white,
                             size: 16,
                           ),
                         ),
                       ),
                     ),
+                    // Show a small indicator when image is selected
+                    if (_selectedImage != null)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 12,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
+              // Show image selection status
+              if (_selectedImage != null)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Image selected (will be uploaded when you submit)',
+                      style: TextStyle(
+                        color: Colors.green[700],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 30),
 
               // Title Field

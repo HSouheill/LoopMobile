@@ -1,6 +1,8 @@
 // Enhanced services/service_service.dart
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../environment.dart';
 import '../models/service_provider.dart';
 import '../models/my_service.dart';
@@ -206,19 +208,71 @@ class ServiceService {
     }
   }
 
-  // Create a new service
-  static Future<Map<String, dynamic>> createService(Map<String, dynamic> serviceData) async {
+  // Create a new service with optional image upload
+  static Future<Map<String, dynamic>> createService(Map<String, dynamic> serviceData, {File? imageFile}) async {
     try {
       final url = Uri.parse('$baseUrl/add-service');
       
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
+      http.Response response;
+      
+      if (imageFile != null) {
+        // Create multipart request for image upload
+        var request = http.MultipartRequest('POST', url);
+        
+        // Add authorization header
+        request.headers.addAll({
           'Authorization': 'Bearer ${AuthService.token}',
-        },
-        body: jsonEncode(serviceData),
-      );
+        });
+        
+        // Add text fields
+        serviceData.forEach((key, value) {
+          if (value != null) {
+            request.fields[key] = value.toString();
+          }
+        });
+        
+        // Add image file with proper content type detection
+        String contentType = 'image/jpeg'; // Default
+        String extension = imageFile.path.split('.').last.toLowerCase();
+        
+        switch (extension) {
+          case 'png':
+            contentType = 'image/png';
+            break;
+          case 'gif':
+            contentType = 'image/gif';
+            break;
+          case 'webp':
+            contentType = 'image/webp';
+            break;
+          case 'jpg':
+          case 'jpeg':
+          default:
+            contentType = 'image/jpeg';
+            break;
+        }
+        
+        var multipartFile = await http.MultipartFile.fromPath(
+          'image', // This should match the field name expected by multer
+          imageFile.path,
+          contentType: MediaType.parse(contentType),
+        );
+        request.files.add(multipartFile);
+        
+        // Send the request
+        var streamedResponse = await request.send();
+        response = await http.Response.fromStream(streamedResponse);
+      } else {
+        // Regular JSON request without image
+        response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${AuthService.token}',
+          },
+          body: jsonEncode(serviceData),
+        );
+      }
 
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
