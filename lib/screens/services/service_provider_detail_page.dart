@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import '../../models/service_provider.dart';
 import '../../services/service_service.dart';
 import '../../widgets/service_provider_reviews_widget.dart';
+import '../../services/chat_service.dart';
+import '../../services/auth_service.dart';
+import '../../models/chat.dart';
+import '../chat/chat_conversation_page.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -72,6 +76,66 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
         _error = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _startChat() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final token = AuthService.token;
+      if (token == null) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in to start a chat')),
+        );
+        return;
+      }
+
+      // First, try to get existing chat with the service provider
+      Chat? existingChat = await ChatService.getChatWithUser(token, widget.serviceProvider.id);
+      
+      Chat? chat = existingChat;
+      
+      // If no existing chat, create a new one
+      if (chat == null) {
+        chat = await ChatService.createChat(
+          token: token,
+          otherUserId: widget.serviceProvider.id,
+        );
+      }
+
+      Navigator.pop(context); // Close loading dialog
+
+      if (chat != null) {
+        // Navigate to chat conversation page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatConversationPage(
+              chat: chat!,
+              otherParticipantName: widget.serviceProvider.displayName,
+              otherParticipantImage: widget.serviceProvider.profileImage.isNotEmpty ? widget.serviceProvider.profileImage : null,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to start chat. Please try again.')),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
 
@@ -430,6 +494,34 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
 
                     // Reviews Section
                     _buildServiceProviderReviews(),
+
+                    // Start Chat Button - now part of scrollable content
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _startChat,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 2,
+                          ),
+                          child: const Text(
+                            'Start Chat',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

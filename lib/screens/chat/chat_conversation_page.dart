@@ -224,14 +224,16 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: widget.otherParticipantImage != null
-                  ? NetworkImage(widget.otherParticipantImage!)
-                  : null,
-              child: widget.otherParticipantImage == null
-                  ? Text(widget.otherParticipantName.isNotEmpty 
-                      ? widget.otherParticipantName[0].toUpperCase() 
-                      : '?')
-                  : null,
+              backgroundColor: Colors.blue[600],
+              child: Text(
+                widget.otherParticipantName.isNotEmpty 
+                    ? widget.otherParticipantName[0].toUpperCase() 
+                    : '?',
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -243,6 +245,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                      color: Colors.black,
                     ),
                   ),
                   if (isTyping)
@@ -258,8 +261,8 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
             ),
           ],
         ),
-        backgroundColor: const Color.fromARGB(255, 27, 55, 147),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           PopupMenuButton<String>(
@@ -283,7 +286,14 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
           ),
         ],
       ),
-      body: Column(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/chatbg.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
         children: [
           Expanded(
             child: isLoading
@@ -377,6 +387,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -390,14 +401,17 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
           if (!isMe) ...[
             CircleAvatar(
               radius: 16,
-              backgroundImage: widget.otherParticipantImage != null
-                  ? NetworkImage(widget.otherParticipantImage!)
-                  : null,
-              child: widget.otherParticipantImage == null
-                  ? Text(widget.otherParticipantName.isNotEmpty 
-                      ? widget.otherParticipantName[0].toUpperCase() 
-                      : '?')
-                  : null,
+              backgroundColor: Colors.blue[600],
+              child: Text(
+                widget.otherParticipantName.isNotEmpty 
+                    ? widget.otherParticipantName[0].toUpperCase() 
+                    : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
           ],

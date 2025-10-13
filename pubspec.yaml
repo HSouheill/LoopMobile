@@ -39,4 +39,5 @@ flutter:
     - assets/profileBackgroundImage.png
     - assets/serverProviderBackground.png
     - assets/defaultProfileImage.png
+    - assets/chatbg.png
   #   - images/a_dot_ham.jpeg

@@ -261,4 +261,40 @@ class ChatService {
       return [];
     }
   }
+
+  // Create a new chat with a user
+  static Future<Chat?> createChat({
+    required String token,
+    required String otherUserId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl}chats'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'otherUserId': otherUserId,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['success']) {
+          try {
+            return Chat.fromJson(data['chat']);
+          } catch (parseError) {
+            print('Error parsing chat data: $parseError');
+            print('Chat data: ${data['chat']}');
+            return null;
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      print('Error creating chat: $e');
+      return null;
+    }
+  }
 }

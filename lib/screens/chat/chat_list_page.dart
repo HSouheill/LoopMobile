@@ -225,20 +225,16 @@ class _ChatListPageState extends State<ChatListPage> {
                                   leading: CircleAvatar(
                                     radius: 24,
                                     backgroundColor: Colors.blue[600],
-                                    backgroundImage: otherParticipantImage != null
-                                        ? NetworkImage(otherParticipantImage)
-                                        : null,
-                                    child: otherParticipantImage == null
-                                        ? Text(
-                                            otherParticipantName.isNotEmpty 
-                                                ? otherParticipantName[0].toUpperCase() 
-                                                : '?',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          )
-                                        : null,
+                                    child: Text(
+                                      otherParticipantName.isNotEmpty 
+                                          ? otherParticipantName[0].toUpperCase() 
+                                          : '?',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
                                   title: Text(
                                     otherParticipantName,

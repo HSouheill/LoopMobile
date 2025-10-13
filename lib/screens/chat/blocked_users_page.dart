@@ -112,9 +112,11 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blocked Users'),
-        backgroundColor: const Color.fromARGB(255, 27, 55, 147),
-        foregroundColor: Colors.white,
+        title: const Text(
+          'Blocked Users',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: isLoading
