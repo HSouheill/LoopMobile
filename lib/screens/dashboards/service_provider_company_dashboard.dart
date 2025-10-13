@@ -124,246 +124,233 @@ class _ServiceProviderCompanyDashboardPageState
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-            Column(
-              children: [
-                // AppBar background
-                SizedBox(
-                  height: 130,
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image:
-                            AssetImage("assets/serverProviderBackground.png"),
-                        fit: BoxFit.cover,
+              Column(
+                children: [
+                  // AppBar background
+                  SizedBox(
+                    height: 130,
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image:
+                              AssetImage("assets/serverProviderBackground.png"),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 50), // space for avatar
+                  const SizedBox(height: 50), // space for avatar
 
-                // User info + button
-                userInfoAndEditButton(district, governance, context),
+                  // User info + button
+                  userInfoAndEditButton(district, governance, context),
 
-                // ✅ Active Plan Section
-                UserPlanSection(agentInfo: agentInfo),
+                  // ✅ Active Plan Section
+                  UserPlanSection(agentInfo: agentInfo),
 
-                // ✅ PDF Uploaded Section
-                PdfUploadedSection(agentInfo: agentInfo),
+                  // ✅ PDF Uploaded Section
+                  PdfUploadedSection(agentInfo: agentInfo),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 20),
 
-                // "+ Add New PDF" Button
-                Center(
-                  child: DynamicGradientButton(
-                    buttonText: "+ Add New PDF",
-                    onTap: () {
-                      Navigator.pushNamed(context, '/upload-pdf');
-                    },
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                    textSize: 14,
-                  ),
-                ),
+                  //! Pierre has to implement Job screen
+                  // ✅ List New Jobs Section
+                  listNewJobsSection(context, screenWidth, jobs),
 
-                const SizedBox(height: 20),
+                  //! Pierre has to implement Application screen
+                  applicationsSection(context, screenWidth, applicationsList),
 
-                //! Pierre has to implement Job screen
-                // ✅ List New Jobs Section
-                listNewJobsSection(context, screenWidth, jobs),
+                  const SizedBox(height: 30),
 
-                //! Pierre has to implement Application screen
-                applicationsSection(context, screenWidth, applicationsList),
-
-                const SizedBox(height: 30),
-
-                // Messages Title
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "Messages",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
+                  // Messages Title
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Messages",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                // Search & Divider
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 26, vertical: 2),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search_sharp,
-                              color: Color(0xFF0048FF)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                hintText: "Search ...",
-                                hintStyle: TextStyle(
-                                  color: Color(0xFF0048FF),
-                                  fontSize: 14,
+                  // Search & Divider
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 26, vertical: 2),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.search_sharp,
+                                color: Color(0xFF0048FF)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                decoration: const InputDecoration(
+                                  hintText: "Search ...",
+                                  hintStyle: TextStyle(
+                                    color: Color(0xFF0048FF),
+                                    fontSize: 14,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
                                 ),
-                                border: InputBorder.none,
-                                isDense: true,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 18.0),
-                      child: Divider(
-                        thickness: 1,
-                        height: 1,
-                        color: Color(0xFF0ACC00),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 18.0),
+                        child: Divider(
+                          thickness: 1,
+                          height: 1,
+                          color: Color(0xFF0ACC00),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                // Message Cards
-                MessageCardList(
-                  items: [
-                    {
-                      "fullName": "John Doe",
-                      "message": "Hello, how are you?",
-                      "date": "12:45 am",
-                      "imageUrl": "",
-                      "isChecked": false,
-                      "unreadCount": "65",
-                    },
-                    {
-                      "fullName": "Jane Smith",
-                      "message": "Let’s meet tomorrow.",
-                      "date": "1:20 pm",
-                      "imageUrl": "",
-                      "isChecked": true,
-                    },
-                  ],
-                ),
+                  // Message Cards
+                  MessageCardList(
+                    items: [
+                      {
+                        "fullName": "John Doe",
+                        "message": "Hello, how are you?",
+                        "date": "12:45 am",
+                        "imageUrl": "",
+                        "isChecked": false,
+                        "unreadCount": "65",
+                      },
+                      {
+                        "fullName": "Jane Smith",
+                        "message": "Let’s meet tomorrow.",
+                        "date": "1:20 pm",
+                        "imageUrl": "",
+                        "isChecked": true,
+                      },
+                    ],
+                  ),
 
-                // Links Title
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "Links",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
+                  // Links Title
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        "Links",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-                // ✅ Social Links Section
-                Column(
-                  children: [
-                    AddSocialAccountWidget(
-                      onRefresh: _refreshData,
-                    ),
-                    const SizedBox(height: 10),
-                    // Display existing social links
-                    if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
-                      SocialLinksDisplayWidget(
-                        socialLinks: agentInfo!['user']['socialLinks'],
+                  // ✅ Social Links Section
+                  Column(
+                    children: [
+                      AddSocialAccountWidget(
                         onRefresh: _refreshData,
                       ),
-                  ],
+                      const SizedBox(height: 10),
+                      // Display existing social links
+                      if (agentInfo != null &&
+                          agentInfo!['user'] != null &&
+                          agentInfo!['user']['socialLinks'] != null)
+                        SocialLinksDisplayWidget(
+                          socialLinks: agentInfo!['user']['socialLinks'],
+                          onRefresh: _refreshData,
+                        ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+
+              // Back button
+              Positioned(
+                top: 30,
+                left: 16,
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: const Color(0xFF0048FF),
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Color(0xFF0048FF),
+                        size: 16,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                 ),
+              ),
 
-                const SizedBox(height: 20),
-              ],
-            ),
-
-            // Back button
-            Positioned(
-              top: 30,
-              left: 16,
-              child: SizedBox(
-                width: 30,
-                height: 30,
+              // Profile avatar overlapping AppBar
+              Positioned(
+                top: 75,
+                left: 16,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
+                    shape: BoxShape.circle,
                     border: Border.all(
                       color: const Color(0xFF0048FF),
-                      width: 1,
+                      width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(50.0),
                   ),
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(
-                      Icons.arrow_back_rounded,
-                      color: Color(0xFF0048FF),
-                      size: 16,
+                  child: ClipOval(
+                    child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: user!.profileImage != null &&
+                              user!.profileImage!.isNotEmpty
+                          ? Image.network(
+                              '${Environment.apiUrl}assets/${user!.profileImage!}',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/defaultProfileImage.png',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              'assets/defaultProfileImage.png',
+                              fit: BoxFit.cover,
+                            ),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
                   ),
                 ),
               ),
-            ),
-
-            // Profile avatar overlapping AppBar
-            Positioned(
-              top: 75,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFF0048FF),
-                    width: 2,
-                  ),
-                ),
-                child: ClipOval(
-                  child: SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: user!.profileImage != null &&
-                            user!.profileImage!.isNotEmpty
-                        ? Image.network(
-                            '${Environment.apiUrl}assets/${user!.profileImage!}',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'assets/defaultProfileImage.png',
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          )
-                        : Image.asset(
-                            'assets/defaultProfileImage.png',
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -441,7 +428,7 @@ class _ServiceProviderCompanyDashboardPageState
 /// ✅ Active Plan Section (dynamic)
 class UserPlanSection extends StatelessWidget {
   final Map<String, dynamic>? agentInfo;
-  
+
   const UserPlanSection({super.key, this.agentInfo});
 
   String _formatDate(String? dateString) {
@@ -456,8 +443,18 @@ class UserPlanSection extends StatelessWidget {
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return months[month - 1];
   }
@@ -538,8 +535,14 @@ class UserPlanSection extends StatelessWidget {
           children: [
             StatCardList(
               items: [
-                {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
-                {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
+                {
+                  "title": "Total Chats:",
+                  "value": "${agentInfo?['totalChats'] ?? 0}"
+                },
+                {
+                  "title": "Profile Views:",
+                  "value": "${agentInfo?['user']?['profileViews'] ?? 0}"
+                },
               ],
             ),
           ],
@@ -550,10 +553,10 @@ class UserPlanSection extends StatelessWidget {
   }
 }
 
-/// ✅ PDF Uploaded Section
+/// ✅ PDF Uploaded Section (matches individual dashboard)
 class PdfUploadedSection extends StatefulWidget {
   final Map<String, dynamic>? agentInfo;
-  
+
   const PdfUploadedSection({super.key, this.agentInfo});
 
   @override
@@ -594,7 +597,8 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
             // Refresh the parent widget to update the user data without navigation
             if (context.mounted) {
               // Trigger a refresh of the parent dashboard
-              final parentState = context.findAncestorStateOfType<_ServiceProviderCompanyDashboardPageState>();
+              final parentState = context.findAncestorStateOfType<
+                  _ServiceProviderCompanyDashboardPageState>();
               if (parentState != null) {
                 parentState._refreshData();
               }
@@ -607,13 +611,13 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
               ),
             );
           }
-        } catch (e) {
+        } catch (uploadError) {
           setState(() {
             isLoading = false;
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error uploading PDF: ${e.toString()}'),
+              content: Text('Error uploading file: ${uploadError.toString()}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -636,7 +640,8 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Delete Portfolio'),
-          content: const Text('Are you sure you want to delete your portfolio PDF?'),
+          content:
+              const Text('Are you sure you want to delete your portfolio PDF?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -672,7 +677,8 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
         // Refresh the parent widget to update the user data without navigation
         if (context.mounted) {
           // Trigger a refresh of the parent dashboard
-          final parentState = context.findAncestorStateOfType<_ServiceProviderCompanyDashboardPageState>();
+          final parentState = context.findAncestorStateOfType<
+              _ServiceProviderCompanyDashboardPageState>();
           if (parentState != null) {
             parentState._refreshData();
           }
@@ -689,34 +695,92 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
   }
 
   Future<void> _viewPortfolioPDF() async {
-    final portfolioUrl = PortfolioService.getPortfolioUrl(widget.agentInfo?['user']?['portfolioLink']);
-    if (portfolioUrl != null) {
-      try {
-        final Uri url = Uri.parse(portfolioUrl);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        } else {
+    final portfolioLink = widget.agentInfo?['user']?['portfolioLink'];
+    if (portfolioLink != null && portfolioLink.isNotEmpty) {
+      final url = PortfolioService.getPortfolioUrl(portfolioLink);
+      if (url != null) {
+        try {
+          final Uri uri = Uri.parse(url);
+
+          // Launch URL in browser
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(
+              uri,
+              mode: LaunchMode.externalApplication,
+            );
+          } else {
+            // Fallback: try to launch without checking canLaunchUrl
+            try {
+              await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+            } catch (e) {
+              // Show error message with copy option
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Could not open PDF in browser. URL: $url'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'Copy URL',
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      try {
+                        await Clipboard.setData(ClipboardData(text: url));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('URL copied to clipboard'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Failed to copy URL: ${e.toString()}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              );
+            }
+          }
+        } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not open PDF'),
+            SnackBar(
+              content: Text('Error opening PDF: ${e.toString()}'),
               backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
             ),
           );
         }
-      } catch (e) {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error opening PDF: ${e.toString()}'),
+          const SnackBar(
+            content: Text('Portfolio URL is not available'),
             backgroundColor: Colors.red,
           ),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No portfolio available'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final portfolioLink = widget.agentInfo?['user']?['portfolioLink'];
+    final hasPortfolio = portfolioLink != null && portfolioLink.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -724,109 +788,138 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "PDF Uploaded",
+            "Portfolio PDF",
             style: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 18,
               color: Color(0xFF1E1E1E),
             ),
           ),
-        const SizedBox(height: 40),
-        Center(
-          child: Material(
-            elevation: 2,
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.white,
-            child: Container(
-              width: screenWidth * 0.75,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
+          const SizedBox(height: 20),
+
+          if (hasPortfolio) ...[
+            // Show existing portfolio
+            Center(
+              child: Material(
+                elevation: 2,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0x570048FF)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.6),
-                    offset: const Offset(0, 4),
-                    blurRadius: 9.4,
-                    spreadRadius: -1,
+                color: Colors.white,
+                child: Container(
+                  width: screenWidth * 0.75,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF0048FF)),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.picture_as_pdf,
-                        size: 32,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(width: 14),
-                      Text(
-                        widget.agentInfo?['user']?['portfolioLink'] != null 
-                            ? "View Portfolio" 
-                            : "No Portfolio Uploaded",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                  child: InkWell(
+                    onTap: _viewPortfolioPDF,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.picture_as_pdf,
+                              size: 32,
+                              color: Colors.red,
+                            ),
+                            SizedBox(width: 14),
+                            Text(
+                              "View Portfolio",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  if (widget.agentInfo?['user']?['portfolioLink'] != null)
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'view') {
-                          _viewPortfolioPDF();
-                        } else if (value == 'delete') {
-                          _deletePortfolioPDF();
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'view',
-                          child: Row(
-                            children: [
-                              Icon(Icons.visibility, size: 16),
-                              SizedBox(width: 8),
-                              Text('View'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, size: 16, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.red)),
-                            ],
-                          ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Colors.black,
                         ),
                       ],
-                      child: const Icon(
-                        Icons.more_vert,
-                        size: 16,
-                        color: Colors.black,
-                      ),
-                    )
-                  else
-                    GestureDetector(
-                      onTap: _uploadPortfolioPDF,
-                      child: const Icon(
-                        Icons.add,
-                        size: 16,
-                        color: Colors.green,
-                      ),
                     ),
-                ],
+                  ),
+                ),
               ),
             ),
+            const SizedBox(height: 15),
+          ],
+
+          // Action buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Add/Update button
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: DynamicGradientButton(
+                    buttonText:
+                        hasPortfolio ? "Update Portfolio" : "+ Add New PDF",
+                    textSize: 12,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    onTap: isLoading ? null : _uploadPortfolioPDF,
+                  ),
+                ),
+              ),
+
+              // Delete button (only show if portfolio exists)
+              if (hasPortfolio)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: isLoading ? null : _deletePortfolioPDF,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "Delete",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ),
+
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
         ],
       ),
     );
