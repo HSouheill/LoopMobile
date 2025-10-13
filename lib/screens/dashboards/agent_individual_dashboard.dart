@@ -1,18 +1,100 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../services/agent_info_service.dart';
 import './widgets/statistics_card.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../screens/dashboards/widgets/dynamic_service_card.dart';
 import '../../screens/dashboards/widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/inactive_listing_card_list.dart';
+import './widgets/social_links_display_widget.dart';
 
-class AgentIndividualDashboardPage extends StatelessWidget {
+class AgentIndividualDashboardPage extends StatefulWidget {
   const AgentIndividualDashboardPage({super.key});
 
   @override
+  State<AgentIndividualDashboardPage> createState() => _AgentIndividualDashboardPageState();
+}
+
+class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardPage> {
+  User? user;
+  Map<String, dynamic>? agentInfo;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+    _loadAgentInfo();
+  }
+
+  Future<void> _loadUser() async {
+    await AuthService.checkAuthStatus();
+    setState(() {
+      user = AuthService.currentUser;
+    });
+  }
+
+  Future<void> _loadAgentInfo() async {
+    try {
+      final info = await AgentInfoService.getAgentInfo();
+      setState(() {
+        agentInfo = info;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading agent info: $e');
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _loadAgentInfo();
+  }
+
+  String _calculateDaysLeft(String? planExpiresAt) {
+    if (planExpiresAt == null) return '0';
+    try {
+      final expiryDate = DateTime.parse(planExpiresAt);
+      final now = DateTime.now();
+      final difference = expiryDate.difference(now).inDays;
+      return difference > 0 ? difference.toString() : '0';
+    } catch (e) {
+      return '0';
+    }
+  }
+
+  List<Widget> _buildPlanCards() {
+    final allPlans = agentInfo?['allPlans'] as List<dynamic>?;
+    if (allPlans == null || allPlans.isEmpty) {
+      return planCards; // fallback to static cards
+    }
+
+    return allPlans.map((plan) {
+      return AgentPlanSection(
+        planTitle: plan['name'] ?? 'Unknown Plan',
+        planDescription: plan['description'] ?? 'No description available',
+        stats: [
+          PlanStat(icon: Icons.list_alt_sharp, value: "${plan['listings'] ?? 0}", label: "Listings"),
+          PlanStat(icon: Icons.calendar_month_outlined, value: "${plan['length'] ?? 0}", label: "Days"),
+          PlanStat(icon: Icons.currency_exchange, value: "\$", label: "${plan['price'] ?? 0}"),
+        ],
+      );
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final user = AuthService.currentUser;
+    if (user == null || isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: PreferredSize(
@@ -73,8 +155,10 @@ class AgentIndividualDashboardPage extends StatelessWidget {
         ),
       ),
       // To allow scrolling for more listings, wrap the Column in a SingleChildScrollView
-      body: SingleChildScrollView(
-        child: Container(
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
           child: Column(
@@ -92,12 +176,12 @@ class AgentIndividualDashboardPage extends StatelessWidget {
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   StatCardList(
                     items: [
-                      {"title": "Total Listing:", "value": "42"},
-                      {"title": "Profile Views:", "value": "4212"},
-                      {"title": "Active Listing:", "value": "42"},
+                      {"title": "Total Listing:", "value": "${agentInfo?['user']?['totalListings'] ?? 0}"},
+                      {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
+                      {"title": "Active Listing:", "value": "${agentInfo?['user']?['activeListings'] ?? 0}"},
                     ],
                   ),
                 ],
@@ -107,7 +191,9 @@ class AgentIndividualDashboardPage extends StatelessWidget {
               Center(
                 child: DynamicGradientButton(
                   buttonText: "+  Add New Listing",
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, '/listing-type-selection');
+                  },
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   textSize: 16,
@@ -193,17 +279,17 @@ class AgentIndividualDashboardPage extends StatelessWidget {
                 children: [
                   // Left Column
                   Row(
-                    children: const [
+                    children: [
                       Text(
-                        "5", // 👈 replace with dynamic variable later
-                        style: TextStyle(
+                        "${(agentInfo?['subscribedPlan']?['listings'] ?? 0) - (agentInfo?['user']?['activeListings'] ?? 0)}", // Calculate remaining listings
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF0048FF),
                         ),
                       ),
-                      SizedBox(width: 4),
-                      Text(
+                      const SizedBox(width: 4),
+                      const Text(
                         "Listings Left",
                         style: TextStyle(
                           fontSize: 15,
@@ -386,9 +472,9 @@ class AgentIndividualDashboardPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Text(
-                            "12", // 👈 replace with dynamic variable for days left
-                            style: TextStyle(
+                          Text(
+                            _calculateDaysLeft(agentInfo?['user']?['planExpiresAt']),
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0XFF0048FF),
@@ -410,13 +496,13 @@ class AgentIndividualDashboardPage extends StatelessWidget {
 
                   SizedBox(width: MediaQuery.of(context).size.width * 0.32),
 
-                  // Wrap Basic in a Column to respect top alignment
+                  // Wrap plan name in a Column to respect top alignment
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        "Basic",
-                        style: TextStyle(
+                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF0048FF),
@@ -430,7 +516,7 @@ class AgentIndividualDashboardPage extends StatelessWidget {
               const SizedBox(height: 15),
 
               Column(
-                children: planCards,
+                children: _buildPlanCards(),
               ),
 
               const SizedBox(height: 15),
@@ -462,17 +548,21 @@ class AgentIndividualDashboardPage extends StatelessWidget {
               Column(
                 children: [
                   AddSocialAccountWidget(
-                    onSubmit: (name, url) {
-                      // Handle the submitted data here
-                      print('Name: $name');
-                      print('URL: $url');
-                    },
+                    onRefresh: _refreshData,
                   ),
+                  const SizedBox(height: 10),
+                  // Display existing social links
+                  if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+                    SocialLinksDisplayWidget(
+                      socialLinks: agentInfo!['user']['socialLinks'],
+                      onRefresh: _refreshData,
+                    ),
                 ],
               ),
               // ---------------------------------
             ],
           ),
+        ),
         ),
       ),
     );
