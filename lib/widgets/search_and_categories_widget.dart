@@ -64,11 +64,15 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
   }
 
   void _navigateToCategory(String category) {
+    // Automatically trigger search with the selected category filter
+    // even if search bar is empty
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => SearchResultsPage(
           initialCategory: category,
+          // Pass empty query to trigger category-only search
+          initialQuery: '',
         ),
       ),
     );

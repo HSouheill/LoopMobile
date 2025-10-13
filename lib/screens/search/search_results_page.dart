@@ -67,13 +67,26 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       _isLoading = true;
     });
 
+
     try {
-      final response = await ListingService.searchListings(
-        query: _currentQuery,
-        category: _currentCategory,
-        page: _currentPage,
-        filters: _currentFilters,
-      );
+      ListingsResponse response;
+      
+      // If we have a category but no query, use getAllListings with type filter
+      if (_currentCategory != null && _currentQuery.isEmpty) {
+        response = await ListingService.getAllListings(
+          page: _currentPage,
+          limit: 20,
+          type: _currentCategory,
+          sort: 'date_desc',
+        );
+      } else {
+        response = await ListingService.searchListings(
+          query: _currentQuery,
+          category: _currentCategory,
+          page: _currentPage,
+          filters: _currentFilters,
+        );
+      }
 
       setState(() {
         if (resetPage) {

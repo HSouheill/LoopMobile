@@ -115,6 +115,7 @@ class ListingService {
         if (category != null) 'type': category,
       };
 
+
       // Add filter parameters
       if (filters != null) {
         if (filters['listingFor'] != null) {
@@ -148,6 +149,7 @@ class ListingService {
 
       final uri = Uri.parse('${Environment.apiUrl}listings/search')
           .replace(queryParameters: queryParams);
+      
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
