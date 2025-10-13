@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../services/agent_info_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import './widgets/message_card.dart';
 import './widgets/statistics_card.dart';
 import './widgets/agent_list_section.dart';
 import './widgets/dynamic_service_card.dart';
+import './widgets/add_social_account_card.dart';
+import './widgets/social_links_display_widget.dart';
+import '../../environment.dart';
 
 class AgentCompanyDashboardPage extends StatefulWidget {
   const AgentCompanyDashboardPage({super.key});
@@ -16,11 +20,14 @@ class AgentCompanyDashboardPage extends StatefulWidget {
 
 class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   User? user;
+  Map<String, dynamic>? agentInfo;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadAgentInfo();
   }
 
   Future<void> _loadUser() async {
@@ -30,9 +37,31 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     });
   }
 
+  Future<void> _loadAgentInfo() async {
+    try {
+      final info = await AgentInfoService.getAgentInfo();
+      setState(() {
+        agentInfo = info;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading agent info: $e');
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _loadAgentInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
+    if (user == null || isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -50,10 +79,12 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     }
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
             Column(
               children: [
                 // AppBar background
@@ -78,7 +109,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 userInfoAndEditButton(district, governance, context),
 
                 // ✅ New Active Plan section
-                const UserPlanSection(),
+                UserPlanSection(agentInfo: agentInfo, onRefresh: _refreshData),
 
                 const SizedBox(height: 40),
 
@@ -217,7 +248,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     child: user!.profileImage != null &&
                             user!.profileImage!.isNotEmpty
                         ? Image.network(
-                            'http://localhost:3000/api/assets/${user!.profileImage!}',
+                            '${Environment.apiUrl}assets/${user!.profileImage!}',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset(
@@ -235,6 +266,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -322,9 +354,30 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   }
 }
 
-/// ✅ Active Plan Section (static)
+/// ✅ Active Plan Section (dynamic)
 class UserPlanSection extends StatelessWidget {
-  const UserPlanSection({super.key});
+  final Map<String, dynamic>? agentInfo;
+  final VoidCallback? onRefresh;
+  
+  const UserPlanSection({super.key, this.agentInfo, this.onRefresh});
+
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -372,8 +425,8 @@ class UserPlanSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Active Plan:",
                         style: TextStyle(
                             color: Colors.white,
@@ -381,17 +434,17 @@ class UserPlanSection extends StatelessWidget {
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        "Basic",
-                        style: TextStyle(
+                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
-                        "Valid Until : 06 June 2025",
-                        style: TextStyle(
+                        "Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}",
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500),
@@ -407,41 +460,17 @@ class UserPlanSection extends StatelessWidget {
         // Stats row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             StatCardList(
               items: [
-                {"title": "Total Chats:", "value": "12"},
-              ],
-            ),
-            SizedBox(width: 20), // 👈 horizontal space between the two
-            StatCardList(
-              items: [
-                {"title": "Profile Views:", "value": "12314"},
+                {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
+                {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
               ],
             ),
           ],
         ),
 
-        const SizedBox(height: 15),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            StatCardList(
-              items: [
-                {"title": "Total Listings:", "value": "112"},
-              ],
-            ),
-            SizedBox(width: 20),
-            StatCardList(
-              items: [
-                {"title": "Total Agents:", "value": "5"},
-              ],
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 35),
+        const SizedBox(height: 20),
 
         Padding(
           padding: const EdgeInsets.only(left: 16.0), // adjust as needed
@@ -523,6 +552,38 @@ class UserPlanSection extends StatelessWidget {
             },
           ],
         ),
+
+        const SizedBox(height: 30),
+
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              "Links",
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+              ),
+            ),
+          ),
+        ),
+
+        Column(
+          children: [
+            AddSocialAccountWidget(
+              onRefresh: onRefresh,
+            ),
+            const SizedBox(height: 10),
+            // Display existing social links
+            if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+              SocialLinksDisplayWidget(
+                socialLinks: agentInfo!['user']['socialLinks'],
+                onRefresh: onRefresh,
+              ),
+          ],
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }
