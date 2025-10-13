@@ -39,9 +39,13 @@ class JobDetailPage extends StatelessWidget {
                     },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: Colors.grey[300],
-                        child: const Center(
-                          child: Icon(Icons.broken_image, size: 60, color: Colors.grey),
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: Icon(
+                            Icons.work_outline,
+                            size: 80,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       );
                     },

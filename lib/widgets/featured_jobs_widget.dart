@@ -123,10 +123,15 @@ class JobCard extends StatelessWidget {
                       );
                     },
                     errorBuilder: (context, error, stackTrace) {
-                      return const SizedBox(
+                      return Container(
                         height: 160,
+                        color: Colors.grey[100],
                         child: Center(
-                          child: Icon(Icons.broken_image, size: 40),
+                          child: Icon(
+                            Icons.work_outline,
+                            size: 50,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       );
                     },
