@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 import '../../services/auth_service.dart';
+import '../../services/agent_info_service.dart';
+import '../../services/portfolio_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import './widgets/message_card.dart';
 import './widgets/statistics_card.dart';
+import './widgets/add_social_account_card.dart';
+import './widgets/social_links_display_widget.dart';
 import '../../environment.dart';
-import './service_provider_company_dashboard_screens/application_screen.dart';
 
 class ServiceProviderCompanyDashboardPage extends StatefulWidget {
   const ServiceProviderCompanyDashboardPage({super.key});
@@ -17,11 +24,14 @@ class ServiceProviderCompanyDashboardPage extends StatefulWidget {
 class _ServiceProviderCompanyDashboardPageState
     extends State<ServiceProviderCompanyDashboardPage> {
   User? user;
+  Map<String, dynamic>? agentInfo;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _loadAgentInfo();
   }
 
   Future<void> _loadUser() async {
@@ -31,9 +41,31 @@ class _ServiceProviderCompanyDashboardPageState
     });
   }
 
+  Future<void> _loadAgentInfo() async {
+    try {
+      final info = await AgentInfoService.getAgentInfo();
+      setState(() {
+        agentInfo = info;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error loading agent info: $e');
+    }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _loadAgentInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
+    if (user == null || isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -86,10 +118,12 @@ class _ServiceProviderCompanyDashboardPageState
     ];
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
             Column(
               children: [
                 // AppBar background
@@ -114,10 +148,10 @@ class _ServiceProviderCompanyDashboardPageState
                 userInfoAndEditButton(district, governance, context),
 
                 // ✅ Active Plan Section
-                const UserPlanSection(),
+                UserPlanSection(agentInfo: agentInfo),
 
                 // ✅ PDF Uploaded Section
-                const PdfUploadedSection(),
+                PdfUploadedSection(agentInfo: agentInfo),
 
                 const SizedBox(height: 10),
 
@@ -224,6 +258,37 @@ class _ServiceProviderCompanyDashboardPageState
                   ],
                 ),
 
+                // Links Title
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      "Links",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ✅ Social Links Section
+                Column(
+                  children: [
+                    AddSocialAccountWidget(
+                      onRefresh: _refreshData,
+                    ),
+                    const SizedBox(height: 10),
+                    // Display existing social links
+                    if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+                      SocialLinksDisplayWidget(
+                        socialLinks: agentInfo!['user']['socialLinks'],
+                        onRefresh: _refreshData,
+                      ),
+                  ],
+                ),
+
                 const SizedBox(height: 20),
               ],
             ),
@@ -299,6 +364,7 @@ class _ServiceProviderCompanyDashboardPageState
             ),
           ],
         ),
+        ),
       ),
     );
   }
@@ -372,9 +438,29 @@ class _ServiceProviderCompanyDashboardPageState
   }
 }
 
-/// ✅ Active Plan Section (static)
+/// ✅ Active Plan Section (dynamic)
 class UserPlanSection extends StatelessWidget {
-  const UserPlanSection({super.key});
+  final Map<String, dynamic>? agentInfo;
+  
+  const UserPlanSection({super.key, this.agentInfo});
+
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'N/A';
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
+    } catch (e) {
+      return 'N/A';
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -416,8 +502,8 @@ class UserPlanSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         "Active Plan:",
                         style: TextStyle(
                             color: Colors.white,
@@ -425,17 +511,17 @@ class UserPlanSection extends StatelessWidget {
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        "Basic",
-                        style: TextStyle(
+                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
-                        "Valid Until : 06 June 2025",
-                        style: TextStyle(
+                        "Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}",
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w500),
@@ -449,11 +535,11 @@ class UserPlanSection extends StatelessWidget {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             StatCardList(
               items: [
-                {"title": "Total Chats:", "value": "12"},
-                {"title": "Profile Views:", "value": "12314"},
+                {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
+                {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
               ],
             ),
           ],
@@ -465,8 +551,168 @@ class UserPlanSection extends StatelessWidget {
 }
 
 /// ✅ PDF Uploaded Section
-class PdfUploadedSection extends StatelessWidget {
-  const PdfUploadedSection({super.key});
+class PdfUploadedSection extends StatefulWidget {
+  final Map<String, dynamic>? agentInfo;
+  
+  const PdfUploadedSection({super.key, this.agentInfo});
+
+  @override
+  State<PdfUploadedSection> createState() => _PdfUploadedSectionState();
+}
+
+class _PdfUploadedSectionState extends State<PdfUploadedSection> {
+  bool isLoading = false;
+
+  Future<void> _uploadPortfolioPDF() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          isLoading = true;
+        });
+
+        try {
+          File file = File(result.files.single.path!);
+          final response = await PortfolioService.uploadPortfolioPDF(file);
+
+          setState(() {
+            isLoading = false;
+          });
+
+          if (response['success']) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['message']),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Refresh the parent widget to update the user data without navigation
+            if (context.mounted) {
+              // Trigger a refresh of the parent dashboard
+              final parentState = context.findAncestorStateOfType<_ServiceProviderCompanyDashboardPageState>();
+              if (parentState != null) {
+                parentState._refreshData();
+              }
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(response['message']),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        } catch (e) {
+          setState(() {
+            isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error uploading PDF: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error selecting file: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _deletePortfolioPDF() async {
+    // Show confirmation dialog
+    bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Portfolio'),
+          content: const Text('Are you sure you want to delete your portfolio PDF?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        isLoading = true;
+      });
+
+      final response = await PortfolioService.deletePortfolioPDF();
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response['success']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Refresh the parent widget to update the user data without navigation
+        if (context.mounted) {
+          // Trigger a refresh of the parent dashboard
+          final parentState = context.findAncestorStateOfType<_ServiceProviderCompanyDashboardPageState>();
+          if (parentState != null) {
+            parentState._refreshData();
+          }
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _viewPortfolioPDF() async {
+    final portfolioUrl = PortfolioService.getPortfolioUrl(widget.agentInfo?['user']?['portfolioLink']);
+    if (portfolioUrl != null) {
+      try {
+        final Uri url = Uri.parse(portfolioUrl);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open PDF'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening PDF: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -485,59 +731,102 @@ class PdfUploadedSection extends StatelessWidget {
               color: Color(0xFF1E1E1E),
             ),
           ),
-          const SizedBox(height: 40),
-          Center(
-            child: Material(
-              elevation: 2,
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-              child: Container(
-                width: screenWidth * 0.75,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0x570048FF)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.6),
-                      offset: const Offset(0, 4),
-                      blurRadius: 9.4,
-                      spreadRadius: -1,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf,
-                          size: 32,
-                          color: Colors.red,
+        const SizedBox(height: 40),
+        Center(
+          child: Material(
+            elevation: 2,
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            child: Container(
+              width: screenWidth * 0.75,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0x570048FF)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.6),
+                    offset: const Offset(0, 4),
+                    blurRadius: 9.4,
+                    spreadRadius: -1,
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.picture_as_pdf,
+                        size: 32,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(width: 14),
+                      Text(
+                        widget.agentInfo?['user']?['portfolioLink'] != null 
+                            ? "View Portfolio" 
+                            : "No Portfolio Uploaded",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
-                        SizedBox(width: 14),
-                        Text(
-                          "View Portfolio",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
+                  if (widget.agentInfo?['user']?['portfolioLink'] != null)
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'view') {
+                          _viewPortfolioPDF();
+                        } else if (value == 'delete') {
+                          _deletePortfolioPDF();
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'view',
+                          child: Row(
+                            children: [
+                              Icon(Icons.visibility, size: 16),
+                              SizedBox(width: 8),
+                              Text('View'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, size: 16, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Delete', style: TextStyle(color: Colors.red)),
+                            ],
                           ),
                         ),
                       ],
+                      child: const Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: Colors.black,
+                      ),
+                    )
+                  else
+                    GestureDetector(
+                      onTap: _uploadPortfolioPDF,
+                      child: const Icon(
+                        Icons.add,
+                        size: 16,
+                        color: Colors.green,
+                      ),
                     ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 10,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
+        ),
         ],
       ),
     );
