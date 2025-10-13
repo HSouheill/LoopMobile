@@ -47,6 +47,7 @@ import 'screens/search/advanced_filters_page.dart';
 import 'screens/add_listing/listing_type_selection_page.dart';
 import 'screens/add_listing/property_type_selection_page.dart';
 import 'screens/add_listing/add_listing_form_page.dart';
+import 'screens/chat/chat.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -130,5 +131,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/listing-type-selection': (_) => const ListingTypeSelectionPage(),
     '/property-type-selection': (_) => const PropertyTypeSelectionPage(),
     '/add-listing-form': (_) => const AddListingFormPage(),
+    '/chat': (_) => const ChatPage(),
   };
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
-import 'widgets/under_construction.dart';
 import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
@@ -16,6 +15,7 @@ import 'services/service_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
+import 'screens/chat/chat.dart';
 import 'screens/add_listing/widgets/add_listing_modal.dart';
 
 void main() {
@@ -90,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
     ListingsPage(),
     HomePage(), // index 2 → center
     ServicesPage(),
-    UnderConstructionPage(pageName: "Chat"),
+    ChatPage(),
   ];
 
   @override
