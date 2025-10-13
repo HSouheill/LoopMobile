@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
+import '../../services/review_service.dart';
+import '../../models/review.dart';
+import '../../environment.dart';
 import './widgets/statistics_card.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../screens/dashboards/widgets/dynamic_service_card.dart';
@@ -20,12 +23,15 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
   User? user;
   Map<String, dynamic>? agentInfo;
   bool isLoading = true;
+  List<Review> reviews = [];
+  bool reviewsLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
     _loadAgentInfo();
+    _loadReviews();
   }
 
   Future<void> _loadUser() async {
@@ -50,11 +56,28 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     }
   }
 
+  Future<void> _loadReviews() async {
+    try {
+      final response = await ReviewService.getMyReviews(page: 1, limit: 3);
+      setState(() {
+        reviews = response.reviews;
+        reviewsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        reviewsLoading = false;
+      });
+      print('Error loading reviews: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
+      reviewsLoading = true;
     });
     await _loadAgentInfo();
+    await _loadReviews();
   }
 
   String _calculateDaysLeft(String? planExpiresAt) {
@@ -67,6 +90,137 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     } catch (e) {
       return '0';
     }
+  }
+
+  Widget _buildReviewsSection() {
+    if (reviewsLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (reviews.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        child: const Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.reviews_outlined,
+                size: 48,
+                color: Colors.grey,
+              ),
+              SizedBox(height: 8),
+              Text(
+                'No reviews yet',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: reviews.map((review) {
+        return _buildReviewCard(review);
+      }).toList(),
+    );
+  }
+
+  Widget _buildReviewCard(Review review) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(152, 255, 255, 255),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Profile image
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF0048FF), width: 1),
+            ),
+            child: ClipOval(
+              child: review.userProfileImage.isNotEmpty
+                  ? Image.network(
+                      '${Environment.apiUrl}assets/${review.userProfileImage}',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.person,
+                          color: Color(0xFF0048FF),
+                        );
+                      },
+                    )
+                  : const Icon(
+                      Icons.person,
+                      color: Color(0xFF0048FF),
+                    ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Review content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top row: name and rating
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        review.userName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                    ),
+                    _buildStars(review.rating.toDouble()),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Comment
+                Text(
+                  review.comment,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF1E1E1E),
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                // Date
+                Text(
+                  review.formattedDate,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> _buildPlanCards() {
@@ -405,22 +559,47 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               const SizedBox(height: 35),
 
-              const Text(
-                "Rating & reviews",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF1E1E1E),
+              // Reviews section with "See all" button
+              SizedBox(
+                height: 40,
+                child: Stack(
+                  children: [
+                    const Center(
+                      child: Text(
+                        "Rating & Reviews",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/my-reviews');
+                          },
+                          child: const Text(
+                            "See all",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF1E1E1E),
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 30),
-
-              _buildRatingsList(context, ratingsList),
-
               const SizedBox(height: 20),
 
-// Example rating rows
+              _buildReviewsSection(),
 
               const SizedBox(height: 20),
 
@@ -747,80 +926,6 @@ final List<AgentPlanSection> planCards = [
   ),
 ];
 
-Widget _buildRatingRow({
-  required BuildContext context,
-  required String imageUrl,
-  required String fullName,
-  required String message,
-  double rating = 4.5, // static rating
-}) {
-  final screenWidth = MediaQuery.of(context).size.width;
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    child: SizedBox(
-      width: screenWidth * 0.95, // 95% of screen width
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Circular image container with border
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF0048FF), width: 1),
-            ),
-            child: ClipOval(
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Text column and stars
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top row: title + stars
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        fullName,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1E1E1E),
-                        ),
-                      ),
-                    ),
-                    _buildStars(rating), // stars on the extreme right
-                  ],
-                ),
-                const SizedBox(height: 2),
-                // Second row: subtitle with ellipsis
-                Text(
-                  message,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF1E1E1E),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis, // 👈 add this
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
 Widget _buildStars(double rating) {
   final int full = rating.floor();
@@ -839,41 +944,6 @@ Widget _buildStars(double rating) {
   );
 }
 
-final List<Map<String, dynamic>> ratingsList = [
-  {
-    "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
-    "fullName": "John Doe",
-    "message": "Great service, highly recommended!",
-    "rating": 4.5,
-  },
-  {
-    "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
-    "fullName": "Jane Smith",
-    "message": "Very responsive and professional.",
-    "rating": 5.0,
-  },
-  {
-    "imageUrl": "https://i.imgur.com/6JfO9hZ.jpeg",
-    "fullName": "Alex Brown",
-    "message": "Good experience overall.",
-    "rating": 4.0,
-  },
-];
-
-Widget _buildRatingsList(
-    BuildContext context, List<Map<String, dynamic>> ratings) {
-  return Column(
-    children: ratings.map((item) {
-      return _buildRatingRow(
-        context: context,
-        imageUrl: item['imageUrl'],
-        fullName: item['fullName'],
-        message: item['message'],
-        rating: item['rating'],
-      );
-    }).toList(),
-  );
-}
 
 // Payment model
 class Payment {

@@ -41,6 +41,7 @@ import 'screens/dashboards/service_provider_individual_dashboard_screens/add_ser
 import 'screens/dashboards/agent_individual_dashboard_screens/inactive_listings_screen.dart';
 import 'screens/dashboards/agent_company_dashboard_screens/add_new_agent_screen.dart';
 import 'screens/reviews/all_reviews_screen.dart';
+import 'screens/reviews/all_reviews_page.dart';
 import 'screens/search/search_results_page.dart';
 import 'screens/search/advanced_filters_page.dart';
 import 'screens/add_listing/listing_type_selection_page.dart';
@@ -110,6 +111,7 @@ Map<String, WidgetBuilder> appRoutes() {
         objectName: args['objectName'],
       );
     },
+    '/my-reviews': (_) => const AllReviewsPage(),
     '/search-results': (context) {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       return SearchResultsPage(

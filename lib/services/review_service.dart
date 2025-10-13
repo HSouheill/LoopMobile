@@ -41,6 +41,37 @@ class ReviewService {
       throw Exception('Network error: ${e.toString()}');
     }
   }
+
+  static Future<ReviewResponse> getMyReviews({
+    int page = 1,
+    int limit = defaultLimit,
+  }) async {
+    try {
+      final uri = Uri.parse('${Environment.apiUrl}reviews/my-reviews').replace(
+        queryParameters: {
+          'page': page.toString(),
+          'limit': limit.toString(),
+        },
+      );
+
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return ReviewResponse.fromJson(data);
+      } else if (response.statusCode == 401) {
+        throw Exception('Session expired. Please log in again.');
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to fetch reviews');
+      }
+    } catch (e) {
+      throw Exception('Network error: ${e.toString()}');
+    }
+  }
 }
 
 class ReviewResponse {
