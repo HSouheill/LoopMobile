@@ -48,6 +48,8 @@ import 'screens/add_listing/listing_type_selection_page.dart';
 import 'screens/add_listing/property_type_selection_page.dart';
 import 'screens/add_listing/add_listing_form_page.dart';
 import 'screens/chat/chat.dart';
+import 'screens/chat/chat_list_page.dart';
+import 'screens/chat/blocked_users_page.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -132,5 +134,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/property-type-selection': (_) => const PropertyTypeSelectionPage(),
     '/add-listing-form': (_) => const AddListingFormPage(),
     '/chat': (_) => const ChatPage(),
+    '/chat-list': (_) => const ChatListPage(),
+    '/blocked-users': (_) => const BlockedUsersPage(),
   };
 }

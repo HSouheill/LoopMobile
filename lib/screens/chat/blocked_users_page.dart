@@ -1,0 +1,219 @@
+import 'package:flutter/material.dart';
+import '../../models/blocked_user.dart';
+import '../../services/chat_service.dart';
+import '../../services/auth_service.dart';
+
+class BlockedUsersPage extends StatefulWidget {
+  const BlockedUsersPage({super.key});
+
+  @override
+  State<BlockedUsersPage> createState() => _BlockedUsersPageState();
+}
+
+class _BlockedUsersPageState extends State<BlockedUsersPage> {
+  List<BlockedUser> blockedUsers = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBlockedUsers();
+  }
+
+  Future<void> _loadBlockedUsers() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final token = AuthService.token;
+      if (token != null) {
+        final blockedList = await ChatService.getBlockedUsers(token);
+        setState(() {
+          blockedUsers = blockedList;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading blocked users: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _unblockUser(BlockedUser blockedUser) async {
+    try {
+      final token = AuthService.token;
+      if (token != null) {
+        final success = await ChatService.unblockUser(token, blockedUser.blockedId);
+        if (success && mounted) {
+          setState(() {
+            blockedUsers.removeWhere((bu) => bu.id == blockedUser.id);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${blockedUser.blockedUser?.fullName ?? 'User'} unblocked successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error unblocking user: $e')),
+        );
+      }
+    }
+  }
+
+  void _showUnblockDialog(BlockedUser blockedUser) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Unblock User'),
+        content: Text('Are you sure you want to unblock ${blockedUser.blockedUser?.fullName ?? 'this user'}? You will be able to send and receive messages from them again.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _unblockUser(blockedUser);
+            },
+            child: const Text('Unblock', style: TextStyle(color: Colors.green)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatBlockedDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Blocked Users'),
+        backgroundColor: const Color.fromARGB(255, 27, 55, 147),
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : blockedUsers.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.block,
+                        size: 80,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No blocked users',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Users you block will appear here',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: _loadBlockedUsers,
+                  child: ListView.builder(
+                    itemCount: blockedUsers.length,
+                    itemBuilder: (context, index) {
+                      final blockedUser = blockedUsers[index];
+                      final user = blockedUser.blockedUser;
+                      
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: user?.profileImage != null
+                                ? NetworkImage(user!.profileImage!)
+                                : null,
+                            child: user?.profileImage == null
+                                ? Text(user?.fullName.isNotEmpty == true 
+                                    ? user!.fullName[0].toUpperCase() 
+                                    : '?')
+                                : null,
+                          ),
+                          title: Text(
+                            user?.fullName ?? 'Unknown User',
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (blockedUser.reason != null) ...[
+                                Text(
+                                  'Reason: ${blockedUser.reason}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                              ],
+                              Text(
+                                'Blocked ${_formatBlockedDate(blockedUser.blockedAt)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.block_flipped, color: Colors.green),
+                                onPressed: () => _showUnblockDialog(blockedUser),
+                                tooltip: 'Unblock User',
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+    );
+  }
+}
