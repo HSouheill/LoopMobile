@@ -48,7 +48,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
       case AgentCategory.featured:
         return 'Featured Agents';
       case AgentCategory.topRated:
-        return 'Top Rated';
+        return 'Top Agents';
       case AgentCategory.forYou:
         return 'For You';
     }

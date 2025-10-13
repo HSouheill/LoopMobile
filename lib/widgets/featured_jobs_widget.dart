@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
-
-// Data model for a job
-class Job {
-  final String title;
-  final String companyName;
-  final String location;
-  final String jobType;
-  final String imageUrl;
-
-  Job({
-    required this.title,
-    required this.companyName,
-    required this.location,
-    required this.jobType,
-    required this.imageUrl,
-  });
-}
+import '../screens/services/job_detail_page.dart';
+import '../services/job_service.dart';
 
 // The main widget that holds the title and the horizontal list of jobs
 class FeaturedJobsWidget extends StatelessWidget {
@@ -76,17 +61,41 @@ class JobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Use the incoming cardHeight so the card can fill the vertical space and layout children with Expanded
-    return Container(
-      width: 250,
-      margin: const EdgeInsets.only(right: 16.0),
-      constraints: BoxConstraints(
-        // ensure the card fills the available vertical space (prevents overflow)
-        maxHeight: cardHeight,
-      ),
-      // No border and transparent background
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+    return GestureDetector(
+      onTap: () async {
+        try {
+          // Fetch job detail and navigate
+          final jobDetail = await JobService.getJobDetail(job.id);
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => JobDetailPage(job: jobDetail),
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to load job details: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+      child: Container(
+        width: 250,
+        margin: const EdgeInsets.only(right: 16.0),
+        constraints: BoxConstraints(
+          // ensure the card fills the available vertical space (prevents overflow)
+          maxHeight: cardHeight,
+        ),
+        // No border and transparent background
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -246,6 +255,7 @@ class JobCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

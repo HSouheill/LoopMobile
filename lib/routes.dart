@@ -28,6 +28,8 @@ import 'screens/dashboards/service_provider_company_dashboard.dart';
 import 'screens/profile/profile.dart';
 import 'screens/services/jobs.dart';
 import 'screens/services/category_services_page.dart';
+import 'screens/services/category_jobs_page.dart';
+import 'widgets/dynamic_jobs_widget.dart'; // For JobCategory enum
 import 'services/service_service.dart';
 import 'screens/listings/featured_listings_page.dart';
 import 'screens/listings/listings.dart';
@@ -87,6 +89,12 @@ Map<String, WidgetBuilder> appRoutes() {
         const ServiceProviderCompanyDashboardPage(),
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
+    '/featured-jobs': (context) =>
+        const CategoryJobsPage(category: JobCategory.featured),
+    '/for-you-jobs': (context) =>
+        const CategoryJobsPage(category: JobCategory.forYou),
+    '/recent-jobs': (context) =>
+        const CategoryJobsPage(category: JobCategory.recent),
     '/featured-services': (context) =>
         const CategoryServicesPage(category: ServiceCategory.featured),
     '/top-rated-services': (context) =>

@@ -1,0 +1,72 @@
+class JobDetail {
+  final String id;
+  final String title;
+  final String companyName;
+  final String location;
+  final String jobType;
+  final String imageUrl;
+  final String description;
+  final List<String> skills;
+  final String workingHours;
+  final String attendance;
+  final Map<String, int> experienceRange;
+  final bool isFeatured;
+  final String createdAt;
+  final String userId;
+
+  JobDetail({
+    required this.id,
+    required this.title,
+    required this.companyName,
+    required this.location,
+    required this.jobType,
+    required this.imageUrl,
+    required this.description,
+    required this.skills,
+    required this.workingHours,
+    required this.attendance,
+    required this.experienceRange,
+    required this.isFeatured,
+    required this.createdAt,
+    required this.userId,
+  });
+
+  factory JobDetail.fromJson(Map<String, dynamic> json) {
+    return JobDetail(
+      id: json['_id'] ?? '',
+      title: json['title'] ?? '',
+      companyName: json['companyName'] ?? json['userId']?['companyName'] ?? '',
+      location: json['location'] ?? '',
+      jobType: json['jobType'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      description: json['description'] ?? '',
+      skills: List<String>.from(json['skills'] ?? []),
+      workingHours: json['workingHours'] ?? '',
+      attendance: json['attendance'] ?? '',
+      experienceRange: Map<String, int>.from(json['experienceRange'] ?? {}),
+      isFeatured: json['isFeatured'] ?? false,
+      createdAt: json['createdAt'] ?? '',
+      userId: json['userId']?['_id'] ?? json['userId'] ?? '',
+    );
+  }
+
+  // Factory method to create a sample job detail
+  factory JobDetail.sample() {
+    return JobDetail(
+      id: 'sample-id',
+      title: 'Graphic Designer',
+      companyName: 'Corpring Co',
+      location: 'Hazmieh, Mount Lebanon',
+      jobType: 'Full Time',
+      imageUrl: 'https://images.pexels.com/photos/3184432/pexels-photo-3184432.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+      description: "We're looking for a creative Graphic Designer with a strong portfolio in branding and digital media. You'll be responsible for designing marketing materials, collaborating with teams, and maintaining brand consistency across all visual communications. The ideal candidate will have experience in both print and digital design, with a keen eye for detail and the ability to work under tight deadlines.",
+      skills: ['Adobe Photoshop', 'Illustrator', 'Figma'],
+      workingHours: '9AM-5PM',
+      attendance: 'Hybrid',
+      experienceRange: {'min': 2, 'max': 4},
+      isFeatured: true,
+      createdAt: '2025-01-01T00:00:00.000Z',
+      userId: 'sample-user-id',
+    );
+  }
+}
