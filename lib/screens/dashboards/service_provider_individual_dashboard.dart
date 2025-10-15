@@ -8,7 +8,6 @@ import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import 'widgets/my_services_widget.dart';
-import './widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
 import './widgets/statistics_card.dart';
@@ -159,89 +158,6 @@ class _ServiceProviderIndividualDashboardPageState
                 const MyServicesWidget(),
 
                 const SizedBox(height: 40),
-
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      "Messages",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 🔎 Search Row with padding
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 26, vertical: 2),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search_sharp,
-                              color: Color(0xFF0048FF)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                hintText: "Search ...",
-                                hintStyle: TextStyle(
-                                  color: Color(
-                                      0xFF0048FF), // ✅ custom placeholder color
-                                  fontSize: 14,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true, // ✅ compact
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Divider with less spacing
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 18.0),
-                      child: Divider(
-                        thickness: 1,
-                        height: 1,
-                        color: Color(0xFF0ACC00),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-                // Dynamic Message Cards
-
-                MessageCardList(
-                  items: [
-                    {
-                      "fullName": "John Doe",
-                      "message": "Hello, how are you?",
-                      "date": "12:45 am",
-                      "imageUrl": "",
-                      "isChecked": false,
-                      "unreadCount": "65", // shown only if isChecked == false
-                    },
-                    {
-                      "fullName": "Jane Smith",
-                      "message": "Let’s meet tomorrow.",
-                      "date": "1:20 pm",
-                      "imageUrl": "",
-                      "isChecked": true,
-                    },
-                  ],
-                ),
-
-                const SizedBox(height: 30),
 
                 const Align(
                   alignment: Alignment.centerLeft,
