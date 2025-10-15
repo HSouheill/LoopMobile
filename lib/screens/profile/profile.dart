@@ -136,11 +136,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'text': 'Referrals',
       'color': Color(0xFF0048FF),
     },
-    {
-      'icon': Icons.apps,
-      'text': 'Dashboard',
-      'color': Color(0xFF0048FF),
-    },
   ];
 
   Future<void> _pickAndUploadImage() async {
