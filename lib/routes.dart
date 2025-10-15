@@ -25,6 +25,7 @@ import 'screens/dashboards/agent_individual_dashboard.dart';
 import 'screens/dashboards/agent_company_dashboard.dart';
 import 'screens/dashboards/service_provider_individual_dashboard.dart';
 import 'screens/dashboards/service_provider_company_dashboard.dart';
+import 'screens/dashboards/my_jobs_page.dart';
 import 'screens/profile/profile.dart';
 import 'screens/services/jobs.dart';
 import 'screens/services/category_services_page.dart';
@@ -90,6 +91,7 @@ Map<String, WidgetBuilder> appRoutes() {
         const ServiceProviderIndividualDashboardPage(),
     '/service-provider-company-dashboard': (context) =>
         const ServiceProviderCompanyDashboardPage(),
+    '/my-jobs': (context) => const MyJobsPage(),
     '/profile': (context) => const ProfileScreen(),
     '/jobs': (context) => const JobsPage(),
     '/featured-jobs': (context) =>

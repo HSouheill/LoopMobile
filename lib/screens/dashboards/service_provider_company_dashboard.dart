@@ -6,6 +6,7 @@ import 'dart:io';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
+import '../../services/job_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import './widgets/message_card.dart';
 import './widgets/statistics_card.dart';
@@ -26,12 +27,15 @@ class _ServiceProviderCompanyDashboardPageState
   User? user;
   Map<String, dynamic>? agentInfo;
   bool isLoading = true;
+  List<Job> myJobs = [];
+  bool isLoadingJobs = false;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
     _loadAgentInfo();
+    _loadMyJobs();
   }
 
   Future<void> _loadUser() async {
@@ -56,11 +60,30 @@ class _ServiceProviderCompanyDashboardPageState
     }
   }
 
+  Future<void> _loadMyJobs() async {
+    setState(() {
+      isLoadingJobs = true;
+    });
+    try {
+      final response = await JobService.getMyJobs(page: 1, limit: 3);
+      setState(() {
+        myJobs = response.jobs;
+        isLoadingJobs = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingJobs = false;
+      });
+      print('Error loading my jobs: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
     });
     await _loadAgentInfo();
+    await _loadMyJobs();
   }
 
   @override
@@ -84,21 +107,13 @@ class _ServiceProviderCompanyDashboardPageState
       district = user!.location!;
     }
 
-    // Example dynamic job list
-    final jobs = [
-      {
-        "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
-        "title": "Software Engineer",
-        "contractType": "Full-Time",
-        "time": "Experience: 3+ years"
-      },
-      {
-        "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
-        "title": "UI/UX Designer",
-        "contractType": "Part-Time",
-        "time": "Remote work allowed"
-      },
-    ];
+    // Convert myJobs to the format expected by the UI
+    final jobs = myJobs.map((job) => {
+      "imageUrl": job.imageUrl,
+      "title": job.title,
+      "contractType": job.jobType,
+      "time": "Experience: ${job.experienceRange['min']}-${job.experienceRange['max']} years"
+    }).toList();
 
     final applicationsList = [
       {
@@ -157,7 +172,7 @@ class _ServiceProviderCompanyDashboardPageState
 
                   //! Pierre has to implement Job screen
                   // ✅ List New Jobs Section
-                  listNewJobsSection(context, screenWidth, jobs),
+                  listNewJobsSection(context, screenWidth, jobs, isLoadingJobs),
 
                   //! Pierre has to implement Application screen
                   applicationsSection(context, screenWidth, applicationsList),
@@ -928,106 +943,161 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
 
 /// ✅ List New Jobs Section
 Widget listNewJobsSection(
-    BuildContext context, double screenWidth, List<Map<String, String>> jobs) {
+    BuildContext context, double screenWidth, List<Map<String, String>> jobs, bool isLoadingJobs) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "List New Jobs",
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 18,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Column(
-          children: jobs.map((job) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Center(
-                child: Material(
-                  elevation: 2,
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                  child: Container(
-                    width: screenWidth * 0.90,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0x570048FF)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.6),
-                          offset: const Offset(0, 4),
-                          blurRadius: 9.4,
-                          spreadRadius: -1,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(job['imageUrl'] ??
-                              'https://via.placeholder.com/50'),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                job['title'] ?? '',
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(height: 0),
-                              Row(
-                                children: [
-                                  const Text(
-                                    "Contract Type: ",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color(0xFF1E1E1E)),
-                                  ),
-                                  Text(
-                                    job['contractType'] ?? '',
-                                    style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 0),
-                              Text(
-                                job['time'] ?? '',
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 10,
-                          color: Colors.black,
-                        ),
-                      ],
-                    ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "My Jobs",
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+              ),
+            ),
+            if (jobs.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/my-jobs');
+                },
+                child: const Text(
+                  "See All",
+                  style: TextStyle(
+                    color: Color(0xFF0048FF),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-            );
-          }).toList(),
+          ],
         ),
+        const SizedBox(height: 12),
+        if (isLoadingJobs)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (jobs.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                "No jobs posted yet",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          )
+        else
+          Column(
+            children: jobs.map((job) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Center(
+                  child: Material(
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                    child: Container(
+                      width: screenWidth * 0.90,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0x570048FF)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.6),
+                            offset: const Offset(0, 4),
+                            blurRadius: 9.4,
+                            spreadRadius: -1,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey,
+                          ),
+                          child: ClipOval(
+                            child: Image.network(
+                              job['imageUrl'] ?? 'https://via.placeholder.com/50',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.work,
+                                  color: Colors.white,
+                                  size: 20,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  job['title'] ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 0),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "Contract Type: ",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w300,
+                                          color: Color(0xFF1E1E1E)),
+                                    ),
+                                    Text(
+                                      job['contractType'] ?? '',
+                                      style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 0),
+                                Text(
+                                  job['time'] ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 10,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         const SizedBox(height: 16),
         Center(
           child: DynamicGradientButton(

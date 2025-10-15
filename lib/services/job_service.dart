@@ -45,6 +45,42 @@ class JobService {
       throw Exception('Error fetching jobs: $e');
     }
   }
+
+  // Get my jobs (for service provider company dashboard)
+  static Future<JobsResponse> getMyJobs({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+      };
+      
+      final uri = Uri.parse('${Environment.apiUrl}jobs/my-jobs').replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['jobs'] != null) {
+          final jobs = (data['jobs'] as List)
+              .map((job) => Job.fromJson(job))
+              .toList();
+          final meta = JobMeta.fromJson(data['meta']);
+          return JobsResponse(jobs: jobs, meta: meta);
+        } else {
+          throw Exception('No jobs found in response');
+        }
+      } else {
+        throw Exception('Failed to load my jobs: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching my jobs: $e');
+    }
+  }
   
   static Future<JobDetail> getJobDetail(String jobId) async {
     try {
