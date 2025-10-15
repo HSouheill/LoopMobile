@@ -403,9 +403,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 children: [
                   StatCardList(
                     items: [
-                      {"title": "Total Listing:", "value": "${agentInfo?['totalListings'] ?? 0}"},
+                      {"title": "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
                       {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
-                      {"title": "Active Listing:", "value": "${agentInfo?['activeListings'] ?? 0}"},
+                      {"title": "Active Listings:", "value": "${agentInfo?['activeListings'] ?? 0}"},
+                      {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
                     ],
                   ),
                 ],
