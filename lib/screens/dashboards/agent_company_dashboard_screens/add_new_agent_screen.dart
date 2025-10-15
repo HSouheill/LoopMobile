@@ -34,7 +34,7 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
   // Form state
   String? _selectedGender;
   DateTime? _selectedDOB;
-  bool _isFeatured = true;
+  final bool _isFeatured = false;
   bool _isLoading = false;
   String? _errorMessage;
   
