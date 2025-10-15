@@ -1,14 +1,17 @@
 // lib/screens/inactive_listings/widgets/inactive_listing_card_list.dart
 import 'package:flutter/material.dart';
+import '../../../widgets/listing_image_widget.dart';
 
 class InactiveListingCardList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final Axis scrollDirection; // new: allows vertical or horizontal
+  final Function(String)? onItemTap; // new: callback for item taps
 
   const InactiveListingCardList({
     super.key,
     required this.items,
     this.scrollDirection = Axis.horizontal, // default horizontal
+    this.onItemTap,
   });
 
   @override
@@ -29,9 +32,22 @@ class InactiveListingCardList extends StatelessWidget {
                   layoutType: item['layoutType'] ?? 'A',
                   location: item['location'],
                   owner: item['owner'],
+                  type: item['type'],
+                  bedrooms: item['bedrooms'],
+                  bathrooms: item['bathrooms'],
+                  size: item['size'],
+                  condition: item['condition'],
+                  buildingAge: item['buildingAge'],
+                  papers: item['papers'],
+                  listingFor: item['listingFor'],
+                  currency: item['currency'],
+                  status: item['status'],
+                  viewsCount: item['viewsCount'],
+                  favoritesCount: item['favoritesCount'],
                   onActivate: () {
                     print("${item['description']} Activated!");
                   },
+                  onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),
             )
@@ -45,9 +61,22 @@ class InactiveListingCardList extends StatelessWidget {
                   layoutType: item['layoutType'] ?? 'A',
                   location: item['location'],
                   owner: item['owner'],
+                  type: item['type'],
+                  bedrooms: item['bedrooms'],
+                  bathrooms: item['bathrooms'],
+                  size: item['size'],
+                  condition: item['condition'],
+                  buildingAge: item['buildingAge'],
+                  papers: item['papers'],
+                  listingFor: item['listingFor'],
+                  currency: item['currency'],
+                  status: item['status'],
+                  viewsCount: item['viewsCount'],
+                  favoritesCount: item['favoritesCount'],
                   onActivate: () {
                     print("${item['description']} Activated!");
                   },
+                  onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),
             ),
@@ -63,7 +92,20 @@ class InactiveListingCard extends StatelessWidget {
   final String layoutType; // "A" or "B"
   final String? location; // Optional for layout B
   final String? owner; // Optional for layout B
+  final String? type;
+  final String? bedrooms;
+  final String? bathrooms;
+  final String? size;
+  final String? condition;
+  final String? buildingAge;
+  final String? papers;
+  final String? listingFor;
+  final String? currency;
+  final String? status;
+  final String? viewsCount;
+  final String? favoritesCount;
   final VoidCallback? onActivate; // Optional action button
+  final VoidCallback? onTap; // Optional card tap callback
 
   const InactiveListingCard({
     super.key,
@@ -74,7 +116,20 @@ class InactiveListingCard extends StatelessWidget {
     required this.layoutType,
     this.location,
     this.owner,
+    this.type,
+    this.bedrooms,
+    this.bathrooms,
+    this.size,
+    this.condition,
+    this.buildingAge,
+    this.papers,
+    this.listingFor,
+    this.currency,
+    this.status,
+    this.viewsCount,
+    this.favoritesCount,
     this.onActivate,
+    this.onTap,
   });
 
   @override
@@ -82,7 +137,9 @@ class InactiveListingCard extends StatelessWidget {
     if (layoutType == 'B') {
       // 👉 Option B layout (Detailed)
       return Center(
-        child: Container(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
           width: MediaQuery.of(context).size.width * 0.90,
           margin:
               const EdgeInsets.symmetric(vertical: 8), // only vertical spacing
@@ -103,16 +160,14 @@ class InactiveListingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Image with rounded corners
-              ClipRRect(
+              ListingImageWidget(
+                imageUrl: backgroundImage,
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.cover,
                 borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  backgroundImage,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stack) =>
-                      Container(height: 180, color: Colors.grey[300]),
-                ),
+                placeholderIcon: Icons.home,
+                placeholderIconSize: 50,
               ),
               const SizedBox(height: 2),
 
@@ -153,41 +208,6 @@ class InactiveListingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
 
-                        // Owner Row
-                        if (owner != null)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.person,
-                                  size: 14, color: Color(0xFF0ACC00)),
-                              const SizedBox(width: 4),
-                              Text(
-                                owner!,
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF0048FF),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
-
-                        // Location Row
-                        if (location != null)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.location_on_outlined,
-                                  size: 14, color: Color(0xFF858585)),
-                              const SizedBox(width: 4),
-                              Text(
-                                location!,
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF0048FF),
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ],
-                          ),
                       ],
                     ),
                   ),
@@ -227,13 +247,16 @@ class InactiveListingCard extends StatelessWidget {
             ],
           ),
         ),
+        ),
       );
     }
 
     // 👉 Option A layout (Compact)
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.6,
-      child: Padding(
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.6,
+        child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,44 +284,7 @@ class InactiveListingCard extends StatelessWidget {
                 ],
               ),
               child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 3.0, left: 52.5),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 3.5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: const Color.fromRGBO(0, 72, 255, 0.34),
-                            width: 0.5,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          "$daysLeft Days Left", // 👈 formatted here
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                children: [],
               ),
             ),
 
@@ -357,6 +343,7 @@ class InactiveListingCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

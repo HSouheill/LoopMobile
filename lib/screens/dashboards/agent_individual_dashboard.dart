@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/review_service.dart';
+import '../../services/listing_service.dart';
 import '../../models/review.dart';
 import '../../environment.dart';
 import './widgets/statistics_card.dart';
@@ -11,6 +12,7 @@ import '../../screens/dashboards/widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/inactive_listing_card_list.dart';
 import './widgets/social_links_display_widget.dart';
+import '../../widgets/listing_details_modal.dart';
 
 class AgentIndividualDashboardPage extends StatefulWidget {
   const AgentIndividualDashboardPage({super.key});
@@ -25,6 +27,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
   bool isLoading = true;
   List<Review> reviews = [];
   bool reviewsLoading = true;
+  List<PropertyListing> inactiveListings = [];
+  List<PropertyListing> activeListings = [];
+  bool inactiveListingsLoading = true;
+  bool activeListingsLoading = true;
 
   @override
   void initState() {
@@ -32,6 +38,8 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     _loadUser();
     _loadAgentInfo();
     _loadReviews();
+    _loadInactiveListings();
+    _loadActiveListings();
   }
 
   Future<void> _loadUser() async {
@@ -71,13 +79,55 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     }
   }
 
+  Future<void> _loadInactiveListings() async {
+    try {
+      final response = await ListingService.getMyListings(
+        status: 'pending',
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        inactiveListings = response.listings;
+        inactiveListingsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        inactiveListingsLoading = false;
+      });
+      print('Error loading inactive listings: $e');
+    }
+  }
+
+  Future<void> _loadActiveListings() async {
+    try {
+      final response = await ListingService.getMyListings(
+        status: 'active',
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        activeListings = response.listings;
+        activeListingsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        activeListingsLoading = false;
+      });
+      print('Error loading active listings: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
       reviewsLoading = true;
+      inactiveListingsLoading = true;
+      activeListingsLoading = true;
     });
     await _loadAgentInfo();
     await _loadReviews();
+    await _loadInactiveListings();
+    await _loadActiveListings();
   }
 
   String _calculateDaysLeft(String? planExpiresAt) {
@@ -91,6 +141,27 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       return '0';
     }
   }
+
+  String _calculateDaysLeftFromCreated(DateTime? createdAt) {
+    if (createdAt == null) return '0';
+    final now = DateTime.now();
+    final difference = now.difference(createdAt).inDays;
+    return difference.toString();
+  }
+
+  String _extractPrice(String price) {
+    // Extract numeric value from price string like "$1,200/Month"
+    final regex = RegExp(r'[\d,]+');
+    final match = regex.firstMatch(price);
+    return match?.group(0)?.replaceAll(',', '') ?? '0';
+  }
+
+  void _showListingDetails(PropertyListing listing) {
+    showListingDetailsModal(context, listing);
+  }
+
+
+
 
   Widget _buildReviewsSection() {
     if (reviewsLoading) {
@@ -377,7 +448,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         padding: const EdgeInsets.only(right: 0),
                         child: TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/inactive-listings');
+                            Navigator.pushNamed(context, '/inactive-listings-page');
                           },
                           child: const Text(
                             "See all",
@@ -395,36 +466,64 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
               ),
 
               // Horizontal scrollable cards
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 4),
-                    InactiveListingCardList(
-                      items: [
-                        {
-                          "daysLeft": "12",
-                          "backgroundImage": "https://i.imgur.com/G5qWJ4p.jpeg",
-                          "description": "Apartment in Achrafieh",
-                          "price": "900",
+              if (inactiveListingsLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (inactiveListings.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'No inactive listings',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 4),
+                      InactiveListingCardList(
+                        onItemTap: (title) {
+                          // Find the listing by title and show details
+                          final listing = inactiveListings.firstWhere(
+                            (l) => l.title == title,
+                            orElse: () => inactiveListings.first,
+                          );
+                          _showListingDetails(listing);
                         },
-                        {
-                          "daysLeft": "8",
-                          "backgroundImage": "https://i.imgur.com/UM9Z7xk.jpeg",
-                          "description": "Studio in Hamra",
-                          "price": "700",
-                        },
-                        {
-                          "daysLeft": "20",
-                          "backgroundImage": "https://i.imgur.com/6JfO9hZ.jpeg",
-                          "description": "Duplex in Byblos",
-                          "price": "1500",
-                        },
-                      ],
-                    )
-                  ],
+                        items: inactiveListings.map((listing) {
+                          return {
+                            "daysLeft": _calculateDaysLeftFromCreated(listing.createdAt),
+                            "backgroundImage": listing.imageUrl,
+                            "description": listing.title,
+                            "price": _extractPrice(listing.price),
+                            "location": listing.location,
+                            "type": listing.type ?? '',
+                            "bedrooms": listing.bedrooms?.toString() ?? '',
+                            "bathrooms": listing.bathrooms?.toString() ?? '',
+                            "size": listing.size?.toString() ?? '',
+                            "condition": listing.condition ?? '',
+                            "buildingAge": listing.buildingAge?.toString() ?? '',
+                            "papers": listing.papers ?? '',
+                            "listingFor": listing.listingFor ?? '',
+                            "currency": listing.currency ?? 'USD',
+                            "status": listing.status ?? '',
+                            "viewsCount": "0", // Default since not in current model
+                            "favoritesCount": "0", // Default since not in current model
+                            "amenities": (listing.amenityList ?? []).join(', '),
+                          };
+                        }).toList(),
+                      )
+                    ],
+                  ),
                 ),
-              ),
 
               // ---------------------------------
               // NEW ROW: Listings Left + Upgrade Plan
@@ -476,30 +575,92 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               const SizedBox(height: 20),
 
-              const Text(
-                "My Listings",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E1E1E),
+              // My Listings section with "See all" button
+              SizedBox(
+                height: 40,
+                child: Stack(
+                  children: [
+                    const Center(
+                      child: Text(
+                        "My Listings",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 0),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/my-listings-page');
+                          },
+                          child: const Text(
+                            "See all",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF1E1E1E),
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              DynamicServiceCardList(
-                items: [
-                  {
-                    'leftText': 'Service Name1',
-                    'imageUrl': 'https://example.com/image1.jpg'
+              
+              if (activeListingsLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              else if (activeListings.isEmpty)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'No active listings',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                DynamicServiceCardList(
+                  items: activeListings.map((listing) {
+                    return {
+                      'leftText': listing.title,
+                      'imageUrl': listing.imageUrl,
+                      'location': listing.location,
+                      'type': listing.type ?? '',
+                      'bedrooms': listing.bedrooms?.toString() ?? '',
+                      'bathrooms': listing.bathrooms?.toString() ?? '',
+                      'size': listing.size?.toString() ?? '',
+                      'condition': listing.condition ?? '',
+                      'buildingAge': listing.buildingAge?.toString() ?? '',
+                      'papers': listing.papers ?? '',
+                      'listingFor': listing.listingFor ?? '',
+                      'currency': listing.currency ?? 'USD',
+                      'status': listing.status ?? '',
+                      'price': listing.price,
+                      'description': listing.description ?? '',
+                      'amenities': (listing.amenityList ?? []).join(', '),
+                    };
+                  }).toList(),
+                  onItemTap: (title) {
+                    // Find the listing by title and show details
+                    final listing = activeListings.firstWhere(
+                      (l) => l.title == title,
+                      orElse: () => activeListings.first,
+                    );
+                    _showListingDetails(listing);
                   },
-                  {
-                    'leftText': 'Service Name2',
-                    'imageUrl': 'https://example.com/image2.jpg'
-                  },
-                  {
-                    'leftText': 'Service Name3',
-                    'imageUrl': 'https://example.com/image3.jpg'
-                  },
-                ],
-              ),
+                ),
 
               const SizedBox(height: 15),
 

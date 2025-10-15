@@ -162,6 +162,90 @@ class ListingService {
       throw Exception('Error searching listings: $e');
     }
   }
+
+  // Get agent's listings with status filter
+  static Future<ListingsResponse> getMyListings({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+        if (status != null) 'status': status,
+      };
+
+      final url = Uri.parse('${Environment.apiUrl}listings/my-listings')
+          .replace(queryParameters: queryParams);
+      
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ListingsResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to load agent listings: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching agent listings: $e');
+    }
+  }
+
+  // Get single listing details
+  static Future<PropertyListing> getListingDetails(String listingId) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/$listingId');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return PropertyListing.fromJson(data);
+      } else {
+        throw Exception('Failed to load listing details: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching listing details: $e');
+    }
+  }
+
+  // Create a new listing
+  static Future<bool> createListing(Map<String, dynamic> listingData) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/create');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+        body: jsonEncode(listingData),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Failed to create listing: ${response.statusCode}');
+        print('Response: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating listing: $e');
+      return false;
+    }
+  }
 }
 
 enum ListingCategory {
@@ -215,32 +299,6 @@ extension ListingCategoryExtension on ListingCategory {
         return '/chalets';
       case ListingCategory.commercial:
         return '/commercial';
-    }
-  }
-
-  // Create a new listing
-  static Future<bool> createListing(Map<String, dynamic> listingData) async {
-    try {
-      final url = Uri.parse('${Environment.apiUrl}listings/create');
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${AuthService.token}',
-        },
-        body: jsonEncode(listingData),
-      );
-
-      if (response.statusCode == 201) {
-        return true;
-      } else {
-        print('Failed to create listing: ${response.statusCode}');
-        print('Response: ${response.body}');
-        return false;
-      }
-    } catch (e) {
-      print('Error creating listing: $e');
-      return false;
     }
   }
 }
@@ -297,6 +355,7 @@ class PropertyListing {
   final bool isFeatured;
   final String? type;
   final String? listingFor;
+  final String? status;
   // Extended fields for single listing page
   final List<String>? images;
   final String? currency;
@@ -331,6 +390,7 @@ class PropertyListing {
     this.isFeatured = false,
     this.type,
     this.listingFor,
+    this.status,
     this.images,
     this.currency,
     this.priceValue,
@@ -480,6 +540,12 @@ class PropertyListing {
     final amenities = json['amenities'] ?? json['amenityList'];
     if (amenities is List) {
       amenityList = amenities.map((e) => e.toString()).toList();
+    } else if (amenities is Map<String, dynamic>) {
+      // Handle amenities object with boolean values
+      amenityList = amenities.entries
+          .where((entry) => entry.value == true)
+          .map((entry) => entry.key)
+          .toList();
     }
     num? size;
     if (json['size'] is num) size = json['size'];
@@ -506,6 +572,7 @@ class PropertyListing {
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),
+      status: json['status']?.toString(),
       images: images,
       currency: currency,
       priceValue: priceValue,

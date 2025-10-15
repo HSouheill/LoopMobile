@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../../widgets/listing_image_widget.dart';
 
 class DynamicServiceCard extends StatefulWidget {
   final String leftText;
   final String imageUrl;
+  final String? location;
+  final String? type;
+  final String? bedrooms;
+  final String? bathrooms;
+  final String? size;
+  final String? condition;
+  final String? buildingAge;
+  final String? papers;
+  final String? listingFor;
+  final String? currency;
+  final String? status;
+  final String? price;
+  final String? description;
+  final VoidCallback? onTap;
 
   const DynamicServiceCard({
     super.key,
     required this.leftText,
     required this.imageUrl,
+    this.location,
+    this.type,
+    this.bedrooms,
+    this.bathrooms,
+    this.size,
+    this.condition,
+    this.buildingAge,
+    this.papers,
+    this.listingFor,
+    this.currency,
+    this.status,
+    this.price,
+    this.description,
+    this.onTap,
   });
 
   @override
@@ -20,31 +49,24 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 12),
-      child: Column(
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 12),
+        child: Column(
         children: [
-          // First row: left text + views/saves
+          // First row: left text only (removed views/saves)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.leftText,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  widget.leftText,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              Row(
-                children: const [
-                  Icon(Icons.remove_red_eye, size: 14, color: Colors.grey),
-                  SizedBox(width: 4),
-                  Text("42 views", style: TextStyle(fontSize: 12)),
-                  SizedBox(width: 12),
-                  Icon(Icons.save_alt, size: 14, color: Colors.grey),
-                  SizedBox(width: 4),
-                  Text("42 saves", style: TextStyle(fontSize: 12)),
-                ],
               ),
             ],
           ),
@@ -55,22 +77,14 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Image on the left
-              ClipRRect(
+              ListingImageWidget(
+                imageUrl: widget.imageUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  widget.imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.image, color: Colors.white),
-                    );
-                  },
-                ),
+                placeholderIcon: Icons.home,
+                placeholderIconSize: 30,
               ),
               const SizedBox(width: 12),
 
@@ -189,6 +203,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
             ],
           ),
         ],
+        ),
       ),
     );
   }
@@ -197,8 +212,13 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
 // Wrapper widget to generate multiple cards
 class DynamicServiceCardList extends StatelessWidget {
   final List<Map<String, String>> items;
+  final Function(String)? onItemTap;
 
-  const DynamicServiceCardList({super.key, required this.items});
+  const DynamicServiceCardList({
+    super.key, 
+    required this.items,
+    this.onItemTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +227,20 @@ class DynamicServiceCardList extends StatelessWidget {
           .map((item) => DynamicServiceCard(
                 leftText: item['leftText'] ?? '',
                 imageUrl: item['imageUrl'] ?? '',
+                location: item['location'],
+                type: item['type'],
+                bedrooms: item['bedrooms'],
+                bathrooms: item['bathrooms'],
+                size: item['size'],
+                condition: item['condition'],
+                buildingAge: item['buildingAge'],
+                papers: item['papers'],
+                listingFor: item['listingFor'],
+                currency: item['currency'],
+                status: item['status'],
+                price: item['price'],
+                description: item['description'],
+                onTap: onItemTap != null ? () => onItemTap!(item['leftText'] ?? '') : null,
               ))
           .toList(),
     );

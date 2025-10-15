@@ -52,6 +52,8 @@ import 'screens/add_listing/add_listing_form_page.dart';
 import 'screens/chat/chat.dart';
 import 'screens/chat/chat_list_page.dart';
 import 'screens/chat/blocked_users_page.dart';
+import 'screens/listings/inactive_listings_page.dart';
+import 'screens/listings/my_listings_page.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -144,5 +146,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/chat': (_) => const ChatPage(),
     '/chat-list': (_) => const ChatListPage(),
     '/blocked-users': (_) => const BlockedUsersPage(),
+    '/inactive-listings-page': (_) => const InactiveListingsPage(),
+    '/my-listings-page': (_) => const MyListingsPage(),
   };
 }
