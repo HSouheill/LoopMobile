@@ -403,9 +403,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 children: [
                   StatCardList(
                     items: [
-                      {"title": "Total Listing:", "value": "${agentInfo?['user']?['totalListings'] ?? 0}"},
+                      {"title": "Total Listing:", "value": "${agentInfo?['totalListings'] ?? 0}"},
                       {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
-                      {"title": "Active Listing:", "value": "${agentInfo?['user']?['activeListings'] ?? 0}"},
+                      {"title": "Active Listing:", "value": "${agentInfo?['activeListings'] ?? 0}"},
                     ],
                   ),
                 ],
@@ -533,7 +533,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   Row(
                     children: [
                       Text(
-                        "${(agentInfo?['subscribedPlan']?['listings'] ?? 0) - (agentInfo?['user']?['activeListings'] ?? 0)}", // Calculate remaining listings
+                        "${agentInfo?['listingsLeft'] ?? 0}", // Use backend value for listings left
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
