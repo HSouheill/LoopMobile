@@ -8,7 +8,6 @@ import '../../environment.dart';
 import './widgets/statistics_card.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../screens/dashboards/widgets/dynamic_service_card.dart';
-import '../../screens/dashboards/widgets/message_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/inactive_listing_card_list.dart';
 import './widgets/social_links_display_widget.dart';
@@ -664,61 +663,6 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               const SizedBox(height: 15),
 
-              const Text(
-                "Messages",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E1E1E),
-                ),
-              ),
-
-              MessageCardList(
-                items: [
-                  {
-                    "fullName": "John Doe",
-                    "message": "Hello, how are you?",
-                    "date": "12:45 am",
-                    "imageUrl": "",
-                    "isChecked": false,
-                    "unreadCount": "65", // shown only if isChecked == false
-                  },
-                  {
-                    "fullName": "Jane Smith",
-                    "message": "Let’s meet tomorrow.",
-                    "date": "1:20 pm",
-                    "imageUrl": "",
-                    "isChecked": true,
-                  },
-                  {
-                    "fullName": "Alex Brown",
-                    "message": "Please check the report.",
-                    "date": "3:00 pm",
-                    "imageUrl": "",
-                    "isChecked": false,
-                    "unreadCount": "12",
-                  },
-                ],
-              ),
-
-              GestureDetector(
-                onTap: () {
-                  // action when tapped
-                  print("Show All clicked");
-                },
-                child: const Text(
-                  "Show All",
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF0048FF), // text color
-                    decoration: TextDecoration.underline, // underline
-                    decorationColor: Color(0xFF0048FF), // underline color
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 35),
 
               // Reviews section with "See all" button
               SizedBox(
