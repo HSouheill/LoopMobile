@@ -8,7 +8,6 @@ import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
 import '../../services/job_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
-import './widgets/message_card.dart';
 import './widgets/statistics_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
@@ -170,93 +169,12 @@ class _ServiceProviderCompanyDashboardPageState
 
                   const SizedBox(height: 20),
 
-                  //! Pierre has to implement Job screen
                   // ✅ List New Jobs Section
                   listNewJobsSection(context, screenWidth, jobs, isLoadingJobs),
 
-                  //! Pierre has to implement Application screen
                   applicationsSection(context, screenWidth, applicationsList),
 
-                  const SizedBox(height: 30),
-
-                  // Messages Title
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        "Messages",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Search & Divider
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 26, vertical: 2),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.search_sharp,
-                                color: Color(0xFF0048FF)),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                  hintText: "Search ...",
-                                  hintStyle: TextStyle(
-                                    color: Color(0xFF0048FF),
-                                    fontSize: 14,
-                                  ),
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 18.0),
-                        child: Divider(
-                          thickness: 1,
-                          height: 1,
-                          color: Color(0xFF0ACC00),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // Message Cards
-                  MessageCardList(
-                    items: [
-                      {
-                        "fullName": "John Doe",
-                        "message": "Hello, how are you?",
-                        "date": "12:45 am",
-                        "imageUrl": "",
-                        "isChecked": false,
-                        "unreadCount": "65",
-                      },
-                      {
-                        "fullName": "Jane Smith",
-                        "message": "Let’s meet tomorrow.",
-                        "date": "1:20 pm",
-                        "imageUrl": "",
-                        "isChecked": true,
-                      },
-                    ],
-                  ),
+                  const SizedBox(height: 20),
 
                   // Links Title
                   const Align(
