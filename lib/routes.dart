@@ -42,6 +42,7 @@ import 'screens/dashboards/service_provider_individual_dashboard_screens/edit_my
 import 'screens/dashboards/service_provider_individual_dashboard_screens/add_service.dart';
 import 'screens/dashboards/agent_individual_dashboard_screens/inactive_listings_screen.dart';
 import 'screens/dashboards/agent_company_dashboard_screens/add_new_agent_screen.dart';
+import 'screens/dashboards/my_agents_page.dart';
 import 'screens/reviews/all_reviews_screen.dart';
 import 'screens/reviews/all_reviews_page.dart';
 import 'screens/search/search_results_page.dart';
@@ -148,5 +149,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/blocked-users': (_) => const BlockedUsersPage(),
     '/inactive-listings-page': (_) => const InactiveListingsPage(),
     '/my-listings-page': (_) => const MyListingsPage(),
+    '/my-agents-page': (_) => const MyAgentsPage(),
   };
 }

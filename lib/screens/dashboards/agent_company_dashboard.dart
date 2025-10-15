@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
+import '../../services/agent_service.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import './widgets/statistics_card.dart';
@@ -28,6 +29,8 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   List<PropertyListing> activeListings = [];
   bool inactiveListingsLoading = true;
   bool activeListingsLoading = true;
+  List<Map<String, dynamic>> myAgents = [];
+  bool myAgentsLoading = true;
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     _loadAgentInfo();
     _loadInactiveListings();
     _loadActiveListings();
+    _loadMyAgents();
   }
 
   Future<void> _loadUser() async {
@@ -98,15 +102,32 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     }
   }
 
+  Future<void> _loadMyAgents() async {
+    try {
+      final response = await AgentService.getMyAgents(page: 1, limit: 3);
+      setState(() {
+        myAgents = List<Map<String, dynamic>>.from(response['agents'] ?? []);
+        myAgentsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        myAgentsLoading = false;
+      });
+      print('Error loading my agents: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
       inactiveListingsLoading = true;
       activeListingsLoading = true;
+      myAgentsLoading = true;
     });
     await _loadAgentInfo();
     await _loadInactiveListings();
     await _loadActiveListings();
+    await _loadMyAgents();
   }
 
   String _calculateDaysLeftFromCreated(DateTime? createdAt) {
@@ -177,7 +198,12 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 userInfoAndEditButton(district, governance, context),
 
                 // ✅ New Active Plan section
-                UserPlanSection(agentInfo: agentInfo, onRefresh: _refreshData),
+                UserPlanSection(
+                  agentInfo: agentInfo, 
+                  onRefresh: _refreshData,
+                  myAgents: myAgents,
+                  myAgentsLoading: myAgentsLoading,
+                ),
 
                 const SizedBox(height: 40),
 
@@ -564,8 +590,16 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
 class UserPlanSection extends StatelessWidget {
   final Map<String, dynamic>? agentInfo;
   final VoidCallback? onRefresh;
+  final List<Map<String, dynamic>> myAgents;
+  final bool myAgentsLoading;
   
-  const UserPlanSection({super.key, this.agentInfo, this.onRefresh});
+  const UserPlanSection({
+    super.key, 
+    this.agentInfo, 
+    this.onRefresh,
+    required this.myAgents,
+    required this.myAgentsLoading,
+  });
 
   String _formatDate(String? dateString) {
     if (dateString == null) return 'N/A';
@@ -695,22 +729,58 @@ class UserPlanSection extends StatelessWidget {
 
         const SizedBox(height: 10),
 
-        AgentListSection(
-          items: [
-            {
-              "fullName": "Sarah Johnson",
-              "status": "active",
-              "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
-              "joinedDate": "9-1-2020",
-            },
-            {
-              "fullName": "Mark Adams",
-              "status": "inactive",
-              "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
-              "joinedDate": "12-4-2021",
-            },
-          ],
-        ),
+        // Agents section with loading and see all
+        if (myAgentsLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (myAgents.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'No agents found',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          )
+        else
+          Column(
+            children: [
+              AgentListSection(
+                items: myAgents.map((agent) {
+                  return {
+                    "fullName": "${agent['firstName'] ?? ''} ${agent['lastName'] ?? ''}".trim(),
+                    "imageUrl": agent['profileImage'] != null 
+                        ? '${Environment.apiUrl}assets/${agent['profileImage']}'
+                        : "https://i.imgur.com/G5qWJ4p.jpeg",
+                    "joinedDate": agent['createdAt'] != null 
+                        ? DateTime.parse(agent['createdAt']).toString().split(' ')[0]
+                        : "N/A",
+                  };
+                }).toList(),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/my-agents-page');
+                  },
+                  child: const Text(
+                    "See all agents",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF1E1E1E),
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
 
         const SizedBox(height: 15),
 

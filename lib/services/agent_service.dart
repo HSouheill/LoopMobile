@@ -83,4 +83,32 @@ class AgentService {
       throw Exception('Error fetching agent directly: $e');
     }
   }
+
+  // New method to fetch my agents
+  static Future<Map<String, dynamic>> getMyAgents({int page = 1, int limit = 20}) async {
+    try {
+      final url = Uri.parse('$baseUrl/my-agents?page=$page&limit=$limit');
+      print('DEBUG: Fetching my agents from URL: $url');
+      
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      print('DEBUG: My agents response status: ${response.statusCode}');
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('DEBUG: My agents response data: $data');
+        return data;
+      } else {
+        print('DEBUG: My agents API call failed with status: ${response.statusCode}');
+        print('DEBUG: My agents response body: ${response.body}');
+        throw Exception('Failed to load my agents: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('DEBUG: Error fetching my agents: $e');
+      throw Exception('Error fetching my agents: $e');
+    }
+  }
 }

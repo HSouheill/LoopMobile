@@ -11,7 +11,6 @@ class AgentListSection extends StatelessWidget {
 
     return Column(
       children: items.map((agent) {
-        final bool isActive = agent['status'] == 'active';
         return Column(
           children: [
             // 🟢 Agent row
@@ -23,22 +22,9 @@ class AgentListSection extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Left section: status + image + name + edit
+                    // Left section: image + name + edit
                     Row(
                       children: [
-                        // 🔘 Status circle
-                        Container(
-                          width: 7,
-                          height: 7,
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? const Color(0xFF0ACC00)
-                                : const Color(0xFFEA4435),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-
                         // 🟦 Circular image
                         Container(
                           width: 25,
