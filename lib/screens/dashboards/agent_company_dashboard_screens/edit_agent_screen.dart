@@ -46,7 +46,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
   final List<String> _genderOptions = ['male', 'female'];
   
   // Role options
-  final List<String> _roleOptions = ['agent-individual', 'agent-company'];
+  final List<String> _roleOptions = ['user', 'agent-individual', 'agent-company'];
 
   @override
   void initState() {
@@ -473,7 +473,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
           items: _roleOptions.map((String role) {
             return DropdownMenuItem<String>(
               value: role,
-              child: Text(role.replaceAll('-', ' ').toUpperCase()),
+              child: Text(role == 'user' ? 'USER' : role.replaceAll('-', ' ').toUpperCase()),
             );
           }).toList(),
           onChanged: (String? newValue) {
