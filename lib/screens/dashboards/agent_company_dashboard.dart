@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
+import '../../services/listing_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
-import './widgets/message_card.dart';
 import './widgets/statistics_card.dart';
 import './widgets/agent_list_section.dart';
 import './widgets/dynamic_service_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
+import './widgets/inactive_listing_card_list.dart';
+import '../../widgets/listing_details_modal.dart';
 import '../../environment.dart';
 
 class AgentCompanyDashboardPage extends StatefulWidget {
@@ -22,12 +24,18 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   User? user;
   Map<String, dynamic>? agentInfo;
   bool isLoading = true;
+  List<PropertyListing> inactiveListings = [];
+  List<PropertyListing> activeListings = [];
+  bool inactiveListingsLoading = true;
+  bool activeListingsLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
     _loadAgentInfo();
+    _loadInactiveListings();
+    _loadActiveListings();
   }
 
   Future<void> _loadUser() async {
@@ -52,11 +60,71 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     }
   }
 
+  Future<void> _loadInactiveListings() async {
+    try {
+      final response = await ListingService.getMyListings(
+        status: 'pending',
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        inactiveListings = response.listings;
+        inactiveListingsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        inactiveListingsLoading = false;
+      });
+      print('Error loading inactive listings: $e');
+    }
+  }
+
+  Future<void> _loadActiveListings() async {
+    try {
+      final response = await ListingService.getMyListings(
+        status: 'active',
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        activeListings = response.listings;
+        activeListingsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        activeListingsLoading = false;
+      });
+      print('Error loading active listings: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
+      inactiveListingsLoading = true;
+      activeListingsLoading = true;
     });
     await _loadAgentInfo();
+    await _loadInactiveListings();
+    await _loadActiveListings();
+  }
+
+  String _calculateDaysLeftFromCreated(DateTime? createdAt) {
+    if (createdAt == null) return '0';
+    final now = DateTime.now();
+    final difference = now.difference(createdAt).inDays;
+    return difference.toString();
+  }
+
+  String _extractPrice(String price) {
+    // Extract numeric value from price string like "$1,200/Month"
+    final regex = RegExp(r'[\d,]+');
+    final match = regex.firstMatch(price);
+    return match?.group(0)?.replaceAll(',', '') ?? '0';
+  }
+
+  void _showListingDetails(PropertyListing listing) {
+    showListingDetailsModal(context, listing);
   }
 
   @override
@@ -113,12 +181,202 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
 
                 const SizedBox(height: 40),
 
+                // Inactive Listings section
+                SizedBox(
+                  height: 40,
+                  child: Stack(
+                    children: [
+                      const Center(
+                        child: Text(
+                          "Inactive Listings",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 0),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/inactive-listings-page');
+                            },
+                            child: const Text(
+                              "See all",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF1E1E1E),
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Horizontal scrollable cards for inactive listings
+                if (inactiveListingsLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (inactiveListings.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        'No inactive listings',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  )
+                else
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 4),
+                        InactiveListingCardList(
+                          onItemTap: (title) {
+                            // Find the listing by title and show details
+                            final listing = inactiveListings.firstWhere(
+                              (l) => l.title == title,
+                              orElse: () => inactiveListings.first,
+                            );
+                            _showListingDetails(listing);
+                          },
+                          items: inactiveListings.map((listing) {
+                            return {
+                              "daysLeft": _calculateDaysLeftFromCreated(listing.createdAt),
+                              "backgroundImage": listing.imageUrl,
+                              "description": listing.title,
+                              "price": _extractPrice(listing.price),
+                              "location": listing.location,
+                              "type": listing.type ?? '',
+                              "bedrooms": listing.bedrooms?.toString() ?? '',
+                              "bathrooms": listing.bathrooms?.toString() ?? '',
+                              "size": listing.size?.toString() ?? '',
+                              "condition": listing.condition ?? '',
+                              "buildingAge": listing.buildingAge?.toString() ?? '',
+                              "papers": listing.papers ?? '',
+                              "listingFor": listing.listingFor ?? '',
+                              "currency": listing.currency ?? 'USD',
+                              "status": listing.status ?? '',
+                              "viewsCount": "0", // Default since not in current model
+                              "favoritesCount": "0", // Default since not in current model
+                              "amenities": (listing.amenityList ?? []).join(', '),
+                            };
+                          }).toList(),
+                        )
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
+
+                // My Listings section with "See all" button
+                SizedBox(
+                  height: 40,
+                  child: Stack(
+                    children: [
+                      const Center(
+                        child: Text(
+                          "My Listings",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1E1E1E),
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 0),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/my-listings-page');
+                            },
+                            child: const Text(
+                              "See all",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF1E1E1E),
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                if (activeListingsLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (activeListings.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        'No active listings',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  )
+                else
+                  DynamicServiceCardList(
+                    items: activeListings.map((listing) {
+                      return {
+                        'leftText': listing.title,
+                        'imageUrl': listing.imageUrl,
+                        'location': listing.location,
+                        'type': listing.type ?? '',
+                        'bedrooms': listing.bedrooms?.toString() ?? '',
+                        'bathrooms': listing.bathrooms?.toString() ?? '',
+                        'size': listing.size?.toString() ?? '',
+                        'condition': listing.condition ?? '',
+                        'buildingAge': listing.buildingAge?.toString() ?? '',
+                        'papers': listing.papers ?? '',
+                        'listingFor': listing.listingFor ?? '',
+                        'currency': listing.currency ?? 'USD',
+                        'status': listing.status ?? '',
+                        'price': listing.price,
+                        'description': listing.description ?? '',
+                        'amenities': (listing.amenityList ?? []).join(', '),
+                      };
+                    }).toList(),
+                    onItemTap: (title) {
+                      // Find the listing by title and show details
+                      final listing = activeListings.firstWhere(
+                        (l) => l.title == title,
+                        orElse: () => activeListings.first,
+                      );
+                      _showListingDetails(listing);
+                    },
+                  ),
+
+                const SizedBox(height: 30),
+
+                // Links section
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      "Messages",
+                      "Links",
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 18,
@@ -127,70 +385,18 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
-
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🔎 Search Row with padding
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 26, vertical: 2),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search_sharp,
-                              color: Color(0xFF0048FF)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              decoration: const InputDecoration(
-                                hintText: "Search ...",
-                                hintStyle: TextStyle(
-                                  color: Color(
-                                      0xFF0048FF), // ✅ custom placeholder color
-                                  fontSize: 14,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true, // ✅ compact
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    AddSocialAccountWidget(
+                      onRefresh: _refreshData,
                     ),
-
-                    // Divider with less spacing
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 18.0),
-                      child: Divider(
-                        thickness: 1,
-                        height: 1,
-                        color: Color(0xFF0ACC00),
+                    const SizedBox(height: 10),
+                    // Display existing social links
+                    if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+                      SocialLinksDisplayWidget(
+                        socialLinks: agentInfo!['user']['socialLinks'],
+                        onRefresh: _refreshData,
                       ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-                // Dynamic Message Cards
-
-                MessageCardList(
-                  items: [
-                    {
-                      "fullName": "John Doe",
-                      "message": "Hello, how are you?",
-                      "date": "12:45 am",
-                      "imageUrl": "",
-                      "isChecked": false,
-                      "unreadCount": "65", // shown only if isChecked == false
-                    },
-                    {
-                      "fullName": "Jane Smith",
-                      "message": "Let’s meet tomorrow.",
-                      "date": "1:20 pm",
-                      "imageUrl": "",
-                      "isChecked": true,
-                    },
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -520,70 +726,6 @@ class UserPlanSection extends StatelessWidget {
         ),
 
         const SizedBox(height: 30),
-
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0), // adjust as needed
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              "My Listings",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1E1E1E),
-              ),
-            ),
-          ),
-        ),
-
-        DynamicServiceCardList(
-          items: [
-            {
-              'leftText': 'Service Name1',
-              'imageUrl': 'https://example.com/image1.jpg'
-            },
-            {
-              'leftText': 'Service Name2',
-              'imageUrl': 'https://example.com/image2.jpg'
-            },
-            {
-              'leftText': 'Service Name3',
-              'imageUrl': 'https://example.com/image3.jpg'
-            },
-          ],
-        ),
-
-        const SizedBox(height: 30),
-
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              "Links",
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-              ),
-            ),
-          ),
-        ),
-
-        Column(
-          children: [
-            AddSocialAccountWidget(
-              onRefresh: onRefresh,
-            ),
-            const SizedBox(height: 10),
-            // Display existing social links
-            if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
-              SocialLinksDisplayWidget(
-                socialLinks: agentInfo!['user']['socialLinks'],
-                onRefresh: onRefresh,
-              ),
-          ],
-        ),
-        const SizedBox(height: 20),
       ],
     );
   }
