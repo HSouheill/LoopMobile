@@ -58,16 +58,14 @@ class StatCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: items.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        return Padding(
-          padding: EdgeInsets.only(right: index == items.length - 1 ? 0 : 10),
-          child: StatCard(
-            title: item['title'] ?? '',
-            value: item['value'] ?? '',
-          ),
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      alignment: WrapAlignment.center,
+      children: items.map((item) {
+        return StatCard(
+          title: item['title'] ?? '',
+          value: item['value'] ?? '',
         );
       }).toList(),
     );

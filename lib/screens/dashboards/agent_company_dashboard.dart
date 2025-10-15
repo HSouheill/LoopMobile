@@ -708,6 +708,8 @@ class UserPlanSection extends StatelessWidget {
               items: [
                 {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
                 {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
+                {"title": "Total Agents:", "value": "${agentInfo?['totalAgents'] ?? 0}"},
+                {"title": "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
               ],
             ),
           ],
