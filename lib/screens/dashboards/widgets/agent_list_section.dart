@@ -37,12 +37,14 @@ class AgentListSection extends StatelessWidget {
                             ),
                           ),
                           child: ClipOval(
-                            child: Image.network(
-                              agent['imageUrl'] ?? '',
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stack) =>
-                                  Image.asset('assets/defaultProfileImage.png'),
-                            ),
+                            child: agent['imageUrl'] != null && agent['imageUrl'].toString().isNotEmpty
+                                ? Image.network(
+                                    agent['imageUrl'],
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stack) =>
+                                        Image.asset('assets/defaultProfileImage.png'),
+                                  )
+                                : Image.asset('assets/defaultProfileImage.png'),
                           ),
                         ),
                         const SizedBox(width: 5),

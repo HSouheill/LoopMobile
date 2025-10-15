@@ -111,4 +111,73 @@ class AgentService {
       throw Exception('Error fetching my agents: $e');
     }
   }
+
+  // Add new agent method
+  static Future<Map<String, dynamic>> addAgent({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required String password,
+    String? companyName,
+    String? description,
+    String? DOB,
+    String? gender,
+    String? profileImage,
+    String? country,
+    String? governance,
+    String? district,
+    String? city,
+    bool? isFeatured,
+    String? portfolioLink,
+    List<Map<String, String>>? socialLinks,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}agents-routes/add-agent');
+      print('DEBUG: Adding agent to URL: $url');
+      
+      final body = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'phone': phone,
+        'password': password,
+        if (companyName != null) 'companyName': companyName,
+        if (description != null) 'description': description,
+        if (DOB != null) 'DOB': DOB,
+        if (gender != null) 'gender': gender,
+        if (profileImage != null) 'profileImage': profileImage,
+        if (country != null) 'country': country,
+        if (governance != null) 'governance': governance,
+        if (district != null) 'district': district,
+        if (city != null) 'city': city,
+        if (isFeatured != null) 'isFeatured': isFeatured,
+        if (portfolioLink != null) 'portfolioLink': portfolioLink,
+        if (socialLinks != null) 'socialLinks': socialLinks,
+      };
+      
+      print('DEBUG: Request body: $body');
+      
+      final response = await http.post(
+        url,
+        headers: AuthService.getAuthHeaders(),
+        body: json.encode(body),
+      );
+      
+      print('DEBUG: Add agent response status: ${response.statusCode}');
+      print('DEBUG: Add agent response body: ${response.body}');
+      
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        print('DEBUG: Agent added successfully: $data');
+        return data;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to add agent: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('DEBUG: Error adding agent: $e');
+      throw Exception('Error adding agent: $e');
+    }
+  }
 }

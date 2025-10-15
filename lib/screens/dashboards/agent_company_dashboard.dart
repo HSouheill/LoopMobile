@@ -754,9 +754,9 @@ class UserPlanSection extends StatelessWidget {
                 items: myAgents.map((agent) {
                   return {
                     "fullName": "${agent['firstName'] ?? ''} ${agent['lastName'] ?? ''}".trim(),
-                    "imageUrl": agent['profileImage'] != null 
+                    "imageUrl": agent['profileImage'] != null && agent['profileImage'].toString().isNotEmpty
                         ? '${Environment.apiUrl}assets/${agent['profileImage']}'
-                        : "https://i.imgur.com/G5qWJ4p.jpeg",
+                        : null, // Use null to trigger placeholder in AgentListSection
                     "joinedDate": agent['createdAt'] != null 
                         ? DateTime.parse(agent['createdAt']).toString().split(' ')[0]
                         : "N/A",
