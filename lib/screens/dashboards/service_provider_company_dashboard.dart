@@ -8,6 +8,7 @@ import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
 import '../../services/job_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/job_form_widget.dart';
 import './widgets/statistics_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
@@ -107,11 +108,17 @@ class _ServiceProviderCompanyDashboardPageState
     }
 
     // Convert myJobs to the format expected by the UI
-    final jobs = myJobs.map((job) => {
-      "imageUrl": job.imageUrl,
-      "title": job.title,
-      "contractType": job.jobType,
-      "time": "Experience: ${job.experienceRange['min']}-${job.experienceRange['max']} years"
+    final jobs = myJobs.map((job) {
+      // Safely extract experience range values
+      final minExp = job.experienceRange['min'] ?? 0;
+      final maxExp = job.experienceRange['max'] ?? 1;
+      
+      return {
+        "imageUrl": job.imageUrl,
+        "title": job.title,
+        "contractType": job.jobType,
+        "time": "Experience: $minExp-$maxExp years"
+      };
     }).toList();
 
     final applicationsList = [
@@ -170,7 +177,7 @@ class _ServiceProviderCompanyDashboardPageState
                   const SizedBox(height: 20),
 
                   // ✅ List New Jobs Section
-                  listNewJobsSection(context, screenWidth, jobs, isLoadingJobs),
+                  listNewJobsSection(context, screenWidth, jobs, isLoadingJobs, myJobs, _loadMyJobs),
 
                   applicationsSection(context, screenWidth, applicationsList),
 
@@ -861,7 +868,7 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
 
 /// ✅ List New Jobs Section
 Widget listNewJobsSection(
-    BuildContext context, double screenWidth, List<Map<String, String>> jobs, bool isLoadingJobs) {
+    BuildContext context, double screenWidth, List<Map<String, String>> jobs, bool isLoadingJobs, List<Job> myJobs, VoidCallback onRefresh) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
     child: Column(
@@ -1003,10 +1010,39 @@ Widget listNewJobsSection(
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 10,
-                            color: Colors.black,
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                  color: Color(0xFF0048FF),
+                                ),
+                                onPressed: () {
+                                  // Find the corresponding job object
+                                  final jobIndex = jobs.indexOf(job);
+                                  if (jobIndex < myJobs.length) {
+                                    final jobToEdit = myJobs[jobIndex];
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => JobFormWidget(
+                                          existingJob: jobToEdit,
+                                          onSuccess: () {
+                                            onRefresh(); // Refresh the jobs list
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 10,
+                                color: Colors.black,
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -1021,7 +1057,16 @@ Widget listNewJobsSection(
           child: DynamicGradientButton(
             buttonText: "Post New Job",
             onTap: () {
-              Navigator.pushNamed(context, '/all-jobs');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JobFormWidget(
+                    onSuccess: () {
+                      onRefresh(); // Refresh the jobs list
+                    },
+                  ),
+                ),
+              );
             },
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             textSize: 14,

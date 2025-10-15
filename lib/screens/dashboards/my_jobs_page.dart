@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/job_service.dart';
+import '../../widgets/job_form_widget.dart';
 
 class MyJobsPage extends StatefulWidget {
   const MyJobsPage({super.key});
@@ -216,7 +217,16 @@ class _MyJobsPageState extends State<MyJobsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/all-jobs');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => JobFormWidget(
+                onSuccess: () {
+                  _loadJobs(); // Refresh the jobs list
+                },
+              ),
+            ),
+          );
         },
         backgroundColor: const Color(0xFF0048FF),
         child: const Icon(Icons.add, color: Colors.white),
@@ -339,7 +349,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                'Experience: ${job.experienceRange['min']}-${job.experienceRange['max']} years',
+                'Experience: ${job.experienceRange['min'] ?? 0}-${job.experienceRange['max'] ?? 1} years',
                 style: const TextStyle(
                   color: Color(0xFF0048FF),
                   fontSize: 12,
@@ -389,13 +399,38 @@ class _MyJobsPageState extends State<MyJobsPage> {
             
             const SizedBox(height: 12),
             
-            // Created date
-            Text(
-              'Posted: ${_formatDate(job.createdAt)}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+            // Created date and edit button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Posted: ${_formatDate(job.createdAt)}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JobFormWidget(
+                          existingJob: job,
+                          onSuccess: () {
+                            _loadJobs(); // Refresh the jobs list
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.edit,
+                    color: Color(0xFF0048FF),
+                    size: 20,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

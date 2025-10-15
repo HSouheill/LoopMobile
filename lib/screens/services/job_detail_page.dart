@@ -215,7 +215,7 @@ class JobDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     // Job details list
-                    _buildDetailItem('Experience Required', '${job.experienceRange['min']}-${job.experienceRange['max']} years'),
+                    _buildDetailItem('Experience Required', '${job.experienceRange['min'] ?? 0}-${job.experienceRange['max'] ?? 1} years'),
                     _buildDetailItem('Skills', job.skills.join(', ')),
                     _buildDetailItem('Working Hours', job.workingHours),
                     _buildDetailItem('Attendance', job.attendance),

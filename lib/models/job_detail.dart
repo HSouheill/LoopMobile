@@ -43,11 +43,38 @@ class JobDetail {
       skills: List<String>.from(json['skills'] ?? []),
       workingHours: json['workingHours'] ?? '',
       attendance: json['attendance'] ?? '',
-      experienceRange: Map<String, int>.from(json['experienceRange'] ?? {}),
+      experienceRange: _parseExperienceRange(json['experienceRange']),
       isFeatured: json['isFeatured'] ?? false,
       createdAt: json['createdAt'] ?? '',
       userId: json['userId']?['_id'] ?? json['userId'] ?? '',
     );
+  }
+
+  static Map<String, int> _parseExperienceRange(dynamic experienceRange) {
+    print('DEBUG JobDetail: Parsing experienceRange: $experienceRange (type: ${experienceRange.runtimeType})');
+    
+    if (experienceRange == null) {
+      print('DEBUG JobDetail: experienceRange is null, returning defaults');
+      return {'min': 0, 'max': 1};
+    }
+    
+    if (experienceRange is Map) {
+      final min = experienceRange['min'];
+      final max = experienceRange['max'];
+      
+      print('DEBUG JobDetail: min: $min (type: ${min.runtimeType}), max: $max (type: ${max.runtimeType})');
+      
+      final result = {
+        'min': min is int ? min : int.tryParse(min?.toString() ?? '0') ?? 0,
+        'max': max is int ? max : int.tryParse(max?.toString() ?? '1') ?? 1,
+      };
+      
+      print('DEBUG JobDetail: Parsed result: $result');
+      return result;
+    }
+    
+    print('DEBUG JobDetail: experienceRange is not a Map, returning defaults');
+    return {'min': 0, 'max': 1};
   }
 
   // Factory method to create a sample job detail
