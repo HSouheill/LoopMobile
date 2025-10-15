@@ -203,6 +203,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                   onRefresh: _refreshData,
                   myAgents: myAgents,
                   myAgentsLoading: myAgentsLoading,
+                  onAgentUpdated: _refreshData,
                 ),
 
                 const SizedBox(height: 40),
@@ -592,6 +593,7 @@ class UserPlanSection extends StatelessWidget {
   final VoidCallback? onRefresh;
   final List<Map<String, dynamic>> myAgents;
   final bool myAgentsLoading;
+  final VoidCallback? onAgentUpdated;
   
   const UserPlanSection({
     super.key, 
@@ -599,6 +601,7 @@ class UserPlanSection extends StatelessWidget {
     this.onRefresh,
     required this.myAgents,
     required this.myAgentsLoading,
+    this.onAgentUpdated,
   });
 
   String _formatDate(String? dateString) {
@@ -760,8 +763,27 @@ class UserPlanSection extends StatelessWidget {
                     "joinedDate": agent['createdAt'] != null 
                         ? DateTime.parse(agent['createdAt']).toString().split(' ')[0]
                         : "N/A",
+                    "_id": agent['_id'], // Add agent ID for editing
+                    "firstName": agent['firstName'],
+                    "lastName": agent['lastName'],
+                    "email": agent['email'],
+                    "phone": agent['phone'],
+                    "role": agent['role'],
+                    "companyName": agent['companyName'],
+                    "description": agent['description'],
+                    "DOB": agent['DOB'],
+                    "gender": agent['gender'],
+                    "profileImage": agent['profileImage'],
+                    "country": agent['country'],
+                    "governance": agent['governance'],
+                    "district": agent['district'],
+                    "city": agent['city'],
+                    "isFeatured": agent['isFeatured'],
+                    "portfolioLink": agent['portfolioLink'],
+                    "socialLinks": agent['socialLinks'],
                   };
                 }).toList(),
+                onAgentUpdated: onAgentUpdated,
               ),
               const SizedBox(height: 10),
               Center(

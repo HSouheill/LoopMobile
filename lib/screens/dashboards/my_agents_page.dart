@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/agent_service.dart';
 import '../../environment.dart';
+import 'agent_company_dashboard_screens/edit_agent_screen.dart';
 
 class MyAgentsPage extends StatefulWidget {
   const MyAgentsPage({super.key});
@@ -235,10 +236,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
                                       children: [
                                         IconButton(
                                           onPressed: () {
-                                            // TODO: Implement edit functionality
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('Edit functionality coming soon')),
-                                            );
+                                            _handleEditAgent(context, agent);
                                           },
                                           icon: const Icon(
                                             Icons.edit,
@@ -267,5 +265,19 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
         ),
       ),
     );
+  }
+
+  void _handleEditAgent(BuildContext context, Map<String, dynamic> agent) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditAgentScreen(agent: agent),
+      ),
+    );
+    
+    if (result == true) {
+      // Refresh the agents list after successful edit
+      await _refreshAgents();
+    }
   }
 }

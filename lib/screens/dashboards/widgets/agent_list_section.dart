@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../agent_company_dashboard_screens/edit_agent_screen.dart';
 
 class AgentListSection extends StatelessWidget {
   final List<Map<String, dynamic>> items;
+  final Function()? onAgentUpdated;
 
-  const AgentListSection({super.key, required this.items});
+  const AgentListSection({super.key, required this.items, this.onAgentUpdated});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,7 @@ class AgentListSection extends StatelessWidget {
                             const SizedBox(width: 6),
                             GestureDetector(
                               onTap: () {
-                                // handle edit tap
+                                _handleEditAgent(context, agent);
                               },
                               child: const Text(
                                 'Edit',
@@ -132,5 +134,18 @@ class AgentListSection extends StatelessWidget {
         );
       }).toList(),
     );
+  }
+
+  void _handleEditAgent(BuildContext context, Map<String, dynamic> agent) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditAgentScreen(agent: agent),
+      ),
+    );
+    
+    if (result == true && onAgentUpdated != null) {
+      onAgentUpdated!();
+    }
   }
 }

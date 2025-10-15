@@ -180,4 +180,77 @@ class AgentService {
       throw Exception('Error adding agent: $e');
     }
   }
+
+  // Edit agent method
+  static Future<Map<String, dynamic>> editAgent({
+    required String agentId,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? phone,
+    String? password,
+    String? role,
+    String? companyName,
+    String? description,
+    String? DOB,
+    String? gender,
+    String? profileImage,
+    String? country,
+    String? governance,
+    String? district,
+    String? city,
+    bool? isFeatured,
+    String? portfolioLink,
+    List<Map<String, String>>? socialLinks,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}agents-routes/edit-agent/$agentId');
+      print('DEBUG: Editing agent at URL: $url');
+      
+      final body = <String, dynamic>{};
+      
+      // Only include fields that are provided (not null)
+      if (firstName != null) body['firstName'] = firstName;
+      if (lastName != null) body['lastName'] = lastName;
+      if (email != null) body['email'] = email;
+      if (phone != null) body['phone'] = phone;
+      if (password != null) body['password'] = password;
+      if (role != null) body['role'] = role;
+      if (companyName != null) body['companyName'] = companyName;
+      if (description != null) body['description'] = description;
+      if (DOB != null) body['DOB'] = DOB;
+      if (gender != null) body['gender'] = gender;
+      if (profileImage != null) body['profileImage'] = profileImage;
+      if (country != null) body['country'] = country;
+      if (governance != null) body['governance'] = governance;
+      if (district != null) body['district'] = district;
+      if (city != null) body['city'] = city;
+      if (isFeatured != null) body['isFeatured'] = isFeatured;
+      if (portfolioLink != null) body['portfolioLink'] = portfolioLink;
+      if (socialLinks != null) body['socialLinks'] = socialLinks;
+      
+      print('DEBUG: Edit agent request body: $body');
+      
+      final response = await http.put(
+        url,
+        headers: AuthService.getAuthHeaders(),
+        body: json.encode(body),
+      );
+      
+      print('DEBUG: Edit agent response status: ${response.statusCode}');
+      print('DEBUG: Edit agent response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('DEBUG: Agent edited successfully: $data');
+        return data;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to edit agent: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('DEBUG: Error editing agent: $e');
+      throw Exception('Error editing agent: $e');
+    }
+  }
 }
