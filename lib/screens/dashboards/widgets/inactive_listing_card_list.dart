@@ -168,6 +168,7 @@ class InactiveListingCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 placeholderIcon: Icons.home,
                 placeholderIconSize: 50,
+                placeholderColor: Colors.grey[400] ?? Colors.grey,
               ),
               const SizedBox(height: 2),
 
@@ -266,14 +267,6 @@ class InactiveListingCard extends StatelessWidget {
               height: 160,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: NetworkImage(backgroundImage),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.1),
-                    BlendMode.darken,
-                  ),
-                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -283,8 +276,27 @@ class InactiveListingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Stack(
-                children: [],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Stack(
+                  children: [
+                    ListingImageWidget(
+                      imageUrl: backgroundImage,
+                      height: 160,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholderIcon: Icons.home,
+                      placeholderIconSize: 40,
+                      placeholderColor: Colors.grey[500] ?? Colors.grey,
+                    ),
+                    // Dark overlay
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.1),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 

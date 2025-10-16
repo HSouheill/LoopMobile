@@ -52,7 +52,7 @@ class ListingImageWidget extends StatelessWidget {
       errorBuilder: (context, error, stackTrace) => Container(
         width: width,
         height: height,
-        color: Colors.grey[300],
+        color: Colors.grey[200],
         child: Icon(
           placeholderIcon,
           size: placeholderIconSize,
