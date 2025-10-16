@@ -135,7 +135,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
           .toList();
 
       if (widget.existingJob != null) {
-        // Update existing job
+        // Update existing job - don't include imageUrl when editing
         await JobService.updateJob(
           jobId: widget.existingJob!.id,
           title: _titleController.text.trim(),
@@ -148,9 +148,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
           workingHours: _workingHoursController.text.trim(),
           attendance: _selectedAttendance,
           description: _descriptionController.text.trim(),
-          imageUrl: _imageUrlController.text.trim().isNotEmpty
-              ? _imageUrlController.text.trim()
-              : null,
+          // Don't include imageUrl when editing existing jobs
           skills: skills.isNotEmpty ? skills : null,
           isFeatured: _isFeatured,
         );
@@ -375,13 +373,15 @@ class _JobFormWidgetState extends State<JobFormWidget> {
               ),
               const SizedBox(height: 16),
 
-              // Image URL
-              _buildTextField(
-                controller: _imageUrlController,
-                label: 'Image URL (optional)',
-                hint: 'Enter image URL',
-              ),
-              const SizedBox(height: 16),
+              // Image URL - only show for new jobs, not when editing
+              if (widget.existingJob == null) ...[
+                _buildTextField(
+                  controller: _imageUrlController,
+                  label: 'Image URL (optional)',
+                  hint: 'Enter image URL',
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Featured checkbox
               CheckboxListTile(
