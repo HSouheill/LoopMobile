@@ -29,6 +29,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   bool _isLoading = false;
   bool _isEditMode = false;
   PropertyListing? _editingListing;
+  bool _initialized = false;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -71,65 +72,75 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _initializeEditMode();
   }
 
   void _initializeEditMode() {
+    if (_initialized) return;
+    
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null && args['editMode'] == true && args['listing'] != null) {
       _isEditMode = true;
       _editingListing = args['listing'] as PropertyListing;
       _populateFields();
     }
+    _initialized = true;
   }
 
   void _populateFields() {
     if (_editingListing != null) {
-      _titleController.text = _editingListing!.title;
-      _descriptionController.text = _editingListing!.description ?? '';
-      _cityController.text = _editingListing!.location;
-      
-      // Extract price value from formatted price string
-      if (_editingListing!.priceValue != null) {
-        _priceController.text = _editingListing!.priceValue.toString();
-      }
-      
-      if (_editingListing!.bedrooms != null) {
-        _bedroomsController.text = _editingListing!.bedrooms.toString();
-      }
-      
-      if (_editingListing!.bathrooms != null) {
-        _bathroomsController.text = _editingListing!.bathrooms.toString();
-      }
-      
-      if (_editingListing!.size != null) {
-        _sizeController.text = _editingListing!.size.toString();
-      }
-      
-      if (_editingListing!.floor != null) {
-        _floorController.text = _editingListing!.floor.toString();
-      }
-      
-      if (_editingListing!.buildingAge != null) {
-        _buildingAgeController.text = _editingListing!.buildingAge.toString();
-      }
-      
-      if (_editingListing!.condition != null) {
-        selectedCondition = _editingListing!.condition;
-      }
-      
-      if (_editingListing!.papers != null) {
-        selectedPapers = _editingListing!.papers;
-      }
-      
-      // Set amenities
-      if (_editingListing!.amenityList != null) {
-        for (String amenity in _editingListing!.amenityList!) {
-          if (amenities.containsKey(amenity)) {
-            amenities[amenity] = true;
+      setState(() {
+        _titleController.text = _editingListing!.title;
+        _descriptionController.text = _editingListing!.description ?? '';
+        _cityController.text = _editingListing!.location;
+        
+        // Extract price value from formatted price string
+        if (_editingListing!.priceValue != null) {
+          _priceController.text = _editingListing!.priceValue.toString();
+        }
+        
+        if (_editingListing!.bedrooms != null) {
+          _bedroomsController.text = _editingListing!.bedrooms.toString();
+        }
+        
+        if (_editingListing!.bathrooms != null) {
+          _bathroomsController.text = _editingListing!.bathrooms.toString();
+        }
+        
+        if (_editingListing!.size != null) {
+          _sizeController.text = _editingListing!.size.toString();
+        }
+        
+        if (_editingListing!.floor != null) {
+          _floorController.text = _editingListing!.floor.toString();
+        }
+        
+        if (_editingListing!.buildingAge != null) {
+          _buildingAgeController.text = _editingListing!.buildingAge.toString();
+        }
+        
+        if (_editingListing!.condition != null) {
+          selectedCondition = _editingListing!.condition;
+        }
+        
+        if (_editingListing!.papers != null) {
+          selectedPapers = _editingListing!.papers;
+        }
+        
+        // Set amenities
+        if (_editingListing!.amenityList != null) {
+          for (String amenity in _editingListing!.amenityList!) {
+            if (amenities.containsKey(amenity)) {
+              amenities[amenity] = true;
+            }
           }
         }
-      }
+      });
     }
   }
 
