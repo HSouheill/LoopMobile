@@ -61,14 +61,26 @@ class _MyAppState extends State<MyApp> {
 
 // Custom FloatingActionButton location with adjustable vertical offset
 class _CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
-  final double offsetFromBottom;
-
-  _CustomFloatingActionButtonLocation(this.offsetFromBottom);
-
+  final BuildContext context;
+  
+  _CustomFloatingActionButtonLocation(this.context);
+  
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    // Get the actual safe area from MediaQuery
+    final double bottomSafeArea = MediaQuery.of(context).padding.bottom;
+    
+    // Calculate the bottom navigation bar height
+    // Your custom navbar height is 80.0
+    final double bottomNavBarHeight = 80.0;
+    
+    // Calculate the FAB position to sit on top of the bottom navigation bar
+    // We want the FAB to be positioned so its bottom edge aligns with the top of the bottom nav bar
     final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2;
-    final double fabY = scaffoldGeometry.scaffoldSize.height - scaffoldGeometry.floatingActionButtonSize.height - offsetFromBottom;
+    
+    // Position the FAB so it sits on top of the navbar, accounting for safe area
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavBarHeight - bottomSafeArea - scaffoldGeometry.floatingActionButtonSize.height;
+    
     return Offset(fabX, fabY);
   }
 }
@@ -194,32 +206,38 @@ class _MainScreenState extends State<MainScreen> {
       ),
 
       // ---------- replace previous FloatingActionButton with this ----------
-      floatingActionButton: Material(
-        elevation: 6,
-        color: const Color.fromARGB(255, 67, 91, 171),
-        shape: const RoundedRectangleBorder(
-          // top radius = half the width → perfect semicircle on top
+      floatingActionButton: Container(
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(255, 65, 105, 183),
           borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
         ),
-        child: InkWell(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          onTap: _showAddModal,
-          child: const SizedBox(
-            width: 72,   // diameter
-            height: 36,  // half the diameter → gives a top semicircle
-            child: Center(
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 28,
+        child: Material(
+          elevation: 0,
+          color: Colors.transparent,
+          shape: const RoundedRectangleBorder(
+            // top radius = half the width → perfect semicircle on top
+            borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
+          ),
+          child: InkWell(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+            onTap: _showAddModal,
+            child: const SizedBox(
+              width: 72,   // diameter
+              height: 36,  // half the diameter → gives a top semicircle
+              child: Center(
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
             ),
           ),
         ),
       ),
 
-      // center it horizontally above the bottom bar with custom vertical offset
-      floatingActionButtonLocation: _CustomFloatingActionButtonLocation(80), // Adjust the 60 value to move up/down
+      // center it horizontally above the bottom bar, positioned relative to navbar height
+      floatingActionButtonLocation: _CustomFloatingActionButtonLocation(context),
     );
   }
 }
