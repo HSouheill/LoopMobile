@@ -124,7 +124,7 @@ class ListingCard extends StatelessWidget {
                     listing.price,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.green[700],
+                      color: Colors.green,
                     ),
                   ),
                   const SizedBox(height: 8),

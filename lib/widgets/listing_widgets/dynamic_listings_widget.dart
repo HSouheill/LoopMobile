@@ -310,7 +310,7 @@ class PropertyListingCard extends StatelessWidget {
                       listing.price,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                        color: Colors.green,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

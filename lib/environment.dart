@@ -1,4 +1,4 @@
 // lib/environment.dart
 class Environment {
-  static const String apiUrl = 'https://loopbackend-4rpp.onrender.com/api/';
+  static const String apiUrl = 'http://localhost:3000/api/';
 }
