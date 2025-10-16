@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/job_service.dart';
-import '../environment.dart';
+import '../services/image_upload_service.dart';
 
 class JobFormWidget extends StatefulWidget {
   final Job? existingJob;
@@ -23,7 +25,6 @@ class _JobFormWidgetState extends State<JobFormWidget> {
   final _locationController = TextEditingController();
   final _workingHoursController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _imageUrlController = TextEditingController();
   final _skillsController = TextEditingController();
 
   String _selectedJobType = 'Full-time';
@@ -32,6 +33,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
   int _maxExperience = 1;
   bool _isFeatured = false;
   bool _isLoading = false;
+  File? _selectedImage;
 
   final List<String> _jobTypes = [
     'Full-time',
@@ -63,9 +65,6 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     _workingHoursController.text = job.workingHours;
     _descriptionController.text = job.description;
     
-    // Extract original image URL (remove API prefix if present)
-    _imageUrlController.text = _extractOriginalImageUrl(job.imageUrl);
-    
     _skillsController.text = job.skills.join(', ');
     _selectedJobType = job.jobType;
     _selectedAttendance = job.attendance;
@@ -75,16 +74,9 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     _maxExperience = _parseIntValue(job.experienceRange['max'], 1);
     
     _isFeatured = job.isFeatured;
-  }
-
-  String _extractOriginalImageUrl(String processedUrl) {
-    // If the URL was processed by JobService.getImageUrl(), extract the original path
-    final apiAssetsPrefix = '${Environment.apiUrl}assets/';
-    if (processedUrl.startsWith(apiAssetsPrefix)) {
-      return processedUrl.substring(apiAssetsPrefix.length);
-    }
-    // If it's an external URL (starts with http/https), return as-is
-    return processedUrl;
+    
+    // For existing jobs, we don't pre-select an image file
+    _selectedImage = null;
   }
 
   int _parseIntValue(dynamic value, int defaultValue) {
@@ -97,13 +89,38 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     return defaultValue;
   }
 
+  Future<void> _pickImage({ImageSource source = ImageSource.gallery}) async {
+    try {
+      final File? imageFile = await ImageUploadService.pickImage(source: source);
+      if (imageFile != null) {
+        setState(() {
+          _selectedImage = imageFile;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error picking image: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _removeImage() {
+    setState(() {
+      _selectedImage = null;
+    });
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
     _locationController.dispose();
     _workingHoursController.dispose();
     _descriptionController.dispose();
-    _imageUrlController.dispose();
     _skillsController.dispose();
     super.dispose();
   }
@@ -165,9 +182,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
           workingHours: _workingHoursController.text.trim(),
           attendance: _selectedAttendance,
           description: _descriptionController.text.trim(),
-          imageUrl: _imageUrlController.text.trim().isNotEmpty
-              ? _imageUrlController.text.trim()
-              : null,
+          imageFile: _selectedImage,
           skills: skills.isNotEmpty ? skills : null,
           isFeatured: _isFeatured,
         );
@@ -373,13 +388,9 @@ class _JobFormWidgetState extends State<JobFormWidget> {
               ),
               const SizedBox(height: 16),
 
-              // Image URL - only show for new jobs, not when editing
+              // Image picker - only show for new jobs, not when editing
               if (widget.existingJob == null) ...[
-                _buildTextField(
-                  controller: _imageUrlController,
-                  label: 'Image URL (optional)',
-                  hint: 'Enter image URL',
-                ),
+                _buildImagePicker(),
                 const SizedBox(height: 16),
               ],
 
@@ -584,6 +595,128 @@ class _JobFormWidgetState extends State<JobFormWidget> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Job Image (optional)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E1E1E),
+          ),
+        ),
+        const SizedBox(height: 8),
+        
+        if (_selectedImage != null) ...[
+          // Show selected image
+          Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE0E0E0)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                _selectedImage!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _pickImage(source: ImageSource.gallery),
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Change Image'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0048FF),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _removeImage,
+                  icon: const Icon(Icons.delete),
+                  label: const Text('Remove'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ] else ...[
+          // Show image picker buttons
+          Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFFE0E0E0),
+                style: BorderStyle.solid,
+                width: 2,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.add_photo_alternate,
+                  size: 48,
+                  color: Color(0xFF9E9E9E),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'No image selected',
+                  style: TextStyle(
+                    color: Color(0xFF9E9E9E),
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => _pickImage(source: ImageSource.gallery),
+                      icon: const Icon(Icons.photo_library),
+                      label: const Text('Gallery'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0048FF),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => _pickImage(source: ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt),
+                      label: const Text('Camera'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0048FF),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
       ],
     );
   }

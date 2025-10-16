@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../environment.dart';
 import '../models/job_detail.dart';
@@ -122,44 +123,93 @@ class JobService {
     required String workingHours,
     required String attendance,
     required String description,
+    File? imageFile,
     String? imageUrl,
     List<String>? skills,
     bool isFeatured = false,
   }) async {
     try {
       final url = Uri.parse(baseUrl);
-      final body = {
-        'title': title,
-        'location': location,
-        'jobType': jobType,
-        'experienceRange': experienceRange,
-        'workingHours': workingHours,
-        'attendance': attendance,
-        'description': description,
-        'isFeatured': isFeatured,
-        if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
-        if (skills != null && skills.isNotEmpty) 'skills': skills,
-      };
-
-      final response = await http.post(
-        url,
-        headers: {
-          ...AuthService.getAuthHeaders(),
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(body),
-      );
-
-      if (response.statusCode == 201) {
-        final data = json.decode(response.body);
-        if (data['job'] != null) {
-          return Job.fromJson(data['job']);
+      
+      // If we have an image file, use multipart form data
+      if (imageFile != null) {
+        final request = http.MultipartRequest('POST', url);
+        
+        // Add authentication headers
+        final authHeaders = AuthService.getAuthHeaders();
+        request.headers.addAll(authHeaders);
+        
+        // Add text fields
+        request.fields['title'] = title;
+        request.fields['location'] = location;
+        request.fields['jobType'] = jobType;
+        request.fields['experienceRange'] = json.encode(experienceRange);
+        request.fields['workingHours'] = workingHours;
+        request.fields['attendance'] = attendance;
+        request.fields['description'] = description;
+        request.fields['isFeatured'] = isFeatured.toString();
+        
+        if (skills != null && skills.isNotEmpty) {
+          request.fields['skills'] = json.encode(skills);
+        }
+        
+        // Add the image file
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image', // This should match the field name expected by multer
+            imageFile.path,
+          ),
+        );
+        
+        final streamedResponse = await request.send();
+        final response = await http.Response.fromStream(streamedResponse);
+        
+        if (response.statusCode == 201) {
+          final data = json.decode(response.body);
+          if (data['job'] != null) {
+            return Job.fromJson(data['job']);
+          } else {
+            throw Exception('No job data found in response');
+          }
         } else {
-          throw Exception('No job data found in response');
+          final errorData = json.decode(response.body);
+          throw Exception(errorData['message'] ?? 'Failed to create job: ${response.statusCode}');
         }
       } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Failed to create job: ${response.statusCode}');
+        // No image file, send as JSON
+        final body = {
+          'title': title,
+          'location': location,
+          'jobType': jobType,
+          'experienceRange': experienceRange,
+          'workingHours': workingHours,
+          'attendance': attendance,
+          'description': description,
+          'isFeatured': isFeatured,
+          if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
+          if (skills != null && skills.isNotEmpty) 'skills': skills,
+        };
+
+        final response = await http.post(
+          url,
+          headers: {
+            ...AuthService.getAuthHeaders(),
+            'Content-Type': 'application/json',
+          },
+          body: json.encode(body),
+        );
+
+        if (response.statusCode == 201) {
+          final data = json.decode(response.body);
+          if (data['job'] != null) {
+            return Job.fromJson(data['job']);
+          } else {
+            throw Exception('No job data found in response');
+          }
+        } else {
+          final errorData = json.decode(response.body);
+          throw Exception(errorData['message'] ?? 'Failed to create job: ${response.statusCode}');
+        }
       }
     } catch (e) {
       throw Exception('Error creating job: $e');
