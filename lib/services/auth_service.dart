@@ -5,7 +5,66 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../environment.dart';
 
-// Updated User class with profileImage field
+// UserOptions class to handle user preferences
+class UserOptions {
+  final bool hideSocialLinks;
+  final bool hideContactInfo;
+  final bool newMessagesNotifications;
+  final bool listingApprovalNotifications;
+  final bool serviceRequestsNotifications;
+  final bool promotionsNotifications;
+
+  UserOptions({
+    this.hideSocialLinks = false,
+    this.hideContactInfo = false,
+    this.newMessagesNotifications = true,
+    this.listingApprovalNotifications = true,
+    this.serviceRequestsNotifications = true,
+    this.promotionsNotifications = true,
+  });
+
+  factory UserOptions.fromJson(Map<String, dynamic> json) {
+    return UserOptions(
+      hideSocialLinks: json['hide_social_links'] ?? false,
+      hideContactInfo: json['hide_contact_info'] ?? false,
+      newMessagesNotifications: json['new_messages_notifications'] ?? true,
+      listingApprovalNotifications: json['listing_approval_notifications'] ?? true,
+      serviceRequestsNotifications: json['service_requests_notifications'] ?? true,
+      promotionsNotifications: json['promotions_notifications'] ?? true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'hide_social_links': hideSocialLinks,
+      'hide_contact_info': hideContactInfo,
+      'new_messages_notifications': newMessagesNotifications,
+      'listing_approval_notifications': listingApprovalNotifications,
+      'service_requests_notifications': serviceRequestsNotifications,
+      'promotions_notifications': promotionsNotifications,
+    };
+  }
+
+  UserOptions copyWith({
+    bool? hideSocialLinks,
+    bool? hideContactInfo,
+    bool? newMessagesNotifications,
+    bool? listingApprovalNotifications,
+    bool? serviceRequestsNotifications,
+    bool? promotionsNotifications,
+  }) {
+    return UserOptions(
+      hideSocialLinks: hideSocialLinks ?? this.hideSocialLinks,
+      hideContactInfo: hideContactInfo ?? this.hideContactInfo,
+      newMessagesNotifications: newMessagesNotifications ?? this.newMessagesNotifications,
+      listingApprovalNotifications: listingApprovalNotifications ?? this.listingApprovalNotifications,
+      serviceRequestsNotifications: serviceRequestsNotifications ?? this.serviceRequestsNotifications,
+      promotionsNotifications: promotionsNotifications ?? this.promotionsNotifications,
+    );
+  }
+}
+
+// Updated User class with profileImage field and options
 class User {
   final String id;
   final String name;
@@ -18,6 +77,7 @@ class User {
   final bool active;
   final String? profileImage; // Add this field
   final String? portfolioLink; // Add portfolio link field
+  final UserOptions? options; // Add options field
 
   User({
     required this.id,
@@ -31,6 +91,7 @@ class User {
     required this.active,
     this.profileImage, // Add this parameter
     this.portfolioLink, // Add portfolio link parameter
+    this.options, // Add options parameter
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,6 +107,7 @@ class User {
       active: json['active'] ?? true,
       profileImage: json['profileImage'], // Add this line
       portfolioLink: json['portfolioLink'], // Add portfolio link
+      options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
     );
   }
 
@@ -62,6 +124,7 @@ class User {
       'active': active,
       'profileImage': profileImage, // Add this line
       'portfolioLink': portfolioLink, // Add portfolio link
+      'options': options?.toJson(),
     };
   }
 
@@ -78,6 +141,7 @@ class User {
     bool? active,
     String? profileImage,
     String? portfolioLink,
+    UserOptions? options,
   }) {
     return User(
       id: id ?? this.id,
@@ -91,6 +155,7 @@ class User {
       active: active ?? this.active,
       profileImage: profileImage ?? this.profileImage,
       portfolioLink: portfolioLink ?? this.portfolioLink,
+      options: options ?? this.options,
     );
   }
 }
@@ -328,6 +393,61 @@ class AuthService {
       }
     } catch (e) {
       print('Verify edit OTP exception: $e');
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Update user options
+  static Future<Map<String, dynamic>> updateUserOptions({
+    bool? hideSocialLinks,
+    bool? hideContactInfo,
+    bool? newMessagesNotifications,
+    bool? listingApprovalNotifications,
+    bool? serviceRequestsNotifications,
+    bool? promotionsNotifications,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/update-options');
+      final response = await http.put(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({
+          if (hideSocialLinks != null) 'hide_social_links': hideSocialLinks,
+          if (hideContactInfo != null) 'hide_contact_info': hideContactInfo,
+          if (newMessagesNotifications != null) 'new_messages_notifications': newMessagesNotifications,
+          if (listingApprovalNotifications != null) 'listing_approval_notifications': listingApprovalNotifications,
+          if (serviceRequestsNotifications != null) 'service_requests_notifications': serviceRequestsNotifications,
+          if (promotionsNotifications != null) 'promotions_notifications': promotionsNotifications,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 200) {
+        // Update current user with new options
+        if (_currentUser != null && data['options'] != null) {
+          final updatedOptions = UserOptions.fromJson(data['options']);
+          final updatedUser = _currentUser!.copyWith(options: updatedOptions);
+          _currentUser = updatedUser;
+          await _storeAuthData();
+        }
+
+        return {
+          'success': true,
+          'message': data['message'] ?? 'User options updated successfully',
+          'options': data['options'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to update user options',
+        };
+      }
+    } catch (e) {
+      print('Update user options exception: $e');
       return {
         'success': false,
         'message': 'Network error occurred',

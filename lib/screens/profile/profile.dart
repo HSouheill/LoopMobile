@@ -647,6 +647,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _handleOptionChange(String optionName, bool value) async {
+    try {
+      final result = await AuthService.updateUserOptions(
+        hideSocialLinks: optionName == 'hideSocialLinks' ? value : null,
+        hideContactInfo: optionName == 'hideContactInfo' ? value : null,
+        newMessagesNotifications: optionName == 'newMessagesNotifications' ? value : null,
+        listingApprovalNotifications: optionName == 'listingApprovalNotifications' ? value : null,
+        serviceRequestsNotifications: optionName == 'serviceRequestsNotifications' ? value : null,
+        promotionsNotifications: optionName == 'promotionsNotifications' ? value : null,
+      );
+
+      if (mounted) {
+        if (result['success']) {
+          // Update the UI to reflect the change
+          setState(() {
+            _didUpdateProfile = true;
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message']),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          throw Exception(result['message']);
+        }
+      }
+    } catch (e) {
+      rethrow; // Re-throw to be handled by the DynamicSection widget
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = AuthService.currentUser;
@@ -919,6 +952,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         {"text": "Service Requests"},
                         {"text": "Promotions"},
                       ],
+                      userOptions: user.options,
+                      onOptionChanged: _handleOptionChange,
                     ),
                   ),
 
@@ -930,6 +965,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         {"text": "Hide Social Links"},
                         {"text": "Hide Contact Info"},
                       ],
+                      userOptions: user.options,
+                      onOptionChanged: _handleOptionChange,
                     ),
                   ),
 
