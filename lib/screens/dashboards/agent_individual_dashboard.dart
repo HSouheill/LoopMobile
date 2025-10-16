@@ -159,6 +159,94 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     showListingDetailsModal(context, listing);
   }
 
+  // Method to refresh data when returning from edit/delete operations
+  void _onListingOperationComplete() {
+    _refreshData();
+  }
+
+  Future<void> _deleteListingFromDashboard(String listingTitle) async {
+    // Find the listing by title
+    final listing = activeListings.firstWhere(
+      (l) => l.title == listingTitle,
+      orElse: () => activeListings.first,
+    );
+
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Listing'),
+        content: Text('Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      try {
+        final success = await ListingService.deleteListing(listing.id);
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Listing deleted successfully')),
+            );
+            // Refresh the data
+            await _refreshData();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to delete listing')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error deleting listing: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  void _editListingFromDashboard(String listingTitle) {
+    // Find the listing by title
+    final listing = activeListings.firstWhere(
+      (l) => l.title == listingTitle,
+      orElse: () => activeListings.first,
+    );
+
+    // Navigate to edit listing page with the listing data
+    Navigator.pushNamed(
+      context,
+      '/add-listing-form',
+      arguments: {
+        'editMode': true,
+        'listing': listing,
+      },
+    );
+  }
+
 
 
 
@@ -447,8 +535,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       child: Padding(
                         padding: const EdgeInsets.only(right: 0),
                         child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/inactive-listings-page');
+                          onPressed: () async {
+                            await Navigator.pushNamed(context, '/inactive-listings-page');
+                            _onListingOperationComplete();
                           },
                           child: const Text(
                             "See all",
@@ -595,8 +684,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       child: Padding(
                         padding: const EdgeInsets.only(right: 0),
                         child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/my-listings-page');
+                          onPressed: () async {
+                            await Navigator.pushNamed(context, '/my-listings-page');
+                            _onListingOperationComplete();
                           },
                           child: const Text(
                             "See all",
@@ -659,6 +749,20 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       orElse: () => activeListings.first,
                     );
                     _showListingDetails(listing);
+                  },
+                  onDelete: _deleteListingFromDashboard,
+                  onEdit: _editListingFromDashboard,
+                  onSold: (title) {
+                    // TODO: Implement sold functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Sold functionality not implemented yet')),
+                    );
+                  },
+                  onBoost: (title) {
+                    // TODO: Implement boost functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Boost functionality not implemented yet')),
+                    );
                   },
                 ),
 
