@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/listing_create_service.dart';
+import '../../services/listing_service.dart';
 
 class AddListingFormPage extends StatefulWidget {
   const AddListingFormPage({super.key});
@@ -26,6 +27,8 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   String? selectedPapers = 'title_deed';
   List<XFile> _selectedImages = [];
   bool _isLoading = false;
+  bool _isEditMode = false;
+  PropertyListing? _editingListing;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -66,6 +69,71 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _initializeEditMode();
+  }
+
+  void _initializeEditMode() {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args['editMode'] == true && args['listing'] != null) {
+      _isEditMode = true;
+      _editingListing = args['listing'] as PropertyListing;
+      _populateFields();
+    }
+  }
+
+  void _populateFields() {
+    if (_editingListing != null) {
+      _titleController.text = _editingListing!.title;
+      _descriptionController.text = _editingListing!.description ?? '';
+      _cityController.text = _editingListing!.location;
+      
+      // Extract price value from formatted price string
+      if (_editingListing!.priceValue != null) {
+        _priceController.text = _editingListing!.priceValue.toString();
+      }
+      
+      if (_editingListing!.bedrooms != null) {
+        _bedroomsController.text = _editingListing!.bedrooms.toString();
+      }
+      
+      if (_editingListing!.bathrooms != null) {
+        _bathroomsController.text = _editingListing!.bathrooms.toString();
+      }
+      
+      if (_editingListing!.size != null) {
+        _sizeController.text = _editingListing!.size.toString();
+      }
+      
+      if (_editingListing!.floor != null) {
+        _floorController.text = _editingListing!.floor.toString();
+      }
+      
+      if (_editingListing!.buildingAge != null) {
+        _buildingAgeController.text = _editingListing!.buildingAge.toString();
+      }
+      
+      if (_editingListing!.condition != null) {
+        selectedCondition = _editingListing!.condition;
+      }
+      
+      if (_editingListing!.papers != null) {
+        selectedPapers = _editingListing!.papers;
+      }
+      
+      // Set amenities
+      if (_editingListing!.amenityList != null) {
+        for (String amenity in _editingListing!.amenityList!) {
+          if (amenities.containsKey(amenity)) {
+            amenities[amenity] = true;
+          }
+        }
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
@@ -101,7 +169,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
 
     try {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      final String listingFor = args?['listingFor'] ?? 'rent';
+      final String listingFor = args?['listingFor'] ?? (_editingListing?.listingFor ?? 'rent');
       final String? rentalPeriod = args?['rentalPeriod'];
       final double priceValue = double.tryParse(_priceController.text) ?? 0;
       
@@ -114,7 +182,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       final listingData = {
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'type': args?['propertyType'],
+        'type': args?['propertyType'] ?? _editingListing?.type,
         'listingFor': listingFor,
         'price': priceValue,
         'paymentFrequency': paymentFrequency,
@@ -130,24 +198,42 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         'papers': selectedPapers,
         'amenities': amenities,
         'isPublished': false,
-        'status': 'pending',
+        'status': _editingListing?.status ?? 'pending',
         'currency': 'USD',
       };
 
-      final success = await ListingCreateService.createListing(
-        listingData,
-        _selectedImages,
-      );
-      
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Listing created successfully!')),
-        );
-        Navigator.popUntil(context, (route) => route.isFirst);
+      bool success;
+      if (_isEditMode && _editingListing != null) {
+        // Edit existing listing
+        success = await ListingService.editListing(_editingListing!.id, listingData);
+        
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Listing updated successfully!')),
+          );
+          Navigator.popUntil(context, (route) => route.isFirst);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update listing. Please try again.')),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to create listing. Please try again.')),
+        // Create new listing
+        success = await ListingCreateService.createListing(
+          listingData,
+          _selectedImages,
         );
+        
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Listing created successfully!')),
+          );
+          Navigator.popUntil(context, (route) => route.isFirst);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to create listing. Please try again.')),
+          );
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -174,9 +260,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Add Property Details',
-          style: TextStyle(
+        title: Text(
+          _isEditMode ? 'Edit Property Details' : 'Add Property Details',
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -460,9 +546,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Create Listing',
-                          style: TextStyle(
+                      : Text(
+                          _isEditMode ? 'Update Listing' : 'Create Listing',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

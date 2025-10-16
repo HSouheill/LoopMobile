@@ -246,6 +246,47 @@ class ListingService {
       return false;
     }
   }
+
+  // Edit an existing listing
+  static Future<bool> editListing(String listingId, Map<String, dynamic> listingData) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/$listingId');
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+        body: jsonEncode(listingData),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Delete a listing
+  static Future<bool> deleteListing(String listingId) async {
+    try {
+      if (listingId.isEmpty || AuthService.token == null) {
+        return false;
+      }
+      
+      final url = Uri.parse('${Environment.apiUrl}listings/$listingId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+      );
+
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 enum ListingCategory {

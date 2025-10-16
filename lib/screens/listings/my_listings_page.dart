@@ -70,6 +70,73 @@ class _MyListingsPageState extends State<MyListingsPage> {
     showListingDetailsModal(context, listing);
   }
 
+  Future<void> _deleteListing(PropertyListing listing) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Listing'),
+        content: Text('Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      try {
+        final success = await ListingService.deleteListing(listing.id);
+        Navigator.of(context).pop(); // Close loading dialog
+
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Listing deleted successfully')),
+          );
+          // Refresh the listings
+          await _refresh();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to delete listing')),
+          );
+        }
+      } catch (e) {
+        Navigator.of(context).pop(); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting listing: $e')),
+        );
+      }
+    }
+  }
+
+  void _editListing(PropertyListing listing) {
+    // Navigate to edit listing page with the listing data
+    Navigator.pushNamed(
+      context,
+      '/add-listing-form',
+      arguments: {
+        'editMode': true,
+        'listing': listing,
+      },
+    );
+  }
+
 
 
   @override
@@ -120,24 +187,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                               const SnackBar(content: Text('Sold functionality not implemented yet')),
                             );
                           },
-                          onDelete: () {
-                            // TODO: Implement delete functionality
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Delete functionality not implemented yet')),
-                            );
-                          },
+                          onDelete: () => _deleteListing(listing),
                           onBoost: () {
                             // TODO: Implement boost functionality
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Boost functionality not implemented yet')),
                             );
                           },
-                          onEdit: () {
-                            // TODO: Navigate to edit page
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Edit functionality not implemented yet')),
-                            );
-                          },
+                          onEdit: () => _editListing(listing),
                         ),
                       );
                     },

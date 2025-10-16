@@ -19,6 +19,10 @@ class DynamicServiceCard extends StatefulWidget {
   final String? price;
   final String? description;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onSold;
+  final VoidCallback? onBoost;
 
   const DynamicServiceCard({
     super.key,
@@ -38,6 +42,10 @@ class DynamicServiceCard extends StatefulWidget {
     this.price,
     this.description,
     this.onTap,
+    this.onDelete,
+    this.onEdit,
+    this.onSold,
+    this.onBoost,
   });
 
   @override
@@ -136,7 +144,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                   width: double.infinity,
                                   child: DynamicGradientButton(
                                     buttonText: 'Sold',
-                                    onTap: () {},
+                                    onTap: widget.onSold,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
@@ -151,7 +159,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                   width: double.infinity,
                                   child: DynamicGradientButton(
                                     buttonText: 'Delete',
-                                    onTap: () {},
+                                    onTap: widget.onDelete,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
@@ -176,6 +184,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                       setState(() {
                                         boostPressed = true;
                                       });
+                                      widget.onBoost?.call();
                                     },
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
@@ -186,10 +195,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                   width: double.infinity,
                                   child: DynamicGradientButton(
                                     buttonText: 'Edit',
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                          context, '/edit-my-service');
-                                    },
+                                    onTap: widget.onEdit,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
                                   ),
@@ -213,11 +219,19 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
 class DynamicServiceCardList extends StatelessWidget {
   final List<Map<String, String>> items;
   final Function(String)? onItemTap;
+  final Function(String)? onDelete;
+  final Function(String)? onEdit;
+  final Function(String)? onSold;
+  final Function(String)? onBoost;
 
   const DynamicServiceCardList({
     super.key, 
     required this.items,
     this.onItemTap,
+    this.onDelete,
+    this.onEdit,
+    this.onSold,
+    this.onBoost,
   });
 
   @override
@@ -241,6 +255,10 @@ class DynamicServiceCardList extends StatelessWidget {
                 price: item['price'],
                 description: item['description'],
                 onTap: onItemTap != null ? () => onItemTap!(item['leftText'] ?? '') : null,
+                onDelete: onDelete != null ? () => onDelete!(item['leftText'] ?? '') : null,
+                onEdit: onEdit != null ? () => onEdit!(item['leftText'] ?? '') : null,
+                onSold: onSold != null ? () => onSold!(item['leftText'] ?? '') : null,
+                onBoost: onBoost != null ? () => onBoost!(item['leftText'] ?? '') : null,
               ))
           .toList(),
     );
