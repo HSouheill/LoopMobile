@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/job_service.dart';
+import '../environment.dart';
 
 class JobFormWidget extends StatefulWidget {
   final Job? existingJob;
@@ -61,7 +62,10 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     _locationController.text = job.location;
     _workingHoursController.text = job.workingHours;
     _descriptionController.text = job.description;
-    _imageUrlController.text = job.imageUrl;
+    
+    // Extract original image URL (remove API prefix if present)
+    _imageUrlController.text = _extractOriginalImageUrl(job.imageUrl);
+    
     _skillsController.text = job.skills.join(', ');
     _selectedJobType = job.jobType;
     _selectedAttendance = job.attendance;
@@ -71,6 +75,16 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     _maxExperience = _parseIntValue(job.experienceRange['max'], 1);
     
     _isFeatured = job.isFeatured;
+  }
+
+  String _extractOriginalImageUrl(String processedUrl) {
+    // If the URL was processed by JobService.getImageUrl(), extract the original path
+    final apiAssetsPrefix = '${Environment.apiUrl}assets/';
+    if (processedUrl.startsWith(apiAssetsPrefix)) {
+      return processedUrl.substring(apiAssetsPrefix.length);
+    }
+    // If it's an external URL (starts with http/https), return as-is
+    return processedUrl;
   }
 
   int _parseIntValue(dynamic value, int defaultValue) {

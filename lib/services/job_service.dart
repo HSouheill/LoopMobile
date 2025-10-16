@@ -207,7 +207,12 @@ class JobService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['job'] != null) {
-          return Job.fromJson(data['job']);
+          try {
+            final updatedJob = Job.fromJson(data['job']);
+            return updatedJob;
+          } catch (parseError) {
+            throw Exception('Failed to parse updated job: $parseError');
+          }
         } else {
           throw Exception('No job data found in response');
         }
@@ -312,12 +317,12 @@ class Job {
     return Job(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
-      companyName: json['companyName'] ?? json['userId']?['companyName'] ?? '',
+      companyName: _parseCompanyName(json),
       location: json['location'] ?? '',
       jobType: json['jobType'] ?? '',
       imageUrl: JobService.getImageUrl(json['imageUrl'] ?? ''),
       description: json['description'] ?? '',
-      skills: List<String>.from(json['skills'] ?? []),
+      skills: _parseSkills(json['skills']),
       workingHours: json['workingHours'] ?? '',
       attendance: json['attendance'] ?? '',
       experienceRange: _parseExperienceRange(json['experienceRange']),
@@ -326,30 +331,73 @@ class Job {
     );
   }
 
-  static Map<String, int> _parseExperienceRange(dynamic experienceRange) {
-    print('DEBUG: Parsing experienceRange: $experienceRange (type: ${experienceRange.runtimeType})');
+  static String _parseCompanyName(Map<String, dynamic> json) {
+    try {
+      // First check if companyName is directly available
+      if (json['companyName'] != null && json['companyName'] is String) {
+        return json['companyName'];
+      }
+      
+      // Then check if userId is an object with companyName
+      if (json['userId'] != null && json['userId'] is Map) {
+        final userId = json['userId'] as Map<String, dynamic>;
+        if (userId['companyName'] != null) {
+          return userId['companyName'].toString();
+        }
+      }
+      
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  static List<String> _parseSkills(dynamic skills) {
+    if (skills == null) return [];
     
-    if (experienceRange == null) {
-      print('DEBUG: experienceRange is null, returning defaults');
+    if (skills is List) {
+      return skills.map((skill) => skill.toString()).toList();
+    }
+    
+    if (skills is String) {
+      return [skills];
+    }
+    
+    return [];
+  }
+
+  static Map<String, int> _parseExperienceRange(dynamic experienceRange) {
+    try {
+      if (experienceRange == null) {
+        return {'min': 0, 'max': 1};
+      }
+      
+      // Handle if it's a List (e.g., [0, 5])
+      if (experienceRange is List && experienceRange.length >= 2) {
+        final min = experienceRange[0];
+        final max = experienceRange[1];
+        return {
+          'min': min is int ? min : int.tryParse(min?.toString() ?? '0') ?? 0,
+          'max': max is int ? max : int.tryParse(max?.toString() ?? '1') ?? 1,
+        };
+      }
+      
+      // Handle if it's a Map (e.g., {min: 0, max: 5})
+      if (experienceRange is Map) {
+        final min = experienceRange['min'];
+        final max = experienceRange['max'];
+        
+        final result = {
+          'min': min is int ? min : int.tryParse(min?.toString() ?? '0') ?? 0,
+          'max': max is int ? max : int.tryParse(max?.toString() ?? '1') ?? 1,
+        };
+        
+        return result;
+      }
+      
+      return {'min': 0, 'max': 1};
+    } catch (e) {
       return {'min': 0, 'max': 1};
     }
-    
-    if (experienceRange is Map) {
-      final min = experienceRange['min'];
-      final max = experienceRange['max'];
-      
-      print('DEBUG: min: $min (type: ${min.runtimeType}), max: $max (type: ${max.runtimeType})');
-      
-      final result = {
-        'min': min is int ? min : int.tryParse(min?.toString() ?? '0') ?? 0,
-        'max': max is int ? max : int.tryParse(max?.toString() ?? '1') ?? 1,
-      };
-      
-      print('DEBUG: Parsed result: $result');
-      return result;
-    }
-    
-    print('DEBUG: experienceRange is not a Map, returning defaults');
-    return {'min': 0, 'max': 1};
   }
 }
