@@ -219,6 +219,26 @@ class JobService {
       throw Exception('Error updating job: $e');
     }
   }
+
+  // Delete a job
+  static Future<bool> deleteJob(String jobId) async {
+    try {
+      final url = Uri.parse('$baseUrl/$jobId');
+      final response = await http.delete(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to delete job: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error deleting job: $e');
+    }
+  }
 }
 
 // Response class for jobs with pagination

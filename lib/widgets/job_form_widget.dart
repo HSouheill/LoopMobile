@@ -161,6 +161,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
         );
       }
 
+      // Success - show success message and navigate back
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -178,11 +179,13 @@ class _JobFormWidgetState extends State<JobFormWidget> {
         Navigator.of(context).pop();
       }
     } catch (e) {
+      // Error - show error message but don't navigate back
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }

@@ -68,6 +68,60 @@ class _MyJobsPageState extends State<MyJobsPage> {
     await _loadJobs();
   }
 
+  Future<void> _showDeleteConfirmation(Job job) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Job'),
+          content: Text('Are you sure you want to delete "${job.title}"? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await _deleteJob(job);
+    }
+  }
+
+  Future<void> _deleteJob(Job job) async {
+    try {
+      await JobService.deleteJob(job.id);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Job deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // Refresh the jobs list
+        _loadJobs();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting job: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -399,7 +453,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
             
             const SizedBox(height: 12),
             
-            // Created date and edit button
+            // Created date and action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -410,25 +464,37 @@ class _MyJobsPageState extends State<MyJobsPage> {
                     color: Colors.grey,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => JobFormWidget(
-                          existingJob: job,
-                          onSuccess: () {
-                            _loadJobs(); // Refresh the jobs list
-                          },
-                        ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => JobFormWidget(
+                              existingJob: job,
+                              onSuccess: () {
+                                _loadJobs(); // Refresh the jobs list
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Color(0xFF0048FF),
+                        size: 20,
                       ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.edit,
-                    color: Color(0xFF0048FF),
-                    size: 20,
-                  ),
+                    ),
+                    IconButton(
+                      onPressed: () => _showDeleteConfirmation(job),
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

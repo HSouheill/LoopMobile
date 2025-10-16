@@ -1037,6 +1037,21 @@ Widget listNewJobsSection(
                                   }
                                 },
                               ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  size: 16,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () {
+                                  // Find the corresponding job object
+                                  final jobIndex = jobs.indexOf(job);
+                                  if (jobIndex < myJobs.length) {
+                                    final jobToDelete = myJobs[jobIndex];
+                                    _showDeleteConfirmation(context, jobToDelete, onRefresh);
+                                  }
+                                },
+                              ),
                               const Icon(
                                 Icons.arrow_forward_ios,
                                 size: 10,
@@ -1209,4 +1224,59 @@ Widget applicationsSection(
       ],
     ),
   );
+}
+
+// Delete confirmation method
+Future<void> _showDeleteConfirmation(BuildContext context, Job job, VoidCallback onRefresh) async {
+  final bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Delete Job'),
+        content: Text('Are you sure you want to delete "${job.title}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (confirmed == true) {
+    await _deleteJob(context, job, onRefresh);
+  }
+}
+
+Future<void> _deleteJob(BuildContext context, Job job, VoidCallback onRefresh) async {
+  try {
+    await JobService.deleteJob(job.id);
+    
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Job deleted successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // Refresh the jobs list
+      onRefresh();
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting job: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 }
