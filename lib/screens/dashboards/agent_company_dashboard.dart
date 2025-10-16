@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
-import '../../services/agent_service.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import './widgets/statistics_card.dart';
-import './widgets/agent_list_section.dart';
 import './widgets/dynamic_service_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
@@ -29,8 +27,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   List<PropertyListing> activeListings = [];
   bool inactiveListingsLoading = true;
   bool activeListingsLoading = true;
-  List<Map<String, dynamic>> myAgents = [];
-  bool myAgentsLoading = true;
 
   @override
   void initState() {
@@ -39,7 +35,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     _loadAgentInfo();
     _loadInactiveListings();
     _loadActiveListings();
-    _loadMyAgents();
   }
 
   Future<void> _loadUser() async {
@@ -102,32 +97,16 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     }
   }
 
-  Future<void> _loadMyAgents() async {
-    try {
-      final response = await AgentService.getMyAgents(page: 1, limit: 3);
-      setState(() {
-        myAgents = List<Map<String, dynamic>>.from(response['agents'] ?? []);
-        myAgentsLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        myAgentsLoading = false;
-      });
-      print('Error loading my agents: $e');
-    }
-  }
 
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
       inactiveListingsLoading = true;
       activeListingsLoading = true;
-      myAgentsLoading = true;
     });
     await _loadAgentInfo();
     await _loadInactiveListings();
     await _loadActiveListings();
-    await _loadMyAgents();
   }
 
   String _calculateDaysLeftFromCreated(DateTime? createdAt) {
@@ -201,9 +180,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 UserPlanSection(
                   agentInfo: agentInfo, 
                   onRefresh: _refreshData,
-                  myAgents: myAgents,
-                  myAgentsLoading: myAgentsLoading,
-                  onAgentUpdated: _refreshData,
                 ),
 
                 const SizedBox(height: 40),
@@ -591,17 +567,11 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
 class UserPlanSection extends StatelessWidget {
   final Map<String, dynamic>? agentInfo;
   final VoidCallback? onRefresh;
-  final List<Map<String, dynamic>> myAgents;
-  final bool myAgentsLoading;
-  final VoidCallback? onAgentUpdated;
   
   const UserPlanSection({
     super.key, 
     this.agentInfo, 
     this.onRefresh,
-    required this.myAgents,
-    required this.myAgentsLoading,
-    this.onAgentUpdated,
   });
 
   String _formatDate(String? dateString) {
@@ -708,7 +678,7 @@ class UserPlanSection extends StatelessWidget {
               items: [
                 {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
                 {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
-                {"title": "Total Agents:", "value": "${agentInfo?['totalAgents'] ?? 0}"},
+                
                 {"title": "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
               ],
             ),
@@ -716,110 +686,6 @@ class UserPlanSection extends StatelessWidget {
         ),
 
         const SizedBox(height: 20),
-
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0), // adjust as needed
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: const Text(
-              "Agents",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF1E1E1E),
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        // Agents section with loading and see all
-        if (myAgentsLoading)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(),
-            ),
-          )
-        else if (myAgents.isEmpty)
-          const Center(
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'No agents found',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-          )
-        else
-          Column(
-            children: [
-              AgentListSection(
-                items: myAgents.map((agent) {
-                  return {
-                    "fullName": "${agent['firstName'] ?? ''} ${agent['lastName'] ?? ''}".trim(),
-                    "imageUrl": agent['profileImage'] != null && agent['profileImage'].toString().isNotEmpty
-                        ? '${Environment.apiUrl}assets/${agent['profileImage']}'
-                        : null, // Use null to trigger placeholder in AgentListSection
-                    "joinedDate": agent['createdAt'] != null 
-                        ? DateTime.parse(agent['createdAt']).toString().split(' ')[0]
-                        : "N/A",
-                    "_id": agent['_id'], // Add agent ID for editing
-                    "firstName": agent['firstName'],
-                    "lastName": agent['lastName'],
-                    "email": agent['email'],
-                    "phone": agent['phone'],
-                    "role": agent['role'],
-                    "companyName": agent['companyName'],
-                    "description": agent['description'],
-                    "DOB": agent['DOB'],
-                    "gender": agent['gender'],
-                    "profileImage": agent['profileImage'],
-                    "country": agent['country'],
-                    "governance": agent['governance'],
-                    "district": agent['district'],
-                    "city": agent['city'],
-                    "isFeatured": agent['isFeatured'],
-                    "portfolioLink": agent['portfolioLink'],
-                    "socialLinks": agent['socialLinks'],
-                  };
-                }).toList(),
-                onAgentUpdated: onAgentUpdated,
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/my-agents-page');
-                  },
-                  child: const Text(
-                    "See all agents",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF1E1E1E),
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-        const SizedBox(height: 15),
-
-        Center(
-          child: DynamicGradientButton(
-            buttonText: "+ Add New Agent",
-            onTap: () {
-              Navigator.pushNamed(context, '/add-new-agent');
-            },
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            textSize: 16,
-          ),
-        ),
-
-        const SizedBox(height: 30),
       ],
     );
   }
