@@ -409,112 +409,114 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               
               const SizedBox(height: 30),
               
-              // Images
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildSectionTitle('Property Images'),
-                  if (_selectedImages.isNotEmpty)
-                    Text(
-                      '${_selectedImages.length}/10 images',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: _selectedImages.length >= 10 ? Colors.red : Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              
-              GestureDetector(
-                onTap: _selectedImages.length >= 10 ? null : _pickImages,
-                child: Container(
-                  width: double.infinity,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _selectedImages.length >= 10 ? Colors.grey[400]! : Colors.grey[300]!,
-                      width: 2,
-                      style: BorderStyle.solid,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: _selectedImages.length >= 10 ? Colors.grey[200] : Colors.grey[50],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _selectedImages.length >= 10 ? Icons.check_circle : Icons.add_photo_alternate,
-                        size: 40,
-                        color: _selectedImages.length >= 10 ? Colors.green : Colors.grey[400],
-                      ),
-                      const SizedBox(height: 8),
+              // Images - Only show for new listings, hide for edit mode
+              if (!_isEditMode) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildSectionTitle('Property Images'),
+                    if (_selectedImages.isNotEmpty)
                       Text(
-                        _selectedImages.length >= 10
-                            ? 'Maximum images reached (10/10)'
-                            : 'Tap to add images',
+                        '${_selectedImages.length}/10 images',
                         style: TextStyle(
-                          color: _selectedImages.length >= 10 ? Colors.green[700] : Colors.grey[600],
-                          fontSize: 16,
-                          fontWeight: _selectedImages.length >= 10 ? FontWeight.w600 : FontWeight.normal,
+                          fontSize: 14,
+                          color: _selectedImages.length >= 10 ? Colors.red : Colors.grey[600],
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
+                  ],
+                ),
+                const SizedBox(height: 15),
+                
+                GestureDetector(
+                  onTap: _selectedImages.length >= 10 ? null : _pickImages,
+                  child: Container(
+                    width: double.infinity,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedImages.length >= 10 ? Colors.grey[400]! : Colors.grey[300]!,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: _selectedImages.length >= 10 ? Colors.grey[200] : Colors.grey[50],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _selectedImages.length >= 10 ? Icons.check_circle : Icons.add_photo_alternate,
+                          size: 40,
+                          color: _selectedImages.length >= 10 ? Colors.green : Colors.grey[400],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedImages.length >= 10
+                              ? 'Maximum images reached (10/10)'
+                              : 'Tap to add images',
+                          style: TextStyle(
+                            color: _selectedImages.length >= 10 ? Colors.green[700] : Colors.grey[600],
+                            fontSize: 16,
+                            fontWeight: _selectedImages.length >= 10 ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              
-              if (_selectedImages.isNotEmpty) ...[
-                const SizedBox(height: 15),
-                SizedBox(
-                  height: 100,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _selectedImages.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(_selectedImages[index].path),
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                
+                if (_selectedImages.isNotEmpty) ...[
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedImages.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(_selectedImages[index].path),
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              top: 4,
-                              right: 4,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedImages.removeAt(index);
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 16,
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedImages.removeAt(index);
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
+                ],
               ],
               
               const SizedBox(height: 30),
