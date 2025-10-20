@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../environment.dart';
 import '../../screens/agents/single_agent_page.dart';
+import '../../services/favorite_service.dart';
 
 // Data model for an agent
 class Agent {
@@ -206,7 +207,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
 }
 
 // Widget for a single agent card
-class AgentCard extends StatelessWidget {
+class AgentCard extends StatefulWidget {
   final Agent agent;
   final bool showPropertyCount;
   final Function(Agent)? onTap;
@@ -219,16 +220,94 @@ class AgentCard extends StatelessWidget {
   });
 
   @override
+  State<AgentCard> createState() => _AgentCardState();
+}
+
+class _AgentCardState extends State<AgentCard> {
+  bool _isFavorited = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    try {
+      final result = await FavoriteService.checkFavorite(
+        favoritedObjectId: widget.agent.id,
+        table: 'user',
+      );
+      
+      if (mounted) {
+        setState(() {
+          _isFavorited = result['isFavorited'] ?? false;
+        });
+      }
+    } catch (e) {
+      print('Error checking favorite status: $e');
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await FavoriteService.toggleFavorite(
+        favoritedObjectId: widget.agent.id,
+        table: 'user',
+      );
+
+      if (mounted) {
+        setState(() {
+          _isFavorited = result['isFavorited'] ?? false;
+          _isLoading = false;
+        });
+
+        // Show user feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Favorite status updated'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: result['success'] == true 
+                ? Colors.green 
+                : Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (onTap != null) {
-          onTap!(agent);
+        if (widget.onTap != null) {
+          widget.onTap!(widget.agent);
         } else {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SingleAgentPage(agent: agent),
+              builder: (context) => SingleAgentPage(agent: widget.agent),
             ),
           );
         }
@@ -250,9 +329,9 @@ class AgentCard extends StatelessWidget {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: agent.imageUrl.trim().isNotEmpty
+                child: widget.agent.imageUrl.trim().isNotEmpty
                     ? Image.network(
-                        agent.imageUrl,
+                        widget.agent.imageUrl,
                         height: 140, // increased slightly for better visual
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -296,11 +375,25 @@ class AgentCard extends StatelessWidget {
               Positioned(
                 top: 8,
                 right: 8,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.8),
-                  radius: 16,
-                  child: const Icon(Icons.favorite_border,
-                      color: Colors.blue, size: 20),
+                child: GestureDetector(
+                  onTap: _toggleFavorite,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white.withOpacity(0.8),
+                    radius: 16,
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(
+                            _isFavorited ? Icons.favorite : Icons.favorite_border,
+                            color: _isFavorited ? Colors.red : Colors.blue,
+                            size: 20,
+                          ),
+                  ),
                 ),
               ),
               Positioned(
@@ -322,7 +415,7 @@ class AgentCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  agent.name,
+                  widget.agent.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -331,16 +424,16 @@ class AgentCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 // Conditional rendering of property count or custom text
-                if (showPropertyCount)
+                if (widget.showPropertyCount)
                   _buildInfoRow(Icons.business_center_outlined,
-                      '${agent.propertyCount} Properties')
+                      '${widget.agent.propertyCount} Properties')
                 else
-                  _buildCustomTextRow(agent.customText ?? 'No description available'),
+                  _buildCustomTextRow(widget.agent.customText ?? 'No description available'),
                 const SizedBox(height: 4),
-                _buildInfoRow(Icons.location_on_outlined, agent.location),
+                _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
                 const SizedBox(height: 4),
                 _buildInfoRow(
-                    Icons.star, '${agent.rating} (${agent.reviewCount} Reviews)',
+                    Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
                     iconColor: Colors.amber),
               ],
             ),
