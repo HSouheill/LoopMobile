@@ -16,7 +16,6 @@ class _AddServiceState extends State<AddService> {
   final TextEditingController _subtitleController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _portfolioLinkController = TextEditingController();
   
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -30,7 +29,6 @@ class _AddServiceState extends State<AddService> {
     _subtitleController.dispose();
     _locationController.dispose();
     _emailController.dispose();
-    _portfolioLinkController.dispose();
     super.dispose();
   }
 
@@ -70,7 +68,7 @@ class _AddServiceState extends State<AddService> {
           'subtitle': _subtitleController.text.trim(),
           'location': _locationController.text.trim(),
           'email': _emailController.text.trim(),
-          'portfolioLink': _portfolioLinkController.text.trim(),
+          'portfolioLink': 'https:NA.com',
           'isFeatured': _isFeatured,
           'type': _selectedType,
         };
@@ -338,28 +336,7 @@ class _AddServiceState extends State<AddService> {
               ),
               const SizedBox(height: 16),
 
-              // Portfolio Link Field
-              TextFormField(
-                controller: _portfolioLinkController,
-                decoration: const InputDecoration(
-                  labelText: 'Portfolio Link',
-                  hintText: 'Enter portfolio URL',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.link),
-                ),
-                keyboardType: TextInputType.url,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    try {
-                      Uri.parse(value);
-                    } catch (e) {
-                      return 'Please enter a valid URL';
-                    }
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+              // Portfolio Link is fixed to https:NA.com; input removed
 
               // Service Type
               DropdownButtonFormField<String>(
