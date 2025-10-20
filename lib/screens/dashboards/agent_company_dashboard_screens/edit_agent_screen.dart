@@ -38,6 +38,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
   String? _selectedRole;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _obscurePassword = true;
   
   // Social links
   List<Map<String, String>> _socialLinks = [];
@@ -276,13 +277,24 @@ class _EditAgentScreenState extends State<EditAgentScreen>
                       label: 'Password (leave blank to keep current)',
                       hint: 'Enter new password',
                       icon: Icons.lock_outline,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         if (value != null && value.isNotEmpty) {
                           return PasswordValidator.validatePassword(value);
                         }
                         return null;
                       },
+                      suffix: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: const Color(0xFF9AA3AF),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                     ),
                     const SizedBox(height: 16),
 
@@ -401,6 +413,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
     bool obscureText = false,
     int maxLines = 1,
     String? Function(String?)? validator,
+    Widget? suffix,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -424,6 +437,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
             prefixIcon: Icon(icon, color: const Color(0xFF0048FF), size: 20),
             hintText: hint,
             hintStyle: const TextStyle(color: Color(0xFF9AA3AF)),
+            suffixIcon: suffix,
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFF0048FF), width: 1.2),
             ),

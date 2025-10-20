@@ -32,6 +32,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController newPasswordController;
   late TextEditingController confirmPasswordController;
   bool _isChangingPassword = false;
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
 
   // Edit contact variables
   bool _isEditingContact = false;
@@ -920,10 +922,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Column(
                     children: [
                       BuildNewPassword(
-                          Icons.lock_open_outlined, "Enter new password",
-                          obscureText: true, controller: newPasswordController),
-                      BuildNewPassword(Icons.lock_outline, "Re-enter password", 
-                          controller: confirmPasswordController),
+                        Icons.lock_open_outlined,
+                        "Enter new password",
+                        obscureText: _obscureNewPassword,
+                        controller: newPasswordController,
+                        onToggleVisibility: () {
+                          setState(() {
+                            _obscureNewPassword = !_obscureNewPassword;
+                          });
+                        },
+                      ),
+                      BuildNewPassword(
+                        Icons.lock_outline,
+                        "Re-enter password",
+                        obscureText: _obscureConfirmPassword,
+                        controller: confirmPasswordController,
+                        onToggleVisibility: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
                     ],
                   ),
 
@@ -1248,9 +1267,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-// New password and rewrite password widget
-  Widget BuildNewPassword(IconData icon, String hintText,
-      {bool obscureText = false, TextEditingController? controller}) {
+// New password and rewrite password widget with eye toggle
+  Widget BuildNewPassword(
+    IconData icon,
+    String hintText, {
+    bool obscureText = false,
+    TextEditingController? controller,
+    VoidCallback? onToggleVisibility,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 25, bottom: 10),
       child: Column(
@@ -1268,6 +1292,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     hintText: hintText,
                     border: InputBorder.none, // removes underline
                     hintStyle: const TextStyle(color: Colors.grey),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: onToggleVisibility,
+                    ),
                   ),
                   style: const TextStyle(
                     color: Colors.black,

@@ -37,6 +37,7 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
   final bool _isFeatured = false;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _obscurePassword = true;
   
   // Social links
   List<Map<String, String>> _socialLinks = [];
@@ -239,10 +240,21 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
                       label: 'Password',
                       hint: 'Enter password',
                       icon: Icons.lock_outline,
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       validator: (value) {
                         return PasswordValidator.validatePassword(value);
                       },
+                      suffix: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: const Color(0xFF9AA3AF),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -358,6 +370,7 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
     bool obscureText = false,
     int maxLines = 1,
     String? Function(String?)? validator,
+    Widget? suffix,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,6 +394,7 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
             prefixIcon: Icon(icon, color: const Color(0xFF0048FF), size: 20),
             hintText: hint,
             hintStyle: const TextStyle(color: Color(0xFF9AA3AF)),
+            suffixIcon: suffix,
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFF0048FF), width: 1.2),
             ),
