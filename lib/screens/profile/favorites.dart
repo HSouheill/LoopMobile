@@ -22,11 +22,30 @@ class _FavoritesPageState extends State<FavoritesPage> {
   bool hasPrevPage = false;
   final int itemsPerPage = 8;
   bool isLoadingMore = false;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     _loadFavorites();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (hasNextPage && !isLoading && !isLoadingMore) {
+        _loadNextPage();
+      }
+    }
   }
 
   Future<void> _loadFavorites({bool isRefresh = false}) async {
@@ -135,11 +154,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void _onFavoriteTap(Favorite favorite) {
     // Handle tap on favorite item
     // You can navigate to the specific item's detail page here
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tapped on ${favorite.objectDetails.displayTitle}'),
-      ),
-    );
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text('Tapped on ${favorite.objectDetails.displayTitle}'),
+    //   ),
+    // );
   }
 
   @override
@@ -238,41 +257,37 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     return Column(
       children: [
-        Expanded(
-          child: GridView.builder(
-            padding: const EdgeInsets.all(8.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-            ),
-            itemCount: favorites.length + (hasNextPage ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == favorites.length) {
-                // Loading indicator for next page
-                return Container(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: isLoadingMore
-                        ? const CircularProgressIndicator()
-                        : TextButton(
-                            onPressed: _loadNextPage,
-                            child: const Text('Load More'),
-                          ),
-                  ),
-                );
-              }
+         Expanded(
+           child: GridView.builder(
+             controller: _scrollController,
+             padding: const EdgeInsets.all(8.0),
+             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+               crossAxisCount: 2,
+               childAspectRatio: 0.9, // Made cards shorter
+               crossAxisSpacing: 8.0,
+               mainAxisSpacing: 8.0,
+             ),
+             itemCount: favorites.length + (isLoadingMore ? 1 : 0),
+             itemBuilder: (context, index) {
+               if (index == favorites.length) {
+                 // Loading indicator for next page
+                 return const Center(
+                   child: Padding(
+                     padding: EdgeInsets.all(16.0),
+                     child: CircularProgressIndicator(),
+                   ),
+                 );
+               }
 
-              final favorite = favorites[index];
-              return FavoriteCard(
-                favorite: favorite,
-                onTap: () => _onFavoriteTap(favorite),
-                onRemove: () => _removeFavorite(favorite),
-              );
-            },
-          ),
-        ),
+               final favorite = favorites[index];
+               return FavoriteCard(
+                 favorite: favorite,
+                 onTap: () => _onFavoriteTap(favorite),
+                 onRemove: () => _removeFavorite(favorite),
+               );
+             },
+           ),
+         ),
         // Pagination info
         if (totalCount > 0)
           Container(
@@ -284,25 +299,27 @@ class _FavoritesPageState extends State<FavoritesPage> {
               ),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Showing ${favorites.length} of $totalCount items',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-                if (hasNextPage)
-                  TextButton(
-                    onPressed: isLoadingMore ? null : _loadNextPage,
-                    child: isLoadingMore
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Load More'),
+                if (isLoadingMore)
+                  const Row(
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 8),
+                      Text('Loading more...'),
+                    ],
+                  )
+                else
+                  Text(
+                    'Showing ${favorites.length} of $totalCount items',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
                   ),
               ],
             ),
