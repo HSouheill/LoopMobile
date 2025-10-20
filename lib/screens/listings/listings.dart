@@ -20,20 +20,23 @@ class _ListingsPageState extends State<ListingsPage> {
           // Search Bar Component
           const SearchAndCategoriesWidget(),
 
-          // Featured Listings (dynamic, fetches from backend)
-          const DynamicListingsWidget(category: ListingCategory.featured),
+          // Chalets
+          const DynamicListingsWidget(category: ListingCategory.chalets),
 
-          // New Listings
-          const DynamicListingsWidget(category: ListingCategory.newListings),
+          // Villas
+          const DynamicListingsWidget(category: ListingCategory.villas),
 
           // Apartments
           const DynamicListingsWidget(category: ListingCategory.apartments),
 
-          // Chalets
-          const DynamicListingsWidget(category: ListingCategory.chalets),
+          // Land
+          const DynamicListingsWidget(category: ListingCategory.land),
 
           // Commercial Buildings
           const DynamicListingsWidget(category: ListingCategory.commercial),
+
+          // Featured Listings (dynamic, fetches from backend)
+          const DynamicListingsWidget(category: ListingCategory.featured),
 
           const SizedBox(height: 100),
         ],

@@ -294,6 +294,8 @@ enum ListingCategory {
   newListings,
   apartments,
   chalets,
+  villas,
+  land,
   commercial,
 }
 
@@ -308,6 +310,10 @@ extension ListingCategoryExtension on ListingCategory {
         return 'Apartments';
       case ListingCategory.chalets:
         return 'Chalets';
+      case ListingCategory.villas:
+        return 'Villas';
+      case ListingCategory.land:
+        return 'Land';
       case ListingCategory.commercial:
         return 'Commercial Buildings';
     }
@@ -323,6 +329,10 @@ extension ListingCategoryExtension on ListingCategory {
         return 'apartment';
       case ListingCategory.chalets:
         return 'chalet';
+      case ListingCategory.villas:
+        return 'villa';
+      case ListingCategory.land:
+        return 'land';
       case ListingCategory.commercial:
         return 'commercial';
     }
@@ -338,6 +348,10 @@ extension ListingCategoryExtension on ListingCategory {
         return '/apartments';
       case ListingCategory.chalets:
         return '/chalets';
+      case ListingCategory.villas:
+        return '/villas';
+      case ListingCategory.land:
+        return '/land';
       case ListingCategory.commercial:
         return '/commercial';
     }

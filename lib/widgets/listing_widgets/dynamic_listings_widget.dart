@@ -48,6 +48,8 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
           break;
         case ListingCategory.apartments:
         case ListingCategory.chalets:
+        case ListingCategory.villas:
+        case ListingCategory.land:
         case ListingCategory.commercial:
           response = await ListingService.getListingsByType(
             type: widget.category.apiType!,
