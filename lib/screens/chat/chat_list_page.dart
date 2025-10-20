@@ -30,13 +30,26 @@ class _ChatListPageState extends State<ChatListPage> {
 
     try {
       final token = AuthService.token;
-      if (token != null) {
+      if (token != null && AuthService.isLoggedIn) {
         currentUserId = AuthService.currentUser?.id;
         final chatList = await ChatService.getUserChats(token);
         setState(() {
           chats = chatList;
           isLoading = false;
         });
+      } else {
+        // User is not authenticated, stop loading
+        setState(() {
+          isLoading = false;
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please sign in to access your chats'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       }
     } catch (e) {
       setState(() {
@@ -188,7 +201,7 @@ class _ChatListPageState extends State<ChatListPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No chats yet',
+                                AuthService.isLoggedIn ? 'No chats yet' : 'Please sign in to chat',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
@@ -197,7 +210,9 @@ class _ChatListPageState extends State<ChatListPage> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Start a conversation with someone',
+                                AuthService.isLoggedIn 
+                                    ? 'Start a conversation with someone'
+                                    : 'Sign in to access your chats and start conversations',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[500],
