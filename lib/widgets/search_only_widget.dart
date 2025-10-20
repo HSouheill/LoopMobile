@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import '../screens/agents/agent_search_results_page.dart';
 
-class SearchOnlyWidget extends StatelessWidget {
+class SearchOnlyWidget extends StatefulWidget {
   const SearchOnlyWidget({super.key});
+
+  @override
+  State<SearchOnlyWidget> createState() => _SearchOnlyWidgetState();
+}
+
+class _SearchOnlyWidgetState extends State<SearchOnlyWidget> {
+  final TextEditingController _searchController = TextEditingController();
+
+  void _performSearch() {
+    final query = _searchController.text.trim();
+    if (query.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AgentSearchResultsPage(searchQuery: query),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +49,10 @@ class SearchOnlyWidget extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
+                    controller: _searchController,
                     cursorColor: Color.fromARGB(255, 69, 100, 201),
                     decoration: const InputDecoration(
-                      hintText: 'Search...',
+                      hintText: 'Search agents...',
                       // remove all borders
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -38,13 +65,12 @@ class SearchOnlyWidget extends StatelessWidget {
                       // placeholder color same as icon
                       hintStyle: TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                     ),
+                    onSubmitted: (_) => _performSearch(),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.tune, color: Colors.black87),
-                  onPressed: () {
-                    // Handle filter button press
-                  },
+                  icon: const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
+                  onPressed: _performSearch,
                 ),
               ],
             ),
