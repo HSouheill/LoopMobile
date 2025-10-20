@@ -32,9 +32,11 @@ class SupportCardWidget extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
+              color: const Color.fromARGB(255, 75, 132, 167), // subtle background behind image
               image: const DecorationImage(
                 image: AssetImage('assets/support.png'),
-                fit: BoxFit.cover,
+                fit: BoxFit.fitHeight, // fill height, keep aspect ratio
+                alignment: Alignment.center,
               ),
             ),
           ),
