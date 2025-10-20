@@ -92,29 +92,29 @@ class AppHeaderWithRefresh extends StatelessWidget implements PreferredSizeWidge
               ),
             ],
           ),
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 6,
-                top: 6,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 8,
-                    minHeight: 8,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Stack(
+          //   children: [
+          //     IconButton(
+          //       icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
+          //       onPressed: () {},
+          //     ),
+          //     Positioned(
+          //       right: 6,
+          //       top: 6,
+          //       child: Container(
+          //         padding: const EdgeInsets.all(2),
+          //         decoration: const BoxDecoration(
+          //           color: Colors.red,
+          //           shape: BoxShape.circle,
+          //         ),
+          //         constraints: const BoxConstraints(
+          //           minWidth: 8,
+          //           minHeight: 8,
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.language, color: Colors.black87),
             onSelected: (String result) {
