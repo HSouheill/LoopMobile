@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../environment.dart';
+import '../models/favorite.dart';
 import 'auth_service.dart';
 
 class FavoriteService {
@@ -167,8 +168,44 @@ class FavoriteService {
     }
   }
 
-  /// Get all favorites by the authenticated user
-  static Future<Map<String, dynamic>> getUserFavorites() async {
+  /// Get all favorites by the authenticated user with pagination
+  static Future<Map<String, dynamic>> getUserFavorites({
+    int page = 1,
+    int limit = 8,
+  }) async {
+    try {
+      final url = Uri.parse('$baseUrl/my-favorites?page=$page&limit=$limit');
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'data': FavoritesResponse.fromJson(data),
+        };
+      } else {
+        return {
+          'success': false,
+          'data': null,
+          'message': data['message'] ?? 'Failed to load favorites',
+        };
+      }
+    } catch (e) {
+      print('Get user favorites error: $e');
+      return {
+        'success': false,
+        'data': null,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  /// Get all favorites by the authenticated user (legacy method for backward compatibility)
+  static Future<Map<String, dynamic>> getUserFavoritesLegacy() async {
     try {
       final url = Uri.parse('$baseUrl/my-favorites');
       final response = await http.get(
