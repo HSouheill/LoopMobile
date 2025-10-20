@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/search_only_widget.dart';
+import '../../widgets/service_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/dynamic_services_widget.dart';
 import '../../services/service_service.dart';
@@ -20,7 +20,7 @@ class ServicesPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SearchOnlyWidget(),
+          const ServiceSearchWidget(),
           const SizedBox(height: 10),
           ImageSliderWidget(imageUrls: sliderImages),
           const SizedBox(height: 20),

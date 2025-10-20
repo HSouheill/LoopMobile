@@ -453,6 +453,61 @@ class ServiceService {
         'success': false,
         'error': 'Unable to connect to server. Please check your internet connection and try again.',
       };
+ }
+  }
+  // Search service providers
+  static Future<ServiceProvidersResponse> searchServiceProviders({
+    required String query,
+    int page = 1,
+    int limit = 20,
+    String? sort,
+    String? city,
+    String? district,
+    String? companyName,
+    String? gender,
+    int? minAge,
+    int? maxAge,
+    DateTime? createdFrom,
+    DateTime? createdTo,
+    bool? isFeatured,
+    bool withServices = true,
+    bool withReviews = false,
+    String? providerType,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'q': query,
+        'page': page.toString(),
+        'limit': limit.toString(),
+        'withServices': withServices.toString(),
+        'withReviews': withReviews.toString(),
+        if (sort != null) 'sort': sort,
+        if (city != null) 'city': city,
+        if (district != null) 'district': district,
+        if (companyName != null) 'companyName': companyName,
+        if (gender != null) 'gender': gender,
+        if (minAge != null) 'minAge': minAge.toString(),
+        if (maxAge != null) 'maxAge': maxAge.toString(),
+        if (createdFrom != null) 'createdFrom': createdFrom.toIso8601String(),
+        if (createdTo != null) 'createdTo': createdTo.toIso8601String(),
+        if (isFeatured != null) 'isFeatured': isFeatured.toString(),
+        if (providerType != null) 'providerType': providerType,
+      };
+      
+      final uri = Uri.parse('$baseUrl/search-service-providers').replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ServiceProvidersResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to search service providers: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error searching service providers: $e');
     }
   }
 }
