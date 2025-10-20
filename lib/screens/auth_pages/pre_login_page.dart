@@ -44,11 +44,11 @@ class PreLoginPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 8),
-                  // Login button that navigates to the LoginLandingPage.
+                  // Login button that navigates directly to email login.
                   AuthButton(
                     label: 'Log In',
                     leadingIcon: Icons.login,
-                    onPressed: () => Navigator.pushNamed(context, '/loginLanding'),
+                    onPressed: () => Navigator.pushNamed(context, '/loginEmail'),
                     filled: true,
                   ),
                   const SizedBox(height: 12),

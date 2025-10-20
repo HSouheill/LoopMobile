@@ -47,26 +47,6 @@ class LoginLandingPage extends StatelessWidget {
                     onPressed: () => Navigator.pushNamed(context, '/loginEmail'),
                     filled: true,
                   ),
-                  const SizedBox(height: 12),
-                  // Google
-                  AuthButton(
-                    label: 'Log In With Google',
-                    leadingIcon: Icons.g_mobiledata,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google Sign-in (stub)')));
-                    },
-                    filled: false,
-                  ),
-                  const SizedBox(height: 12),
-                  // Apple
-                  AuthButton(
-                    label: 'Log In With Apple',
-                    leadingIcon: Icons.apple,
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Apple Sign-in (stub)')));
-                    },
-                    filled: false,
-                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
