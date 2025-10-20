@@ -130,6 +130,7 @@ class ServiceProvider {
   // Convert to Agent format for compatibility with existing widgets
   Map<String, dynamic> toAgentJson() {
     return {
+      'id': id, // Add the service provider ID for favorite functionality
       'imageUrl': profileImage,
       'name': displayName,
       'propertyCount': propertyCount,
