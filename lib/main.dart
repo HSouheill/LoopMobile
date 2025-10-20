@@ -11,6 +11,7 @@ import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
 import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
+import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
@@ -332,6 +333,13 @@ class HomePage extends StatelessWidget {
             limit: 3,
             showSeeAll: true,
             onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+          ),
+          const SizedBox(height: 10),
+          // Featured Jobs section - now fetched dynamically
+          DynamicJobsWidget(
+            category: JobCategory.featured,
+            limit: 3,
+            onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
           ),
           const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
         ],
