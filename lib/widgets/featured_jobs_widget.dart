@@ -171,9 +171,14 @@ class _JobCardState extends State<JobCard> {
           // ensure the card fills the available vertical space (prevents overflow)
           maxHeight: widget.cardHeight,
         ),
-        // No border and transparent background
-        decoration: const BoxDecoration(
+        // Add slight border with transparent background
+        decoration: BoxDecoration(
           color: Colors.transparent,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
         ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

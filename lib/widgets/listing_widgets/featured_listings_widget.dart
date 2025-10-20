@@ -238,6 +238,13 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
         child: Card(
           color: Colors.transparent,
           elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(
+              color: Colors.grey.withOpacity(0.2),
+              width: 1.0,
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

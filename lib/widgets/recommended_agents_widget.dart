@@ -315,8 +315,13 @@ class _AgentCardState extends State<AgentCard> {
       child: Container(
       width: 200, // Card width
       margin: const EdgeInsets.only(right: 16.0),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.transparent, // Transparent background
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

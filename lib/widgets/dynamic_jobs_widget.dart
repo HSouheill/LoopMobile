@@ -344,8 +344,13 @@ class _JobCardState extends State<JobCard> {
         constraints: const BoxConstraints(
           maxHeight: 320,
         ),
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(
+            color: Colors.grey.shade300,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
