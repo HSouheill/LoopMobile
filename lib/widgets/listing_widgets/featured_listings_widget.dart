@@ -1,6 +1,7 @@
 // widgets/featured_listings_widget.dart
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
+import '../../services/favorite_service.dart';
 import '../../screens/listings/single_listing_page.dart';
 
 class FeaturedListingsWidget extends StatefulWidget {
@@ -134,7 +135,7 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
   }
 }
 
-class PropertyListingCard extends StatelessWidget {
+class PropertyListingCard extends StatefulWidget {
   final PropertyListing listing;
 
   const PropertyListingCard({
@@ -143,13 +144,91 @@ class PropertyListingCard extends StatelessWidget {
   });
 
   @override
+  State<PropertyListingCard> createState() => _PropertyListingCardState();
+}
+
+class _PropertyListingCardState extends State<PropertyListingCard> {
+  bool _isFavorited = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    try {
+      final result = await FavoriteService.checkFavorite(
+        favoritedObjectId: widget.listing.id,
+        table: 'listing',
+      );
+      
+      if (mounted) {
+        setState(() {
+          _isFavorited = result['isFavorited'] ?? false;
+        });
+      }
+    } catch (e) {
+      print('Error checking favorite status: $e');
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await FavoriteService.toggleFavorite(
+        favoritedObjectId: widget.listing.id,
+        table: 'listing',
+      );
+
+      if (mounted) {
+        setState(() {
+          _isFavorited = result['isFavorited'] ?? false;
+          _isLoading = false;
+        });
+
+        // Show user feedback
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Favorite status updated'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: result['success'] == true 
+                ? Colors.green 
+                : Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SingleListingPage(listing: listing),
+            builder: (context) => SingleListingPage(listing: widget.listing),
           ),
         );
       },
@@ -170,7 +249,7 @@ class PropertyListingCard extends StatelessWidget {
                       topRight: Radius.circular(16.0),
                     ),
                     child: Image.network(
-                      listing.imageUrl,
+                      widget.listing.imageUrl,
                       height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -204,20 +283,26 @@ class PropertyListingCard extends StatelessWidget {
                     top: 10,
                     right: 10,
                     child: GestureDetector(
-                      onTap: () {
-                        // Add to favorites functionality - prevent navigation
-                      },
+                      onTap: _toggleFavorite,
                       child: Container(
                         padding: const EdgeInsets.all(4.0),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        child: const Icon(
-                          Icons.favorite_border,
-                          color: Colors.black,
-                          size: 20,
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Icon(
+                                _isFavorited ? Icons.favorite : Icons.favorite_border,
+                                color: _isFavorited ? Colors.red : Colors.black,
+                                size: 20,
+                              ),
                       ),
                     ),
                   ),
@@ -251,14 +336,14 @@ class PropertyListingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        listing.title,
+                        widget.listing.title,
                         style: Theme.of(context).textTheme.titleMedium,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        listing.price,
+                        widget.listing.price,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
@@ -273,7 +358,7 @@ class PropertyListingCard extends StatelessWidget {
                           const SizedBox(width: 5),
                           Expanded(
                             child: Text(
-                              listing.agentName,
+                              widget.listing.agentName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(color: Colors.grey),
@@ -288,7 +373,7 @@ class PropertyListingCard extends StatelessWidget {
                           const SizedBox(width: 5),
                           Expanded(
                             child: Text(
-                              listing.location,
+                              widget.listing.location,
                               style: const TextStyle(color: Colors.blue),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
