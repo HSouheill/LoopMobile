@@ -10,6 +10,7 @@ import 'auth_service.dart';
 
 class ServiceService {
   static final String baseUrl = '${Environment.apiUrl}agents-routes';
+  static final String usersBaseUrl = '${Environment.apiUrl}users';
   
   static Future<ServiceProvidersResponse> getFeaturedServiceProviders({int limit = 3}) async {
     try {
@@ -205,6 +206,51 @@ class ServiceService {
       }
     } catch (e) {
       throw Exception('Error fetching my services: $e');
+    }
+  }
+
+  // Get services for a specific agent (service provider) with pagination and filters
+  static Future<MyServicesResponse> getServicesByAgentId({
+    required String agentId,
+    int page = 1,
+    int limit = 20,
+    String? sort,
+    String? type,
+    String? location,
+    bool? isFeatured,
+    String? q,
+    DateTime? createdFrom,
+    DateTime? createdTo,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+        if (sort != null) 'sort': sort,
+        if (type != null) 'type': type,
+        if (location != null) 'location': location,
+        if (isFeatured != null) 'isFeatured': isFeatured.toString(),
+        if (q != null && q.isNotEmpty) 'q': q,
+        if (createdFrom != null) 'createdFrom': createdFrom.toIso8601String(),
+        if (createdTo != null) 'createdTo': createdTo.toIso8601String(),
+      };
+
+      final uri = Uri.parse('$baseUrl/agent-services/$agentId')
+          .replace(queryParameters: queryParams);
+
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return MyServicesResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to load agent services: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching agent services: $e');
     }
   }
 

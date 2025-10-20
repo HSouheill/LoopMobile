@@ -7,6 +7,7 @@ import '../../services/chat_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/chat.dart';
 import '../chat/chat_conversation_page.dart';
+import 'package:loopflutter/screens/services/agent_services_page.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -413,15 +414,34 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(Icons.work, color: Colors.black, size: 24),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Services',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              children: [
+                                const Icon(Icons.work, color: Colors.black, size: 24),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Services',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AgentServicesPage(
+                                      agentId: widget.serviceProvider.id,
+                                      agentName: widget.serviceProvider.displayName,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text('See all'),
                             ),
                           ],
                         ),
