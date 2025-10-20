@@ -94,12 +94,12 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: Colors.blue),
+                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    cursorColor: Colors.blue,
+                    cursorColor: Color.fromARGB(255, 69, 100, 201),
                     onSubmitted: (_) => _performSearch(),
                     decoration: const InputDecoration(
                       hintText: 'Search...',
@@ -113,7 +113,7 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       // placeholder color same as icon
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                     ),
                   ),
                 ),
@@ -163,7 +163,14 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: backgroundColor,
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 103, 155, 218),
+                  Color.fromARGB(255, 69, 100, 201),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
             ),
             child: Icon(icon, color: iconColor, size: 30),
           ),

@@ -19,11 +19,11 @@ class SearchOnlyWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: Colors.blue),
+                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
-                    cursorColor: Colors.blue,
+                    cursorColor: Color.fromARGB(255, 69, 100, 201),
                     decoration: const InputDecoration(
                       hintText: 'Search...',
                       // remove all borders
@@ -36,7 +36,7 @@ class SearchOnlyWidget extends StatelessWidget {
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(vertical: 12.0),
                       // placeholder color same as icon
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                     ),
                   ),
                 ),
