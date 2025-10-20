@@ -15,6 +15,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
   bool _loading = false;
   bool _rememberMe = false;
   bool _isEmailSelected = true;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -236,10 +237,17 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 hintText: 'Enter Password',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.grey[400],
+                                  ),
+                                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
-                              obscureText: true,
+                              obscureText: _obscurePassword,
                               validator: (v) => (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
                             ),
                           ),
