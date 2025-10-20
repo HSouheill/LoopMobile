@@ -165,7 +165,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               TextFormField(
                 controller: _searchController,
                 decoration: const InputDecoration(
-                  labelText: 'Search Query',
+                  labelText: 'Search',
                   hintText: 'Enter search terms...',
                   border: OutlineInputBorder(),
                 ),

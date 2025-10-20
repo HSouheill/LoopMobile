@@ -310,6 +310,14 @@ class HomePage extends StatelessWidget {
             isMainPage: true,
             onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),
+          // Featured Services section - now fetched dynamically
+          DynamicServicesWidget(
+            category: ServiceCategory.featured,
+            limit: 3,
+            showSeeAll: true,
+            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+          ),
+          const SizedBox(height: 10),
           // Companies Services section - now fetched dynamically
           DynamicServicesWidget(
             category: ServiceCategory.companies,

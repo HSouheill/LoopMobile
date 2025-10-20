@@ -62,12 +62,6 @@ class ServicesPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Featured Services
-          const DynamicServicesWidget(
-            category: ServiceCategory.featured,
-            showSeeAll: true,
-          ),
-
           // Top Rated Services
           const DynamicServicesWidget(
             category: ServiceCategory.topRated,
