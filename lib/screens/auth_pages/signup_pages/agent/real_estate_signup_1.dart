@@ -15,6 +15,8 @@ class _RealEstateSignupPage1State extends State<RealEstateSignupPage1> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -200,10 +202,21 @@ class _RealEstateSignupPage1State extends State<RealEstateSignupPage1> {
                                 hintText: 'Create Password',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.grey[400],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
-                              obscureText: true,
+                              obscureText: _obscurePassword,
                               validator: PasswordValidator.validatePassword,
                             ),
                           ),
@@ -222,10 +235,21 @@ class _RealEstateSignupPage1State extends State<RealEstateSignupPage1> {
                                 hintText: 'Confirm New Password',
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.grey[400],
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                                    });
+                                  },
+                                ),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
-                              obscureText: true,
+                              obscureText: _obscureConfirmPassword,
                               validator: (v) {
                                 if (v == null || v.isEmpty) return 'Required';
                                 if (v != _passwordCtrl.text) return 'Passwords do not match';
