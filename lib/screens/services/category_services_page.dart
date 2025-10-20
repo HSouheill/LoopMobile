@@ -45,6 +45,15 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
           isFeatured: true,
           sort: 'date_desc',
         );
+      } else if (widget.category == ServiceCategory.featuredCompanies) {
+        // featured companies: combine isFeatured with providerType=company
+        resp = await ServiceService.getAllServiceProviders(
+          page: pageToFetch,
+          limit: limit,
+          isFeatured: true,
+          providerType: 'company',
+          sort: 'date_desc',
+        );
       } else if (widget.category == ServiceCategory.topRated) {
         resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,

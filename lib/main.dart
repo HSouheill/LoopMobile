@@ -319,6 +319,14 @@ class HomePage extends StatelessWidget {
             onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
           ),
           const SizedBox(height: 10),
+          // Featured Companies section - featured company providers
+          DynamicServicesWidget(
+            category: ServiceCategory.featuredCompanies,
+            limit: 3,
+            showSeeAll: true,
+            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+          ),
+          const SizedBox(height: 10),
           // Companies Services section - now fetched dynamically
           DynamicServicesWidget(
             category: ServiceCategory.companies,

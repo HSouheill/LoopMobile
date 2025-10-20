@@ -51,6 +51,15 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
         case ServiceCategory.topRated:
           response = await ServiceService.getTopRatedServiceProviders(limit: widget.limit);
           break;
+        case ServiceCategory.featuredCompanies:
+          // Featured companies: filter providerType=company and isFeatured=true
+          response = await ServiceService.getAllServiceProviders(
+            limit: widget.limit,
+            isFeatured: true,
+            providerType: 'company',
+            sort: 'date_desc',
+          );
+          break;
         case ServiceCategory.companies:
           response = await ServiceService.getServiceProvidersByType(
             providerType: 'company',

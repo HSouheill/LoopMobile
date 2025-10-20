@@ -462,6 +462,7 @@ enum ServiceCategory {
   topRated,
   companies,
   individual,
+  featuredCompanies,
 }
 
 extension ServiceCategoryExtension on ServiceCategory {
@@ -475,6 +476,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return 'Company Services';
       case ServiceCategory.individual:
         return 'Individual Services';
+      case ServiceCategory.featuredCompanies:
+        return 'Featured Companies';
     }
   }
   
@@ -488,6 +491,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return 'company';
       case ServiceCategory.individual:
         return 'individual';
+      case ServiceCategory.featuredCompanies:
+        return 'company';
     }
   }
   
@@ -501,6 +506,8 @@ extension ServiceCategoryExtension on ServiceCategory {
         return '/company-services';
       case ServiceCategory.individual:
         return '/individual-services';
+      case ServiceCategory.featuredCompanies:
+        return '/featured-company-services';
     }
   }
 }
