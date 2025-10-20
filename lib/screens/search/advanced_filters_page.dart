@@ -81,6 +81,12 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _hasGarden = widget.initialFilters!['garden'];
       _hasSecurity = widget.initialFilters!['security'];
       _isFurnished = widget.initialFilters!['furnished'];
+    } else {
+      // Set default values to first options when no initial filters
+      _selectedType = _propertyTypes.first;
+      _selectedListingFor = _listingForOptions.first;
+      _selectedCondition = _conditionOptions.first;
+      _selectedSort = 'score';
     }
   }
 
