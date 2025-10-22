@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../../environment.dart';
+import '../../../../widgets/terms_privacy_agreement.dart';
 
 class ServiceProviderCompanySignupPage3 extends StatefulWidget {
   const ServiceProviderCompanySignupPage3({super.key});
@@ -41,9 +42,19 @@ class _ServiceProviderCompanySignupPage3State extends State<ServiceProviderCompa
   String _companyName = '';
   String _phone = '';
   bool _isLoading = false;
+  bool _isAgreedToTerms = false;
 
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
+      if (!_isAgreedToTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please agree to the Terms of Service and Privacy Policy to continue'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
       setState(() => _isLoading = true);
       
       try {
@@ -297,6 +308,17 @@ class _ServiceProviderCompanySignupPage3State extends State<ServiceProviderCompa
                               },
                               validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
                             ),
+                          ),
+                          const SizedBox(height: 24),
+                          
+                          // Terms and Privacy Policy Agreement
+                          TermsPrivacyAgreement(
+                            isAgreed: _isAgreedToTerms,
+                            onChanged: (value) {
+                              setState(() {
+                                _isAgreedToTerms = value;
+                              });
+                            },
                           ),
                           const SizedBox(height: 24),
                           

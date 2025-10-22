@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import '../../../../environment.dart';
+import '../../../../widgets/terms_privacy_agreement.dart';
 
 class RealEstateCompanySignupPage4 extends StatefulWidget {
   const RealEstateCompanySignupPage4({super.key});
@@ -18,6 +19,7 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
   File? _backIdImage;
   File? _selfieImage;
   bool _isLoading = false;
+  bool _isAgreedToTerms = false;
 
   @override
   void initState() {
@@ -85,6 +87,16 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please upload all required images'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!_isAgreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please agree to the Terms of Service and Privacy Policy to continue'),
           backgroundColor: Colors.red,
         ),
       );
@@ -394,6 +406,18 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
                       image: _selfieImage,
                       imageType: 'selfie',
                       icon: Icons.person,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Terms and Privacy Policy Agreement
+                    TermsPrivacyAgreement(
+                      isAgreed: _isAgreedToTerms,
+                      onChanged: (value) {
+                        setState(() {
+                          _isAgreedToTerms = value;
+                        });
+                      },
                     ),
                     
                     const SizedBox(height: 24),
