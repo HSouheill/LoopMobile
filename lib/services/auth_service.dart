@@ -214,7 +214,6 @@ class AuthService {
         return true;
       } else {
         // Handle error response from the server
-        final errorData = jsonDecode(response.body);
         return false;
       }
     } catch (e) {
@@ -463,6 +462,39 @@ class AuthService {
         return {
           'success': false,
           'message': data['message'] ?? 'Failed to update user options',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Delete user account
+  static Future<Map<String, dynamic>> deleteAccount() async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/delete-account');
+      final response = await http.delete(
+        url,
+        headers: getAuthHeaders(),
+      );
+
+      final data = jsonDecode(response.body);
+      
+      if (response.statusCode == 200) {
+        // Clear user data after successful deletion
+        await signOut();
+        
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Account deleted successfully',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to delete account',
         };
       }
     } catch (e) {
