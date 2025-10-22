@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../../environment.dart';
 
 class RealEstateSignupPage2 extends StatefulWidget {
   const RealEstateSignupPage2({super.key});
@@ -39,7 +36,6 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
   String _lastName = '';
   String _email = '';
   String _password = '';
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -47,70 +43,19 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
     super.dispose();
   }
 
-  Future<void> _completeSignup() async {
+  void _next() {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-      
-      try {
-        final response = await http.post(
-          Uri.parse('${Environment.apiUrl}users/signup'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'firstName': _firstName,
-            'lastName': _lastName,
-            'email': _email,
-            'password': _password,
-            'role': 'agent-individual',
-            'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
-            'country': _selectedCountry,
-            'governance': _selectedGovernance,
-            'district': _selectedDistrict,
-            'city': _selectedCity,
-          }),
-        );
-
-        if (response.statusCode == 202) {
-          final data = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('OTP sent to your phone. Please verify to complete signup.'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Navigate to OTP verification page
-            Navigator.pushNamed(context, '/verifyOtp', arguments: {
-              'pendingId': data['pendingId'],
-              'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
-            });
-          }
-        } else {
-          final errorData = json.decode(response.body);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(errorData['message'] ?? 'Signup failed'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Network error: ${e.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      Navigator.pushNamed(context, '/realEstateSignup3', arguments: {
+        'firstName': _firstName,
+        'lastName': _lastName,
+        'email': _email,
+        'password': _password,
+        'phone': '$_selectedCountryCode${_phoneCtrl.text.trim()}',
+        'country': _selectedCountry,
+        'governance': _selectedGovernance,
+        'district': _selectedDistrict,
+        'city': _selectedCity,
+      });
     }
   }
 
@@ -383,12 +328,12 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                           ),
                           const SizedBox(height: 24),
                           
-                          // Complete Signup button
+                          // Next button
                           SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _completeSignup,
+                              onPressed: _next,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
@@ -397,22 +342,13 @@ class _RealEstateSignupPage2State extends State<RealEstateSignupPage2> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: _isLoading 
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Complete Signup',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                              child: const Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 24),

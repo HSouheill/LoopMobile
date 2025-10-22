@@ -11,11 +11,13 @@ import 'screens/auth_pages/signup_pages/user/user_signup_2.dart';
 import 'screens/auth_pages/signup_pages/user/user_signup_3.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_signup_1.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_signup_2.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_signup_3.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup_1.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_signup_2.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_1.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_2.dart';
 import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_3.dart';
+import 'screens/auth_pages/signup_pages/agent/real_estate_company_signup_4.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_1.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_2.dart';
 import 'screens/auth_pages/signup_pages/service_provider/service_provider_company_signup_3.dart';
@@ -71,11 +73,13 @@ Map<String, WidgetBuilder> appRoutes() {
     '/userSignup3': (_) => const UserSignupPage3(),
     '/realEstateSignup1': (_) => const RealEstateSignupPage1(),
     '/realEstateSignup2': (_) => const RealEstateSignupPage2(),
+    '/realEstateSignup3': (_) => const RealEstateSignupPage3(),
     '/serviceProviderSignup1': (_) => const ServiceProviderSignupPage1(),
     '/serviceProviderSignup2': (_) => const ServiceProviderSignupPage2(),
     '/realEstateCompanySignup1': (_) => const RealEstateCompanySignupPage1(),
     '/realEstateCompanySignup2': (_) => const RealEstateCompanySignupPage2(),
     '/realEstateCompanySignup3': (_) => const RealEstateCompanySignupPage3(),
+    '/realEstateCompanySignup4': (_) => const RealEstateCompanySignupPage4(),
     '/serviceProviderCompanySignup1': (_) =>
         const ServiceProviderCompanySignupPage1(),
     '/serviceProviderCompanySignup2': (_) =>
