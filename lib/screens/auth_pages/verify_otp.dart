@@ -206,7 +206,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                     // Instructions
                     Text(
-                      'Enter the OTP sent to $_phone',
+                      'Enter the OTP sent to your phone number $_phone',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],

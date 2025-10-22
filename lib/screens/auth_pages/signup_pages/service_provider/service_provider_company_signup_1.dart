@@ -27,8 +27,8 @@ class _ServiceProviderCompanySignupPage1State extends State<ServiceProviderCompa
   void _next() {
     if (_formKey.currentState!.validate()) {
       Navigator.pushNamed(context, '/serviceProviderCompanySignup2', arguments: {
-        'firstName': 'NA',
-        'lastName': 'NA',
+        'firstName': 'COMPANY',
+        'lastName': 'COMPANY',
         'email': _emailCtrl.text.trim(),
         'password': _passwordCtrl.text,
       });

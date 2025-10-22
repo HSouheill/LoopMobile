@@ -77,6 +77,7 @@ class User {
   final bool active;
   final String? profileImage; // Add this field
   final String? portfolioLink; // Add portfolio link field
+  final String? companyName; // Add company name field
   final UserOptions? options; // Add options field
 
   User({
@@ -91,6 +92,7 @@ class User {
     required this.active,
     this.profileImage, // Add this parameter
     this.portfolioLink, // Add portfolio link parameter
+    this.companyName, // Add company name parameter
     this.options, // Add options parameter
   });
 
@@ -98,7 +100,10 @@ class User {
     return User(
       id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? json['firstName'] ?? '',
-      fullName: json['fullName'] ?? json['firstName'] ?? json['name'] ?? '',
+      fullName: json['fullName'] ?? 
+        (json['role'] == 'agent-company' || json['role'] == 'service-provider-company')
+          ? (json['companyName'] ?? json['firstName'] ?? json['name'] ?? '')
+          : (json['firstName'] ?? json['name'] ?? ''),
       email: json['email'] ?? '',
       phone: json['phone'],
       location: json['location'],
@@ -107,6 +112,7 @@ class User {
       active: json['active'] ?? true,
       profileImage: json['profileImage'], // Add this line
       portfolioLink: json['portfolioLink'], // Add portfolio link
+      companyName: json['companyName'], // Add company name
       options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
     );
   }
@@ -124,6 +130,7 @@ class User {
       'active': active,
       'profileImage': profileImage, // Add this line
       'portfolioLink': portfolioLink, // Add portfolio link
+      'companyName': companyName, // Add company name
       'options': options?.toJson(),
     };
   }
@@ -141,6 +148,7 @@ class User {
     bool? active,
     String? profileImage,
     String? portfolioLink,
+    String? companyName,
     UserOptions? options,
   }) {
     return User(
@@ -155,6 +163,7 @@ class User {
       active: active ?? this.active,
       profileImage: profileImage ?? this.profileImage,
       portfolioLink: portfolioLink ?? this.portfolioLink,
+      companyName: companyName ?? this.companyName,
       options: options ?? this.options,
     );
   }
