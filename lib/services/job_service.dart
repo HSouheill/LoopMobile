@@ -294,6 +294,64 @@ class JobService {
       throw Exception('Error deleting job: $e');
     }
   }
+
+  // Search jobs
+  static Future<JobsResponse> searchJobs({
+    required String query,
+    int page = 1,
+    int limit = 20,
+    String? location,
+    String? jobType,
+    int? minExperience,
+    int? maxExperience,
+    String? attendance,
+    String? skills,
+    DateTime? createdFrom,
+    DateTime? createdTo,
+    bool? isFeatured,
+    String sort = 'score',
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'q': query,
+        'page': page.toString(),
+        'limit': limit.toString(),
+        'sort': sort,
+        if (location != null) 'location': location,
+        if (jobType != null) 'jobType': jobType,
+        if (minExperience != null) 'minExperience': minExperience.toString(),
+        if (maxExperience != null) 'maxExperience': maxExperience.toString(),
+        if (attendance != null) 'attendance': attendance,
+        if (skills != null) 'skills': skills,
+        if (createdFrom != null) 'createdFrom': createdFrom.toIso8601String(),
+        if (createdTo != null) 'createdTo': createdTo.toIso8601String(),
+        if (isFeatured != null) 'isFeatured': isFeatured.toString(),
+      };
+      
+      final uri = Uri.parse('$baseUrl/search').replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['jobs'] != null) {
+          final jobs = (data['jobs'] as List)
+              .map((job) => Job.fromJson(job))
+              .toList();
+          final meta = JobMeta.fromJson(data['meta']);
+          return JobsResponse(jobs: jobs, meta: meta);
+        } else {
+          throw Exception('No jobs found in response');
+        }
+      } else {
+        throw Exception('Failed to search jobs: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error searching jobs: $e');
+    }
+  }
 }
 
 // Response class for jobs with pagination

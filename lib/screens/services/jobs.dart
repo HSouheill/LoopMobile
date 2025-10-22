@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/search_only_widget.dart';
+import '../../widgets/job_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/dynamic_jobs_widget.dart';
 
@@ -32,7 +32,7 @@ class JobsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SearchOnlyWidget(),
+            const JobSearchWidget(),
             const SizedBox(height: 10),
             ImageSliderWidget(imageUrls: sliderImages),
             const SizedBox(height: 20),
