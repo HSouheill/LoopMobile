@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../environment.dart';
+import '../../services/auth_service.dart';
+import '../../main.dart';
 
 class VerifyOtpPage extends StatefulWidget {
   const VerifyOtpPage({super.key});
@@ -53,21 +55,51 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
         // MODIFIED BLOCK
         if (response.statusCode == 201) {
+          final data = json.decode(response.body);
+          
           if (mounted) {
-            // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'Verification successful! Redirecting to main screen.'),
-                backgroundColor: Colors.green,
-                duration: Duration(seconds: 2),
-              ),
-            );
+            // Check if the response contains token and user data for auto sign-in
+            if (data['token'] != null && data['user'] != null) {
+              // Auto sign-in the user
+              final success = await AuthService.completeSignup(data['token'], data['user']);
+              
+              if (success) {
+                // Show success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Verification successful! You are now signed in.'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
 
-            // Navigate immediately to main page
-            // The SnackBar will briefly show over the new screen.
-            // Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-            Navigator.of(context).popUntil((route) => route.isFirst);
+                // Navigate to main page of the app
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
+                  (route) => false,
+                );
+              } else {
+                // Fallback if auto sign-in fails
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Verification successful! Please sign in manually.'),
+                    backgroundColor: Colors.orange,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }
+            } else {
+              // Fallback for cases where token/user data is not provided
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Verification successful! Please sign in to continue.'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            }
           }
         } else {
           final errorData = json.decode(response.body);

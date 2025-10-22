@@ -206,11 +206,9 @@ class AuthService {
       } else {
         // Handle error response from the server
         final errorData = jsonDecode(response.body);
-        print('SignIn error: ${errorData['message']}');
         return false;
       }
     } catch (e) {
-      print('SignIn exception: $e');
       return false;
     }
   }
@@ -239,7 +237,7 @@ class AuthService {
         return true;
       }
     } catch (e) {
-      print('Error loading auth data: $e');
+      // Error loading auth data
     }
     return false;
   }
@@ -302,7 +300,6 @@ class AuthService {
         };
       }
     } catch (e) {
-      print('Change password exception: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
@@ -341,7 +338,6 @@ class AuthService {
         };
       }
     } catch (e) {
-      print('Request edit contact exception: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
@@ -392,11 +388,25 @@ class AuthService {
         };
       }
     } catch (e) {
-      print('Verify edit OTP exception: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
       };
+    }
+  }
+
+  // Handle signup completion with token and user data
+  static Future<bool> completeSignup(String token, Map<String, dynamic> userData) async {
+    try {
+      _token = token;
+      _currentUser = User.fromJson(userData);
+
+      // Store in SharedPreferences for persistent login
+      await _storeAuthData();
+
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -447,7 +457,6 @@ class AuthService {
         };
       }
     } catch (e) {
-      print('Update user options exception: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
