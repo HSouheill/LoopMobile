@@ -10,8 +10,6 @@ class RealEstateCompanySignupPage1 extends StatefulWidget {
 
 class _RealEstateCompanySignupPage1State extends State<RealEstateCompanySignupPage1> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameCtrl = TextEditingController();
-  final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
@@ -20,8 +18,6 @@ class _RealEstateCompanySignupPage1State extends State<RealEstateCompanySignupPa
 
   @override
   void dispose() {
-    _firstNameCtrl.dispose();
-    _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmPasswordCtrl.dispose();
@@ -31,8 +27,8 @@ class _RealEstateCompanySignupPage1State extends State<RealEstateCompanySignupPa
   void _next() {
     if (_formKey.currentState!.validate()) {
       Navigator.pushNamed(context, '/realEstateCompanySignup2', arguments: {
-        'firstName': _firstNameCtrl.text.trim(),
-        'lastName': _lastNameCtrl.text.trim(),
+        'firstName': 'NA',
+        'lastName': 'NA',
         'email': _emailCtrl.text.trim(),
         'password': _passwordCtrl.text,
       });
@@ -115,53 +111,6 @@ class _RealEstateCompanySignupPage1State extends State<RealEstateCompanySignupPa
                       key: _formKey,
                       child: Column(
                         children: [
-                          // First Name and Last Name
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.grey[200]!),
-                                  ),
-                                  child: TextFormField(
-                                    controller: _firstNameCtrl,
-                                    decoration: InputDecoration(
-                                      hintText: 'First Name',
-                                      hintStyle: TextStyle(color: Colors.grey[400]),
-                                      prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
-                                      border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                    ),
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.grey[200]!),
-                                  ),
-                                  child: TextFormField(
-                                    controller: _lastNameCtrl,
-                                    decoration: InputDecoration(
-                                      hintText: 'Last Name',
-                                      hintStyle: TextStyle(color: Colors.grey[400]),
-                                      prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
-                                      border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                    ),
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
                           
                           // Email
                           Container(

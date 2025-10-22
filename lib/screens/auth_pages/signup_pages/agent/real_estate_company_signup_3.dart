@@ -11,7 +11,6 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
   final _formKey = GlobalKey<FormState>();
   String _selectedCountry = '';
   String _selectedDistrict = '';
-  String _selectedGovernance = '';
   String _selectedCity = '';
 
   @override
@@ -49,7 +48,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
         'companyName': _companyName,
         'phone': _phone,
         'country': _selectedCountry,
-        'governance': _selectedGovernance,
+        'governance': 'Central Government',
         'district': _selectedDistrict,
         'city': _selectedCity,
       });
@@ -212,38 +211,6 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                           ),
                           const SizedBox(height: 16),
                           
-                          // Select Governance
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[200]!),
-                            ),
-                            child: DropdownButtonFormField<String>(
-                              value: _selectedGovernance.isEmpty ? null : _selectedGovernance,
-                              decoration: InputDecoration(
-                                hintText: 'Select Governance',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                prefixIcon: Icon(Icons.business, color: Colors.grey[400]),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                                suffixIcon: Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
-                              ),
-                              items: ['Central Government', 'Local Government', 'Regional Government'].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedGovernance = newValue ?? '';
-                                });
-                              },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
                           
                           // Select City
                           Container(

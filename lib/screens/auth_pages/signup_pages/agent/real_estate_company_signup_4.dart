@@ -34,7 +34,6 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
         _companyName = args['companyName'] ?? '';
         _phone = args['phone'] ?? '';
         _country = args['country'] ?? '';
-        _governance = args['governance'] ?? '';
         _district = args['district'] ?? '';
         _city = args['city'] ?? '';
       }
@@ -48,7 +47,6 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
   String _companyName = '';
   String _phone = '';
   String _country = '';
-  String _governance = '';
   String _district = '';
   String _city = '';
 
@@ -110,7 +108,7 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
       request.fields['phone'] = _phone;
       request.fields['companyName'] = _companyName;
       request.fields['country'] = _country;
-      request.fields['governance'] = _governance;
+      request.fields['governance'] = 'Central Government';
       request.fields['district'] = _district;
       request.fields['city'] = _city;
 

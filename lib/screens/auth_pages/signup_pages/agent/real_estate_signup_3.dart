@@ -33,7 +33,6 @@ class _RealEstateSignupPage3State extends State<RealEstateSignupPage3> {
         _password = args['password'] ?? '';
         _phone = args['phone'] ?? '';
         _country = args['country'] ?? '';
-        _governance = args['governance'] ?? '';
         _district = args['district'] ?? '';
         _city = args['city'] ?? '';
       }
@@ -46,7 +45,6 @@ class _RealEstateSignupPage3State extends State<RealEstateSignupPage3> {
   String _password = '';
   String _phone = '';
   String _country = '';
-  String _governance = '';
   String _district = '';
   String _city = '';
 
@@ -107,7 +105,7 @@ class _RealEstateSignupPage3State extends State<RealEstateSignupPage3> {
       request.fields['role'] = 'agent-individual';
       request.fields['phone'] = _phone;
       request.fields['country'] = _country;
-      request.fields['governance'] = _governance;
+      request.fields['governance'] = 'Central Government';
       request.fields['district'] = _district;
       request.fields['city'] = _city;
 
