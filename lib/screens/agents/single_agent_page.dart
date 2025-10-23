@@ -8,6 +8,7 @@ import '../../services/chat_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/chat.dart';
 import '../chat/chat_conversation_page.dart';
+import '../../widgets/agent_report_dialog.dart';
 
 class SingleAgentPage extends StatefulWidget {
   final Agent agent;
@@ -38,6 +39,16 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
   void initState() {
     super.initState();
     _loadAgentData();
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AgentReportDialog(
+        agentId: widget.agent.id,
+        agentName: widget.agent.name,
+      ),
+    );
   }
 
   @override
@@ -163,6 +174,13 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle.light,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                onPressed: _showReportDialog,
+                tooltip: 'Report this agent',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -446,27 +464,47 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                     const SizedBox(height: 24),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _startChat,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _startChat,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                elevation: 2,
+                              ),
+                              child: const Text(
+                                'Start Chat',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                            elevation: 2,
                           ),
-                          child: const Text(
-                            'Start Chat',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              onPressed: _showReportDialog,
+                              icon: const Icon(Icons.flag, color: Colors.red),
+                              label: const Text('Report this agent', style: TextStyle(color: Colors.red)),
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                side: const BorderSide(color: Colors.red),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],

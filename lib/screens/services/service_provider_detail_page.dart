@@ -8,6 +8,7 @@ import '../../services/auth_service.dart';
 import '../../models/chat.dart';
 import '../chat/chat_conversation_page.dart';
 import 'package:loopflutter/screens/services/agent_services_page.dart';
+import '../../widgets/agent_report_dialog.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -48,6 +49,16 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   void initState() {
     super.initState();
     _loadServiceProviderData();
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AgentReportDialog(
+        agentId: widget.serviceProvider.id,
+        agentName: widget.serviceProvider.displayName,
+      ),
+    );
   }
 
   @override
@@ -172,6 +183,13 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle.light,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                onPressed: _showReportDialog,
+                tooltip: 'Report this service provider',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -519,27 +537,47 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                     const SizedBox(height: 24),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _startChat,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _startChat,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                elevation: 2,
+                              ),
+                              child: const Text(
+                                'Start Chat',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                            elevation: 2,
                           ),
-                          child: const Text(
-                            'Start Chat',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: OutlinedButton.icon(
+                              onPressed: _showReportDialog,
+                              icon: const Icon(Icons.flag, color: Colors.red),
+                              label: const Text('Report this service provider', style: TextStyle(color: Colors.red)),
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                side: const BorderSide(color: Colors.red),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
