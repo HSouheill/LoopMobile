@@ -23,7 +23,10 @@ import 'screens/add_listing/widgets/add_listing_modal.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize device UUID service
+  // Initialize authentication first to ensure auth data is loaded
+  await AuthService.loadAuthData();
+  
+  // Then initialize device UUID service
   await DeviceUuidService.initialize();
   
   runApp(const MyApp());
@@ -122,7 +125,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _checkAuthStatus() async {
-    final isAuthenticated = await AuthService.checkAuthStatus();
+    // Auth data should already be loaded in main(), just check the current state
+    final isAuthenticated = AuthService.isLoggedIn;
     setState(() {
       _isLoggedIn = isAuthenticated;
       _isLoading = false;

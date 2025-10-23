@@ -25,13 +25,23 @@ class UserOptions {
 
   factory UserOptions.fromJson(Map<String, dynamic> json) {
     return UserOptions(
-      hideSocialLinks: json['hide_social_links'] ?? false,
-      hideContactInfo: json['hide_contact_info'] ?? false,
-      newMessagesNotifications: json['new_messages_notifications'] ?? true,
-      listingApprovalNotifications: json['listing_approval_notifications'] ?? true,
-      serviceRequestsNotifications: json['service_requests_notifications'] ?? true,
-      promotionsNotifications: json['promotions_notifications'] ?? true,
+      hideSocialLinks: _parseBool(json['hide_social_links']) ?? false,
+      hideContactInfo: _parseBool(json['hide_contact_info']) ?? false,
+      newMessagesNotifications: _parseBool(json['new_messages_notifications']) ?? true,
+      listingApprovalNotifications: _parseBool(json['listing_approval_notifications']) ?? true,
+      serviceRequestsNotifications: _parseBool(json['service_requests_notifications']) ?? true,
+      promotionsNotifications: _parseBool(json['promotions_notifications']) ?? true,
     );
+  }
+
+  // Helper method to safely parse boolean values
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
@@ -97,24 +107,47 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    // Simplified fullName parsing to avoid complex ternary
+    String fullName;
+    if (json['fullName'] != null) {
+      fullName = json['fullName'].toString();
+    } else {
+      final role = json['role']?.toString() ?? '';
+      if (role == 'agent-company' || role == 'service-provider-company') {
+        fullName = json['companyName']?.toString() ?? 
+                  json['firstName']?.toString() ?? 
+                  json['name']?.toString() ?? '';
+      } else {
+        fullName = json['firstName']?.toString() ?? 
+                  json['name']?.toString() ?? '';
+      }
+    }
+
     return User(
       id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? json['firstName'] ?? '',
-      fullName: json['fullName'] ?? 
-        (json['role'] == 'agent-company' || json['role'] == 'service-provider-company')
-          ? (json['companyName'] ?? json['firstName'] ?? json['name'] ?? '')
-          : (json['firstName'] ?? json['name'] ?? ''),
+      fullName: fullName,
       email: json['email'] ?? '',
       phone: json['phone'],
       location: json['location'],
       city: json['city'],
       role: json['role'] ?? 'user',
-      active: json['active'] ?? true,
-      profileImage: json['profileImage'], // Add this line
-      portfolioLink: json['portfolioLink'], // Add portfolio link
-      companyName: json['companyName'], // Add company name
+      active: json['active'] != null ? _parseBool(json['active']) ?? true : true,
+      profileImage: json['profileImage'],
+      portfolioLink: json['portfolioLink'],
+      companyName: json['companyName'],
       options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
     );
+  }
+
+  // Helper method to safely parse boolean values
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) {
+      return value.toLowerCase() == 'true';
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
