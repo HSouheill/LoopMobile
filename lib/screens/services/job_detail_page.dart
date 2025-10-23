@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../models/job_detail.dart';
 import '../../services/job_service.dart';
+import '../../widgets/job_report_dialog.dart';
 
-class JobDetailPage extends StatelessWidget {
+class JobDetailPage extends StatefulWidget {
   final JobDetail job;
 
   const JobDetailPage({
     super.key,
     required this.job,
   });
+
+  @override
+  State<JobDetailPage> createState() => _JobDetailPageState();
+}
+
+class _JobDetailPageState extends State<JobDetailPage> {
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => JobReportDialog(
+        jobId: widget.job.id,
+        jobTitle: widget.job.title,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +38,20 @@ class JobDetailPage extends StatelessWidget {
             floating: false,
             pinned: true,
             backgroundColor: Colors.transparent,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                onPressed: _showReportDialog,
+                tooltip: 'Report this job',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
                 children: [
                   // Job image
                   Image.network(
-                    JobService.getImageUrl(job.imageUrl),
+                    JobService.getImageUrl(widget.job.imageUrl),
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
@@ -92,7 +115,7 @@ class JobDetailPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          job.title,
+                          widget.job.title,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -109,7 +132,7 @@ class JobDetailPage extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              job.location,
+                              widget.job.location,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -152,7 +175,7 @@ class JobDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          job.jobType,
+                          widget.job.jobType,
                           style: const TextStyle(
                             color: Color(0xFF1976D2),
                             fontSize: 18,
@@ -186,7 +209,7 @@ class JobDetailPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Company: ${job.companyName}',
+                          'Company: ${widget.job.companyName}',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -215,11 +238,11 @@ class JobDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     // Job details list
-                    _buildDetailItem('Experience Required', '${job.experienceRange['min'] ?? 0}-${job.experienceRange['max'] ?? 1} years'),
-                    _buildDetailItem('Skills', job.skills.join(', ')),
-                    _buildDetailItem('Working Hours', job.workingHours),
-                    _buildDetailItem('Attendance', job.attendance),
-                    _buildDetailItem('Job Type', job.jobType),
+                    _buildDetailItem('Experience Required', '${widget.job.experienceRange['min'] ?? 0}-${widget.job.experienceRange['max'] ?? 1} years'),
+                    _buildDetailItem('Skills', widget.job.skills.join(', ')),
+                    _buildDetailItem('Working Hours', widget.job.workingHours),
+                    _buildDetailItem('Attendance', widget.job.attendance),
+                    _buildDetailItem('Job Type', widget.job.jobType),
                     const SizedBox(height: 30),
                     // Job Description section
                     Row(
@@ -241,7 +264,7 @@ class JobDetailPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     Text(
-                      job.description,
+                      widget.job.description,
                       style: const TextStyle(
                         fontSize: 16,
                         height: 1.5,
@@ -276,6 +299,23 @@ class JobDetailPage extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Report button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: _showReportDialog,
+                        icon: const Icon(Icons.flag, color: Colors.red),
+                        label: const Text('Report this job', style: TextStyle(color: Colors.red)),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          side: const BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
