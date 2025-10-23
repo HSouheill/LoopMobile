@@ -3,6 +3,7 @@ import '../models/review.dart';
 import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;
 import 'review_submission_widget.dart';
+import 'review_report_dialog.dart';
 
 class AgentListingsReviewsWidget extends StatefulWidget {
   final AgentWithListingsAndReviews agent;
@@ -236,74 +237,99 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[200]!),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Profile Image
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.grey[300],
-            backgroundImage: review.userProfileImage.isNotEmpty
-                ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
-                : null,
-            child: review.userProfileImage.isEmpty
-                ? const Icon(Icons.person, color: Colors.grey, size: 20)
-                : null,
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Review Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Name, date and rating
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Image
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.grey[300],
+                backgroundImage: review.userProfileImage.isNotEmpty
+                    ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
+                    : null,
+                child: review.userProfileImage.isEmpty
+                    ? const Icon(Icons.person, color: Colors.grey, size: 20)
+                    : null,
+              ),
+              
+              const SizedBox(width: 12),
+              
+              // Review Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            review.userName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                    // Name, date and rating
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                review.userName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                review.formattedDate,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            review.formattedDate,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
+                        ),
+                        const SizedBox(width: 8),
+                        // Star rating
+                        _buildStarRating(review.rating),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 8),
+                    
+                    // Comment
+                    Text(
+                      review.comment,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                        height: 1.4,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    // Star rating
-                    _buildStarRating(review.rating),
                   ],
                 ),
-                
-                const SizedBox(height: 8),
-                
-                // Comment
-                Text(
-                  review.comment,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              
+              // Report button
+              IconButton(
+                icon: const Icon(Icons.flag, color: Colors.red, size: 18),
+                onPressed: () => _showReportDialog(context, review),
+                tooltip: 'Report this review',
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showReportDialog(BuildContext context, Review review) {
+    showDialog(
+      context: context,
+      builder: (context) => ReviewReportDialog(
+        reviewId: review.id,
+        reviewerName: review.userName,
+        reviewComment: review.comment,
       ),
     );
   }

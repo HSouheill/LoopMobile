@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/review.dart';
 import '../environment.dart';
+import 'review_report_dialog.dart';
 
 class ReviewCardWidget extends StatelessWidget {
   final Review review;
@@ -88,6 +89,16 @@ class ReviewCardWidget extends StatelessWidget {
               
               // Star rating
               _buildStarRating(review.rating),
+              
+              // Report button
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.flag, color: Colors.red, size: 18),
+                onPressed: () => _showReportDialog(context),
+                tooltip: 'Report this review',
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
             ],
           ),
           
@@ -104,6 +115,17 @@ class ReviewCardWidget extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  void _showReportDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => ReviewReportDialog(
+        reviewId: review.id,
+        reviewerName: review.userName,
+        reviewComment: review.comment,
       ),
     );
   }
