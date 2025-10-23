@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'services/auth_service.dart';
+import 'services/device_uuid_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
 import 'widgets/search_and_categories_widget.dart';
@@ -19,7 +20,12 @@ import 'screens/services/services.dart';
 import 'screens/chat/chat.dart';
 import 'screens/add_listing/widgets/add_listing_modal.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize device UUID service
+  await DeviceUuidService.initialize();
+  
   runApp(const MyApp());
 }
 

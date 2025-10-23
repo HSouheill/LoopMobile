@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../widgets/report_dialog.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -171,6 +172,16 @@ class _SingleListingPageState extends State<SingleListingPage> {
         SnackBar(content: Text('Error opening WhatsApp: $e')),
       );
     }
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => ReportDialog(
+        listingId: widget.listing.id,
+        listingTitle: widget.listing.title,
+      ),
+    );
   }
 
   @override
@@ -345,7 +356,13 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 onPressed: () => Navigator.pop(context),
               ),
             ),
-            actions: const [],
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                onPressed: _showReportDialog,
+                tooltip: 'Report this listing',
+              ),
+            ],
           ),
           
           // Content
@@ -657,6 +674,25 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           ),
                         ),
                       ],
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Report Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _showReportDialog,
+                        icon: const Icon(Icons.flag, color: Colors.red),
+                        label: const Text('Report this listing', style: TextStyle(color: Colors.red)),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: const BorderSide(color: Colors.red),
+                        ),
+                      ),
                     ),
                     
                     const SizedBox(height: 20),

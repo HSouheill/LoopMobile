@@ -23,6 +23,7 @@ dependencies:
   url_launcher: ^6.2.2
   file_picker: ^8.0.0+1
   path: ^1.9.0
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
