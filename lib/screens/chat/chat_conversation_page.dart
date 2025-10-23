@@ -4,6 +4,7 @@ import '../../models/message.dart';
 import '../../services/chat_service.dart';
 import '../../services/socket_service.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/message_report_dialog.dart';
 
 class ChatConversationPage extends StatefulWidget {
   final Chat chat;
@@ -476,6 +477,28 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
               ],
               child: const Icon(Icons.more_vert, size: 16),
             ),
+          ] else ...[
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'report') {
+                  _showReportMessageDialog(message);
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      Icon(Icons.report, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Report'),
+                    ],
+                  ),
+                ),
+              ],
+              child: const Icon(Icons.more_vert, size: 16),
+            ),
           ],
         ],
       ),
@@ -545,5 +568,15 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
         );
       }
     }
+  }
+
+  void _showReportMessageDialog(Message message) {
+    showDialog(
+      context: context,
+      builder: (context) => MessageReportDialog(
+        messageId: message.id,
+        messageContent: message.content,
+      ),
+    );
   }
 }
