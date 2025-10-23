@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/service_provider.dart';
+import '../../models/review.dart';
 import '../../services/service_service.dart';
 import '../../widgets/service_provider_reviews_widget.dart';
 import '../../services/chat_service.dart';
@@ -148,6 +150,56 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
+    }
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not make phone call')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error making phone call: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _openSocialLink(String url) async {
+    try {
+      // Ensure the URL has a proper scheme
+      String formattedUrl = url.trim();
+      if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+        formattedUrl = 'https://$formattedUrl';
+      }
+      
+      final Uri uri = Uri.parse(formattedUrl);
+      
+      // Launch directly without checking canLaunchUrl
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error opening link: ${e.toString()}')),
+      );
+    }
+  }
+
+  SocialLink? _getSocialLink(String platform) {
+    if (_serviceProviderData?.socialLinks == null) return null;
+    try {
+      return _serviceProviderData!.socialLinks.firstWhere(
+        (link) => link.name.toLowerCase() == platform.toLowerCase(),
+      );
+    } catch (e) {
+      return null;
     }
   }
 
@@ -363,20 +415,31 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                             // Social media icons
                             Row(
                               children: [
-                                _socialIcon(
-                                  icon: Icons.phone,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 8),
-                                _socialIcon(
-                                  icon: Icons.email,
-                                  color: Colors.blue,
-                                ),
-                                const SizedBox(width: 8),
-                                _socialIcon(
-                                  icon: Icons.business,
-                                  color: Colors.purple,
-                                ),
+                                // Phone call icon
+                                if (_serviceProviderData?.phone.isNotEmpty == true)
+                                  _socialIcon(
+                                    icon: Icons.phone,
+                                    color: Colors.green,
+                                    onTap: () => _makePhoneCall(_serviceProviderData!.phone),
+                                  ),
+                                if (_serviceProviderData?.phone.isNotEmpty == true)
+                                  const SizedBox(width: 8),
+                                // Instagram icon (purple)
+                                if (_getSocialLink('instagram') != null)
+                                  _socialIcon(
+                                    icon: Icons.camera_alt,
+                                    color: Colors.purple,
+                                    onTap: () => _openSocialLink(_getSocialLink('instagram')!.link),
+                                  ),
+                                if (_getSocialLink('instagram') != null)
+                                  const SizedBox(width: 8),
+                                // Facebook icon (blue)
+                                if (_getSocialLink('facebook') != null)
+                                  _socialIcon(
+                                    icon: Icons.facebook,
+                                    color: Colors.blue,
+                                    onTap: () => _openSocialLink(_getSocialLink('facebook')!.link),
+                                  ),
                               ],
                             ),
                           ],
@@ -676,19 +739,22 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     );
   }
 
-  Widget _socialIcon({required IconData icon, required Color color}) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: Icon(
-          icon,
-          color: color,
-          size: 24,
+  Widget _socialIcon({required IconData icon, required Color color, VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
         ),
       ),
     );

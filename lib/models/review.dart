@@ -65,6 +65,26 @@ class Review {
   }
 }
 
+class SocialLink {
+  final String name;
+  final String link;
+  final String id;
+
+  SocialLink({
+    required this.name,
+    required this.link,
+    required this.id,
+  });
+
+  factory SocialLink.fromJson(Map<String, dynamic> json) {
+    return SocialLink(
+      name: json['name']?.toString() ?? '',
+      link: json['link']?.toString() ?? '',
+      id: json['_id']?.toString() ?? '',
+    );
+  }
+}
+
 class AgentWithListingsAndReviews {
   final String id;
   final String firstName;
@@ -80,6 +100,7 @@ class AgentWithListingsAndReviews {
   final int propertyCount;
   final List<Review> reviews;
   final List<PropertyListing> listings;
+  final List<SocialLink> socialLinks;
 
   AgentWithListingsAndReviews({
     required this.id,
@@ -96,6 +117,7 @@ class AgentWithListingsAndReviews {
     required this.propertyCount,
     required this.reviews,
     required this.listings,
+    required this.socialLinks,
   });
 
   factory AgentWithListingsAndReviews.fromJson(Map<String, dynamic> json) {
@@ -117,6 +139,9 @@ class AgentWithListingsAndReviews {
           .toList(),
       listings: (json['listings'] as List<dynamic>? ?? [])
           .map((listing) => PropertyListing.fromJson(listing))
+          .toList(),
+      socialLinks: (json['socialLinks'] as List<dynamic>? ?? [])
+          .map((link) => SocialLink.fromJson(link))
           .toList(),
     );
   }
