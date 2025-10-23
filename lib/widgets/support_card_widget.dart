@@ -56,8 +56,7 @@ class SupportCardWidget extends StatelessWidget {
           const SizedBox(height: 20),
           GestureDetector(
             onTap: () {
-              // Add your navigation or action here
-              // Example: Navigator.pushNamed(context, '/support');
+              Navigator.pushNamed(context, '/contact-support');
             },
             child: Container(
               width: 250,

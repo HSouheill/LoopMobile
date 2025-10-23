@@ -295,7 +295,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                     child: DynamicGradientButton(
                       buttonText: "Submit Ticket",
                       onTap: () {
-                        // Handle submit action
+                        Navigator.pushNamed(context, '/contact-support');
                       },
                       padding: const EdgeInsets.symmetric(
                           horizontal: 30, vertical: 5),

@@ -58,6 +58,7 @@ import 'screens/chat/chat_list_page.dart';
 import 'screens/chat/blocked_users_page.dart';
 import 'screens/listings/inactive_listings_page.dart';
 import 'screens/listings/my_listings_page.dart';
+import 'widgets/contact_support_form.dart';
 
 Map<String, WidgetBuilder> appRoutes() {
   return {
@@ -156,5 +157,6 @@ Map<String, WidgetBuilder> appRoutes() {
     '/inactive-listings-page': (_) => const InactiveListingsPage(),
     '/my-listings-page': (_) => const MyListingsPage(),
     '/my-agents-page': (_) => const MyAgentsPage(),
+    '/contact-support': (_) => const ContactSupportForm(),
   };
 }
