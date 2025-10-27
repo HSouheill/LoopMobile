@@ -307,10 +307,8 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           ),
 
           // Portfolio Section
-          if (application.portfolio != null && application.portfolio!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildPortfolioSection(application.portfolio!),
-          ],
+          const SizedBox(height: 12),
+          _buildPortfolioSection(application.portfolio),
 
           const SizedBox(height: 12),
 
@@ -389,45 +387,57 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
     );
   }
 
-  Widget _buildPortfolioSection(String portfolioLink) {
+  Widget _buildPortfolioSection(String? portfolioLink) {
+    final hasPortfolio = portfolioLink != null && portfolioLink.isNotEmpty;
+    
+    String? linkToUse = hasPortfolio ? portfolioLink : null;
+    
     return Material(
       elevation: 2,
       borderRadius: BorderRadius.circular(8),
       color: Colors.white,
       child: InkWell(
-        onTap: () => _viewPortfolioPDF(portfolioLink),
+        onTap: linkToUse != null
+            ? () => _viewPortfolioPDF(linkToUse)
+            : null,
         borderRadius: BorderRadius.circular(8),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF0048FF)),
+            border: Border.all(
+              color: hasPortfolio 
+                ? const Color(0xFF0048FF)
+                : Colors.grey.withOpacity(0.3),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Row(
                 children: [
                   Icon(
-                    Icons.picture_as_pdf,
+                    hasPortfolio ? Icons.picture_as_pdf : Icons.work_off_outlined,
                     size: 32,
-                    color: Colors.red,
+                    color: hasPortfolio ? Colors.red : Colors.grey,
                   ),
-                  SizedBox(width: 14),
+                  const SizedBox(width: 14),
                   Text(
-                    "View Portfolio",
+                    hasPortfolio ? "View Portfolio" : "No portfolio provided",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      color: hasPortfolio ? Colors.black : Colors.grey,
                     ),
                   ),
                 ],
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 10,
-                color: Colors.black,
-              ),
+              if (hasPortfolio)
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 10,
+                  color: Colors.black,
+                ),
             ],
           ),
         ),
