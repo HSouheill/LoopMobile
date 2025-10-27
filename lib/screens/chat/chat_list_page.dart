@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/chat.dart';
+import '../../models/message.dart';
 import '../../services/chat_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/socket_service.dart';
 import 'chat_conversation_page.dart';
 import 'blocked_users_page.dart';
 
@@ -16,11 +19,74 @@ class _ChatListPageState extends State<ChatListPage> {
   List<Chat> chats = [];
   bool isLoading = true;
   String? currentUserId;
+  StreamSubscription? _socketSubscription;
 
   @override
   void initState() {
     super.initState();
+    _initializeSocket();
     _loadChats();
+  }
+
+  Future<void> _initializeSocket() async {
+    try {
+      final token = AuthService.token;
+      final userId = AuthService.currentUser?.id;
+      
+      if (token != null && userId != null) {
+        // Connect to socket
+        await SocketService.instance.connect(token, userId);
+        
+        // Listen for chat updates (new messages, unread counts, etc.)
+        _socketSubscription = SocketService.instance.chatUpdateStream.listen((data) {
+          _handleChatUpdate(data);
+        });
+
+        // Listen for new messages to update chat list
+        _socketSubscription = SocketService.instance.messageStream.listen((message) {
+          _handleNewMessage(message);
+        });
+      }
+    } catch (e) {
+      print('Error initializing socket: $e');
+    }
+  }
+
+  void _handleChatUpdate(Map<String, dynamic> data) {
+    // Update the chat list based on the update
+    final chatId = data['chatId'] as String?;
+    if (chatId != null) {
+      // Reload chats to get the latest data
+      _loadChats();
+    }
+  }
+
+  void _handleNewMessage(Message message) {
+    // Update the chat in the list with the new message
+    setState(() {
+      final chatIndex = chats.indexWhere((chat) => chat.id == message.chatId);
+      if (chatIndex != -1) {
+        final chat = chats[chatIndex];
+        chats[chatIndex] = Chat(
+          id: chat.id,
+          participants: chat.participants,
+          lastMessage: message.content,
+          lastMessageAt: message.createdAt,
+          isActive: chat.isActive,
+          unreadCount: message.senderId != currentUserId 
+              ? chat.unreadCount + 1 
+              : chat.unreadCount,
+          participantDetails: chat.participantDetails,
+          messages: chat.messages,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _socketSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadChats() async {
@@ -316,8 +382,8 @@ class _ChatListPageState extends State<ChatListPage> {
                                       ],
                                     ],
                                   ),
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ChatConversationPage(
@@ -327,6 +393,8 @@ class _ChatListPageState extends State<ChatListPage> {
                                         ),
                                       ),
                                     );
+                                    // Refresh chats when returning from conversation
+                                    _loadChats();
                                   },
                                 ),
                               );

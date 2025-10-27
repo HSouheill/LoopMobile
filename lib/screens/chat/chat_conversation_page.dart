@@ -53,9 +53,30 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
         SocketService.instance.messageStream.listen((message) {
           if (message.chatId == widget.chat.id) {
             setState(() {
-              messages.add(message);
+              // Check if message doesn't already exist in the list
+              final existingIndex = messages.indexWhere((m) => m.id == message.id || 
+                  (m.id.startsWith('temp_') && message.senderId == currentUserId));
+              
+              if (existingIndex == -1) {
+                // New message, add it
+                messages.add(message);
+                // Only scroll if message is from other user
+                if (message.senderId != currentUserId) {
+                  _scrollToBottom();
+                }
+              } else {
+                // Message already exists, replace it if it's from current user (temp -> real)
+                if (message.senderId == currentUserId) {
+                  messages[existingIndex] = message;
+                }
+                // If message is from other user and already exists, don't add it again
+              }
             });
-            _scrollToBottom();
+            
+            // Scroll to bottom if message is from other user
+            if (message.senderId != currentUserId) {
+              _scrollToBottom();
+            }
           }
         });
 
@@ -149,7 +170,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
     _scrollToBottom();
 
     try {
-      // Send via API
+      // Send via API (backend will emit Socket.IO event)
       final sentMessage = await ChatService.sendMessage(
         token: token!,
         chatId: widget.chat.id,
@@ -157,13 +178,8 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
       );
 
       if (sentMessage != null) {
-        // Replace the temporary message with the real one from the server
-        setState(() {
-          final index = messages.indexWhere((m) => m.id == tempMessage.id);
-          if (index != -1) {
-            messages[index] = sentMessage;
-          }
-        });
+        // The Socket.IO event will replace the temp message automatically
+        // No need to manually replace it here
       }
 
       // Mark messages as read
