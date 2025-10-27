@@ -36,7 +36,6 @@ class SocketService {
   // Connect to socket server
   Future<void> connect(String token, String userId) async {
     if (_isConnected && _token == token && _socket != null) {
-      print('Socket already connected');
       return;
     }
 
@@ -54,8 +53,6 @@ class SocketService {
       final uri = Uri.parse(apiUrl.replaceFirst('/api/', ''));
       final socketUrl = 'http://${uri.host}:${uri.port}';
       
-      print('Connecting to Socket.IO: $socketUrl');
-      
       _socket = IO.io(socketUrl, IO.OptionBuilder()
           .setTransports(['websocket'])
           .setAuth({'token': token})
@@ -64,12 +61,8 @@ class SocketService {
 
       _setupEventListeners();
       _socket!.connect();
-      
-      print('Socket.IO service connecting...');
     } catch (e) {
-      print('Error connecting to socket: $e');
       _isConnected = false;
-      // Fallback: continue without Socket.IO, the app will work but won't have real-time updates
     }
   }
 
@@ -81,26 +74,19 @@ class SocketService {
 
     // Connection events
     _socket!.onConnect((_) {
-      print('Socket.IO connected');
       _isConnected = true;
     });
 
     _socket!.onDisconnect((_) {
-      print('Socket.IO disconnected');
       _isConnected = false;
     });
 
     _socket!.onConnectError((error) {
-      print('Socket.IO connection error: $error');
       _isConnected = false;
     });
 
     // Chat events
     _socket!.on('new_message', (data) {
-      print('SocketService: Received new_message event');
-      print('SocketService: Data type: ${data.runtimeType}');
-      print('SocketService: Data: $data');
-      
       try {
         // Convert data to Map<String, dynamic> if needed
         Map<String, dynamic> messageData;
@@ -112,10 +98,7 @@ class SocketService {
           messageData = Map<String, dynamic>.from(data as Map);
         }
         
-        print('SocketService: Parsed message data: $messageData');
-        
         final message = Message.fromJson(messageData);
-        print('SocketService: Created Message object, adding to stream. ChatId: ${message.chatId}');
         _messageController.add(message);
         
         // Also emit as chat update
@@ -124,26 +107,18 @@ class SocketService {
           'type': 'message_added',
           'message': messageData,
         });
-        
-        print('SocketService: Message added to stream successfully');
       } catch (e) {
-        print('SocketService: Error handling new_message: $e');
-        print('SocketService: Data type: ${data.runtimeType}');
-        print('SocketService: Data: $data');
+        // Silently fail - error handling in production
       }
     });
 
     _socket!.on('message_notification', (data) {
-      print('SocketService: Received message_notification event');
-      print('SocketService: Notification data: $data');
-      
       try {
         // Convert data to Map if needed
         final notificationData = data is Map<String, dynamic> 
             ? data 
             : Map<String, dynamic>.from(data as Map);
         
-        print('SocketService: Adding notification to stream: $notificationData');
         _notificationController.add(notificationData);
         
         // Also emit as chat update for unread count
@@ -153,7 +128,7 @@ class SocketService {
           'unreadCount': notificationData['unreadCount'],
         });
       } catch (e) {
-        print('SocketService: Error handling message_notification: $e');
+        // Silently fail - error handling in production
       }
     });
 
@@ -164,7 +139,7 @@ class SocketService {
             : Map<String, dynamic>.from(data as Map);
         _typingController.add(typingData);
       } catch (e) {
-        print('Error handling user_typing: $e');
+        // Silently fail - error handling in production
       }
     });
 
@@ -183,7 +158,7 @@ class SocketService {
           'readBy': readData['readBy'],
         });
       } catch (e) {
-        print('Error handling messages_read: $e');
+        // Silently fail - error handling in production
       }
     });
 
@@ -194,7 +169,7 @@ class SocketService {
             : Map<String, dynamic>.from(data as Map);
         _statusController.add(statusData);
       } catch (e) {
-        print('Error handling user_status_updated: $e');
+        // Silently fail - error handling in production
       }
     });
 
@@ -208,21 +183,21 @@ class SocketService {
           'status': 'offline',
         });
       } catch (e) {
-        print('Error handling user_offline: $e');
+        // Silently fail - error handling in production
       }
     });
 
     _socket!.on('error', (data) {
-      print('Socket.IO error: $data');
+      // Silently fail - error handling in production
     });
 
     // Chat room events
     _socket!.on('joined_chat', (data) {
-      print('Joined chat: ${data['chatId']}');
+      // Chat joined successfully
     });
 
     _socket!.on('left_chat', (data) {
-      print('Left chat: ${data['chatId']}');
+      // Chat left successfully
     });
   }
 
@@ -234,7 +209,6 @@ class SocketService {
     _token = null;
     _isConnected = false;
     _joinedRooms.clear();
-    print('Socket.IO service disconnected');
   }
 
   // Join a chat room
@@ -242,15 +216,13 @@ class SocketService {
     _joinedRooms.add(chatId);
     
     if (!_isConnected || _socket == null) {
-      print('Cannot join chat: not connected to socket');
       return;
     }
 
     try {
       _socket!.emit('join_chat', chatId);
-      print('Joining chat: $chatId');
     } catch (e) {
-      print('Error joining chat: $e');
+      // Silently fail
     }
   }
 
@@ -264,9 +236,8 @@ class SocketService {
 
     try {
       _socket!.emit('leave_chat', chatId);
-      print('Leaving chat: $chatId');
     } catch (e) {
-      print('Error leaving chat: $e');
+      // Silently fail
     }
   }
 
@@ -278,7 +249,6 @@ class SocketService {
     List<String> attachments = const [],
   }) {
     if (!_isConnected || _socket == null) {
-      print('Cannot send message: not connected to socket');
       return;
     }
 
@@ -290,7 +260,7 @@ class SocketService {
         'attachments': attachments,
       });
     } catch (e) {
-      print('Error sending message via socket: $e');
+      // Silently fail
     }
   }
 
@@ -301,7 +271,7 @@ class SocketService {
     try {
       _socket!.emit('typing_start', {'chatId': chatId});
     } catch (e) {
-      print('Error sending typing indicator: $e');
+      // Silently fail
     }
   }
 
@@ -312,7 +282,7 @@ class SocketService {
     try {
       _socket!.emit('typing_stop', {'chatId': chatId});
     } catch (e) {
-      print('Error stopping typing indicator: $e');
+      // Silently fail
     }
   }
 
@@ -322,9 +292,8 @@ class SocketService {
 
     try {
       _socket!.emit('mark_read', {'chatId': chatId});
-      print('Marking messages as read in chat: $chatId');
     } catch (e) {
-      print('Error marking messages as read: $e');
+      // Silently fail
     }
   }
 
@@ -335,7 +304,7 @@ class SocketService {
     try {
       _socket!.emit('update_status', {'status': status});
     } catch (e) {
-      print('Error updating status: $e');
+      // Silently fail
     }
   }
 

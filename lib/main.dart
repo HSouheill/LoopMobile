@@ -151,42 +151,61 @@ class _MainScreenState extends State<MainScreen> {
       _isLoading = false;
     });
     
-    // Fetch unread count if logged in
+    // Connect socket and fetch unread count if logged in
     if (isAuthenticated) {
+      await _connectSocket();
       _fetchUnreadCount();
+    }
+  }
+
+  Future<void> _connectSocket() async {
+    final token = AuthService.token;
+    final userId = AuthService.currentUser?.id;
+    
+    if (token != null && userId != null) {
+      try {
+        await SocketService.instance.connect(token, userId);
+      } catch (e) {
+        // Silently fail
+      }
     }
   }
 
   void _setupSocketListeners() {
     // Listen to message events to update unread count
-    _messageSubscription = SocketService.instance.messageStream.listen((message) {
-      // When a new message arrives, increment unread count if not from current user
-      final currentUserId = AuthService.currentUser?.id;
-      if (message.senderId != currentUserId) {
-        setState(() {
-          _unreadChatCount++;
-        });
-      }
-    });
+    _messageSubscription = SocketService.instance.messageStream.listen(
+      (message) {
+        // When a new message arrives from another user, fetch updated count
+        final currentUserId = AuthService.currentUser?.id;
+        if (message.senderId != currentUserId) {
+          _fetchUnreadCount();
+        }
+      },
+    );
 
     // Listen to notification events to update unread count
-    _notificationSubscription = SocketService.instance.notificationStream.listen((data) {
-      final unreadCount = data['unreadCount'] as int?;
-      if (unreadCount != null) {
-        // Update total unread count when receiving notifications
-        _fetchUnreadCount();
-      }
-    });
+    _notificationSubscription = SocketService.instance.notificationStream.listen(
+      (data) {
+        final unreadCount = data['unreadCount'] as int?;
+        if (unreadCount != null) {
+          setState(() {
+            _unreadChatCount = unreadCount;
+          });
+        }
+      },
+    );
 
     // Listen to read events to decrease unread count
-    _readSubscription = SocketService.instance.readStream.listen((data) {
-      final readBy = data['readBy'] as String?;
-      final currentUserId = AuthService.currentUser?.id;
-      // If current user read messages, fetch updated count
-      if (readBy == currentUserId) {
-        _fetchUnreadCount();
-      }
-    });
+    _readSubscription = SocketService.instance.readStream.listen(
+      (data) {
+        final readBy = data['readBy'] as String?;
+        final currentUserId = AuthService.currentUser?.id;
+        // If current user read messages, fetch updated count
+        if (readBy == currentUserId) {
+          _fetchUnreadCount();
+        }
+      },
+    );
   }
 
   void _startUnreadCountTimer() {
@@ -209,7 +228,7 @@ class _MainScreenState extends State<MainScreen> {
           });
         }
       } catch (e) {
-        print('Error fetching unread count: $e');
+        // Silently fail
       }
     }
   }
@@ -226,9 +245,15 @@ class _MainScreenState extends State<MainScreen> {
 
   void _handleLogout() async {
     await AuthService.signOut();
+    
+    // Disconnect socket and reset unread count
+    SocketService.instance.disconnect();
+    
     setState(() {
       _isLoggedIn = false;
+      _unreadChatCount = 0;
     });
+    
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Logged out successfully')),
     );
