@@ -343,11 +343,6 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                             const SizedBox(width: 8),
                             Container(
                               width: 80,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Color(0xFF1976D2), width: 2),
-                                ),
-                              ),
                               child: DropdownButton<String>(
                                 value: _selectedCountryCode,
                                 underline: const SizedBox(),
