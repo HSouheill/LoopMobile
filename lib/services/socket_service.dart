@@ -97,6 +97,10 @@ class SocketService {
 
     // Chat events
     _socket!.on('new_message', (data) {
+      print('SocketService: Received new_message event');
+      print('SocketService: Data type: ${data.runtimeType}');
+      print('SocketService: Data: $data');
+      
       try {
         // Convert data to Map<String, dynamic> if needed
         Map<String, dynamic> messageData;
@@ -108,7 +112,10 @@ class SocketService {
           messageData = Map<String, dynamic>.from(data as Map);
         }
         
+        print('SocketService: Parsed message data: $messageData');
+        
         final message = Message.fromJson(messageData);
+        print('SocketService: Created Message object, adding to stream. ChatId: ${message.chatId}');
         _messageController.add(message);
         
         // Also emit as chat update
@@ -117,20 +124,26 @@ class SocketService {
           'type': 'message_added',
           'message': messageData,
         });
+        
+        print('SocketService: Message added to stream successfully');
       } catch (e) {
-        print('Error handling new_message: $e');
-        print('Data type: ${data.runtimeType}');
-        print('Data: $data');
+        print('SocketService: Error handling new_message: $e');
+        print('SocketService: Data type: ${data.runtimeType}');
+        print('SocketService: Data: $data');
       }
     });
 
     _socket!.on('message_notification', (data) {
+      print('SocketService: Received message_notification event');
+      print('SocketService: Notification data: $data');
+      
       try {
         // Convert data to Map if needed
         final notificationData = data is Map<String, dynamic> 
             ? data 
             : Map<String, dynamic>.from(data as Map);
         
+        print('SocketService: Adding notification to stream: $notificationData');
         _notificationController.add(notificationData);
         
         // Also emit as chat update for unread count
@@ -140,7 +153,7 @@ class SocketService {
           'unreadCount': notificationData['unreadCount'],
         });
       } catch (e) {
-        print('Error handling message_notification: $e');
+        print('SocketService: Error handling message_notification: $e');
       }
     });
 

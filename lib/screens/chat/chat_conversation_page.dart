@@ -76,6 +76,8 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
             // Scroll to bottom if message is from other user
             if (message.senderId != currentUserId) {
               _scrollToBottom();
+              // Automatically mark as read when receiving a message while in the chat
+              _markMessagesAsRead();
             }
           }
         });
@@ -120,12 +122,21 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
           isLoading = false;
         });
         _scrollToBottom();
+        
+        // Automatically mark messages as read when entering the chat
+        _markMessagesAsRead();
       }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  // Mark messages as read via socket
+  void _markMessagesAsRead() {
+    // Use socket to mark messages as read
+    SocketService.instance.markMessagesAsRead(widget.chat.id);
   }
 
   void _scrollToBottom() {
@@ -181,9 +192,6 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
         // The Socket.IO event will replace the temp message automatically
         // No need to manually replace it here
       }
-
-      // Mark messages as read
-      await ChatService.markMessagesAsRead(token!, widget.chat.id);
     } catch (e) {
       // Remove the temporary message if sending failed
       setState(() {

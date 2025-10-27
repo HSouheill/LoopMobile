@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'app_header.dart';
 import 'bottom_navbar.dart';
 import 'services/auth_service.dart';
 import 'services/device_uuid_service.dart';
+import 'services/chat_service.dart';
+import 'services/socket_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
 import 'widgets/search_and_categories_widget.dart';
@@ -109,6 +112,11 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 2; // start at index 2
   bool _isLoading = true;
   bool _isLoggedIn = false;
+  int _unreadChatCount = 0;
+  StreamSubscription? _messageSubscription;
+  StreamSubscription? _notificationSubscription;
+  StreamSubscription? _readSubscription;
+  Timer? _unreadCountTimer;
 
   final List<Widget> _pages = const [
     AgentsPage(),
@@ -122,6 +130,17 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _checkAuthStatus();
+    _setupSocketListeners();
+    _startUnreadCountTimer();
+  }
+
+  @override
+  void dispose() {
+    _messageSubscription?.cancel();
+    _notificationSubscription?.cancel();
+    _readSubscription?.cancel();
+    _unreadCountTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _checkAuthStatus() async {
@@ -131,6 +150,68 @@ class _MainScreenState extends State<MainScreen> {
       _isLoggedIn = isAuthenticated;
       _isLoading = false;
     });
+    
+    // Fetch unread count if logged in
+    if (isAuthenticated) {
+      _fetchUnreadCount();
+    }
+  }
+
+  void _setupSocketListeners() {
+    // Listen to message events to update unread count
+    _messageSubscription = SocketService.instance.messageStream.listen((message) {
+      // When a new message arrives, increment unread count if not from current user
+      final currentUserId = AuthService.currentUser?.id;
+      if (message.senderId != currentUserId) {
+        setState(() {
+          _unreadChatCount++;
+        });
+      }
+    });
+
+    // Listen to notification events to update unread count
+    _notificationSubscription = SocketService.instance.notificationStream.listen((data) {
+      final unreadCount = data['unreadCount'] as int?;
+      if (unreadCount != null) {
+        // Update total unread count when receiving notifications
+        _fetchUnreadCount();
+      }
+    });
+
+    // Listen to read events to decrease unread count
+    _readSubscription = SocketService.instance.readStream.listen((data) {
+      final readBy = data['readBy'] as String?;
+      final currentUserId = AuthService.currentUser?.id;
+      // If current user read messages, fetch updated count
+      if (readBy == currentUserId) {
+        _fetchUnreadCount();
+      }
+    });
+  }
+
+  void _startUnreadCountTimer() {
+    // Refresh unread count every 30 seconds
+    _unreadCountTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (_isLoggedIn) {
+        _fetchUnreadCount();
+      }
+    });
+  }
+
+  Future<void> _fetchUnreadCount() async {
+    final token = AuthService.token;
+    if (token != null && _isLoggedIn) {
+      try {
+        final count = await ChatService.getUnreadCount(token);
+        if (mounted) {
+          setState(() {
+            _unreadChatCount = count;
+          });
+        }
+      } catch (e) {
+        print('Error fetching unread count: $e');
+      }
+    }
   }
 
   void _handleSubtitleTap() {
@@ -216,7 +297,14 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
+        onTap: (i) {
+          setState(() => _currentIndex = i);
+          // Refresh unread count when navigating to chat page
+          if (i == 4 && _isLoggedIn) {
+            _fetchUnreadCount();
+          }
+        },
+        unreadChatCount: _unreadChatCount,
       ),
 
       // ---------- replace previous FloatingActionButton with this ----------

@@ -4,11 +4,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Import localiza
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final int unreadChatCount;
 
   const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    this.unreadChatCount = 0,
   });
 
   @override
@@ -54,7 +56,7 @@ class BottomNavBar extends StatelessWidget {
             label: localizations.services,
           ),
           BottomNavigationBarItem(
-            icon: _buildIcon(Icons.chat, 4),
+            icon: _buildChatIconWithBadge(4),
             label: localizations.chat,
           ),
         ],
@@ -79,5 +81,39 @@ class BottomNavBar extends StatelessWidget {
     } else {
       return Icon(iconData);
     }
+  }
+
+  Widget _buildChatIconWithBadge(int index) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _buildIcon(Icons.chat, index),
+        if (unreadChatCount > 0)
+          Positioned(
+            right: -6,
+            top: -4,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(
+                minWidth: 18,
+                minHeight: 18,
+              ),
+              child: Text(
+                unreadChatCount > 99 ? '99+' : unreadChatCount.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

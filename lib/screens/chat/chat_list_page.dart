@@ -19,7 +19,9 @@ class _ChatListPageState extends State<ChatListPage> {
   List<Chat> chats = [];
   bool isLoading = true;
   String? currentUserId;
-  StreamSubscription? _socketSubscription;
+  StreamSubscription? _messageSubscription;
+  StreamSubscription? _notificationSubscription;
+  StreamSubscription? _readSubscription;
 
   @override
   void initState() {
@@ -34,58 +36,184 @@ class _ChatListPageState extends State<ChatListPage> {
       final userId = AuthService.currentUser?.id;
       
       if (token != null && userId != null) {
+        currentUserId = userId;
+        
+        print('ChatListPage: Initializing socket for user $userId');
+        
         // Connect to socket
         await SocketService.instance.connect(token, userId);
         
-        // Listen for chat updates (new messages, unread counts, etc.)
-        _socketSubscription = SocketService.instance.chatUpdateStream.listen((data) {
-          _handleChatUpdate(data);
-        });
-
+        print('ChatListPage: Socket connected, setting up listeners');
+        
+        // Cancel any existing subscriptions first
+        await _messageSubscription?.cancel();
+        await _notificationSubscription?.cancel();
+        await _readSubscription?.cancel();
+        
         // Listen for new messages to update chat list
-        _socketSubscription = SocketService.instance.messageStream.listen((message) {
-          _handleNewMessage(message);
-        });
+        _messageSubscription = SocketService.instance.messageStream.listen(
+          (message) {
+            print('ChatListPage: Received new message for chat: ${message.chatId}, content: ${message.content}');
+            _handleNewMessage(message);
+          },
+          onError: (error) {
+            print('ChatListPage: Error in message stream: $error');
+          },
+        );
+
+        // Listen for message notifications to update unread counts
+        _notificationSubscription = SocketService.instance.notificationStream.listen(
+          (data) {
+            print('ChatListPage: Received notification for chat: ${data['chatId']}, unreadCount: ${data['unreadCount']}');
+            _handleMessageNotification(data);
+          },
+          onError: (error) {
+            print('ChatListPage: Error in notification stream: $error');
+          },
+        );
+
+        // Listen for messages_read event to update unread counts
+        _readSubscription = SocketService.instance.readStream.listen(
+          (data) {
+            print('ChatListPage: Received messages_read for chat: ${data['chatId']}, readBy: ${data['readBy']}');
+            _handleMessagesRead(data);
+          },
+          onError: (error) {
+            print('ChatListPage: Error in read stream: $error');
+          },
+        );
+        
+        print('ChatListPage: All listeners set up successfully');
       }
     } catch (e) {
-      print('Error initializing socket: $e');
-    }
-  }
-
-  void _handleChatUpdate(Map<String, dynamic> data) {
-    // Update the chat list based on the update
-    final chatId = data['chatId'] as String?;
-    if (chatId != null) {
-      // Reload chats to get the latest data
-      _loadChats();
+      print('ChatListPage: Error initializing socket: $e');
     }
   }
 
   void _handleNewMessage(Message message) {
+    print('ChatListPage: _handleNewMessage called, mounted: $mounted');
+    if (!mounted) {
+      print('ChatListPage: Not mounted, skipping update');
+      return;
+    }
+    
+    print('ChatListPage: Updating chat list for message in chat ${message.chatId}');
+    
     // Update the chat in the list with the new message
     setState(() {
       final chatIndex = chats.indexWhere((chat) => chat.id == message.chatId);
+      print('ChatListPage: Found chat at index: $chatIndex');
+      
       if (chatIndex != -1) {
         final chat = chats[chatIndex];
-        chats[chatIndex] = Chat(
+        final newUnreadCount = message.senderId != currentUserId 
+            ? chat.unreadCount + 1 
+            : chat.unreadCount;
+        
+        print('ChatListPage: Updating chat - Old unread: ${chat.unreadCount}, New unread: $newUnreadCount');
+        
+        final updatedChat = Chat(
           id: chat.id,
           participants: chat.participants,
           lastMessage: message.content,
           lastMessageAt: message.createdAt,
           isActive: chat.isActive,
-          unreadCount: message.senderId != currentUserId 
-              ? chat.unreadCount + 1 
-              : chat.unreadCount,
+          unreadCount: newUnreadCount,
           participantDetails: chat.participantDetails,
           messages: chat.messages,
         );
+        
+        // Remove from current position and add to top
+        chats.removeAt(chatIndex);
+        chats.insert(0, updatedChat);
+        
+        print('ChatListPage: Chat moved to top of list');
+      } else {
+        print('ChatListPage: Chat not found in list, might need to refresh');
       }
     });
   }
 
+  void _handleMessageNotification(Map<String, dynamic> data) {
+    print('ChatListPage: _handleMessageNotification called, mounted: $mounted');
+    if (!mounted) {
+      print('ChatListPage: Not mounted, skipping notification update');
+      return;
+    }
+    
+    final chatId = data['chatId'] as String?;
+    final unreadCount = data['unreadCount'] as int?;
+    
+    print('ChatListPage: Notification - chatId: $chatId, unreadCount: $unreadCount');
+    
+    if (chatId != null && unreadCount != null) {
+      setState(() {
+        final chatIndex = chats.indexWhere((chat) => chat.id == chatId);
+        print('ChatListPage: Found chat at index: $chatIndex for notification');
+        
+        if (chatIndex != -1) {
+          final chat = chats[chatIndex];
+          print('ChatListPage: Updating unread count from ${chat.unreadCount} to $unreadCount');
+          
+          chats[chatIndex] = Chat(
+            id: chat.id,
+            participants: chat.participants,
+            lastMessage: chat.lastMessage,
+            lastMessageAt: chat.lastMessageAt,
+            isActive: chat.isActive,
+            unreadCount: unreadCount,
+            participantDetails: chat.participantDetails,
+            messages: chat.messages,
+          );
+        }
+      });
+    }
+  }
+
+  void _handleMessagesRead(Map<String, dynamic> data) {
+    print('ChatListPage: _handleMessagesRead called, mounted: $mounted');
+    if (!mounted) {
+      print('ChatListPage: Not mounted, skipping read update');
+      return;
+    }
+    
+    final chatId = data['chatId'] as String?;
+    final readBy = data['readBy'] as String?;
+    
+    print('ChatListPage: Messages read - chatId: $chatId, readBy: $readBy, currentUserId: $currentUserId');
+    
+    // Update unread count when current user reads messages
+    if (chatId != null && readBy != null && readBy == currentUserId) {
+      print('ChatListPage: Current user read messages, resetting unread count to 0');
+      
+      setState(() {
+        final chatIndex = chats.indexWhere((chat) => chat.id == chatId);
+        print('ChatListPage: Found chat at index: $chatIndex for read update');
+        
+        if (chatIndex != -1) {
+          final chat = chats[chatIndex];
+          print('ChatListPage: Setting unread count from ${chat.unreadCount} to 0');
+          
+          chats[chatIndex] = Chat(
+            id: chat.id,
+            participants: chat.participants,
+            lastMessage: chat.lastMessage,
+            lastMessageAt: chat.lastMessageAt,
+            isActive: chat.isActive,
+            unreadCount: 0, // Messages were read by current user
+            participantDetails: chat.participantDetails,
+            messages: chat.messages,
+          );
+        }
+      });
+    }
+  }
+
   @override
   void dispose() {
-    _socketSubscription?.cancel();
+    _messageSubscription?.cancel();
+    _notificationSubscription?.cancel();
+    _readSubscription?.cancel();
     super.dispose();
   }
 
@@ -383,6 +511,24 @@ class _ChatListPageState extends State<ChatListPage> {
                                     ],
                                   ),
                                   onTap: () async {
+                                    // Set unread count to 0 immediately for better UX
+                                    setState(() {
+                                      final chatIndex = chats.indexWhere((c) => c.id == chat.id);
+                                      if (chatIndex != -1) {
+                                        final currentChat = chats[chatIndex];
+                                        chats[chatIndex] = Chat(
+                                          id: currentChat.id,
+                                          participants: currentChat.participants,
+                                          lastMessage: currentChat.lastMessage,
+                                          lastMessageAt: currentChat.lastMessageAt,
+                                          isActive: currentChat.isActive,
+                                          unreadCount: 0,
+                                          participantDetails: currentChat.participantDetails,
+                                          messages: currentChat.messages,
+                                        );
+                                      }
+                                    });
+                                    
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -393,8 +539,7 @@ class _ChatListPageState extends State<ChatListPage> {
                                         ),
                                       ),
                                     );
-                                    // Refresh chats when returning from conversation
-                                    _loadChats();
+                                    // No need to reload chats - socket events handle updates
                                   },
                                 ),
                               );
