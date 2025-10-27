@@ -9,6 +9,7 @@ class Chat {
   final int unreadCount;
   final List<Participant> participantDetails;
   final List<Message>? messages;
+  final PaginationInfo? pagination;
 
   Chat({
     required this.id,
@@ -19,6 +20,7 @@ class Chat {
     this.unreadCount = 0,
     this.participantDetails = const [],
     this.messages,
+    this.pagination,
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
@@ -63,6 +65,9 @@ class Chat {
       messages: (json['messages'] as List<dynamic>?)
           ?.map((m) => Message.fromJson(m))
           .toList(),
+      pagination: json['pagination'] != null 
+          ? PaginationInfo.fromJson(json['pagination'])
+          : null,
     );
   }
 
@@ -101,4 +106,27 @@ class Participant {
   }
 
   String get fullName => '$firstName $lastName';
+}
+
+class PaginationInfo {
+  final int currentPage;
+  final int totalPages;
+  final int totalMessages;
+  final bool hasMore;
+
+  PaginationInfo({
+    required this.currentPage,
+    required this.totalPages,
+    required this.totalMessages,
+    required this.hasMore,
+  });
+
+  factory PaginationInfo.fromJson(Map<String, dynamic> json) {
+    return PaginationInfo(
+      currentPage: json['currentPage'] ?? 1,
+      totalPages: json['totalPages'] ?? 1,
+      totalMessages: json['totalMessages'] ?? 0,
+      hasMore: json['hasMore'] ?? false,
+    );
+  }
 }

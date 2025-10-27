@@ -13,7 +13,6 @@ class SocketService {
   // Stream controllers for real-time updates
   final StreamController<Message> _messageController = StreamController<Message>.broadcast();
   final StreamController<Map<String, dynamic>> _notificationController = StreamController<Map<String, dynamic>>.broadcast();
-  final StreamController<Map<String, dynamic>> _typingController = StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _readController = StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _statusController = StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _chatUpdateController = StreamController<Map<String, dynamic>>.broadcast();
@@ -28,7 +27,6 @@ class SocketService {
   // Getters for streams
   Stream<Message> get messageStream => _messageController.stream;
   Stream<Map<String, dynamic>> get notificationStream => _notificationController.stream;
-  Stream<Map<String, dynamic>> get typingStream => _typingController.stream;
   Stream<Map<String, dynamic>> get readStream => _readController.stream;
   Stream<Map<String, dynamic>> get statusStream => _statusController.stream;
   Stream<Map<String, dynamic>> get chatUpdateStream => _chatUpdateController.stream;
@@ -127,17 +125,6 @@ class SocketService {
           'type': 'unread_updated',
           'unreadCount': notificationData['unreadCount'],
         });
-      } catch (e) {
-        // Silently fail - error handling in production
-      }
-    });
-
-    _socket!.on('user_typing', (data) {
-      try {
-        final typingData = data is Map<String, dynamic> 
-            ? data 
-            : Map<String, dynamic>.from(data as Map);
-        _typingController.add(typingData);
       } catch (e) {
         // Silently fail - error handling in production
       }
@@ -264,28 +251,6 @@ class SocketService {
     }
   }
 
-  // Start typing indicator
-  void startTyping(String chatId) {
-    if (!_isConnected || _socket == null) return;
-
-    try {
-      _socket!.emit('typing_start', {'chatId': chatId});
-    } catch (e) {
-      // Silently fail
-    }
-  }
-
-  // Stop typing indicator
-  void stopTyping(String chatId) {
-    if (!_isConnected || _socket == null) return;
-
-    try {
-      _socket!.emit('typing_stop', {'chatId': chatId});
-    } catch (e) {
-      // Silently fail
-    }
-  }
-
   // Mark messages as read
   void markMessagesAsRead(String chatId) {
     if (!_isConnected || _socket == null) return;
@@ -316,7 +281,6 @@ class SocketService {
     disconnect();
     _messageController.close();
     _notificationController.close();
-    _typingController.close();
     _readController.close();
     _statusController.close();
     _chatUpdateController.close();

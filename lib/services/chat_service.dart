@@ -38,10 +38,14 @@ class ChatService {
   }
 
   // Get chat with specific user
-  static Future<Chat?> getChatWithUser(String token, String otherUserId) async {
+  static Future<Chat?> getChatWithUser(
+    String token, 
+    String otherUserId, 
+    {int page = 1, int limit = 20}
+  ) async {
     try {
       final response = await http.get(
-        Uri.parse('${baseUrl}chats/with/$otherUserId'),
+        Uri.parse('${baseUrl}chats/with/$otherUserId?page=$page&limit=$limit'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

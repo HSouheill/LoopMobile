@@ -27,14 +27,18 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
   final ScrollController _scrollController = ScrollController();
   List<Message> messages = [];
   bool isLoading = true;
-  bool isTyping = false;
+  bool isLoadingMore = false;
+  bool isInitialLoadComplete = false;
   String? currentUserId;
   String? token;
+  int currentPage = 1;
+  bool hasMore = true;
 
   @override
   void initState() {
     super.initState();
     _initializeChat();
+    _scrollController.addListener(_scrollListener);
   }
 
   Future<void> _initializeChat() async {
@@ -82,15 +86,6 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
           }
         });
 
-        // Listen for typing indicators
-        SocketService.instance.typingStream.listen((data) {
-          if (data['chatId'] == widget.chat.id && data['userId'] != currentUserId) {
-            setState(() {
-              isTyping = data['isTyping'] ?? false;
-            });
-          }
-        });
-
         // Load existing messages
         await _loadMessages();
       }
@@ -110,18 +105,33 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
     if (token == null) return;
 
     try {
-      // Get chat with messages
+      // Get chat with messages (first page)
       final chatWithMessages = await ChatService.getChatWithUser(
         token!,
         widget.chat.participants.firstWhere((id) => id != currentUserId),
+        page: 1,
+        limit: 20,
       );
 
       if (chatWithMessages != null) {
         setState(() {
-          messages = chatWithMessages.messages ?? [];
+          // Reverse messages since backend returns newest first
+          messages = (chatWithMessages.messages ?? []).reversed.toList();
+          currentPage = chatWithMessages.pagination?.currentPage ?? 1;
+          hasMore = chatWithMessages.pagination?.hasMore ?? false;
           isLoading = false;
         });
-        _scrollToBottom();
+        
+        // Scroll to bottom after initial load
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+            // Enable pagination after initial scroll is complete
+            setState(() {
+              isInitialLoadComplete = true;
+            });
+          }
+        });
         
         // Automatically mark messages as read when entering the chat
         _markMessagesAsRead();
@@ -129,6 +139,63 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
     } catch (e) {
       setState(() {
         isLoading = false;
+        isInitialLoadComplete = true;
+      });
+    }
+  }
+
+  void _scrollListener() {
+    // Only trigger pagination after initial load is complete
+    if (!isInitialLoadComplete) return;
+    
+    if (_scrollController.position.pixels <= 100 && hasMore && !isLoadingMore) {
+      _loadMoreMessages();
+    }
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (token == null || !hasMore || isLoadingMore) return;
+
+    // Save the current scroll position before loading more messages
+    final double previousScrollOffset = _scrollController.offset;
+    final double previousMaxScrollExtent = _scrollController.position.maxScrollExtent;
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    try {
+      final nextPage = currentPage + 1;
+      final chatWithMessages = await ChatService.getChatWithUser(
+        token!,
+        widget.chat.participants.firstWhere((id) => id != currentUserId),
+        page: nextPage,
+        limit: 20,
+      );
+
+      if (chatWithMessages != null && mounted) {
+        final newMessages = (chatWithMessages.messages ?? []).reversed.toList();
+        setState(() {
+          // Insert older messages at the beginning
+          messages.insertAll(0, newMessages);
+          currentPage = chatWithMessages.pagination?.currentPage ?? currentPage;
+          hasMore = chatWithMessages.pagination?.hasMore ?? false;
+          isLoadingMore = false;
+        });
+
+        // Restore scroll position to maintain seamless scrolling
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_scrollController.hasClients) {
+            final double newMaxScrollExtent = _scrollController.position.maxScrollExtent;
+            final double scrollDifference = newMaxScrollExtent - previousMaxScrollExtent;
+            final double newScrollOffset = previousScrollOffset + scrollDifference;
+            _scrollController.jumpTo(newScrollOffset);
+          }
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoadingMore = false;
       });
     }
   }
@@ -206,14 +273,6 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
     }
   }
 
-  void _onTypingChanged(bool isTyping) {
-    if (isTyping) {
-      SocketService.instance.startTyping(widget.chat.id);
-    } else {
-      SocketService.instance.stopTyping(widget.chat.id);
-    }
-  }
-
   Future<void> _deleteMessage(Message message) async {
     if (token == null) return;
 
@@ -273,14 +332,6 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                       color: Colors.black,
                     ),
                   ),
-                  if (isTyping)
-                    const Text(
-                      'typing...',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -352,15 +403,42 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                           ],
                         ),
                       )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-                          final isMe = message.senderId == currentUserId;
-                          
-                          return _buildMessageBubble(message, isMe);
-                        },
+                    : Stack(
+                        children: [
+                          ListView.builder(
+                            controller: _scrollController,
+                            itemCount: messages.length,
+                            itemBuilder: (context, index) {
+                              final message = messages[index];
+                              final isMe = message.senderId == currentUserId;
+                              
+                              return _buildMessageBubble(message, isMe);
+                            },
+                          ),
+                          if (isLoadingMore)
+                            Positioned(
+                              top: 10,
+                              left: 0,
+                              right: 0,
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
           ),
           Container(
@@ -394,9 +472,6 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                         vertical: 10,
                       ),
                     ),
-                    onChanged: (value) {
-                      _onTypingChanged(value.isNotEmpty);
-                    },
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
