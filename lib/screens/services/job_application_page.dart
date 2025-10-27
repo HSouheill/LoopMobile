@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../models/job_detail.dart';
+import '../../services/auth_service.dart';
+import '../../environment.dart';
 
 class JobApplicationPage extends StatefulWidget {
   final JobDetail job;
@@ -54,34 +58,136 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
       return;
     }
 
+    // Check if user is signed in
+    if (!AuthService.isLoggedIn) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Sign In Required'),
+            content: const Text('You need to be signed in to apply to jobs. Please sign in and try again.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Prepare the request body
+      final phone = _selectedCountryCode + _phoneController.text.trim();
+      final requestBody = {
+        'firstName': _firstNameController.text.trim(),
+        'lastName': _lastNameController.text.trim(),
+        'email': _emailController.text.trim().toLowerCase(),
+        'phone': phone,
+        'expectedSalary': _expectedSalaryController.text.trim(),
+        'experience': _experienceController.text.trim(),
+        // portfolio is optional, not included for now as per requirements
+      };
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Application Submitted'),
-          content: const Text('Your application has been submitted successfully!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pop(); // Go back to job detail page
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+      // Make the API call
+      final url = Uri.parse('${Environment.apiUrl}jobs/${widget.job.id}/apply');
+      final response = await http.post(
+        url,
+        headers: AuthService.getAuthHeaders(),
+        body: jsonEncode(requestBody),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        final data = jsonDecode(response.body);
+        
+        if (response.statusCode == 201) {
+          // Success
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Application Submitted'),
+              content: const Text('Your application has been submitted successfully!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                    Navigator.of(context).pop(); // Go back to job detail page
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else if (response.statusCode == 409) {
+          // Already applied
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Already Applied'),
+              content: Text(data['message'] ?? 'You have already applied to this job.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          // Error
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text(data['message'] ?? 'Failed to submit application. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: Text('Network error: ${e.toString()}'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
