@@ -27,15 +27,12 @@ class ChatService {
                 .map((chat) => Chat.fromJson(chat))
                 .toList();
           } catch (parseError) {
-            print('Error parsing chats data: $parseError');
-            print('Chats data: ${data['chats']}');
             return [];
           }
         }
       }
       return [];
     } catch (e) {
-      print('Error getting user chats: $e');
       return [];
     }
   }
@@ -57,15 +54,12 @@ class ChatService {
           try {
             return Chat.fromJson(data['chat']);
           } catch (parseError) {
-            print('Error parsing chat data: $parseError');
-            print('Chat data: ${data['chat']}');
             return null;
           }
         }
       }
       return null;
     } catch (e) {
-      print('Error getting chat with user: $e');
       return null;
     }
   }
@@ -101,7 +95,6 @@ class ChatService {
       }
       return null;
     } catch (e) {
-      print('Error sending message: $e');
       return null;
     }
   }
@@ -119,7 +112,6 @@ class ChatService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Error marking messages as read: $e');
       return false;
     }
   }
@@ -143,7 +135,6 @@ class ChatService {
       }
       return 0;
     } catch (e) {
-      print('Error getting unread count: $e');
       return 0;
     }
   }
@@ -169,7 +160,6 @@ class ChatService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Error blocking user: $e');
       return false;
     }
   }
@@ -187,7 +177,6 @@ class ChatService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Error unblocking user: $e');
       return false;
     }
   }
@@ -213,7 +202,6 @@ class ChatService {
       }
       return [];
     } catch (e) {
-      print('Error getting blocked users: $e');
       return [];
     }
   }
@@ -231,7 +219,6 @@ class ChatService {
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Error deleting message: $e');
       return false;
     }
   }
@@ -257,7 +244,6 @@ class ChatService {
       }
       return [];
     } catch (e) {
-      print('Error searching users: $e');
       return [];
     }
   }
@@ -285,15 +271,12 @@ class ChatService {
           try {
             return Chat.fromJson(data['chat']);
           } catch (parseError) {
-            print('Error parsing chat data: $parseError');
-            print('Chat data: ${data['chat']}');
             return null;
           }
         }
       }
       return null;
     } catch (e) {
-      print('Error creating chat: $e');
       return null;
     }
   }
