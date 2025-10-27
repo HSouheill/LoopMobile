@@ -76,14 +76,12 @@ class _ChatListPageState extends State<ChatListPage> {
     if (!mounted) return;
     
     // Update the chat in the list with the new message
+    // Don't update unread count here - it will be updated by message_notification event
     setState(() {
       final chatIndex = chats.indexWhere((chat) => chat.id == message.chatId);
       
       if (chatIndex != -1) {
         final chat = chats[chatIndex];
-        final newUnreadCount = message.senderId != currentUserId 
-            ? chat.unreadCount + 1 
-            : chat.unreadCount;
         
         final updatedChat = Chat(
           id: chat.id,
@@ -91,7 +89,7 @@ class _ChatListPageState extends State<ChatListPage> {
           lastMessage: message.content,
           lastMessageAt: message.createdAt,
           isActive: chat.isActive,
-          unreadCount: newUnreadCount,
+          unreadCount: chat.unreadCount, // Keep existing count, will be updated by notification
           participantDetails: chat.participantDetails,
           messages: chat.messages,
         );
