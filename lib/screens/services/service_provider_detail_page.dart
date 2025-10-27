@@ -11,6 +11,7 @@ import '../../models/chat.dart';
 import '../chat/chat_conversation_page.dart';
 import 'package:loopflutter/screens/services/agent_services_page.dart';
 import '../../widgets/agent_report_dialog.dart';
+import '../../services/portfolio_service.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -188,6 +189,56 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error opening link: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _viewPortfolioPDF() async {
+    final portfolioLink = widget.serviceProvider.portfolioLink;
+    if (portfolioLink.isNotEmpty) {
+      final url = PortfolioService.getPortfolioUrl(portfolioLink);
+      if (url != null) {
+        try {
+          final Uri uri = Uri.parse(url);
+
+          // Launch URL in browser
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(
+              uri,
+              mode: LaunchMode.externalApplication,
+            );
+          } else {
+            // Fallback: try to launch without checking canLaunchUrl
+            try {
+              await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+            } catch (e) {
+              // Show error message with copy option
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Could not open portfolio. URL: $url'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening portfolio: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No portfolio available'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -593,6 +644,13 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                     const Divider(height: 1, color: Colors.grey),
                     const SizedBox(height: 24),
 
+                    // Portfolio Section
+                    _buildPortfolioSection(),
+
+                    const SizedBox(height: 24),
+                    const Divider(height: 1, color: Colors.grey),
+                    const SizedBox(height: 24),
+
                     // Reviews Section
                     _buildServiceProviderReviews(),
 
@@ -858,6 +916,87 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     return ServiceProviderReviewsWidget(
       serviceProvider: _serviceProviderData!,
       onReviewSubmitted: _loadServiceProviderData,
+    );
+  }
+
+  Widget _buildPortfolioSection() {
+    final portfolioLink = widget.serviceProvider.portfolioLink;
+    final hasPortfolio = portfolioLink.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.picture_as_pdf, color: Colors.black, size: 24),
+            const SizedBox(width: 8),
+            const Text(
+              'Portfolio',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (hasPortfolio) ...[
+          // Show existing portfolio
+          Center(
+            child: Material(
+              elevation: 2,
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.75,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF0048FF)),
+                ),
+                child: InkWell(
+                  onTap: _viewPortfolioPDF,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf,
+                            size: 32,
+                            color: Colors.red,
+                          ),
+                          SizedBox(width: 14),
+                          Text(
+                            "View Portfolio",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 10,
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ] else ...[
+          const Text(
+            'No portfolio available',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

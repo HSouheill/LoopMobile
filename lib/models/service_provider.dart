@@ -23,6 +23,7 @@ class ServiceProvider {
   final List<Service> services;
   final List<Review> reviews;
   final List<SocialLink> socialLinks;
+  final String portfolioLink;
 
   ServiceProvider({
     required this.id,
@@ -46,6 +47,7 @@ class ServiceProvider {
     required this.services,
     this.reviews = const [],
     required this.socialLinks,
+    required this.portfolioLink,
   });
 
   factory ServiceProvider.fromJson(Map<String, dynamic> json) {
@@ -77,6 +79,7 @@ class ServiceProvider {
       socialLinks: (json['socialLinks'] as List<dynamic>? ?? [])
           .map((link) => SocialLink.fromJson(link))
           .toList(),
+      portfolioLink: json['portfolioLink']?.toString() ?? '',
     );
   }
 
@@ -279,6 +282,7 @@ class ServiceProviderWithReviews {
   final List<Service> services;
   final List<Review> reviews;
   final List<SocialLink> socialLinks;
+  final String portfolioLink;
 
   ServiceProviderWithReviews({
     required this.id,
@@ -302,6 +306,7 @@ class ServiceProviderWithReviews {
     required this.services,
     required this.reviews,
     required this.socialLinks,
+    required this.portfolioLink,
   });
 
   factory ServiceProviderWithReviews.fromJson(Map<String, dynamic> json) {
@@ -336,6 +341,7 @@ class ServiceProviderWithReviews {
       socialLinks: (json['socialLinks'] as List<dynamic>? ?? [])
           .map((link) => SocialLink.fromJson(link))
           .toList(),
+      portfolioLink: json['portfolioLink']?.toString() ?? '',
     );
   }
 
