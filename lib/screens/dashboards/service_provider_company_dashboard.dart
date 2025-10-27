@@ -1165,106 +1165,90 @@ Widget applicationsSection(
                           ),
                         ],
                       ),
-                      child: InkWell(
-                        onTap: () {
-                          // Navigate to application details or "View All" page
-                          Navigator.pushNamed(context, '/applications');
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey.shade200,
-                              ),
-                              child: application.applicant?.email != null
-                                  ? Center(
-                                      child: Text(
-                                        application.applicant!.firstName.substring(0, 1).toUpperCase(),
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.person,
-                                      color: Colors.grey,
-                                      size: 20,
-                                    ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey.shade200,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    application.fullName,
-                                    style: const TextStyle(
-                                        fontSize: 14, fontWeight: FontWeight.w600),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        "Experience: ",
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w300,
-                                          color: Color(0xFF1E1E1E),
-                                        ),
+                            child: Center(
+                              child: Text(
+                                application.firstName.isNotEmpty
+                                    ? application.firstName.substring(0, 1).toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  application.fullName,
+                                  style: const TextStyle(
+                                      fontSize: 14, fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "Experience: ",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w300,
+                                        color: Color(0xFF1E1E1E),
                                       ),
-                                      Text(
-                                        "${application.experience} years",
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (application.job != null) ...[
-                                    const SizedBox(height: 2),
+                                    ),
                                     Text(
-                                      application.job!.title,
+                                      "${application.experience} years",
                                       style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.blueGrey,
-                                          fontWeight: FontWeight.w500),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ],
-                                ],
-                              ),
-                            ),
-                            if (application.status == 'pending')
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.orange),
                                 ),
-                                child: const Text(
-                                  "NEW",
-                                  style: TextStyle(
-                                    color: Colors.orange,
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
+                                if (application.title.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    application.title,
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.blueGrey,
+                                        fontWeight: FontWeight.w500),
                                   ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          if (application.status == 'pending')
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.orange),
+                              ),
+                              child: const Text(
+                                "NEW",
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 10,
-                              color: Colors.black,
                             ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                   ),

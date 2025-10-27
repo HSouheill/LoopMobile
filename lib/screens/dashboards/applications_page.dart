@@ -197,9 +197,9 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           const SizedBox(height: 8),
 
           // Job Title
-          if (application.job != null) ...[
+          if (application.title.isNotEmpty) ...[
             Text(
-              application.job!.title,
+              application.title,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

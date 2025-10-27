@@ -40,33 +40,9 @@ class JobApplicationService {
     }
   }
 
-  // Get a single job application by ID
-  static Future<JobApplication> getJobApplication(String applicationId) async {
-    try {
-      final url = Uri.parse('$baseUrl/applications/$applicationId');
-      final response = await http.get(
-        url,
-        headers: AuthService.getAuthHeaders(),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['application'] != null) {
-          return JobApplication.fromJson(data['application']);
-        } else {
-          throw Exception('No application data found in response');
-        }
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['message'] ?? 'Failed to load application: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error fetching job application: $e');
-    }
-  }
 
   // Update application status (accept/reject)
-  static Future<JobApplication> updateApplicationStatus({
+  static Future<void> updateApplicationStatus({
     required String applicationId,
     required String status, // 'accepted' or 'rejected'
   }) async {
@@ -81,14 +57,7 @@ class JobApplicationService {
         body: json.encode({'status': status}),
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['application'] != null) {
-          return JobApplication.fromJson(data['application']);
-        } else {
-          throw Exception('No application data found in response');
-        }
-      } else {
+      if (response.statusCode != 200) {
         final errorData = json.decode(response.body);
         throw Exception(errorData['message'] ?? 'Failed to update status: ${response.statusCode}');
       }

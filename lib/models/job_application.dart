@@ -1,8 +1,5 @@
 class JobApplication {
   final String id;
-  final String jobId;
-  final String applicantId;
-  final String jobOwnerId;
   final String firstName;
   final String lastName;
   final String email;
@@ -12,16 +9,10 @@ class JobApplication {
   final int experience;
   final String status;
   final String createdAt;
-  
-  // Populated fields
-  final ApplicantInfo? applicant;
-  final JobInfo? job;
+  final String title; // Job title
 
   JobApplication({
     required this.id,
-    required this.jobId,
-    required this.applicantId,
-    required this.jobOwnerId,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -31,16 +22,22 @@ class JobApplication {
     required this.experience,
     required this.status,
     required this.createdAt,
-    this.applicant,
-    this.job,
+    required this.title,
   });
 
   factory JobApplication.fromJson(Map<String, dynamic> json) {
+    // Extract title from populated jobId if available
+    String title = '';
+    if (json['jobId'] != null) {
+      if (json['jobId'] is Map && json['jobId']['title'] != null) {
+        title = json['jobId']['title'];
+      } else {
+        title = json['jobId'].toString();
+      }
+    }
+
     return JobApplication(
       id: json['_id'] ?? '',
-      jobId: json['jobId'] is String ? json['jobId'] : (json['jobId']?['_id'] ?? ''),
-      applicantId: json['applicantId'] is String ? json['applicantId'] : (json['applicantId']?['_id'] ?? ''),
-      jobOwnerId: json['jobOwnerId'] is String ? json['jobOwnerId'] : (json['jobOwnerId']?['_id'] ?? ''),
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',
       email: json['email'] ?? '',
@@ -50,66 +47,11 @@ class JobApplication {
       experience: json['experience'] is int ? json['experience'] : int.tryParse(json['experience']?.toString() ?? '0') ?? 0,
       status: json['status'] ?? 'pending',
       createdAt: json['createdAt'] ?? '',
-      applicant: json['applicantId'] is Map ? ApplicantInfo.fromJson(json['applicantId']) : null,
-      job: json['jobId'] is Map ? JobInfo.fromJson(json['jobId']) : null,
+      title: title,
     );
   }
 
   String get fullName => '$firstName $lastName';
-}
-
-class ApplicantInfo {
-  final String id;
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String? phone;
-  final String? companyName;
-
-  ApplicantInfo({
-    required this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    this.phone,
-    this.companyName,
-  });
-
-  factory ApplicantInfo.fromJson(Map<String, dynamic> json) {
-    return ApplicantInfo(
-      id: json['_id'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'],
-      companyName: json['companyName'],
-    );
-  }
-
-  String get fullName => '$firstName $lastName';
-}
-
-class JobInfo {
-  final String id;
-  final String title;
-  final String? location;
-  final String? jobType;
-
-  JobInfo({
-    required this.id,
-    required this.title,
-    this.location,
-    this.jobType,
-  });
-
-  factory JobInfo.fromJson(Map<String, dynamic> json) {
-    return JobInfo(
-      id: json['_id'] ?? '',
-      title: json['title'] ?? '',
-      location: json['location'],
-      jobType: json['jobType'],
-    );
-  }
 }
 
 class JobApplicationsResponse {
