@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 import '../../services/job_application_service.dart';
 import '../../models/job_application.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../environment.dart';
 
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({super.key});
@@ -84,6 +87,88 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error updating status: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _viewPortfolioPDF(String portfolioLink) async {
+    if (portfolioLink.isNotEmpty) {
+      final url = '${Environment.apiUrl}assets/$portfolioLink';
+      try {
+        final Uri uri = Uri.parse(url);
+
+        // Launch URL in browser
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication,
+          );
+        } else {
+          // Fallback: try to launch without checking canLaunchUrl
+          try {
+            await launchUrl(
+              uri,
+              mode: LaunchMode.externalApplication,
+            );
+          } catch (e) {
+            // Show error message with copy option
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Could not open PDF in browser. URL: $url'),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'Copy URL',
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      try {
+                        await Clipboard.setData(ClipboardData(text: url));
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('URL copied to clipboard'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Failed to copy URL: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+              );
+            }
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening PDF: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Portfolio URL is not available'),
             backgroundColor: Colors.red,
           ),
         );
@@ -221,8 +306,11 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
             'Expected salary: ${application.expectedSalary}',
           ),
 
-          if (application.portfolio != null && application.portfolio!.isNotEmpty)
-            _buildDetailRow(Icons.link, 'Portfolio: ${application.portfolio}'),
+          // Portfolio Section
+          if (application.portfolio != null && application.portfolio!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildPortfolioSection(application.portfolio!),
+          ],
 
           const SizedBox(height: 12),
 
@@ -296,6 +384,52 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           color: color,
           fontSize: 10,
           fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPortfolioSection(String portfolioLink) {
+    return Material(
+      elevation: 2,
+      borderRadius: BorderRadius.circular(8),
+      color: Colors.white,
+      child: InkWell(
+        onTap: () => _viewPortfolioPDF(portfolioLink),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFF0048FF)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Row(
+                children: [
+                  Icon(
+                    Icons.picture_as_pdf,
+                    size: 32,
+                    color: Colors.red,
+                  ),
+                  SizedBox(width: 14),
+                  Text(
+                    "View Portfolio",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 10,
+                color: Colors.black,
+              ),
+            ],
+          ),
         ),
       ),
     );
