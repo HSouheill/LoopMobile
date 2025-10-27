@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/job_detail.dart';
 import '../../services/job_service.dart';
 import '../../widgets/job_report_dialog.dart';
+import 'job_application_page.dart';
 
 class JobDetailPage extends StatefulWidget {
   final JobDetail job;
@@ -278,11 +279,10 @@ class _JobDetailPageState extends State<JobDetailPage> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Handle apply action
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Application submitted successfully!'),
-                              backgroundColor: Colors.green,
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => JobApplicationPage(job: widget.job),
                             ),
                           );
                         },
