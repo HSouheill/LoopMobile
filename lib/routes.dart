@@ -27,6 +27,7 @@ import 'screens/dashboards/agent_individual_dashboard.dart';
 import 'screens/dashboards/agent_company_dashboard.dart';
 import 'screens/dashboards/service_provider_individual_dashboard.dart';
 import 'screens/dashboards/service_provider_company_dashboard.dart';
+import 'screens/dashboards/applications_page.dart';
 import 'screens/dashboards/my_jobs_page.dart';
 import 'screens/profile/profile.dart';
 import 'screens/services/jobs.dart';
@@ -157,6 +158,7 @@ Map<String, WidgetBuilder> appRoutes() {
     '/inactive-listings-page': (_) => const InactiveListingsPage(),
     '/my-listings-page': (_) => const MyListingsPage(),
     '/my-agents-page': (_) => const MyAgentsPage(),
+    '/applications': (_) => const ApplicationsPage(),
     '/contact-support': (_) => const ContactSupportForm(),
   };
 }

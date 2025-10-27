@@ -7,6 +7,8 @@ import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
 import '../../services/job_service.dart';
+import '../../services/job_application_service.dart';
+import '../../models/job_application.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/job_form_widget.dart';
 import './widgets/statistics_card.dart';
@@ -29,6 +31,8 @@ class _ServiceProviderCompanyDashboardPageState
   bool isLoading = true;
   List<Job> myJobs = [];
   bool isLoadingJobs = false;
+  List<JobApplication> applications = [];
+  bool isLoadingApplications = false;
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _ServiceProviderCompanyDashboardPageState
     _loadUser();
     _loadAgentInfo();
     _loadMyJobs();
+    _loadApplications();
   }
 
   Future<void> _loadUser() async {
@@ -78,12 +83,34 @@ class _ServiceProviderCompanyDashboardPageState
     }
   }
 
+  Future<void> _loadApplications() async {
+    setState(() {
+      isLoadingApplications = true;
+    });
+    try {
+      final response = await JobApplicationService.getMyJobApplications(
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        applications = response.applications;
+        isLoadingApplications = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingApplications = false;
+      });
+      print('Error loading applications: $e');
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
     });
     await _loadAgentInfo();
     await _loadMyJobs();
+    await _loadApplications();
   }
 
   @override
@@ -120,23 +147,6 @@ class _ServiceProviderCompanyDashboardPageState
         "time": "Experience: $minExp-$maxExp years"
       };
     }).toList();
-
-    final applicationsList = [
-      {
-        "imageUrl": "https://i.imgur.com/UM9Z7xk.jpeg",
-        "name": "John Doe",
-        "experienceValue": "5",
-        "experienceUnit": "years",
-        "pdfNumber": "PDF-12345",
-      },
-      {
-        "imageUrl": "https://i.imgur.com/G5qWJ4p.jpeg",
-        "name": "Jane Smith",
-        "experienceValue": "2",
-        "experienceUnit": "years",
-        "pdfNumber": "PDF-98765",
-      },
-    ];
 
     return Scaffold(
       body: RefreshIndicator(
@@ -179,7 +189,7 @@ class _ServiceProviderCompanyDashboardPageState
                   // ✅ List New Jobs Section
                   listNewJobsSection(context, screenWidth, jobs, isLoadingJobs, myJobs, _loadMyJobs),
 
-                  applicationsSection(context, screenWidth, applicationsList),
+                  applicationsSection(context, screenWidth, applications, isLoadingApplications),
 
                   const SizedBox(height: 20),
 
@@ -1094,7 +1104,7 @@ Widget listNewJobsSection(
 
 /// ✅ Applications Section
 Widget applicationsSection(
-    BuildContext context, double screenWidth, List<Map<String, String>> jobs) {
+    BuildContext context, double screenWidth, List<JobApplication> applications, bool isLoadingApplications) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
     child: Column(
@@ -1108,114 +1118,166 @@ Widget applicationsSection(
           ),
         ),
         const SizedBox(height: 12),
-        Column(
-          children: jobs.map((job) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Center(
-                child: Material(
-                  elevation: 2,
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
-                  child: Container(
-                    width: screenWidth * 0.90,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0x570048FF)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.6),
-                          offset: const Offset(0, 4),
-                          blurRadius: 9.4,
-                          spreadRadius: -1,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf,
-                          size: 40,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Name instead of Title
-                              Text(
-                                job['name'] ?? '',
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600),
+        if (isLoadingApplications)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (applications.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text(
+                "No applications yet",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          )
+        else
+          Column(
+            children: applications.map((application) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Center(
+                  child: Material(
+                    elevation: 2,
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                    child: Container(
+                      width: screenWidth * 0.90,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0x570048FF)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.6),
+                            offset: const Offset(0, 4),
+                            blurRadius: 9.4,
+                            spreadRadius: -1,
+                          ),
+                        ],
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          // Navigate to application details or "View All" page
+                          Navigator.pushNamed(context, '/applications');
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.shade200,
                               ),
-
-                              // Experience Row
-                              Row(
+                              child: application.applicant?.email != null
+                                  ? Center(
+                                      child: Text(
+                                        application.applicant!.firstName.substring(0, 1).toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.person,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
-                                    "Experience: ",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color(0xFF1E1E1E),
-                                    ),
-                                  ),
-                                  // 🔹 First dynamic text (e.g. "Senior")
                                   Text(
-                                    job['experienceValue'] ??
-                                        '', // <-- add a new key like "level"
+                                    application.fullName,
                                     style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
-                                    ),
+                                        fontSize: 14, fontWeight: FontWeight.w600),
                                   ),
-                                  // 🔹 Existing experience (e.g. "5 years")
-                                  Text(
-                                    job['experienceUnit'] ?? '',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "Experience: ",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w300,
+                                          color: Color(0xFF1E1E1E),
+                                        ),
+                                      ),
+                                      Text(
+                                        "${application.experience} years",
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  if (application.job != null) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      application.job!.title,
+                                      style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.blueGrey,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
                                 ],
                               ),
-
-                              // PDF Number
-                              Text(
-                                "PDF Number: ${job['pdfNumber'] ?? ''}",
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500),
+                            ),
+                            if (application.status == 'pending')
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.orange),
+                                ),
+                                child: const Text(
+                                  "NEW",
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ],
-                          ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 10,
+                              color: Colors.black,
+                            ),
+                          ],
                         ),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 10,
-                          color: Colors.black,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
+              );
+            }).toList(),
+          ),
         const SizedBox(height: 16),
         Center(
           child: DynamicGradientButton(
             buttonText: "View All",
             onTap: () {
-              Navigator.pushNamed(context, '/applications'); // ✅ your route
+              Navigator.pushNamed(context, '/applications');
             },
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
             textSize: 14,
