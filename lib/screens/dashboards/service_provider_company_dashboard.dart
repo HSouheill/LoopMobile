@@ -1172,18 +1172,13 @@ Widget applicationsSection(
                             height: 40,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.grey.shade200,
+                              color: const Color.fromARGB(135, 238, 238, 238),
                             ),
                             child: Center(
-                              child: Text(
-                                application.firstName.isNotEmpty
-                                    ? application.firstName.substring(0, 1).toUpperCase()
-                                    : '?',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                              child: Icon(
+                                Icons.picture_as_pdf,
+                                color: Colors.red,
+                                size: 26,
                               ),
                             ),
                           ),
@@ -1231,23 +1226,29 @@ Widget applicationsSection(
                               ],
                             ),
                           ),
-                          if (application.status == 'pending')
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.orange),
-                              ),
-                              child: const Text(
-                                "NEW",
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
+                           if (application.status == 'pending')
+                             Container(
+                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                               decoration: BoxDecoration(
+                                 color: Colors.orange.withOpacity(0.1),
+                                 borderRadius: BorderRadius.circular(12),
+                                 border: Border.all(color: Colors.orange),
+                               ),
+                               child: const Text(
+                                 "NEW",
+                                 style: TextStyle(
+                                   color: Colors.orange,
+                                   fontSize: 8,
+                                   fontWeight: FontWeight.bold,
+                                 ),
+                               ),
+                             ),
+                          const SizedBox(width: 8),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 10,
+                            color: Colors.black,
+                          ),
                         ],
                       ),
                     ),
