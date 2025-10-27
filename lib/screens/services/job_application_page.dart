@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:file_picker/file_picker.dart';
 import '../../models/job_detail.dart';
 import '../../services/auth_service.dart';
 import '../../environment.dart';
@@ -29,6 +31,7 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
   String _selectedCountryCode = '+961';
   bool _isLoading = false;
   bool _isConfirmed = false;
+  PlatformFile? _selectedFile;
 
   final List<String> _countryCodes = ['+961', '+1', '+44', '+33', '+49'];
 
@@ -41,6 +44,31 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     _expectedSalaryController.dispose();
     _experienceController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _selectedFile = result.files.first;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error picking file: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _submitApplication() async {
@@ -87,23 +115,39 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     try {
       // Prepare the request body
       final phone = _selectedCountryCode + _phoneController.text.trim();
-      final requestBody = {
-        'firstName': _firstNameController.text.trim(),
-        'lastName': _lastNameController.text.trim(),
-        'email': _emailController.text.trim().toLowerCase(),
-        'phone': phone,
-        'expectedSalary': _expectedSalaryController.text.trim(),
-        'experience': _experienceController.text.trim(),
-        // portfolio is optional, not included for now as per requirements
-      };
 
-      // Make the API call
+      // Create multipart request
       final url = Uri.parse('${Environment.apiUrl}jobs/${widget.job.id}/apply');
-      final response = await http.post(
-        url,
-        headers: AuthService.getAuthHeaders(),
-        body: jsonEncode(requestBody),
-      );
+      final request = http.MultipartRequest('POST', url);
+      
+      // Add headers (don't set Content-Type for multipart, http package will handle it)
+      if (AuthService.token != null) {
+        request.headers['Authorization'] = 'Bearer ${AuthService.token}';
+      }
+      
+      // Add form fields
+      request.fields['firstName'] = _firstNameController.text.trim();
+      request.fields['lastName'] = _lastNameController.text.trim();
+      request.fields['email'] = _emailController.text.trim().toLowerCase();
+      request.fields['phone'] = phone;
+      request.fields['expectedSalary'] = _expectedSalaryController.text.trim();
+      request.fields['experience'] = _experienceController.text.trim();
+      
+      // Add file if selected
+      if (_selectedFile != null && _selectedFile!.path != null) {
+        final file = File(_selectedFile!.path!);
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'portfolio',
+            file.path,
+            filename: _selectedFile!.name,
+          ),
+        );
+      }
+      
+      // Send the request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
       setState(() {
         _isLoading = false;
@@ -411,6 +455,68 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                         }
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Portfolio Upload
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFF1976D2), width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: InkWell(
+                        onTap: _isLoading ? null : _pickFile,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.attach_file,
+                                color: const Color(0xFF1976D2),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Upload Portfolio (Optional)',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    if (_selectedFile != null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _selectedFile!.name,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              if (_selectedFile != null)
+                                IconButton(
+                                  icon: const Icon(Icons.close, size: 20),
+                                  color: Colors.red,
+                                  onPressed: _isLoading ? null : () {
+                                    setState(() {
+                                      _selectedFile = null;
+                                    });
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     
