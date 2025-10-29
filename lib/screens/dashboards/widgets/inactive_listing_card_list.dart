@@ -1,5 +1,6 @@
 // lib/screens/inactive_listings/widgets/inactive_listing_card_list.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../widgets/listing_image_widget.dart';
 
 class InactiveListingCardList extends StatelessWidget {
@@ -201,7 +202,7 @@ class InactiveListingCard extends StatelessWidget {
                                 size: 16, color: Color(0xFF1E1E1E)),
                             const SizedBox(width: 2),
                             Text(
-                              "$price / Month",
+                              "$price ${AppLocalizations.of(context)?.perMonth ?? '/ Month'}",
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.w600),
                             ),
@@ -232,9 +233,9 @@ class InactiveListingCard extends StatelessWidget {
                             width: 1,
                           ),
                         ),
-                        child: const Text(
-                          'Activate Listing',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF1E1E1E),
@@ -314,7 +315,7 @@ class InactiveListingCard extends StatelessWidget {
 
             // Price
             Text(
-              "\$$price / Month", // 👈 formatted here
+              "\$$price ${AppLocalizations.of(context)?.perMonth ?? '/ Month'}", // 👈 formatted here
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -343,9 +344,9 @@ class InactiveListingCard extends StatelessWidget {
                     width: 1,
                   ),
                 ),
-                child: const Text(
-                  'Activate Listing',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
+                  style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w400,
                     color: Color(0xFF1E1E1E),

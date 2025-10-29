@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
@@ -139,12 +140,13 @@ class _ServiceProviderCompanyDashboardPageState
       // Safely extract experience range values
       final minExp = job.experienceRange['min'] ?? 0;
       final maxExp = job.experienceRange['max'] ?? 1;
+      final l10n = AppLocalizations.of(context);
       
       return {
         "imageUrl": job.imageUrl,
         "title": job.title,
         "contractType": job.jobType,
-        "time": "Experience: $minExp-$maxExp years"
+        "time": l10n?.experienceYears(minExp, maxExp) ?? "Experience: $minExp-$maxExp years"
       };
     }).toList();
 
@@ -194,13 +196,13 @@ class _ServiceProviderCompanyDashboardPageState
                   const SizedBox(height: 20),
 
                   // Links Title
-                  const Align(
+                  Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        "Links",
-                        style: TextStyle(
+                        AppLocalizations.of(context)?.links ?? "Links",
+                        style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 18,
                         ),
@@ -361,7 +363,7 @@ class _ServiceProviderCompanyDashboardPageState
           // Right: Edit Profile button
           Center(
             child: DynamicGradientButton(
-              buttonText: 'Edit Profile',
+              buttonText: AppLocalizations.of(context)?.editProfile ?? 'Edit Profile',
               onTap: () {
                 Navigator.pushNamed(context, '/profile');
               },
@@ -450,15 +452,15 @@ class UserPlanSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Active Plan:",
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        agentInfo?['subscribedPlan']?['name'] ?? AppLocalizations.of(context)?.noPlan ?? 'No Plan',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -467,7 +469,7 @@ class UserPlanSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}",
+                        AppLocalizations.of(context)?.validUntil(_formatDate(agentInfo?['user']?['planExpiresAt'])) ?? 'Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}',
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -486,11 +488,11 @@ class UserPlanSection extends StatelessWidget {
             StatCardList(
               items: [
                 {
-                  "title": "Total Chats:",
+                  "title": AppLocalizations.of(context)?.totalChats ?? "Total Chats:",
                   "value": "${agentInfo?['totalChats'] ?? 0}"
                 },
                 {
-                  "title": "Profile Views:",
+                  "title": AppLocalizations.of(context)?.profileViews ?? "Profile Views:",
                   "value": "${agentInfo?['user']?['profileViews'] ?? 0}"
                 },
               ],
@@ -565,18 +567,18 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
           setState(() {
             isLoading = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error uploading file: ${uploadError.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)?.errorUploadingFile(uploadError.toString()) ?? 'Error uploading file: ${uploadError.toString()}'),
+                backgroundColor: Colors.red,
+              ),
+            );
         }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error selecting file: ${e.toString()}'),
+          content: Text(AppLocalizations.of(context)?.errorSelectingFile(e.toString()) ?? 'Error selecting file: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -588,18 +590,18 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
     bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          title: const Text('Delete Portfolio'),
-          content:
-              const Text('Are you sure you want to delete your portfolio PDF?'),
+          title: Text(l10n?.deletePortfolio ?? 'Delete Portfolio'),
+          content: Text(l10n?.deletePortfolioConfirm ?? 'Are you sure you want to delete your portfolio PDF?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n?.cancel ?? 'Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(l10n?.delete ?? 'Delete', style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -669,26 +671,25 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
               // Show error message with copy option
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Could not open PDF in browser. URL: $url'),
+                  content: Text(AppLocalizations.of(context)?.couldNotOpenPdfBrowser(url) ?? 'Could not open PDF in browser. URL: $url'),
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 5),
                   action: SnackBarAction(
-                    label: 'Copy URL',
+                    label: AppLocalizations.of(context)?.urlCopiedToClipboard ?? 'Copy URL',
                     textColor: Colors.white,
                     onPressed: () async {
                       try {
                         await Clipboard.setData(ClipboardData(text: url));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('URL copied to clipboard'),
+                          SnackBar(
+                            content: Text(AppLocalizations.of(context)?.urlCopiedToClipboard ?? 'URL copied to clipboard'),
                             backgroundColor: Colors.green,
                           ),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                                Text('Failed to copy URL: ${e.toString()}'),
+                            content: Text(AppLocalizations.of(context)?.failedToCopyUrl(e.toString()) ?? 'Failed to copy URL: ${e.toString()}'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -702,7 +703,7 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error opening PDF: ${e.toString()}'),
+              content: Text(AppLocalizations.of(context)?.errorOpeningPdf(e.toString()) ?? 'Error opening PDF: ${e.toString()}'),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 5),
             ),
@@ -710,16 +711,16 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Portfolio URL is not available'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)?.portfolioUrlNotAvailable ?? 'Portfolio URL is not available'),
             backgroundColor: Colors.red,
           ),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No portfolio available'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)?.noPortfolioAvailable ?? 'No portfolio available'),
           backgroundColor: Colors.red,
         ),
       );
@@ -737,9 +738,9 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Portfolio PDF",
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)?.portfolioPdf ?? "Portfolio PDF",
+            style: const TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 18,
               color: Color(0xFF1E1E1E),
@@ -766,25 +767,25 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
                     onTap: _viewPortfolioPDF,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.picture_as_pdf,
                               size: 32,
                               color: Colors.red,
                             ),
-                            SizedBox(width: 14),
+                            const SizedBox(width: 14),
                             Text(
-                              "View Portfolio",
-                              style: TextStyle(
+                              AppLocalizations.of(context)?.viewPortfolio ?? "View Portfolio",
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
-                        Icon(
+                        const Icon(
                           Icons.arrow_forward_ios,
                           size: 10,
                           color: Colors.black,
@@ -807,8 +808,9 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: DynamicGradientButton(
-                    buttonText:
-                        hasPortfolio ? "Update Portfolio" : "+ Add New PDF",
+                    buttonText: hasPortfolio 
+                        ? (AppLocalizations.of(context)?.updatePortfolio ?? "Update Portfolio")
+                        : (AppLocalizations.of(context)?.addNewPdf ?? "+ Add New PDF"),
                     textSize: 12,
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -845,8 +847,8 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  "Delete",
-                                  style: TextStyle(
+                                  AppLocalizations.of(context)?.delete ?? "Delete",
+                                  style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -887,9 +889,9 @@ Widget listNewJobsSection(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              "My Jobs",
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)?.myJobs ?? "My Jobs",
+              style: const TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
               ),
@@ -899,9 +901,9 @@ Widget listNewJobsSection(
                 onPressed: () {
                   Navigator.pushNamed(context, '/my-jobs');
                 },
-                child: const Text(
-                  "See All",
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)?.seeAll ?? "See All",
+                  style: const TextStyle(
                     color: Color(0xFF0048FF),
                     fontWeight: FontWeight.w600,
                   ),
@@ -918,12 +920,12 @@ Widget listNewJobsSection(
             ),
           )
         else if (jobs.isEmpty)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Text(
-                "No jobs posted yet",
-                style: TextStyle(
+                AppLocalizations.of(context)?.noJobsPostedYet ?? "No jobs posted yet",
+                style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                 ),
@@ -993,9 +995,9 @@ Widget listNewJobsSection(
                                 const SizedBox(height: 0),
                                 Row(
                                   children: [
-                                    const Text(
-                                      "Contract Type: ",
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)?.contractType ?? "Contract Type: ",
+                                      style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w300,
                                           color: Color(0xFF1E1E1E)),
@@ -1080,7 +1082,7 @@ Widget listNewJobsSection(
         const SizedBox(height: 16),
         Center(
           child: DynamicGradientButton(
-            buttonText: "Post New Job",
+            buttonText: AppLocalizations.of(context)?.postNewJob ?? "Post New Job",
             onTap: () {
               Navigator.push(
                 context,
@@ -1110,9 +1112,9 @@ Widget applicationsSection(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Applications",
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)?.applications ?? "Applications",
+          style: const TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 18,
           ),
@@ -1126,12 +1128,12 @@ Widget applicationsSection(
             ),
           )
         else if (applications.isEmpty)
-          const Center(
+          Center(
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Text(
-                "No applications yet",
-                style: TextStyle(
+                AppLocalizations.of(context)?.noApplicationsYet ?? "No applications yet",
+                style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                 ),
@@ -1195,9 +1197,9 @@ Widget applicationsSection(
                                 const SizedBox(height: 2),
                                 Row(
                                   children: [
-                                    const Text(
-                                      "Experience: ",
-                                      style: TextStyle(
+                                    Text(
+                                      AppLocalizations.of(context)?.experience ?? "Experience: ",
+                                      style: const TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w300,
                                         color: Color(0xFF1E1E1E),
@@ -1234,9 +1236,9 @@ Widget applicationsSection(
                                  borderRadius: BorderRadius.circular(12),
                                  border: Border.all(color: Colors.orange),
                                ),
-                               child: const Text(
-                                 "NEW",
-                                 style: TextStyle(
+                               child: Text(
+                                 AppLocalizations.of(context)?.newBadge ?? "NEW",
+                                 style: const TextStyle(
                                    color: Colors.orange,
                                    fontSize: 8,
                                    fontWeight: FontWeight.bold,
@@ -1260,7 +1262,7 @@ Widget applicationsSection(
         const SizedBox(height: 16),
         Center(
           child: DynamicGradientButton(
-            buttonText: "View All",
+            buttonText: AppLocalizations.of(context)?.viewAll ?? "View All",
             onTap: () {
               Navigator.pushNamed(context, '/applications');
             },
@@ -1278,18 +1280,19 @@ Future<void> _showDeleteConfirmation(BuildContext context, Job job, VoidCallback
   final bool? confirmed = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
+      final l10n = AppLocalizations.of(context);
       return AlertDialog(
-        title: const Text('Delete Job'),
-        content: Text('Are you sure you want to delete "${job.title}"? This action cannot be undone.'),
+        title: Text(l10n?.deleteJob ?? 'Delete Job'),
+        content: Text(l10n?.deleteJobConfirm(job.title) ?? 'Are you sure you want to delete "${job.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n?.delete ?? 'Delete'),
           ),
         ],
       );
@@ -1307,8 +1310,8 @@ Future<void> _deleteJob(BuildContext context, Job job, VoidCallback onRefresh) a
     
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Job deleted successfully!'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)?.jobDeletedSuccessfully ?? 'Job deleted successfully!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -1320,7 +1323,7 @@ Future<void> _deleteJob(BuildContext context, Job job, VoidCallback onRefresh) a
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error deleting job: ${e.toString()}'),
+          content: Text(AppLocalizations.of(context)?.errorDeletingJob(e.toString()) ?? 'Error deleting job: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );

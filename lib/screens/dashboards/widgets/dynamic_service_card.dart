@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../../widgets/listing_image_widget.dart';
 
@@ -105,7 +106,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                             child: SizedBox(
                               width: double.infinity,
                               child: DynamicGradientButton(
-                                buttonText: 'Cancel',
+                                buttonText: AppLocalizations.of(context)?.cancelButton ?? 'Cancel',
                                 onTap: () {
                                   setState(() {
                                     boostPressed = false;
@@ -126,7 +127,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                             child: SizedBox(
                               width: double.infinity,
                               child: DynamicGradientButton(
-                                buttonText: 'Promote',
+                                buttonText: AppLocalizations.of(context)?.promoteButton ?? 'Promote',
                                 onTap: () {},
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8),
@@ -143,7 +144,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Sold',
+                                    buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
                                     onTap: widget.onSold,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
@@ -158,7 +159,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Delete',
+                                    buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
                                     onTap: widget.onDelete,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
@@ -179,7 +180,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Boost',
+                                    buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
                                     onTap: () {
                                       setState(() {
                                         boostPressed = true;
@@ -194,7 +195,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Edit',
+                                    buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
                                     onTap: widget.onEdit,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),

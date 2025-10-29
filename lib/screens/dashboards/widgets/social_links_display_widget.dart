@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../services/social_links_service.dart';
 
 class SocialLinksDisplayWidget extends StatelessWidget {
@@ -17,17 +18,18 @@ class SocialLinksDisplayWidget extends StatelessWidget {
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          title: const Text('Delete Social Link'),
-          content: Text('Are you sure you want to delete "$linkName"?'),
+          title: Text(l10n?.deleteSocialLink ?? 'Delete Social Link'),
+          content: Text(l10n?.deleteSocialLinkConfirm(linkName) ?? 'Are you sure you want to delete "$linkName"?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n?.cancel ?? 'Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(l10n?.delete ?? 'Delete', style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -42,13 +44,13 @@ class SocialLinksDisplayWidget extends StatelessWidget {
         }
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Social link deleted successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.socialLinkDeletedSuccessfully ?? 'Social link deleted successfully')),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting social link: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.errorDeletingSocialLink(e.toString()) ?? 'Error deleting social link: $e')),
           );
         }
       }
@@ -128,12 +130,12 @@ class SocialLinksDisplayWidget extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.open_in_new, size: 18),
                   onPressed: () => _launchUrl(link['link']),
-                  tooltip: 'Open link',
+                  tooltip: AppLocalizations.of(context)?.openLink ?? 'Open link',
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                   onPressed: () => _deleteSocialLink(context, link['_id'], link['name']),
-                  tooltip: 'Delete link',
+                  tooltip: AppLocalizations.of(context)?.deleteLink ?? 'Delete link',
                 ),
               ],
             ),

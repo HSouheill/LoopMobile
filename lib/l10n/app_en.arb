@@ -865,5 +865,183 @@
   "selectReasonForReporting": "Please select a reason for reporting this message:",
   "additionalDetailsOptional": "Additional details (optional):",
   "provideAdditionalInformation": "Provide additional information about why you are reporting this message...",
-  "submitReport": "Submit Report"
+  "submitReport": "Submit Report",
+  "portfolioPdf": "Portfolio PDF",
+  "viewPortfolio": "View Portfolio",
+  "updatePortfolio": "Update Portfolio",
+  "addPortfolio": "Add Portfolio",
+  "addNewPdf": "+ Add New PDF",
+  "deletePortfolio": "Delete Portfolio",
+  "deletePortfolioConfirm": "Are you sure you want to delete your portfolio PDF?",
+  "portfolioUrlNotAvailable": "Portfolio URL is not available",
+  "noPortfolioAvailable": "No portfolio available",
+  "errorUploadingFile": "Error uploading file: {error}",
+  "@errorUploadingFile": {
+    "description": "Error uploading file message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "Error selecting file: {error}",
+  "@errorSelectingFile": {
+    "description": "Error selecting file message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenPdfBrowser": "Could not open PDF in browser. URL: {url}",
+  "@couldNotOpenPdfBrowser": {
+    "description": "Error opening PDF in browser",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "urlCopiedToClipboard": "URL copied to clipboard",
+  "failedToCopyUrl": "Failed to copy URL: {error}",
+  "@failedToCopyUrl": {
+    "description": "Failed to copy URL message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningPdf": "Error opening PDF: {error}",
+  "@errorOpeningPdf": {
+    "description": "Error opening PDF message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myJobs": "My Jobs",
+  "noJobsPostedYet": "No jobs posted yet",
+  "contractType": "Contract Type:",
+  "experience": "Experience:",
+  "experienceYears": "Experience: {min}-{max} years",
+  "@experienceYears": {
+    "description": "Experience years range",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "postNewJob": "Post New Job",
+  "applications": "Applications",
+  "noApplicationsYet": "No applications yet",
+  "viewAll": "View All",
+  "newBadge": "NEW",
+  "deleteJob": "Delete Job",
+  "deleteJobConfirm": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+  "@deleteJobConfirm": {
+    "description": "Delete job confirmation message",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "jobDeletedSuccessfully": "Job deleted successfully!",
+  "errorDeletingJob": "Error deleting job: {error}",
+  "@errorDeletingJob": {
+    "description": "Error deleting job message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myServices": "My Services",
+  "addService": "Add Service",
+  "showMore": "Show More",
+  "showLess": "Show Less",
+  "failedToLoadServices": "Failed to load services",
+  "noServicesFound": "No services found",
+  "addYourFirstService": "Add your first service to get started",
+  "deleteService": "Delete Service",
+  "deleteServiceConfirm": "Are you sure you want to delete \"{title}\"?",
+  "@deleteServiceConfirm": {
+    "description": "Delete service confirmation message",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "serviceDeletedSuccessfully": "Service deleted successfully",
+  "boostService": "Boost Service",
+  "boostServiceConfirm": "Boost \"{title}\" to get more visibility?",
+  "@boostServiceConfirm": {
+    "description": "Boost service confirmation message",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activateListing": "Activate Listing",
+  "perMonth": "/ Month",
+  "addSocialAccountUrl": "Add Social Account URL",
+  "exampleFacebook": "example: Facebook",
+  "addSocialAccountUrlHint": "add social account URL",
+  "adding": "Adding...",
+  "pleaseFillAllFields": "Please fill in all fields",
+  "urlMustStartWithHttp": "URL must start with http:// or https://",
+  "socialLinkAddedSuccessfully": "Social link added successfully",
+  "errorAddingSocialLink": "Error adding social link: {error}",
+  "@errorAddingSocialLink": {
+    "description": "Error adding social link message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteSocialLink": "Delete Social Link",
+  "deleteSocialLinkConfirm": "Are you sure you want to delete \"{linkName}\"?",
+  "@deleteSocialLinkConfirm": {
+    "description": "Delete social link confirmation message",
+    "placeholders": {
+      "linkName": {
+        "type": "String"
+      }
+    }
+  },
+  "socialLinkDeletedSuccessfully": "Social link deleted successfully",
+  "errorDeletingSocialLink": "Error deleting social link: {error}",
+  "@errorDeletingSocialLink": {
+    "description": "Error deleting social link message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openLink": "Open link",
+  "deleteLink": "Delete link",
+  "listingsLabel": "Listings",
+  "daysLabel": "Days",
+  "forFreelancersOrSelfEmployed": "For Freelancers or Self-employed Providers",
+  "idealForSmallAgencies": "Ideal for Small Agencies with Moderate Needs",
+  "forHighVolumeProfessionals": "For High-volume Professionals & Teams",
+  "basicPlan": "Basic",
+  "standardPlan": "Standard",
+  "unlimitedPlan": "Unlimited",
+  "cancelButton": "Cancel",
+  "promoteButton": "Promote",
+  "soldButton": "Sold",
+  "deleteButton": "Delete",
+  "boostButton": "Boost",
+  "editButton": "Edit"
 }

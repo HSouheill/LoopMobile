@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../models/my_service.dart';
 import '../../../services/service_service.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
@@ -96,7 +97,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               Text(
-                'Failed to load services',
+                AppLocalizations.of(context)?.failedToLoadServices ?? 'Failed to load services',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -115,7 +116,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _refreshServices,
-                child: const Text('Retry'),
+                child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
               ),
             ],
           ),
@@ -124,25 +125,25 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
     }
 
     if (services.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              Icon(Icons.business_center_outlined, size: 48, color: Colors.grey),
-              SizedBox(height: 16),
+              const Icon(Icons.business_center_outlined, size: 48, color: Colors.grey),
+              const SizedBox(height: 16),
               Text(
-                'No services found',
-                style: TextStyle(
+                AppLocalizations.of(context)?.noServicesFound ?? 'No services found',
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                'Add your first service to get started',
-                style: TextStyle(
+                AppLocalizations.of(context)?.addYourFirstService ?? 'Add your first service to get started',
+                style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
                 ),
@@ -190,7 +191,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
               // Show More button
               if (canShowMore)
                 DynamicGradientButton(
-                  buttonText: 'Show More',
+                  buttonText: AppLocalizations.of(context)?.showMore ?? 'Show More',
                   onTap: _showMoreServices,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   textSize: 14,
@@ -200,7 +201,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
               if (canShowLess) ...[
                 if (canShowMore) const SizedBox(width: 16),
                 DynamicGradientButton(
-                  buttonText: 'Show Less',
+                  buttonText: AppLocalizations.of(context)?.showLess ?? 'Show Less',
                   onTap: _showLessServices,
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   textSize: 14,
@@ -220,7 +221,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
           const SizedBox(height: 16),
           Center(
             child: DynamicGradientButton(
-              buttonText: 'Load More',
+              buttonText: AppLocalizations.of(context)?.loadMore ?? 'Load More',
               onTap: () => _loadServices(loadMore: true),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               textSize: 14,
@@ -240,20 +241,21 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          title: const Text('Delete Service'),
-          content: Text('Are you sure you want to delete "${service.title}"?'),
+          title: Text(l10n?.deleteService ?? 'Delete Service'),
+          content: Text(l10n?.deleteServiceConfirm(service.title) ?? 'Are you sure you want to delete "${service.title}"?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n?.cancel ?? 'Cancel'),
             ),
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
                 await _deleteService(service);
               },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(l10n?.delete ?? 'Delete', style: const TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -267,7 +269,7 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
       
       if (result['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Service deleted successfully')),
+          SnackBar(content: Text(AppLocalizations.of(context)?.serviceDeletedSuccessfully ?? 'Service deleted successfully')),
         );
         _refreshServices();
       } else {
@@ -286,20 +288,21 @@ class _MyServicesWidgetState extends State<MyServicesWidget> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final l10n = AppLocalizations.of(context);
         return AlertDialog(
-          title: const Text('Boost Service'),
-          content: Text('Boost "${service.title}" to get more visibility?'),
+          title: Text(l10n?.boostService ?? 'Boost Service'),
+          content: Text(l10n?.boostServiceConfirm(service.title) ?? 'Boost "${service.title}" to get more visibility?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n?.cancel ?? 'Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 // TODO: Implement boost service functionality
               },
-              child: const Text('Boost'),
+              child: Text(l10n?.boostButton ?? 'Boost'),
             ),
           ],
         );
@@ -400,7 +403,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                             child: SizedBox(
                               width: double.infinity,
                               child: DynamicGradientButton(
-                                buttonText: 'Cancel',
+                                buttonText: AppLocalizations.of(context)?.cancelButton ?? 'Cancel',
                                 onTap: () {
                                   setState(() {
                                     boostPressed = false;
@@ -420,7 +423,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                             child: SizedBox(
                               width: double.infinity,
                               child: DynamicGradientButton(
-                                buttonText: 'Promote',
+                                buttonText: AppLocalizations.of(context)?.promoteButton ?? 'Promote',
                                 onTap: widget.onBoost,
                                 padding: const EdgeInsets.symmetric(vertical: 8),
                               ),
@@ -436,7 +439,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Sold',
+                                    buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
                                     onTap: () {
                                       // TODO: Implement sold functionality
                                     },
@@ -452,7 +455,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Delete',
+                                    buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
                                     onTap: widget.onDelete,
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
@@ -472,7 +475,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Boost',
+                                    buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
                                     onTap: () {
                                       setState(() {
                                         boostPressed = true;
@@ -485,7 +488,7 @@ class _MyServiceCardState extends State<MyServiceCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Edit',
+                                    buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
                                     onTap: widget.onEdit,
                                     padding: const EdgeInsets.symmetric(vertical: 8),
                                   ),

@@ -143,21 +143,24 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Listing'),
-        content: Text('Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(l10n?.deleteListing ?? 'Delete Listing'),
+          content: Text(l10n?.deleteListingConfirm(listing.title) ?? 'Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n?.cancel ?? 'Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text(l10n?.delete ?? 'Delete'),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {
@@ -176,19 +179,19 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
 
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing deleted successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.listingDeletedSuccessfully ?? 'Listing deleted successfully')),
           );
           // Refresh the data
           await _refreshData();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete listing')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.failedToDeleteListing ?? 'Failed to delete listing')),
           );
         }
       } catch (e) {
         Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting listing: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)?.errorDeletingListing(e.toString()) ?? 'Error deleting listing: $e')),
         );
       }
     }
@@ -297,9 +300,9 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                               await Navigator.pushNamed(context, '/inactive-listings-page');
                               _onListingOperationComplete();
                             },
-                            child: const Text(
-                              "See all",
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)?.seeAll ?? "See all",
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF1E1E1E),
                                 fontWeight: FontWeight.w300,
@@ -398,9 +401,9 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                               await Navigator.pushNamed(context, '/my-listings-page');
                               _onListingOperationComplete();
                             },
-                            child: const Text(
-                              "See all",
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizations.of(context)?.seeAll ?? "See all",
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF1E1E1E),
                                 fontWeight: FontWeight.w300,
@@ -744,15 +747,15 @@ class UserPlanSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Active Plan:",
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                        agentInfo?['subscribedPlan']?['name'] ?? (AppLocalizations.of(context)?.noPlan ?? 'No Plan'),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -761,7 +764,7 @@ class UserPlanSection extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}",
+                        AppLocalizations.of(context)?.validUntil(_formatDate(agentInfo?['user']?['planExpiresAt'])) ?? 'Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}',
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -781,10 +784,10 @@ class UserPlanSection extends StatelessWidget {
           children: [
             StatCardList(
               items: [
-                {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
-                {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
+                {"title": AppLocalizations.of(context)?.totalChats ?? "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
+                {"title": AppLocalizations.of(context)?.profileViews ?? "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
                 
-                {"title": "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
+                {"title": AppLocalizations.of(context)?.totalListings ?? "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
               ],
             ),
           ],

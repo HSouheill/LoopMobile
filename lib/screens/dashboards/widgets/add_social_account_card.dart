@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../../services/social_links_service.dart';
 
@@ -32,7 +33,7 @@ class AddSocialAccountWidget extends StatelessWidget {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'example: Facebook',
+                    hintText: AppLocalizations.of(context)?.exampleFacebook ?? 'example: Facebook',
                     hintStyle: const TextStyle(
                       fontSize: 14, // Hint text size
                       color: Colors.grey,
@@ -57,7 +58,7 @@ class AddSocialAccountWidget extends StatelessWidget {
                     color: Colors.black,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'add social account URL',
+                    hintText: AppLocalizations.of(context)?.addSocialAccountUrlHint ?? 'add social account URL',
                     hintStyle: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -74,52 +75,57 @@ class AddSocialAccountWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            DynamicGradientButton(
-              buttonText: isLoading ? 'Adding...' : 'Submit',
-              onTap: isLoading ? null : () async {
-                final name = nameController.text.trim();
-                final url = urlController.text.trim();
-                
-                if (name.isEmpty || url.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill in all fields')),
-                  );
-                  return;
-                }
+            Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context);
+                return DynamicGradientButton(
+                  buttonText: isLoading ? (l10n?.adding ?? 'Adding...') : 'Submit',
+                  onTap: isLoading ? null : () async {
+                    final name = nameController.text.trim();
+                    final url = urlController.text.trim();
+                    
+                    if (name.isEmpty || url.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n?.pleaseFillAllFields ?? 'Please fill in all fields')),
+                      );
+                      return;
+                    }
 
-                // Basic URL validation
-                if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('URL must start with http:// or https://')),
-                  );
-                  return;
-                }
+                    // Basic URL validation
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n?.urlMustStartWithHttp ?? 'URL must start with http:// or https://')),
+                      );
+                      return;
+                    }
 
-                try {
-                  isLoading = true;
-                  await SocialLinksService.addSocialLink(name, url);
-                  if (onRefresh != null) {
-                    onRefresh!();
-                  }
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Social link added successfully')),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error adding social link: $e')),
-                    );
-                  }
-                } finally {
-                  isLoading = false;
-                }
+                    try {
+                      isLoading = true;
+                      await SocialLinksService.addSocialLink(name, url);
+                      if (onRefresh != null) {
+                        onRefresh!();
+                      }
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n?.socialLinkAddedSuccessfully ?? 'Social link added successfully')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n?.errorAddingSocialLink(e.toString()) ?? 'Error adding social link: $e')),
+                        );
+                      }
+                    } finally {
+                      isLoading = false;
+                    }
+                  },
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                  useGradient: true,
+                  textColor: const Color(0xFFFFFFFF),
+                );
               },
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-              useGradient: true,
-              textColor: const Color(0xFFFFFFFF),
             ),
           ],
         ),
@@ -154,10 +160,10 @@ class AddSocialAccountWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Add Social Account URL',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    AppLocalizations.of(context)?.addSocialAccountUrl ?? 'Add Social Account URL',
+                    style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
               ],

@@ -863,5 +863,183 @@
   "selectReasonForReporting": "الرجاء اختيار سبب للإبلاغ عن هذه الرسالة:",
   "additionalDetailsOptional": "تفاصيل إضافية (اختياري):",
   "provideAdditionalInformation": "قدم معلومات إضافية حول سبب إبلاغك عن هذه الرسالة...",
-  "submitReport": "إرسال البلاغ"
+  "submitReport": "إرسال البلاغ",
+  "portfolioPdf": "ملف PDF للمحفظة",
+  "viewPortfolio": "عرض المحفظة",
+  "updatePortfolio": "تحديث المحفظة",
+  "addPortfolio": "إضافة محفظة",
+  "addNewPdf": "+ إضافة ملف PDF جديد",
+  "deletePortfolio": "حذف المحفظة",
+  "deletePortfolioConfirm": "هل أنت متأكد أنك تريد حذف ملف PDF للمحفظة؟",
+  "portfolioUrlNotAvailable": "رابط المحفظة غير متاح",
+  "noPortfolioAvailable": "لا توجد محفظة متاحة",
+  "errorUploadingFile": "خطأ في رفع الملف: {error}",
+  "@errorUploadingFile": {
+    "description": "رسالة خطأ عند رفع الملف",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSelectingFile": "خطأ في اختيار الملف: {error}",
+  "@errorSelectingFile": {
+    "description": "رسالة خطأ عند اختيار الملف",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenPdfBrowser": "تعذر فتح ملف PDF في المتصفح. الرابط: {url}",
+  "@couldNotOpenPdfBrowser": {
+    "description": "خطأ في فتح ملف PDF في المتصفح",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "urlCopiedToClipboard": "تم نسخ الرابط إلى الحافظة",
+  "failedToCopyUrl": "فشل نسخ الرابط: {error}",
+  "@failedToCopyUrl": {
+    "description": "رسالة فشل نسخ الرابط",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningPdf": "خطأ في فتح ملف PDF: {error}",
+  "@errorOpeningPdf": {
+    "description": "رسالة خطأ في فتح ملف PDF",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myJobs": "وظائفي",
+  "noJobsPostedYet": "لم يتم نشر أي وظائف بعد",
+  "contractType": "نوع العقد:",
+  "experience": "الخبرة:",
+  "experienceYears": "الخبرة: {min}-{max} سنوات",
+  "@experienceYears": {
+    "description": "نطاق سنوات الخبرة",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "postNewJob": "نشر وظيفة جديدة",
+  "applications": "الطلبات",
+  "noApplicationsYet": "لا توجد طلبات بعد",
+  "viewAll": "عرض الكل",
+  "newBadge": "جديد",
+  "deleteJob": "حذف الوظيفة",
+  "deleteJobConfirm": "هل أنت متأكد أنك تريد حذف \"{title}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@deleteJobConfirm": {
+    "description": "رسالة تأكيد حذف الوظيفة",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "jobDeletedSuccessfully": "تم حذف الوظيفة بنجاح!",
+  "errorDeletingJob": "خطأ في حذف الوظيفة: {error}",
+  "@errorDeletingJob": {
+    "description": "رسالة خطأ في حذف الوظيفة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myServices": "خدماتي",
+  "addService": "إضافة خدمة",
+  "showMore": "عرض المزيد",
+  "showLess": "عرض أقل",
+  "failedToLoadServices": "فشل تحميل الخدمات",
+  "noServicesFound": "لم يتم العثور على خدمات",
+  "addYourFirstService": "أضف خدمتك الأولى للبدء",
+  "deleteService": "حذف الخدمة",
+  "deleteServiceConfirm": "هل أنت متأكد أنك تريد حذف \"{title}\"؟",
+  "@deleteServiceConfirm": {
+    "description": "رسالة تأكيد حذف الخدمة",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "serviceDeletedSuccessfully": "تم حذف الخدمة بنجاح",
+  "boostService": "تعزيز الخدمة",
+  "boostServiceConfirm": "تعزيز \"{title}\" للحصول على المزيد من الرؤية؟",
+  "@boostServiceConfirm": {
+    "description": "رسالة تأكيد تعزيز الخدمة",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "activateListing": "تفعيل القائمة",
+  "perMonth": "/ الشهر",
+  "addSocialAccountUrl": "إضافة رابط حساب اجتماعي",
+  "exampleFacebook": "مثال: Facebook",
+  "addSocialAccountUrlHint": "إضافة رابط حساب اجتماعي",
+  "adding": "جاري الإضافة...",
+  "pleaseFillAllFields": "الرجاء ملء جميع الحقول",
+  "urlMustStartWithHttp": "يجب أن يبدأ الرابط بـ http:// أو https://",
+  "socialLinkAddedSuccessfully": "تم إضافة الرابط الاجتماعي بنجاح",
+  "errorAddingSocialLink": "خطأ في إضافة الرابط الاجتماعي: {error}",
+  "@errorAddingSocialLink": {
+    "description": "رسالة خطأ في إضافة الرابط الاجتماعي",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteSocialLink": "حذف الرابط الاجتماعي",
+  "deleteSocialLinkConfirm": "هل أنت متأكد أنك تريد حذف \"{linkName}\"؟",
+  "@deleteSocialLinkConfirm": {
+    "description": "رسالة تأكيد حذف الرابط الاجتماعي",
+    "placeholders": {
+      "linkName": {
+        "type": "String"
+      }
+    }
+  },
+  "socialLinkDeletedSuccessfully": "تم حذف الرابط الاجتماعي بنجاح",
+  "errorDeletingSocialLink": "خطأ في حذف الرابط الاجتماعي: {error}",
+  "@errorDeletingSocialLink": {
+    "description": "رسالة خطأ في حذف الرابط الاجتماعي",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openLink": "فتح الرابط",
+  "deleteLink": "حذف الرابط",
+  "listingsLabel": "قوائم",
+  "daysLabel": "أيام",
+  "forFreelancersOrSelfEmployed": "للمستقلين أو مقدمي الخدمات العاملين لحسابهم الخاص",
+  "idealForSmallAgencies": "مثالي للوكالات الصغيرة ذات الاحتياجات المعتدلة",
+  "forHighVolumeProfessionals": "للمهنيين والفرق عالية الحجم",
+  "basicPlan": "أساسي",
+  "standardPlan": "قياسي",
+  "unlimitedPlan": "غير محدود",
+  "cancelButton": "إلغاء",
+  "promoteButton": "ترقية",
+  "soldButton": "تم البيع",
+  "deleteButton": "حذف",
+  "boostButton": "تعزيز",
+  "editButton": "تعديل"
 }
