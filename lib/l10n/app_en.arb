@@ -633,5 +633,237 @@
   "serviceProviderCompany": "Service Provider Company",
   "forFreelancersOrSelfEmployed": "For Freelancers or Self-employed Providers",
   "forBusinessesWithTeam": "For Businesses with a team or registered office",
-  "companyName": "Company Name"
+  "companyName": "Company Name",
+  "signInToChat": "Sign in to Chat",
+  "signInToChatDescription": "You need to be signed in to access your chats and start conversations.",
+  "unread": "Unread",
+  "unreadCount": "Unread {count}",
+  "@unreadCount": {
+    "description": "Unread message count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "search": "Search...",
+  "seeBlockedContacts": "See Blocked Contacts",
+  "pleaseSignInToAccessChats": "Please sign in to access your chats",
+  "errorLoadingChats": "Error loading chats: {error}",
+  "@errorLoadingChats": {
+    "description": "Error loading chats message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknown": "Unknown",
+  "noMessagesYet": "No messages yet",
+  "noChatsYet": "No chats yet",
+  "pleaseSignInToChat": "Please sign in to chat",
+  "startConversation": "Start a conversation with someone",
+  "signInToAccessChatsDescription": "Sign in to access your chats and start conversations",
+  "justNow": "Just now",
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "description": "Days ago format",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "description": "Hours ago format",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "description": "Minutes ago format",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "blockUser": "Block User",
+  "blockUserConfirm": "Are you sure you want to block this user? You won't be able to send or receive messages from them.",
+  "userBlockedSuccessfully": "User blocked successfully",
+  "errorBlockingUser": "Error blocking user: {error}",
+  "@errorBlockingUser": {
+    "description": "Error blocking user message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInitializingChat": "Error initializing chat: {error}",
+  "@errorInitializingChat": {
+    "description": "Error initializing chat message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSendingMessage": "Error sending message: {error}",
+  "@errorSendingMessage": {
+    "description": "Error sending message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingMessage": "Error deleting message: {error}",
+  "@errorDeletingMessage": {
+    "description": "Error deleting message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Delete",
+  "report": "Report",
+  "startConversationPrompt": "Start the conversation!",
+  "typeAMessage": "Type a message...",
+  "you": "You",
+  "errorLoadingBlockedUsers": "Error loading blocked users: {error}",
+  "@errorLoadingBlockedUsers": {
+    "description": "Error loading blocked users message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "userUnblockedSuccessfully": "{name} unblocked successfully",
+  "@userUnblockedSuccessfully": {
+    "description": "User unblocked successfully message",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUnblockingUser": "Error unblocking user: {error}",
+  "@errorUnblockingUser": {
+    "description": "Error unblocking user message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUser": "Unblock User",
+  "unblockUserConfirm": "Are you sure you want to unblock {name}? You will be able to send and receive messages from them again.",
+  "@unblockUserConfirm": {
+    "description": "Unblock user confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockedUsers": "Blocked Users",
+  "noBlockedUsers": "No blocked users",
+  "blockedUsersDescription": "Users you block will appear here",
+  "reason": "Reason:",
+  "blocked": "Blocked",
+  "blockedAgo": "Blocked {timeAgo}",
+  "@blockedAgo": {
+    "description": "Blocked time ago message",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownUser": "Unknown User",
+  "dayAgo": "{count} day ago",
+  "@dayAgo": {
+    "description": "Single day ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoFull": "{count} days ago",
+  "@daysAgoFull": {
+    "description": "Multiple days ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "{count} hour ago",
+  "@hourAgo": {
+    "description": "Single hour ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoFull": "{count} hours ago",
+  "@hoursAgoFull": {
+    "description": "Multiple hours ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minuteAgo": "{count} minute ago",
+  "@minuteAgo": {
+    "description": "Single minute ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgoFull": "{count} minutes ago",
+  "@minutesAgoFull": {
+    "description": "Multiple minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pleaseSelectReasonForReporting": "Please select a reason for reporting",
+  "errorSubmittingReport": "Error submitting report: {error}",
+  "@errorSubmittingReport": {
+    "description": "Error submitting report message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportMessage": "Report Message",
+  "reportMessagePrompt": "Report message: \"{message}\"",
+  "@reportMessagePrompt": {
+    "description": "Report message prompt",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReporting": "Please select a reason for reporting this message:",
+  "additionalDetailsOptional": "Additional details (optional):",
+  "provideAdditionalInformation": "Provide additional information about why you are reporting this message...",
+  "submitReport": "Submit Report"
 }

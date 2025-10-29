@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import 'chat_list_page.dart';
 
@@ -42,7 +43,7 @@ class ChatPage extends StatelessWidget {
 
                 // Title
                 Text(
-                  'Sign in to Chat',
+                  AppLocalizations.of(context)?.signInToChat ?? 'Sign in to Chat',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class ChatPage extends StatelessWidget {
 
                 // Description
                 Text(
-                  'You need to be signed in to access your chats and start conversations.',
+                  AppLocalizations.of(context)?.signInToChatDescription ?? 'You need to be signed in to access your chats and start conversations.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,

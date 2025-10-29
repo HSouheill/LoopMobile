@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/chat.dart';
 import '../../models/message.dart';
 import '../../services/chat_service.dart';
@@ -94,8 +95,9 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
         isLoading = false;
       });
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error initializing chat: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorInitializingChat(e.toString()) : 'Error initializing chat: $e')),
         );
       }
     }
@@ -231,9 +233,9 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
       senderId: currentUserId!,
       content: content,
       createdAt: DateTime.now(),
-      sender: Sender(
+        sender: Sender(
         id: currentUserId!,
-        firstName: AuthService.currentUser?.name.split(' ').first ?? 'You',
+        firstName: AuthService.currentUser?.name.split(' ').first ?? (AppLocalizations.of(context)?.you ?? 'You'),
         lastName: (AuthService.currentUser?.name.split(' ').length ?? 0) > 1 
             ? AuthService.currentUser!.name.split(' ').skip(1).join(' ') 
             : '',
@@ -266,8 +268,9 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
       });
       
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending message: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorSendingMessage(e.toString()) : 'Error sending message: $e')),
         );
       }
     }
@@ -285,8 +288,9 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting message: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorDeletingMessage(e.toString()) : 'Error deleting message: $e')),
         );
       }
     }
@@ -302,7 +306,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
 
   @override
   Widget build(BuildContext context) {
-    
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -348,13 +352,13 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'block',
                 child: Row(
                   children: [
-                    Icon(Icons.block, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Block User'),
+                    const Icon(Icons.block, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(l10n?.blockUser ?? 'Block User'),
                   ],
                 ),
               ),
@@ -386,7 +390,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No messages yet',
+                              l10n?.noMessagesYet ?? 'No messages yet',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[600],
@@ -394,7 +398,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Start the conversation!',
+                              l10n?.startConversationPrompt ?? 'Start the conversation!',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[500],
@@ -460,7 +464,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type a message...',
+                      hintText: l10n?.typeAMessage ?? 'Type a message...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,
@@ -529,7 +533,7 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                 children: [
                   if (!isMe)
                     Text(
-                      message.sender?.fullName ?? 'Unknown',
+                      message.sender?.fullName ?? (AppLocalizations.of(context)?.unknown ?? 'Unknown'),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -563,13 +567,13 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete'),
+                      const Icon(Icons.delete, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(AppLocalizations.of(context)?.delete ?? 'Delete'),
                     ],
                   ),
                 ),
@@ -585,13 +589,13 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'report',
                   child: Row(
                     children: [
-                      Icon(Icons.report, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Report'),
+                      const Icon(Icons.report, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(AppLocalizations.of(context)?.report ?? 'Report'),
                     ],
                   ),
                 ),
@@ -618,22 +622,23 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
   }
 
   void _showBlockUserDialog() {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Block User'),
-        content: const Text('Are you sure you want to block this user? You won\'t be able to send or receive messages from them.'),
+        title: Text(l10n?.blockUser ?? 'Block User'),
+        content: Text(l10n?.blockUserConfirm ?? 'Are you sure you want to block this user? You won\'t be able to send or receive messages from them.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _blockUser();
             },
-            child: const Text('Block', style: TextStyle(color: Colors.red)),
+            child: Text(l10n?.blockUser ?? 'Block', style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -656,14 +661,16 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
 
       if (success && mounted) {
         Navigator.pop(context);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User blocked successfully')),
+          SnackBar(content: Text(l10n?.userBlockedSuccessfully ?? 'User blocked successfully')),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error blocking user: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorBlockingUser(e.toString()) : 'Error blocking user: $e')),
         );
       }
     }

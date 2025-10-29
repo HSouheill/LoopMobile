@@ -633,5 +633,235 @@
   "serviceProviderCompany": "شركة مقدم خدمة",
   "forFreelancersOrSelfEmployed": "للحرفيين أو العاملين المستقلين",
   "forBusinessesWithTeam": "للشركات التي لديها فريق أو مكتب مسجل",
-  "companyName": "اسم الشركة"
+  "companyName": "اسم الشركة",
+  "signInToChat": "تسجيل الدخول للمحادثة",
+  "signInToChatDescription": "يجب تسجيل الدخول للوصول إلى محادثاتك وبدء المحادثات.",
+  "unread": "غير مقروء",
+  "unreadCount": "{count} غير مقروء",
+  "@unreadCount": {
+    "description": "عدد الرسائل غير المقروءة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "search": "بحث...",
+  "seeBlockedContacts": "عرض جهات الاتصال المحظورة",
+  "pleaseSignInToAccessChats": "الرجاء تسجيل الدخول للوصول إلى محادثاتك",
+  "errorLoadingChats": "خطأ في تحميل المحادثات: {error}",
+  "@errorLoadingChats": {
+    "description": "رسالة خطأ تحميل المحادثات",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unknown": "غير معروف",
+  "noMessagesYet": "لا توجد رسائل بعد",
+  "noChatsYet": "لا توجد محادثات بعد",
+  "pleaseSignInToChat": "الرجاء تسجيل الدخول للمحادثة",
+  "startConversation": "ابدأ محادثة مع شخص ما",
+  "signInToAccessChatsDescription": "سجل الدخول للوصول إلى محادثاتك وبدء المحادثات",
+  "justNow": "الآن",
+  "daysAgo": "منذ {count} يوم",
+  "@daysAgo": {
+    "description": "صيغة منذ أيام",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "منذ {count} ساعة",
+  "@hoursAgo": {
+    "description": "صيغة منذ ساعات",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "منذ {count} دقيقة",
+  "@minutesAgo": {
+    "description": "صيغة منذ دقائق",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "blockUser": "حظر المستخدم",
+  "blockUserConfirm": "هل أنت متأكد أنك تريد حظر هذا المستخدم؟ لن تتمكن من إرسال أو استقبال الرسائل منه.",
+  "userBlockedSuccessfully": "تم حظر المستخدم بنجاح",
+  "errorBlockingUser": "خطأ في حظر المستخدم: {error}",
+  "@errorBlockingUser": {
+    "description": "رسالة خطأ حظر المستخدم",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorInitializingChat": "خطأ في تهيئة المحادثة: {error}",
+  "@errorInitializingChat": {
+    "description": "رسالة خطأ تهيئة المحادثة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSendingMessage": "خطأ في إرسال الرسالة: {error}",
+  "@errorSendingMessage": {
+    "description": "خطأ في إرسال الرسالة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingMessage": "خطأ في حذف الرسالة: {error}",
+  "@errorDeletingMessage": {
+    "description": "خطأ في حذف الرسالة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "startConversationPrompt": "ابدأ المحادثة!",
+  "typeAMessage": "اكتب رسالة...",
+  "you": "أنت",
+  "errorLoadingBlockedUsers": "خطأ في تحميل المستخدمين المحظورين: {error}",
+  "@errorLoadingBlockedUsers": {
+    "description": "رسالة خطأ تحميل المستخدمين المحظورين",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "userUnblockedSuccessfully": "تم إلغاء حظر {name} بنجاح",
+  "@userUnblockedSuccessfully": {
+    "description": "رسالة إلغاء حظر المستخدم بنجاح",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUnblockingUser": "خطأ في إلغاء حظر المستخدم: {error}",
+  "@errorUnblockingUser": {
+    "description": "رسالة خطأ إلغاء حظر المستخدم",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unblockUser": "إلغاء حظر المستخدم",
+  "unblockUserConfirm": "هل أنت متأكد أنك تريد إلغاء حظر {name}؟ ستتمكن من إرسال واستقبال الرسائل منه مرة أخرى.",
+  "@unblockUserConfirm": {
+    "description": "رسالة تأكيد إلغاء حظر المستخدم",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockedUsers": "المستخدمون المحظورون",
+  "noBlockedUsers": "لا يوجد مستخدمون محظورون",
+  "blockedUsersDescription": "المستخدمون الذين تحظرهم سيظهرون هنا",
+  "reason": "السبب:",
+  "blocked": "محظور",
+  "blockedAgo": "محظور {timeAgo}",
+  "@blockedAgo": {
+    "description": "رسالة وقت الحظر",
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownUser": "مستخدم غير معروف",
+  "dayAgo": "منذ {count} يوم",
+  "@dayAgo": {
+    "description": "منذ يوم واحد",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgoFull": "منذ {count} أيام",
+  "@daysAgoFull": {
+    "description": "منذ عدة أيام",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hourAgo": "منذ {count} ساعة",
+  "@hourAgo": {
+    "description": "منذ ساعة واحدة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgoFull": "منذ {count} ساعات",
+  "@hoursAgoFull": {
+    "description": "منذ عدة ساعات",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minuteAgo": "منذ {count} دقيقة",
+  "@minuteAgo": {
+    "description": "منذ دقيقة واحدة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgoFull": "منذ {count} دقائق",
+  "@minutesAgoFull": {
+    "description": "منذ عدة دقائق",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pleaseSelectReasonForReporting": "الرجاء اختيار سبب للإبلاغ",
+  "errorSubmittingReport": "خطأ في إرسال البلاغ: {error}",
+  "@errorSubmittingReport": {
+    "description": "رسالة خطأ إرسال البلاغ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportMessage": "الإبلاغ عن الرسالة",
+  "reportMessagePrompt": "الإبلاغ عن الرسالة: \"{message}\"",
+  "@reportMessagePrompt": {
+    "description": "موجه الإبلاغ عن الرسالة",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReporting": "الرجاء اختيار سبب للإبلاغ عن هذه الرسالة:",
+  "additionalDetailsOptional": "تفاصيل إضافية (اختياري):",
+  "provideAdditionalInformation": "قدم معلومات إضافية حول سبب إبلاغك عن هذه الرسالة...",
+  "submitReport": "إرسال البلاغ"
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/chat.dart';
 import '../../models/message.dart';
 import '../../services/chat_service.dart';
@@ -186,10 +187,11 @@ class _ChatListPageState extends State<ChatListPage> {
           isLoading = false;
         });
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Please sign in to access your chats'),
-              duration: Duration(seconds: 3),
+            SnackBar(
+              content: Text(l10n?.pleaseSignInToAccessChats ?? 'Please sign in to access your chats'),
+              duration: const Duration(seconds: 3),
             ),
           );
         }
@@ -199,15 +201,17 @@ class _ChatListPageState extends State<ChatListPage> {
         isLoading = false;
       });
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading chats: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorLoadingChats(e.toString()) : 'Error loading chats: $e')),
         );
       }
     }
   }
 
-  String _getOtherParticipantName(Chat chat) {
-    if (chat.participantDetails.length < 2) return 'Unknown';
+  String _getOtherParticipantName(Chat chat, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (chat.participantDetails.length < 2) return l10n?.unknown ?? 'Unknown';
     
     // Find the other participant (not the current user)
     for (final participant in chat.participantDetails) {
@@ -215,7 +219,7 @@ class _ChatListPageState extends State<ChatListPage> {
         return participant.fullName;
       }
     }
-    return 'Unknown';
+    return l10n?.unknown ?? 'Unknown';
   }
 
   String? _getOtherParticipantImage(Chat chat) {
@@ -230,26 +234,27 @@ class _ChatListPageState extends State<ChatListPage> {
     return null;
   }
 
-  String _formatLastMessageTime(DateTime? lastMessageAt) {
+  String _formatLastMessageTime(DateTime? lastMessageAt, BuildContext context) {
     if (lastMessageAt == null) return '';
     
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(lastMessageAt);
     
     if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
+      return l10n != null ? l10n.daysAgo(difference.inDays) : '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
+      return l10n != null ? l10n.hoursAgo(difference.inHours) : '${difference.inHours}h ago';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+      return l10n != null ? l10n.minutesAgo(difference.inMinutes) : '${difference.inMinutes}m ago';
     } else {
-      return 'Just now';
+      return l10n?.justNow ?? 'Just now';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -268,34 +273,40 @@ class _ChatListPageState extends State<ChatListPage> {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Text(
-                    'Chat',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  if (chats.any((chat) => chat.unreadCount > 0))
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Unread ${chats.fold(0, (sum, chat) => sum + chat.unreadCount)}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+              child: Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context);
+                  final unreadCount = chats.fold(0, (sum, chat) => sum + chat.unreadCount);
+                  return Row(
+                    children: [
+                      Text(
+                        l10n?.chat ?? 'Chat',
+                        style: TextStyle(
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                    ),
-                ],
+                      const SizedBox(width: 8),
+                      if (unreadCount > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            l10n != null ? l10n.unreadCount(unreadCount) : 'Unread $unreadCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
             
@@ -303,22 +314,27 @@ class _ChatListPageState extends State<ChatListPage> {
             Container(
               padding: const EdgeInsets.all(16),
               color: Colors.white,
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: Colors.blue[600], size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search...',
-                        hintStyle: TextStyle(color: Colors.grey[500]),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
+              child: Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context);
+                  return Row(
+                    children: [
+                      Icon(Icons.search, color: Colors.blue[600], size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: l10n?.search ?? 'Search...',
+                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Icon(Icons.tune, color: Colors.black87, size: 20),
-                ],
+                      Icon(Icons.tune, color: Colors.black87, size: 20),
+                    ],
+                  );
+                },
               ),
             ),
             
@@ -344,7 +360,9 @@ class _ChatListPageState extends State<ChatListPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                AuthService.isLoggedIn ? 'No chats yet' : 'Please sign in to chat',
+                                AuthService.isLoggedIn 
+                                    ? (l10n?.noChatsYet ?? 'No chats yet') 
+                                    : (l10n?.pleaseSignInToChat ?? 'Please sign in to chat'),
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
@@ -354,8 +372,8 @@ class _ChatListPageState extends State<ChatListPage> {
                               const SizedBox(height: 8),
                               Text(
                                 AuthService.isLoggedIn 
-                                    ? 'Start a conversation with someone'
-                                    : 'Sign in to access your chats and start conversations',
+                                    ? (l10n?.startConversation ?? 'Start a conversation with someone')
+                                    : (l10n?.signInToAccessChatsDescription ?? 'Sign in to access your chats and start conversations'),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[500],
@@ -370,8 +388,9 @@ class _ChatListPageState extends State<ChatListPage> {
                             itemCount: chats.length,
                             itemBuilder: (context, index) {
                               final chat = chats[index];
-                              final otherParticipantName = _getOtherParticipantName(chat);
+                              final otherParticipantName = _getOtherParticipantName(chat, context);
                               final otherParticipantImage = _getOtherParticipantImage(chat);
+                              final l10n = AppLocalizations.of(context);
                               
                               return Container(
                                 color: Colors.white,
@@ -412,7 +431,7 @@ class _ChatListPageState extends State<ChatListPage> {
                                       const SizedBox(width: 4),
                                       Expanded(
                                         child: Text(
-                                          chat.lastMessage ?? 'No messages yet',
+                                          chat.lastMessage ?? (l10n?.noMessagesYet ?? 'No messages yet'),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -428,7 +447,7 @@ class _ChatListPageState extends State<ChatListPage> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        _formatLastMessageTime(chat.lastMessageAt),
+                                        _formatLastMessageTime(chat.lastMessageAt, context),
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey[500],
@@ -516,9 +535,9 @@ class _ChatListPageState extends State<ChatListPage> {
                       ),
                     );
                   },
-                  child: const Text(
-                    'See Blocked Contacts',
-                    style: TextStyle(
+                  child: Text(
+                    l10n?.seeBlockedContacts ?? 'See Blocked Contacts',
+                    style: const TextStyle(
                       color: Colors.red,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

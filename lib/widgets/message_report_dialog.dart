@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/report_service.dart';
 
 class MessageReportDialog extends StatefulWidget {
@@ -27,9 +28,10 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
   }
 
   Future<void> _submitReport() async {
+    final l10n = AppLocalizations.of(context);
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a reason for reporting')),
+        SnackBar(content: Text(l10n?.pleaseSelectReasonForReporting ?? 'Please select a reason for reporting')),
       );
       return;
     }
@@ -65,9 +67,10 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting report: $e'),
+            content: Text(l10n != null ? l10n.errorSubmittingReport(e.toString()) : 'Error submitting report: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -83,27 +86,29 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final reasonLabels = ReportService.getReasonLabels();
     final reasons = ReportService.getReportReasons();
+    final messagePreview = widget.messageContent.length > 50 ? '${widget.messageContent.substring(0, 50)}...' : widget.messageContent;
 
     return AlertDialog(
-      title: const Text('Report Message'),
+      title: Text(l10n?.reportMessage ?? 'Report Message'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Report message: "${widget.messageContent.length > 50 ? '${widget.messageContent.substring(0, 50)}...' : widget.messageContent}"',
+              l10n != null ? l10n.reportMessagePrompt(messagePreview) : 'Report message: "$messagePreview"',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Please select a reason for reporting this message:',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n?.selectReasonForReporting ?? 'Please select a reason for reporting this message:',
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
             ...reasons.map((reason) {
@@ -120,19 +125,19 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
               );
             }).toList(),
             const SizedBox(height: 16),
-            const Text(
-              'Additional details (optional):',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n?.additionalDetailsOptional ?? 'Additional details (optional):',
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _detailsController,
               maxLines: 3,
               maxLength: 1000,
-              decoration: const InputDecoration(
-                hintText: 'Provide additional information about why you are reporting this message...',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(12),
+              decoration: InputDecoration(
+                hintText: l10n?.provideAdditionalInformation ?? 'Provide additional information about why you are reporting this message...',
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.all(12),
               ),
             ),
           ],
@@ -141,7 +146,7 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n?.cancel ?? 'Cancel'),
         ),
         ElevatedButton(
           onPressed: _isSubmitting ? null : _submitReport,
@@ -158,7 +163,7 @@ class _MessageReportDialogState extends State<MessageReportDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : const Text('Submit Report'),
+              : Text(l10n?.submitReport ?? 'Submit Report'),
         ),
       ],
     );

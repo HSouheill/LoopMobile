@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/blocked_user.dart';
 import '../../services/chat_service.dart';
 import '../../services/auth_service.dart';
@@ -39,8 +40,9 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
         isLoading = false;
       });
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading blocked users: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorLoadingBlockedUsers(e.toString()) : 'Error loading blocked users: $e')),
         );
       }
     }
@@ -55,66 +57,76 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
           setState(() {
             blockedUsers.removeWhere((bu) => bu.id == blockedUser.id);
           });
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${blockedUser.blockedUser?.fullName ?? 'User'} unblocked successfully')),
+            SnackBar(content: Text(l10n != null ? l10n.userUnblockedSuccessfully(blockedUser.blockedUser?.fullName ?? (l10n.unknownUser)) : '${blockedUser.blockedUser?.fullName ?? 'User'} unblocked successfully')),
           );
         }
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error unblocking user: $e')),
+          SnackBar(content: Text(l10n != null ? l10n.errorUnblockingUser(e.toString()) : 'Error unblocking user: $e')),
         );
       }
     }
   }
 
   void _showUnblockDialog(BlockedUser blockedUser) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unblock User'),
-        content: Text('Are you sure you want to unblock ${blockedUser.blockedUser?.fullName ?? 'this user'}? You will be able to send and receive messages from them again.'),
+        title: Text(l10n?.unblockUser ?? 'Unblock User'),
+        content: Text(l10n != null ? l10n.unblockUserConfirm(blockedUser.blockedUser?.fullName ?? (l10n.unknownUser)) : 'Are you sure you want to unblock ${blockedUser.blockedUser?.fullName ?? 'this user'}? You will be able to send and receive messages from them again.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _unblockUser(blockedUser);
             },
-            child: const Text('Unblock', style: TextStyle(color: Colors.green)),
+            child: Text(l10n?.unblockUser ?? 'Unblock', style: const TextStyle(color: Colors.green)),
           ),
         ],
       ),
     );
   }
 
-  String _formatBlockedDate(DateTime dateTime) {
+  String _formatBlockedDate(DateTime dateTime, BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(dateTime);
     
     if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+      return l10n != null 
+          ? (difference.inDays == 1 ? l10n.dayAgo(difference.inDays) : l10n.daysAgoFull(difference.inDays))
+          : '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+      return l10n != null
+          ? (difference.inHours == 1 ? l10n.hourAgo(difference.inHours) : l10n.hoursAgoFull(difference.inHours))
+          : '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+      return l10n != null
+          ? (difference.inMinutes == 1 ? l10n.minuteAgo(difference.inMinutes) : l10n.minutesAgoFull(difference.inMinutes))
+          : '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
     } else {
-      return 'Just now';
+      return l10n?.justNow ?? 'Just now';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Blocked Users',
-          style: TextStyle(color: Colors.black),
+        title: Text(
+          l10n?.blockedUsers ?? 'Blocked Users',
+          style: const TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -133,7 +145,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'No blocked users',
+                        l10n?.noBlockedUsers ?? 'No blocked users',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -142,7 +154,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Users you block will appear here',
+                        l10n?.blockedUsersDescription ?? 'Users you block will appear here',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[500],
@@ -176,7 +188,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                                 : null,
                           ),
                           title: Text(
-                            user?.fullName ?? 'Unknown User',
+                            user?.fullName ?? (l10n?.unknownUser ?? 'Unknown User'),
                             style: const TextStyle(fontWeight: FontWeight.w500),
                           ),
                           subtitle: Column(
@@ -184,7 +196,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                             children: [
                               if (blockedUser.reason != null) ...[
                                 Text(
-                                  'Reason: ${blockedUser.reason}',
+                                  '${l10n?.reason ?? 'Reason:'} ${blockedUser.reason}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey[600],
@@ -193,7 +205,9 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                                 const SizedBox(height: 2),
                               ],
                               Text(
-                                'Blocked ${_formatBlockedDate(blockedUser.blockedAt)}',
+                                l10n != null 
+                                    ? l10n.blockedAgo(_formatBlockedDate(blockedUser.blockedAt, context))
+                                    : 'Blocked ${_formatBlockedDate(blockedUser.blockedAt, context)}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[500],
@@ -207,7 +221,7 @@ class _BlockedUsersPageState extends State<BlockedUsersPage> {
                               IconButton(
                                 icon: const Icon(Icons.block_flipped, color: Colors.green),
                                 onPressed: () => _showUnblockDialog(blockedUser),
-                                tooltip: 'Unblock User',
+                                tooltip: l10n?.unblockUser ?? 'Unblock User',
                               ),
                             ],
                           ),
