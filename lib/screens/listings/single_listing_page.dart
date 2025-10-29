@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,11 +54,12 @@ class _SingleListingPageState extends State<SingleListingPage> {
     return widget.listing.price;
   }
 
-  String get _formattedDate {
+  String _formattedDate(BuildContext context) {
     if (widget.listing.createdAt != null) {
       return DateFormat('EEEE, d MMMM yyyy').format(widget.listing.createdAt!);
     }
-    return 'Date not available';
+    final l10n = AppLocalizations.of(context);
+    return l10n?.dateNotAvailable ?? 'Date not available';
   }
 
   String get _propertyCode {
@@ -128,13 +130,15 @@ class _SingleListingPageState extends State<SingleListingPage> {
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri, mode: LaunchMode.platformDefault);
       } else {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not make call')),
+          SnackBar(content: Text(l10n?.couldNotMakePhoneCall ?? 'Could not make call')),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error making call: $e')),
+        SnackBar(content: Text(l10n?.couldNotMakePhoneCallAgent ?? 'Error making call: $e')),
       );
     }
   }
@@ -163,13 +167,15 @@ class _SingleListingPageState extends State<SingleListingPage> {
       } else if (await canLaunchUrl(webUri)) {
         await launchUrl(webUri, mode: LaunchMode.externalApplication);
       } else {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open WhatsApp')),
+          SnackBar(content: Text(l10n?.couldNotOpenWhatsApp ?? 'Could not open WhatsApp')),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error opening WhatsApp: $e')),
+        SnackBar(content: Text(l10n?.errorOpeningWhatsApp(e.toString()) ?? 'Error opening WhatsApp: $e')),
       );
     }
   }
@@ -357,10 +363,15 @@ class _SingleListingPageState extends State<SingleListingPage> {
               ),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
-                onPressed: _showReportDialog,
-                tooltip: 'Report this listing',
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context);
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    onPressed: _showReportDialog,
+                    tooltip: l10n?.reportListing ?? 'Report this listing',
+                  );
+                }
               ),
             ],
           ),
@@ -451,20 +462,25 @@ class _SingleListingPageState extends State<SingleListingPage> {
                             children: [
                               const Icon(Icons.search, color: Colors.grey, size: 20),
                               const SizedBox(width: 8),
-                              const Text(
-                                'Property Details',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                              Builder(
+                                builder: (context) {
+                                  final l10n = AppLocalizations.of(context);
+                                  return Text(
+                                    l10n?.propertyDetails ?? 'Property Details',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  );
+                                }
                               ),
                             ],
                           ),
                           const SizedBox(height: 16),
                           
                           // Dynamic property details
-                          ...(_buildPropertyDetailsList()),
+                          ...(_buildPropertyDetailsList(context)),
                         ],
                       ),
                     ),
@@ -493,13 +509,18 @@ class _SingleListingPageState extends State<SingleListingPage> {
                                   child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Description',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context);
+                                    return Text(
+                                      l10n?.about ?? 'Description',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    );
+                                  }
                                 ),
                               ],
                             ),
@@ -522,13 +543,18 @@ class _SingleListingPageState extends State<SingleListingPage> {
                                     _isExpanded = !_isExpanded;
                                   });
                                 },
-                                child: Text(
-                                  _isExpanded ? 'Read Less' : 'Read More',
-                                  style: const TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                  ),
+                                child: Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context);
+                                    return Text(
+                                      _isExpanded ? (l10n?.readLess ?? 'Read Less') : (l10n?.readMore ?? 'Read More'),
+                                      style: const TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
+                                    );
+                                  }
                                 ),
                               ),
                             ],
@@ -553,13 +579,18 @@ class _SingleListingPageState extends State<SingleListingPage> {
                               children: [
                                 const Icon(Icons.star_outline, color: Colors.grey, size: 20),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Amenities',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context);
+                                    return Text(
+                                      l10n?.amenitiesLabel ?? 'Amenities',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    );
+                                  }
                                 ),
                               ],
                             ),
@@ -599,43 +630,56 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         GestureDetector(
                           onTap: () {
                             Clipboard.setData(ClipboardData(text: _propertyCode));
+                            final l10n = AppLocalizations.of(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Property code copied to clipboard')),
+                              SnackBar(content: Text(l10n?.propertyCodeCopied ?? 'Property code copied to clipboard')),
                             );
                           },
-                          child: RichText(
+                          child: Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              return RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                                  children: [
+                                    TextSpan(
+                                      text: l10n?.propertyCodeLabel ?? 'Property Code: ',
+                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(
+                                      text: _propertyCode,
+                                    ),
+                                    const TextSpan(text: ' '),
+                                    const WidgetSpan(
+                                      child: Icon(Icons.copy, size: 16, color: Colors.blue),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return RichText(
                             text: TextSpan(
                               style: const TextStyle(fontSize: 16, color: Colors.black87),
                               children: [
-                                const TextSpan(
-                                  text: 'Property Code: ',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                TextSpan(
+                                  text: l10n?.listedDateLabel ?? 'Listed Date: ',
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                TextSpan(text: _propertyCode),
-                                const TextSpan(text: ' '),
-                                WidgetSpan(
-                                  child: Icon(Icons.copy, size: 16, color: Colors.blue),
+                                TextSpan(
+                                  text: _formattedDate(context),
+                                  style: const TextStyle(color: Colors.blue),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(fontSize: 16, color: Colors.black87),
-                            children: [
-                              const TextSpan(
-                                text: 'Listed Date: ',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              TextSpan(
-                                text: _formattedDate,
-                                style: const TextStyle(color: Colors.blue),
-                              ),
-                            ],
-                          ),
-                        ),
+                          );
+                        }
+                      ),
                       ],
                     ),
                     
@@ -648,7 +692,12 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           child: ElevatedButton.icon(
                             onPressed: _makeCall,
                             icon: const Icon(Icons.phone, color: Colors.white),
-                            label: const Text('Call', style: TextStyle(color: Colors.white)),
+                            label: Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context);
+                                return Text(l10n?.callButton ?? 'Call', style: const TextStyle(color: Colors.white));
+                              }
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -663,7 +712,12 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           child: ElevatedButton.icon(
                             onPressed: _openWhatsApp,
                             icon: const Icon(Icons.message, color: Colors.white),
-                            label: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
+                            label: Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context);
+                                return Text(l10n?.whatsAppButton ?? 'WhatsApp', style: const TextStyle(color: Colors.white));
+                              }
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -684,7 +738,12 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       child: OutlinedButton.icon(
                         onPressed: _showReportDialog,
                         icon: const Icon(Icons.flag, color: Colors.red),
-                        label: const Text('Report this listing', style: TextStyle(color: Colors.red)),
+                        label: Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return Text(l10n?.reportListing ?? 'Report this listing', style: const TextStyle(color: Colors.red));
+                          }
+                        ),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -706,22 +765,23 @@ class _SingleListingPageState extends State<SingleListingPage> {
     );
   }
   
-  List<Widget> _buildPropertyDetailsList() {
+  List<Widget> _buildPropertyDetailsList(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     List<Widget> details = [];
     
     // Size
     if (widget.listing.size != null) {
-      details.add(_buildPropertyDetail('Size: ${widget.listing.size} sqm'));
+      details.add(_buildPropertyDetail(l10n?.sizeLabel(widget.listing.size.toString()) ?? 'Size: ${widget.listing.size} sqm'));
     }
     
     // Bedrooms and Bathrooms
     String roomInfo = '';
     if (widget.listing.bedrooms != null && widget.listing.bathrooms != null) {
-      roomInfo = '${widget.listing.bedrooms} Bedrooms, ${widget.listing.bathrooms} Bathrooms';
+      roomInfo = l10n?.bedroomsBathrooms(widget.listing.bedrooms.toString(), widget.listing.bathrooms.toString()) ?? '${widget.listing.bedrooms} Bedrooms, ${widget.listing.bathrooms} Bathrooms';
     } else if (widget.listing.bedrooms != null) {
-      roomInfo = '${widget.listing.bedrooms} Bedrooms';
+      roomInfo = l10n?.bedroomsOnly(widget.listing.bedrooms.toString()) ?? '${widget.listing.bedrooms} Bedrooms';
     } else if (widget.listing.bathrooms != null) {
-      roomInfo = '${widget.listing.bathrooms} Bathrooms';
+      roomInfo = l10n?.bathroomsOnly(widget.listing.bathrooms.toString()) ?? '${widget.listing.bathrooms} Bathrooms';
     }
     if (roomInfo.isNotEmpty) {
       details.add(_buildPropertyDetail(roomInfo));
@@ -729,38 +789,38 @@ class _SingleListingPageState extends State<SingleListingPage> {
     
     // Property type
     if (widget.listing.type != null) {
-      details.add(_buildPropertyDetail('Type: ${widget.listing.type!.toUpperCase()}'));
+      details.add(_buildPropertyDetail('${l10n?.typeLabel ?? 'Type:'} ${widget.listing.type!.toUpperCase()}'));
     }
     
     // Floor
     if (widget.listing.floor != null) {
-      details.add(_buildPropertyDetail('Floor: ${widget.listing.floor}'));
+      details.add(_buildPropertyDetail('${l10n?.floorLabel ?? 'Floor:'} ${widget.listing.floor}'));
     }
     
     // Condition
     if (widget.listing.condition != null) {
-      details.add(_buildPropertyDetail('Condition: ${widget.listing.condition!.toUpperCase()}'));
+      details.add(_buildPropertyDetail('${l10n?.conditionLabel ?? 'Condition:'} ${widget.listing.condition!.toUpperCase()}'));
     }
     
     // Building age
     if (widget.listing.buildingAge != null) {
-      details.add(_buildPropertyDetail('Building Age: ${widget.listing.buildingAge} years'));
+      details.add(_buildPropertyDetail(l10n?.buildingAgeLabel(widget.listing.buildingAge.toString()) ?? 'Building Age: ${widget.listing.buildingAge} years'));
     }
     
     // Papers
     if (widget.listing.papers != null) {
-      details.add(_buildPropertyDetail('Papers: ${_formatPapers(widget.listing.papers!)}'));
+      details.add(_buildPropertyDetail('${l10n?.papersLabel ?? 'Papers:'} ${_formatPapers(widget.listing.papers!)}'));
     }
     
     // Listing type
     if (widget.listing.listingFor != null) {
-      details.add(_buildPropertyDetail('Available for: ${widget.listing.listingFor!.toUpperCase()}'));
+      details.add(_buildPropertyDetail('${l10n?.availableForLabel ?? 'Available for:'} ${widget.listing.listingFor!.toUpperCase()}'));
     }
     
     // Available from
     if (widget.listing.availableFrom != null) {
       final availableDate = DateFormat('MMMM yyyy').format(widget.listing.availableFrom!);
-      details.add(_buildPropertyDetail('Available from: $availableDate'));
+      details.add(_buildPropertyDetail(l10n?.availableFromLabel(availableDate) ?? 'Available from: $availableDate'));
     }
     
     return details;

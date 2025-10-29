@@ -1,5 +1,7 @@
 // enums/listing_category.dart
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 enum ListingCategory {
   // Enum values with their specific properties
   featured(
@@ -22,6 +24,16 @@ enum ListingCategory {
     routeName: '/chalets',
     apiType: 'chalet',
   ),
+  villas(
+    displayName: 'Villas',
+    routeName: '/villas',
+    apiType: 'villa',
+  ),
+  land(
+    displayName: 'Land',
+    routeName: '/land',
+    apiType: 'land',
+  ),
   commercial(
     displayName: 'Commercial',
     routeName: '/commercial',
@@ -39,4 +51,28 @@ enum ListingCategory {
   final String displayName;
   final String routeName;
   final String? apiType;
+
+  // Get localized display name
+  String getLocalizedDisplayName(AppLocalizations? l10n) {
+    if (l10n == null) return displayName;
+    switch (this) {
+      case ListingCategory.featured:
+        return l10n.featuredListings;
+      case ListingCategory.newListings:
+        return l10n.newListings;
+      case ListingCategory.apartments:
+        return l10n.apartments;
+      case ListingCategory.chalets:
+        return l10n.chalets;
+      case ListingCategory.villas:
+        return l10n.villas;
+      case ListingCategory.land:
+        return l10n.land;
+      case ListingCategory.commercial:
+        return l10n.commercial;
+    }
+  }
+  
+  // Backward compatibility: provide extension-like getters
+  // These are already properties but ensure compatibility with code expecting extension methods
 }

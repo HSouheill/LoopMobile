@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '/services/listing_service.dart';
-import '/services/listing_service.dart' show ListingCategory; // import enum from service
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '/services/listing_service.dart' hide ListingCategory;
+import 'listings_category.dart'; // import enum with localization support
 import '../../widgets/listing_widgets/featured_listings_widget.dart' as flw; // reuse shared card UI
 
 class CategoryListingsPage extends StatefulWidget {
@@ -87,7 +88,8 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.category.displayName;
+    final l10n = AppLocalizations.of(context);
+    final title = widget.category.getLocalizedDisplayName(l10n);
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -102,7 +104,7 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
-                        'Failed to load $title: $error',
+                        l10n?.failedToLoadListingsCategory(title, error ?? '') ?? 'Failed to load $title: $error',
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
@@ -110,9 +112,9 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
                     child: listings.isEmpty
                         ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
-                              SizedBox(height: 80),
-                              Center(child: Text('No listings found')),
+                            children: [
+                              const SizedBox(height: 80),
+                              Center(child: Text(l10n?.noListingsFound ?? 'No listings found')),
                             ],
                           )
                         : GridView.builder(
@@ -138,12 +140,12 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
                       children: [
                         ElevatedButton(
                           onPressed: (meta == null || page <= 1) ? null : () => _goToPage(page - 1),
-                          child: const Text('Previous'),
+                          child: Text(l10n?.previous ?? 'Previous'),
                         ),
-                        Text('Page ${meta?.page ?? page} of ${meta?.pages ?? '?'}'),
+                        Text(l10n?.pageOf(meta?.page ?? page, meta?.pages ?? 0) ?? 'Page ${meta?.page ?? page} of ${meta?.pages ?? '?'}'),
                         ElevatedButton(
                           onPressed: (meta == null || (meta!.pages != 0 && page >= meta!.pages)) ? null : () => _goToPage(page + 1),
-                          child: const Text('Next'),
+                          child: Text(l10n?.next ?? 'Next'),
                         ),
                       ],
                     ),

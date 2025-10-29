@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_and_categories_widget.dart';
 import '../../widgets/listing_widgets/dynamic_listings_widget.dart';
-import '../../services/listing_service.dart';
+import 'listings_category.dart'; // import enum with localization support
 
 class ListingsPage extends StatefulWidget {
   const ListingsPage({super.key});

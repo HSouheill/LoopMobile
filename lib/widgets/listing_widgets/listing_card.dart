@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../screens/listings/single_listing_page.dart';
 
@@ -94,13 +95,18 @@ class ListingCard extends StatelessWidget {
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'Featured',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return Text(
+                            l10n?.featuredLabel ?? 'Featured',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
                       ),
                     ),
                   ),
@@ -164,13 +170,23 @@ class ListingCard extends StatelessWidget {
                         if (listing.bedrooms != null) ...[
                           const Icon(Icons.bed, size: 16, color: Colors.grey),
                           const SizedBox(width: 4),
-                          Text('${listing.bedrooms} bed'),
+                          Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              return Text('${listing.bedrooms} ${l10n?.bedText ?? 'bed'}');
+                            }
+                          ),
                           const SizedBox(width: 16),
                         ],
                         if (listing.bathrooms != null) ...[
                           const Icon(Icons.bathtub, size: 16, color: Colors.grey),
                           const SizedBox(width: 4),
-                          Text('${listing.bathrooms} bath'),
+                          Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              return Text('${listing.bathrooms} ${l10n?.bathText ?? 'bath'}');
+                            }
+                          ),
                         ],
                       ],
                     ),

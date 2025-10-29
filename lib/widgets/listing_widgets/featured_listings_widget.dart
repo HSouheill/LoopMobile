@@ -1,5 +1,6 @@
 // widgets/featured_listings_widget.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../services/favorite_service.dart';
 import '../../screens/listings/single_listing_page.dart';
@@ -70,9 +71,14 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
                 ),
               ),
               if (widget.isMainPage)
-                TextButton(
-                  onPressed: widget.onSeeAll,
-                  child: const Text('See all'),
+                Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context);
+                    return TextButton(
+                      onPressed: widget.onSeeAll,
+                      child: Text(l10n?.seeAll ?? 'See all'),
+                    );
+                  }
                 ),
             ],
           ),
@@ -92,9 +98,14 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
                 children: [
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
-                  Text(
-                    'Failed to load listings',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return Text(
+                        l10n?.failedToLoadFeaturedListings ?? 'Failed to load listings',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      );
+                    }
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -103,20 +114,30 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadFeaturedListings,
-                    child: const Text('Retry'),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return ElevatedButton(
+                        onPressed: _loadFeaturedListings,
+                        child: Text(l10n?.retry ?? 'Retry'),
+                      );
+                    }
                   ),
                 ],
               ),
             ),
           )
         else if (listings.isEmpty)
-          const SizedBox(
-            height: 330,
-            child: Center(
-              child: Text('No featured listings found'),
-            ),
+          Builder(
+            builder: (context) {
+              final l10n = AppLocalizations.of(context);
+              return SizedBox(
+                height: 330,
+                child: Center(
+                  child: Text(l10n?.noFeaturedListingsFound ?? 'No featured listings found'),
+                ),
+              );
+            }
           )
         else
           SizedBox(

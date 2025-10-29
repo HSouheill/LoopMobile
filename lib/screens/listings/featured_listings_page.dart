@@ -1,5 +1,6 @@
 // screens/listings/featured_listings_page.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/listing_widgets/featured_listings_widget.dart';
 
@@ -99,9 +100,10 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Featured Listings'),
+        title: Text(l10n?.featuredListings ?? 'Featured Listings'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -123,13 +125,13 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Showing ${listings.length} of $totalListings featured listings',
+                      l10n?.showingFeaturedListings(listings.length, totalListings) ?? 'Showing ${listings.length} of $totalListings featured listings',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
                     ),
                     Text(
-                      'Page $currentPage of $totalPages',
+                      l10n?.pageOf(currentPage, totalPages) ?? 'Page $currentPage of $totalPages',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -153,6 +155,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
   }
 
   Widget _buildContent() {
+    final l10n = AppLocalizations.of(context);
     if (isLoading && listings.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -165,7 +168,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'Failed to load featured listings',
+              l10n?.failedToLoadFeaturedListings ?? 'Failed to load featured listings',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
@@ -180,7 +183,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _refreshListings,
-              child: const Text('Retry'),
+              child: Text(l10n?.retry ?? 'Retry'),
             ),
           ],
         ),
@@ -188,15 +191,15 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
     }
 
     if (listings.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.home_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
+            const Icon(Icons.home_outlined, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
             Text(
-              'No featured listings found',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              l10n?.noFeaturedListingsFound ?? 'No featured listings found',
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
           ],
         ),
@@ -259,7 +262,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
           ElevatedButton.icon(
             onPressed: currentPage > 1 ? _loadPreviousPage : null,
             icon: const Icon(Icons.chevron_left),
-            label: const Text('Previous'),
+            label: Text(AppLocalizations.of(context)?.previous ?? 'Previous'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentPage > 1 ? null : Colors.grey[300],
             ),
@@ -273,7 +276,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              '$currentPage / $totalPages',
+              AppLocalizations.of(context)?.pageCurrentOfTotal(currentPage, totalPages) ?? '$currentPage / $totalPages',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -282,7 +285,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
           ElevatedButton.icon(
             onPressed: currentPage < totalPages ? _loadNextPage : null,
             icon: const Icon(Icons.chevron_right),
-            label: const Text('Next'),
+            label: Text(AppLocalizations.of(context)?.next ?? 'Next'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentPage < totalPages ? null : Colors.grey[300],
             ),

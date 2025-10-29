@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '/services/listing_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '/services/listing_service.dart' hide ListingCategory;
+import '../../screens/listings/listings_category.dart'; // import enum with localization support
 import '../../screens/listings/category_listings_page.dart';
 import 'featured_listings_widget.dart' as flw; // reuse shared card UI
 
@@ -88,6 +90,7 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -96,14 +99,14 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.category.displayName,
+                widget.category.getLocalizedDisplayName(l10n),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               TextButton(
                 onPressed: _handleSeeAll,
-                child: const Text('See all'),
+                child: Text(l10n?.seeAll ?? 'See all'),
               ),
             ],
           ),
@@ -124,7 +127,7 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    'Failed to load ${widget.category.displayName.toLowerCase()}',
+                    l10n?.failedToLoadListingsCategory(widget.category.getLocalizedDisplayName(l10n), error ?? '') ?? 'Failed to load ${widget.category.displayName.toLowerCase()}',
                     style: Theme.of(context).textTheme.titleMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -142,7 +145,7 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadListings,
-                    child: const Text('Retry'),
+                    child: Text(l10n?.retry ?? 'Retry'),
                   ),
                 ],
               ),
@@ -158,7 +161,7 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
                   const Icon(Icons.home_outlined, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   Text(
-                    'No ${widget.category.displayName.toLowerCase()} found',
+                    l10n?.noCategoryListingsFound(widget.category.getLocalizedDisplayName(l10n)) ?? 'No ${widget.category.displayName.toLowerCase()} found',
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
@@ -283,13 +286,18 @@ class PropertyListingCard extends StatelessWidget {
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text(
-                        'Featured',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return Text(
+                            l10n?.featuredLabel ?? 'Featured',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/listing_image_widget.dart';
@@ -56,8 +57,9 @@ class _MyListingsPageState extends State<MyListingsPage> {
       setState(() {
         isLoading = false;
       });
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading listings: $e')),
+        SnackBar(content: Text(l10n?.errorLoadingListings(e.toString()) ?? 'Error loading listings: $e')),
       );
     }
   }
@@ -71,21 +73,22 @@ class _MyListingsPageState extends State<MyListingsPage> {
   }
 
   Future<void> _deleteListing(PropertyListing listing) async {
+    final l10n = AppLocalizations.of(context);
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Listing'),
-        content: Text('Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
+        title: Text(l10n?.deleteListing ?? 'Delete Listing'),
+        content: Text(l10n?.deleteListingConfirm(listing.title) ?? 'Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n?.delete ?? 'Delete'),
           ),
         ],
       ),
@@ -105,21 +108,23 @@ class _MyListingsPageState extends State<MyListingsPage> {
         final success = await ListingService.deleteListing(listing.id);
         Navigator.of(context).pop(); // Close loading dialog
 
+        final l10n = AppLocalizations.of(context);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing deleted successfully')),
+            SnackBar(content: Text(l10n?.listingDeletedSuccessfully ?? 'Listing deleted successfully')),
           );
           // Refresh the listings
           await _refresh();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete listing')),
+            SnackBar(content: Text(l10n?.failedToDeleteListing ?? 'Failed to delete listing')),
           );
         }
       } catch (e) {
         Navigator.of(context).pop(); // Close loading dialog
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting listing: $e')),
+          SnackBar(content: Text(l10n?.errorDeletingListing(e.toString()) ?? 'Error deleting listing: $e')),
         );
       }
     }
@@ -141,9 +146,10 @@ class _MyListingsPageState extends State<MyListingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Listings'),
+        title: Text(l10n?.myListings ?? 'My Listings'),
         backgroundColor: const Color(0xFF0048FF),
         foregroundColor: Colors.white,
       ),
@@ -152,15 +158,15 @@ class _MyListingsPageState extends State<MyListingsPage> {
         child: isLoading && listings.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : listings.isEmpty
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.inbox, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
+                        const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                        const SizedBox(height: 16),
                         Text(
-                          'No active listings found',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                          l10n?.noActiveListings ?? 'No active listings found',
+                          style: const TextStyle(fontSize: 18, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -184,14 +190,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                           onSold: () {
                             // TODO: Implement sold functionality
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Sold functionality not implemented yet')),
+                              SnackBar(content: Text(l10n?.soldFunctionalityNotImplemented ?? 'Sold functionality not implemented yet')),
                             );
                           },
                           onDelete: () => _deleteListing(listing),
                           onBoost: () {
                             // TODO: Implement boost functionality
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Boost functionality not implemented yet')),
+                              SnackBar(content: Text(l10n?.boostFunctionalityNotImplemented ?? 'Boost functionality not implemented yet')),
                             );
                           },
                           onEdit: () => _editListing(listing),
@@ -272,15 +278,15 @@ class _MyListingCardState extends State<MyListingCard> {
                     ? Row(
                         children: [
                           Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: DynamicGradientButton(
-                                buttonText: 'Cancel',
-                                onTap: () {
-                                  setState(() {
-                                    boostPressed = false;
-                                  });
-                                },
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.cancel ?? 'Cancel',
+                                  onTap: () {
+                                    setState(() {
+                                      boostPressed = false;
+                                    });
+                                  },
                                 padding: const EdgeInsets.symmetric(vertical: 6),
                                 useGradient: false,
                                 backgroundColor: const Color(0xFFF9FBFF),
@@ -292,11 +298,11 @@ class _MyListingCardState extends State<MyListingCard> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: DynamicGradientButton(
-                                buttonText: 'Promote',
-                                onTap: widget.onBoost,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.promoteButton ?? 'Promote',
+                                  onTap: widget.onBoost,
                                 padding: const EdgeInsets.symmetric(vertical: 8),
                               ),
                             ),
@@ -311,7 +317,7 @@ class _MyListingCardState extends State<MyListingCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Sold',
+                                    buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
                                     onTap: widget.onSold,
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
@@ -325,7 +331,7 @@ class _MyListingCardState extends State<MyListingCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Delete',
+                                    buttonText: AppLocalizations.of(context)?.delete ?? 'Delete',
                                     onTap: widget.onDelete,
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
@@ -345,7 +351,7 @@ class _MyListingCardState extends State<MyListingCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Boost',
+                                    buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
                                     onTap: () {
                                       setState(() {
                                         boostPressed = true;
@@ -358,7 +364,7 @@ class _MyListingCardState extends State<MyListingCard> {
                                 SizedBox(
                                   width: double.infinity,
                                   child: DynamicGradientButton(
-                                    buttonText: 'Edit',
+                                    buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
                                     onTap: widget.onEdit,
                                     padding: const EdgeInsets.symmetric(vertical: 8),
                                   ),

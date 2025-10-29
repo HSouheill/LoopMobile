@@ -377,5 +377,158 @@
         "type": "int"
       }
     }
+  },
+  "failedToLoadListingsCategory": "Failed to load {categoryName}: {error}",
+  "@failedToLoadListingsCategory": {
+    "description": "Error message when failing to load listings by category",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noListingsFound": "No listings found",
+  "featuredLabel": "Featured",
+  "showingFeaturedListings": "Showing {count} of {total} featured listings",
+  "@showingFeaturedListings": {
+    "description": "Showing count and total for featured listings",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToLoadFeaturedListings": "Failed to load featured listings",
+  "noFeaturedListingsFound": "No featured listings found",
+  "errorLoadingListings": "Error loading listings: {error}",
+  "@errorLoadingListings": {
+    "description": "Error loading listings message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "activateFunctionalityNotImplemented": "Activate functionality not implemented yet",
+  "editButton": "Edit",
+  "soldButton": "Sold",
+  "boostButton": "Boost",
+  "promoteButton": "Promote",
+  "reportListing": "Report this listing",
+  "phoneNumberNotAvailable": "Phone number not available",
+  "couldNotOpenWhatsApp": "Could not open WhatsApp",
+  "errorOpeningWhatsApp": "Error opening WhatsApp: {error}",
+  "@errorOpeningWhatsApp": {
+    "description": "Error message when opening WhatsApp",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateNotAvailable": "Date not available",
+  "propertyDetails": "Property Details",
+  "amenitiesLabel": "Amenities",
+  "propertyCodeLabel": "Property Code:",
+  "listedDateLabel": "Listed Date:",
+  "propertyCodeCopied": "Property code copied to clipboard",
+  "callButton": "Call",
+  "whatsAppButton": "WhatsApp",
+  "sizeLabel": "Size: {size} sqm",
+  "@sizeLabel": {
+    "description": "Property size label",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "bedroomsBathrooms": "{bedrooms} Bedrooms, {bathrooms} Bathrooms",
+  "@bedroomsBathrooms": {
+    "description": "Bedrooms and bathrooms count",
+    "placeholders": {
+      "bedrooms": {
+        "type": "String"
+      },
+      "bathrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "bedroomsOnly": "{bedrooms} Bedrooms",
+  "@bedroomsOnly": {
+    "description": "Bedrooms count only",
+    "placeholders": {
+      "bedrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "bathroomsOnly": "{bathrooms} Bathrooms",
+  "@bathroomsOnly": {
+    "description": "Bathrooms count only",
+    "placeholders": {
+      "bathrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "typeLabel": "Type:",
+  "floorLabel": "Floor:",
+  "conditionLabel": "Condition:",
+  "buildingAgeLabel": "Building Age: {age} years",
+  "@buildingAgeLabel": {
+    "description": "Building age label",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "papersLabel": "Papers:",
+  "availableForLabel": "Available for:",
+  "availableFromLabel": "Available from: {date}",
+  "@availableFromLabel": {
+    "description": "Available from date label",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "newListings": "New Listings",
+  "apartments": "Apartments",
+  "chalets": "Chalets",
+  "villas": "Villas",
+  "land": "Land",
+  "commercial": "Commercial",
+  "bedText": "bed",
+  "bathText": "bath",
+  "noCategoryListingsFound": "No {categoryName} found",
+  "@noCategoryListingsFound": {
+    "description": "Message when no listings found in category",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "pageCurrentOfTotal": "{current} / {total}",
+  "@pageCurrentOfTotal": {
+    "description": "Page indicator in format current/total",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

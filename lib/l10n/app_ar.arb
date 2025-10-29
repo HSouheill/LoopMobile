@@ -377,5 +377,158 @@
         "type": "int"
       }
     }
+  },
+  "failedToLoadListingsCategory": "فشل تحميل {categoryName}: {error}",
+  "@failedToLoadListingsCategory": {
+    "description": "رسالة خطأ عند فشل تحميل القوائم حسب الفئة",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noListingsFound": "لم يتم العثور على قوائم",
+  "featuredLabel": "مميز",
+  "showingFeaturedListings": "عرض {count} من {total} قائمة مميزة",
+  "@showingFeaturedListings": {
+    "description": "عرض العدد والإجمالي للقوائم المميزة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToLoadFeaturedListings": "فشل تحميل القوائم المميزة",
+  "noFeaturedListingsFound": "لم يتم العثور على قوائم مميزة",
+  "errorLoadingListings": "خطأ في تحميل القوائم: {error}",
+  "@errorLoadingListings": {
+    "description": "رسالة خطأ تحميل القوائم",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "activateFunctionalityNotImplemented": "وظيفة التفعيل غير مطبقة بعد",
+  "editButton": "تعديل",
+  "soldButton": "مباع",
+  "boostButton": "تعزيز",
+  "promoteButton": "ترقية",
+  "reportListing": "الإبلاغ عن هذه القائمة",
+  "phoneNumberNotAvailable": "رقم الهاتف غير متاح",
+  "couldNotOpenWhatsApp": "تعذر فتح واتساب",
+  "errorOpeningWhatsApp": "خطأ في فتح واتساب: {error}",
+  "@errorOpeningWhatsApp": {
+    "description": "رسالة خطأ عند فتح واتساب",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateNotAvailable": "التاريخ غير متاح",
+  "propertyDetails": "تفاصيل العقار",
+  "amenitiesLabel": "وسائل الراحة",
+  "propertyCodeLabel": "رمز العقار:",
+  "listedDateLabel": "تاريخ الإدراج:",
+  "propertyCodeCopied": "تم نسخ رمز العقار إلى الحافظة",
+  "callButton": "اتصال",
+  "whatsAppButton": "واتساب",
+  "sizeLabel": "المساحة: {size} متر مربع",
+  "@sizeLabel": {
+    "description": "تسمية مساحة العقار",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "bedroomsBathrooms": "{bedrooms} غرف نوم، {bathrooms} حمامات",
+  "@bedroomsBathrooms": {
+    "description": "عدد غرف النوم والحمامات",
+    "placeholders": {
+      "bedrooms": {
+        "type": "String"
+      },
+      "bathrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "bedroomsOnly": "{bedrooms} غرف نوم",
+  "@bedroomsOnly": {
+    "description": "عدد غرف النوم فقط",
+    "placeholders": {
+      "bedrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "bathroomsOnly": "{bathrooms} حمامات",
+  "@bathroomsOnly": {
+    "description": "عدد الحمامات فقط",
+    "placeholders": {
+      "bathrooms": {
+        "type": "String"
+      }
+    }
+  },
+  "typeLabel": "النوع:",
+  "floorLabel": "الطابق:",
+  "conditionLabel": "الحالة:",
+  "buildingAgeLabel": "عمر المبنى: {age} سنوات",
+  "@buildingAgeLabel": {
+    "description": "تسمية عمر المبنى",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "papersLabel": "الأوراق:",
+  "availableForLabel": "متاح لـ:",
+  "availableFromLabel": "متاح من: {date}",
+  "@availableFromLabel": {
+    "description": "تسمية تاريخ التوفر",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "newListings": "القوائم الجديدة",
+  "apartments": "شقق",
+  "chalets": "شاليهات",
+  "villas": "فلل",
+  "land": "أراضي",
+  "commercial": "تجاري",
+  "bedText": "غرفة",
+  "bathText": "حمام",
+  "noCategoryListingsFound": "لم يتم العثور على {categoryName}",
+  "@noCategoryListingsFound": {
+    "description": "رسالة عندما لا يتم العثور على قوائم في الفئة",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "pageCurrentOfTotal": "{current} / {total}",
+  "@pageCurrentOfTotal": {
+    "description": "مؤشر الصفحة بتنسيق الحالي/الإجمالي",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

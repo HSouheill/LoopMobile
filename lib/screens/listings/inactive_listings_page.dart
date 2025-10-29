@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../dashboards/widgets/inactive_listing_card_list.dart';
 import '../../widgets/listing_details_modal.dart';
@@ -55,8 +56,9 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
       setState(() {
         isLoading = false;
       });
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading listings: $e')),
+        SnackBar(content: Text(l10n?.errorLoadingListings(e.toString()) ?? 'Error loading listings: $e')),
       );
     }
   }
@@ -73,9 +75,10 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inactive Listings'),
+        title: Text(l10n?.inactiveListings ?? 'Inactive Listings'),
         backgroundColor: const Color(0xFF0048FF),
         foregroundColor: Colors.white,
       ),
@@ -84,15 +87,15 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
         child: isLoading && listings.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : listings.isEmpty
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.inbox, size: 64, color: Colors.grey),
-                        SizedBox(height: 16),
+                        const Icon(Icons.inbox, size: 64, color: Colors.grey),
+                        const SizedBox(height: 16),
                         Text(
-                          'No inactive listings found',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                          l10n?.noInactiveListings ?? 'No inactive listings found',
+                          style: const TextStyle(fontSize: 18, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -122,7 +125,7 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
                           onActivate: () {
                             // TODO: Implement activate functionality
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Activate functionality not implemented yet')),
+                              SnackBar(content: Text(l10n?.activateFunctionalityNotImplemented ?? 'Activate functionality not implemented yet')),
                             );
                           },
                         ),

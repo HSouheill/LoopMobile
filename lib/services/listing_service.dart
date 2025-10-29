@@ -289,6 +289,8 @@ class ListingService {
   }
 }
 
+// Note: ListingCategory enum with localized support is in lib/screens/listings/listings_category.dart
+// This is kept here for backward compatibility - import from listings_category.dart for localization support
 enum ListingCategory {
   featured,
   newListings,
