@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/password_validator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceProviderSignupPage1 extends StatefulWidget {
   const ServiceProviderSignupPage1({super.key});
@@ -41,6 +42,7 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -98,9 +100,9 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Sign Up',
-                          style: TextStyle(
+                        Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -128,13 +130,13 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                                   child: TextFormField(
                                     controller: _firstNameCtrl,
                                     decoration: InputDecoration(
-                                      hintText: 'First Name',
+                                      hintText: l10n.firstName,
                                       hintStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                     ),
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                                    validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                                   ),
                                 ),
                               ),
@@ -149,13 +151,13 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                                   child: TextFormField(
                                     controller: _lastNameCtrl,
                                     decoration: InputDecoration(
-                                      hintText: 'Last Name',
+                                      hintText: l10n.lastName,
                                       hintStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                     ),
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                                    validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                                   ),
                                 ),
                               ),
@@ -173,7 +175,7 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                             child: TextFormField(
                               controller: _emailCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Enter Email',
+                                hintText: l10n.enterEmail,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.mail_outline, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -181,8 +183,8 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                               ),
                               keyboardType: TextInputType.emailAddress,
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v)) return 'Invalid email';
+                                if (v == null || v.isEmpty) return l10n.required;
+                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v)) return l10n.invalidEmail;
                                 return null;
                               },
                             ),
@@ -199,7 +201,7 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                             child: TextFormField(
                               controller: _passwordCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Create Password',
+                                hintText: l10n.createPassword,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
                                 suffixIcon: IconButton(
@@ -232,7 +234,7 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                             child: TextFormField(
                               controller: _confirmPasswordCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Confirm New Password',
+                                hintText: l10n.confirmNewPassword,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
                                 suffixIcon: IconButton(
@@ -251,8 +253,8 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                               ),
                               obscureText: _obscureConfirmPassword,
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (v != _passwordCtrl.text) return 'Passwords do not match';
+                                if (v == null || v.isEmpty) return l10n.required;
+                                if (v != _passwordCtrl.text) return l10n.passwordsDoNotMatch;
                                 return null;
                               },
                             ),
@@ -273,9 +275,9 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Next',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.next,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -288,15 +290,15 @@ class _ServiceProviderSignupPage1State extends State<ServiceProviderSignupPage1>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Already have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.alreadyHaveAnAccount,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.logIn,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

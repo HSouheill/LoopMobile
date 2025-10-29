@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../widgets/auth_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginLandingPage extends StatelessWidget {
   const LoginLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -42,7 +44,7 @@ class LoginLandingPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Primary login button
                   AuthButton(
-                    label: 'Log in with Email Address',
+                    label: l10n.logInWithEmailAddress,
                     leadingIcon: Icons.mail_outline,
                     onPressed: () => Navigator.pushNamed(context, '/loginEmail'),
                     filled: true,
@@ -51,12 +53,12 @@ class LoginLandingPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account? "),
+                      Text(l10n.dontHaveAnAccount),
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/signupOptions'),
-                        child: const Text(
-                          'Sign up',
-                          style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                        child: Text(
+                          l10n.signUpButton,
+                          style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                         ),
                       ),
                     ],

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceProviderLandingPage extends StatelessWidget {
   const ServiceProviderLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -65,9 +67,9 @@ class ServiceProviderLandingPage extends StatelessWidget {
                         child: const Icon(Icons.arrow_back, size: 24),
                       ),
                       const SizedBox(width: 16),
-                      const Text(
-                        'Sign Up as Service Provider',
-                        style: TextStyle(
+                      Text(
+                        l10n.signUpAsServiceProvider,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -80,8 +82,8 @@ class ServiceProviderLandingPage extends StatelessWidget {
                   // Service Provider Individual option
                   _buildSignupOption(
                     icon: Icons.person_outline,
-                    label: 'Individual Service Provider',
-                    description: 'For Freelancers or Self-employed Providers',
+                    label: l10n.individualServiceProvider,
+                    description: l10n.forFreelancersOrSelfEmployed,
                     onTap: () {
                       Navigator.pushNamed(context, '/serviceProviderSignup1');
                     },
@@ -91,8 +93,8 @@ class ServiceProviderLandingPage extends StatelessWidget {
                   // Service Provider Company option
                   _buildSignupOption(
                     icon: Icons.business_outlined,
-                    label: 'Service Provider Company',
-                    description: 'For Businesses with a team or registered office',
+                    label: l10n.serviceProviderCompany,
+                    description: l10n.forBusinessesWithTeam,
                     onTap: () {
                       Navigator.pushNamed(context, '/serviceProviderCompanySignup1');
                     },
@@ -104,12 +106,12 @@ class ServiceProviderLandingPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an account? "),
+                      Text(l10n.alreadyHaveAnAccount),
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.logIn,
+                          style: const TextStyle(
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
                           ),

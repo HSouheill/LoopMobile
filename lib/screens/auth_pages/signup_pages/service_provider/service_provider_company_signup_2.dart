@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceProviderCompanySignupPage2 extends StatefulWidget {
   const ServiceProviderCompanySignupPage2({super.key});
@@ -56,6 +57,7 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -113,9 +115,9 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Sign Up',
-                          style: TextStyle(
+                        Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -140,13 +142,13 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                             child: TextFormField(
                               controller: _companyNameCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Company Name',
+                                hintText: l10n.companyName,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.business, color: Colors.grey[400]),
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -201,8 +203,8 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                                     ),
                                     keyboardType: TextInputType.phone,
                                     validator: (v) {
-                                      if (v == null || v.isEmpty) return 'Required';
-                                      if (v.length < 8) return 'Invalid phone';
+                                      if (v == null || v.isEmpty) return l10n.required;
+                                      if (v.length < 8) return l10n.invalidPhone;
                                       return null;
                                     },
                                   ),
@@ -226,9 +228,9 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Next',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.next,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -241,15 +243,15 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Already have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.alreadyHaveAnAccount,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.logIn,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

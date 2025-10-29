@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import '../services/auth_service.dart'; // Commented out as this is a new page and auth service functions may differ.
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -44,17 +45,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final ok = _inputCtrl.text.isNotEmpty; // A simple check to simulate success.
     
     // Show a snackbar message based on the result.
+    final l10n = AppLocalizations.of(context)!;
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset link/code sent successfully!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.passwordResetSent)));
       // Optionally navigate back to the login page after success.
       // Navigator.of(context).pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to send reset link/code. Please check your input.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.failedToSendReset)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -103,9 +106,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Forgot Password',
-                          style: TextStyle(
+                        Text(
+                          l10n.forgotPasswordTitle,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -118,8 +121,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     // Descriptive text
                     Text(
                       _isPhoneSelected ? 
-                      'Enter your phone number below. We\'ll send a verification code to proceed with resetting your password' :
-                      'Enter your email address below. We\'ll send a password reset link to proceed with resetting your password',
+                      l10n.enterPhoneNumberBelow :
+                      l10n.enterEmailBelow,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -176,7 +179,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                       ),
                                       keyboardType: TextInputType.phone,
                                       validator: (v) {
-                                        if (v == null || v.isEmpty) return 'Please enter your phone number';
+                                        if (v == null || v.isEmpty) return l10n.pleaseEnterYourPhoneNumber;
                                         return null;
                                       },
                                     ),
@@ -187,7 +190,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               TextFormField(
                                 controller: _inputCtrl,
                                 decoration: InputDecoration(
-                                  hintText: 'Enter Email Address',
+                                  hintText: l10n.enterEmail,
                                   hintStyle: TextStyle(color: Colors.grey[400]),
                                   prefixIcon: Icon(Icons.mail_outline, color: Colors.grey[400]),
                                   border: InputBorder.none,
@@ -195,8 +198,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (v) {
-                                  if (v == null || v.isEmpty) return 'Please enter your email';
-                                  if (!v.contains('@') || !v.contains('.')) return 'Enter a valid email';
+                                  if (v == null || v.isEmpty) return l10n.pleaseEnterYourEmail;
+                                  if (!v.contains('@') || !v.contains('.')) return l10n.enterValidEmail;
                                   return null;
                                 },
                               ),
@@ -226,9 +229,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text(
-                                      'Next',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.next,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -243,9 +246,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             children: [
                               GestureDetector(
                                 onTap: () => Navigator.pop(context),
-                                child: const Text(
-                                  'Back to Login',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.backToLogin,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),
@@ -262,7 +265,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   });
                                 },
                                 child: Text(
-                                  _isPhoneSelected ? 'Verify By Email' : 'Verify By Phone',
+                                  _isPhoneSelected ? l10n.verifyByEmail : l10n.verifyByPhone,
                                   style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,

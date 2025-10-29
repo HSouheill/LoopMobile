@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import '../../../../environment.dart';
 import '../../../../widgets/terms_privacy_agreement.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RealEstateCompanySignupPage4 extends StatefulWidget {
   const RealEstateCompanySignupPage4({super.key});
@@ -83,10 +84,11 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
   }
 
   Future<void> _completeSignup() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_frontIdImage == null || _backIdImage == null || _selfieImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please upload all required images'),
+        SnackBar(
+          content: Text(l10n.pleaseAgreeToTerms),
           backgroundColor: Colors.red,
         ),
       );
@@ -95,8 +97,8 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
 
     if (!_isAgreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please agree to the Terms of Service and Privacy Policy to continue'),
+        SnackBar(
+          content: Text(l10n.pleaseAgreeToTerms),
           backgroundColor: Colors.red,
         ),
       );
@@ -135,9 +137,10 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
       if (response.statusCode == 202) {
         final data = json.decode(responseBody);
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('OTP sent to your phone. Please verify to complete signup.'),
+            SnackBar(
+              content: Text(l10n.otpSentToPhone),
               backgroundColor: Colors.green,
             ),
           );
@@ -149,20 +152,22 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
         }
       } else {
         final errorData = json.decode(responseBody);
+        final l10n = AppLocalizations.of(context)!;
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(errorData['message'] ?? 'Signup failed'),
+              content: Text(errorData['message'] ?? l10n.signupFailed),
               backgroundColor: Colors.red,
             ),
           );
         }
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Network error: ${e.toString()}'),
+            content: Text(l10n.networkError(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -306,6 +311,7 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -445,13 +451,13 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Complete Signup',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                                  : Text(
+                                      l10n.completeSignup,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -460,20 +466,20 @@ class _RealEstateCompanySignupPage4State extends State<RealEstateCompanySignupPa
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Already have an account? ",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                          child: const Text(
-                            'Log in',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
+                          Text(
+                            l10n.alreadyHaveAnAccount,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, '/loginLanding'),
+                            child: Text(
+                              l10n.logIn,
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 20),

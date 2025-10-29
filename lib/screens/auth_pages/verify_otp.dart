@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../../environment.dart';
 import '../../services/auth_service.dart';
 import '../../main.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerifyOtpPage extends StatefulWidget {
   const VerifyOtpPage({super.key});
@@ -65,11 +66,12 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
               
               if (success) {
                 // Show success message
+                final l10n = AppLocalizations.of(context)!;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Verification successful! You are now signed in.'),
+                  SnackBar(
+                    content: Text(l10n.verificationSuccessful),
                     backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
 
@@ -80,22 +82,24 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                 );
               } else {
                 // Fallback if auto sign-in fails
+                final l10n = AppLocalizations.of(context)!;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Verification successful! Please sign in manually.'),
+                  SnackBar(
+                    content: Text(l10n.verificationSuccessfulManual),
                     backgroundColor: Colors.orange,
-                    duration: Duration(seconds: 2),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
                 Navigator.of(context).popUntil((route) => route.isFirst);
               }
             } else {
               // Fallback for cases where token/user data is not provided
+              final l10n = AppLocalizations.of(context)!;
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Verification successful! Please sign in to continue.'),
+                SnackBar(
+                  content: Text(l10n.verificationSuccessfulContinue),
                   backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
+                  duration: const Duration(seconds: 2),
                 ),
               );
               Navigator.of(context).popUntil((route) => route.isFirst);
@@ -104,10 +108,11 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
         } else {
           final errorData = json.decode(response.body);
           if (mounted) {
+            final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content:
-                    Text(errorData['message'] ?? 'OTP verification failed'),
+                    Text(errorData['message'] ?? l10n.otpVerificationFailed),
                 backgroundColor: Colors.red,
               ),
             );
@@ -115,9 +120,10 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
         }
       } catch (e) {
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Network error: ${e.toString()}'),
+              content: Text(l10n.networkError(e.toString())),
               backgroundColor: Colors.red,
             ),
           );
@@ -132,6 +138,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -192,9 +199,9 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Verify OTP',
-                          style: TextStyle(
+                        Text(
+                          l10n.verifyOtpTitle,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -206,7 +213,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                     // Instructions
                     Text(
-                      'Enter the OTP sent to your phone number $_phone',
+                      l10n.enterOtpSentToPhone(_phone),
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -229,7 +236,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             child: TextFormField(
                               controller: _otpCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Enter OTP',
+                                hintText: l10n.enterOtp,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.security,
                                     color: Colors.grey[400]),
@@ -239,8 +246,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                               ),
                               keyboardType: TextInputType.number,
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'Required';
-                                if (v.length < 4) return 'Invalid OTP';
+                                if (v == null || v.isEmpty) return l10n.required;
+                                if (v.length < 4) return l10n.invalidOtp;
                                 return null;
                               },
                             ),
@@ -272,9 +279,9 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text(
-                                      'Verify OTP',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.verifyOtp,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -287,23 +294,22 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Didn't receive OTP? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.didntReceiveOtp,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'OTP resend functionality coming soon'),
+                                    SnackBar(
+                                      content: Text(l10n.otpResendFunctionalityComingSoon),
                                       backgroundColor: Colors.orange,
                                     ),
                                   );
                                 },
-                                child: const Text(
-                                  'Resend',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.resend,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

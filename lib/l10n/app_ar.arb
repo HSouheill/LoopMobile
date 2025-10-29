@@ -530,5 +530,108 @@
         "type": "int"
       }
     }
-  }
+  },
+  "signUp": "التسجيل",
+  "logIn": "تسجيل الدخول",
+  "usingEmail": "باستخدام البريد الإلكتروني",
+  "usingPhoneNumber": "باستخدام رقم الهاتف",
+  "emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "phoneNumber": "رقم الهاتف",
+  "enterPassword": "أدخل كلمة المرور",
+  "rememberMe": "تذكرني",
+  "forgotPassword": "نسيت كلمة المرور؟",
+  "forgotPasswordTitle": "نسيت كلمة المرور",
+  "dontHaveAnAccount": "ليس لديك حساب؟ ",
+  "dontHaveAnAccountFull": "ليس لديك حساب؟ ",
+  "alreadyHaveAnAccount": "لديك حساب بالفعل؟ ",
+  "signUpButton": "التسجيل",
+  "logInWithEmailAddress": "تسجيل الدخول بالبريد الإلكتروني",
+  "backToLogin": "العودة لتسجيل الدخول",
+  "verifyByEmail": "التحقق بالبريد الإلكتروني",
+  "verifyByPhone": "التحقق بالهاتف",
+  "next": "التالي",
+  "verifyOtp": "تحقق من الرمز",
+  "verifyOtpTitle": "تحقق من الرمز",
+  "enterOtp": "أدخل الرمز",
+  "enterOtpSentToPhone": "أدخل الرمز المرسل إلى رقم هاتفك {phone}",
+  "@enterOtpSentToPhone": {
+    "description": "تعليمات التحقق من الرمز",
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "didntReceiveOtp": "لم تستلم الرمز؟ ",
+  "resend": "إعادة الإرسال",
+  "firstName": "الاسم الأول",
+  "lastName": "اسم العائلة",
+  "enterEmail": "أدخل البريد الإلكتروني",
+  "createPassword": "إنشاء كلمة المرور",
+  "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+  "dateOfBirth": "تاريخ الميلاد",
+  "gender": "الجنس",
+  "male": "ذكر",
+  "female": "أنثى",
+  "other": "آخر",
+  "selectCountry": "اختر البلد",
+  "selectDistrict": "اختر المنطقة",
+  "selectCity": "اختر المدينة",
+  "completeSignup": "إكمال التسجيل",
+  "liveLocation": "الموقع المباشر",
+  "thisFieldIsRequired": "هذا الحقل مطلوب",
+  "required": "مطلوب",
+  "enterValidPhoneNumber": "أدخل رقم هاتف صالح",
+  "minimum6Characters": "الحد الأدنى 6 أحرف",
+  "invalidEmail": "بريد إلكتروني غير صالح",
+  "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+  "invalidPhone": "رقم هاتف غير صالح",
+  "pleaseEnterYourPhoneNumber": "يرجى إدخال رقم هاتفك",
+  "pleaseEnterYourEmail": "يرجى إدخال بريدك الإلكتروني",
+  "enterValidEmail": "أدخل بريداً إلكترونياً صالحاً",
+  "invalidOtp": "رمز غير صالح",
+  "enterPhoneNumberBelow": "أدخل رقم هاتفك أدناه. سنرسل رمز تحقق للمتابعة في إعادة تعيين كلمة المرور",
+  "enterEmailBelow": "أدخل عنوان بريدك الإلكتروني أدناه. سنرسل رابط إعادة تعيين كلمة المرور للمتابعة في إعادة تعيين كلمة المرور",
+  "passwordResetSent": "تم إرسال رابط/رمز إعادة التعيين بنجاح!",
+  "failedToSendReset": "فشل إرسال رابط/رمز إعادة التعيين. يرجى التحقق من المدخلات.",
+  "welcomeBack": "مرحباً بعودتك، {name}!",
+  "@welcomeBack": {
+    "description": "رسالة الترحيب بعد تسجيل الدخول",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidCredentials": "بيانات اعتماد غير صحيحة. يرجى المحاولة مرة أخرى.",
+  "verificationSuccessful": "تم التحقق بنجاح! أنت الآن مسجل الدخول.",
+  "verificationSuccessfulManual": "تم التحقق بنجاح! يرجى تسجيل الدخول يدوياً.",
+  "verificationSuccessfulContinue": "تم التحقق بنجاح! يرجى تسجيل الدخول للمتابعة.",
+  "otpVerificationFailed": "فشل التحقق من الرمز",
+  "networkError": "خطأ في الشبكة: {error}",
+  "@networkError": {
+    "description": "رسالة خطأ الشبكة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpSentToPhone": "تم إرسال الرمز إلى هاتفك. يرجى التحقق لإكمال التسجيل.",
+  "signupFailed": "فشل التسجيل",
+  "pleaseAgreeToTerms": "يرجى الموافقة على شروط الخدمة وسياسة الخصوصية للمتابعة",
+  "otpResendFunctionalityComingSoon": "وظيفة إعادة إرسال الرمز قريباً",
+  "signUpAs": "التسجيل كـ",
+  "user": "مستخدم",
+  "realEstate": "عقارات",
+  "serviceProvider": "مقدم خدمة",
+  "signUpAsRealEstate": "التسجيل كعقارات",
+  "signUpAsServiceProvider": "التسجيل كمقدم خدمة",
+  "realEstateAgent": "وكيل عقارات",
+  "realEstateCompany": "شركة عقارات",
+  "individualServiceProvider": "مقدم خدمة فردي",
+  "serviceProviderCompany": "شركة مقدم خدمة",
+  "forFreelancersOrSelfEmployed": "للحرفيين أو العاملين المستقلين",
+  "forBusinessesWithTeam": "للشركات التي لديها فريق أو مكتب مسجل",
+  "companyName": "اسم الشركة"
 }

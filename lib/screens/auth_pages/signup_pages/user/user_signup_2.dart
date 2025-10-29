@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UserSignupPage2 extends StatefulWidget {
   const UserSignupPage2({super.key});
@@ -58,6 +59,7 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -115,9 +117,9 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Sign Up',
-                          style: TextStyle(
+                        Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -145,7 +147,7 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                   child: TextFormField(
                                     controller: _dateOfBirthCtrl,
                                     decoration: InputDecoration(
-                                      hintText: 'DD/MM/YYYY',
+                                      hintText: l10n.dateOfBirth,
                                       hintStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: Icon(Icons.calendar_today, color: Colors.grey[400]),
                                       border: InputBorder.none,
@@ -163,7 +165,7 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                         _dateOfBirthCtrl.text = '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
                                       }
                                     },
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                                    validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                                   ),
                                 ),
                               ),
@@ -178,16 +180,20 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                   child: DropdownButtonFormField<String>(
                                     value: _selectedGender.isEmpty ? null : _selectedGender,
                                     decoration: InputDecoration(
-                                      hintText: 'Gender',
+                                      hintText: l10n.gender,
                                       hintStyle: TextStyle(color: Colors.grey[400]),
                                       prefixIcon: Icon(Icons.person_outline, color: Colors.grey[400]),
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                     ),
-                                    items: ['Male', 'Female', 'Other'].map((String value) {
+                                    items: [
+                                      {'label': l10n.male, 'value': 'Male'},
+                                      {'label': l10n.female, 'value': 'Female'},
+                                      {'label': l10n.other, 'value': 'Other'}
+                                    ].map((item) {
                                       return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
+                                        value: item['value'],
+                                        child: Text(item['label']!),
                                       );
                                     }).toList(),
                                     onChanged: (String? newValue) {
@@ -195,7 +201,7 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                         _selectedGender = newValue ?? '';
                                       });
                                     },
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                                    validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                                   ),
                                 ),
                               ),
@@ -253,8 +259,8 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                     ),
                                     keyboardType: TextInputType.phone,
                                     validator: (v) {
-                                      if (v == null || v.isEmpty) return 'Required';
-                                      if (v.length < 8) return 'Invalid phone';
+                                      if (v == null || v.isEmpty) return l10n.required;
+                                      if (v.length < 8) return l10n.invalidPhone;
                                       return null;
                                     },
                                   ),
@@ -278,9 +284,9 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Next',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.next,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -293,15 +299,15 @@ class _UserSignupPage2State extends State<UserSignupPage2> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Already have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.alreadyHaveAnAccount,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.logIn,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

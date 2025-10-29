@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginEmailPage extends StatefulWidget {
   const LoginEmailPage({super.key});
@@ -39,13 +40,14 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
   
   setState(() => _loading = false);
   
+  final l10n = AppLocalizations.of(context)!;
   if (success) {
     // If login is successful, navigate and show a success message.
     if (mounted) {
       Navigator.of(context).popUntil((route) => route.isFirst);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Welcome back, ${AuthService.currentUser?.name ?? 'User'}!'),
+          content: Text(l10n.welcomeBack(AuthService.currentUser?.name ?? 'User')),
           backgroundColor: Colors.green,
         ),
       );
@@ -54,8 +56,8 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
     // If login fails, show an error message.
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid credentials. Please try again.'),
+        SnackBar(
+          content: Text(l10n.invalidCredentials),
           backgroundColor: Colors.red,
         ),
       );
@@ -65,6 +67,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -123,9 +126,9 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Login',
-                          style: TextStyle(
+                        Text(
+                          l10n.logIn,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -152,7 +155,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 ),
                               ),
                               child: Text(
-                                'Using Email',
+                                l10n.usingEmail,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: _isEmailSelected ? Colors.blue : Colors.grey,
@@ -176,7 +179,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 ),
                               ),
                               child: Text(
-                                'Using Phone Number',
+                                l10n.usingPhoneNumber,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: !_isEmailSelected ? Colors.blue : Colors.grey,
@@ -205,7 +208,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                             child: TextFormField(
                               controller: _emailCtrl,
                               decoration: InputDecoration(
-                                hintText: _isEmailSelected ? 'Email or Username' : 'Phone Number',
+                                hintText: _isEmailSelected ? l10n.emailOrUsername : l10n.phoneNumber,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(
                                   _isEmailSelected ? Icons.mail_outline : Icons.phone_outlined,
@@ -216,8 +219,8 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                               ),
                               keyboardType: _isEmailSelected ? TextInputType.emailAddress : TextInputType.phone,
                               validator: (v) {
-                                if (v == null || v.isEmpty) return 'This field is required';
-                                if (!_isEmailSelected && v.length < 8) return 'Enter a valid phone number';
+                                if (v == null || v.isEmpty) return l10n.thisFieldIsRequired;
+                                if (!_isEmailSelected && v.length < 8) return l10n.enterValidPhoneNumber;
                                 return null;
                               },
                             ),
@@ -234,7 +237,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                             child: TextFormField(
                               controller: _passCtrl,
                               decoration: InputDecoration(
-                                hintText: 'Enter Password',
+                                hintText: l10n.enterPassword,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[400]),
                                 suffixIcon: IconButton(
@@ -248,7 +251,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               ),
                               obscureText: _obscurePassword,
-                              validator: (v) => (v == null || v.length < 6) ? 'Minimum 6 characters' : null,
+                              validator: (v) => (v == null || v.length < 6) ? l10n.minimum6Characters : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -261,18 +264,18 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                 onChanged: (value) => setState(() => _rememberMe = value ?? false),
                                 activeColor: Colors.blue,
                               ),
-                              const Text(
-                                'Remember me',
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.rememberMe,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               const Spacer(),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(context, '/forgotPassword');
                                 },
-                                child: const Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.forgotPassword,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),
@@ -305,9 +308,9 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text(
-                                      'Login',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.logIn,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -319,15 +322,15 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Don't Have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.dontHaveAnAccountFull,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/signupOptions'),
-                                child: const Text(
-                                  'Sign up',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.signUpButton,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

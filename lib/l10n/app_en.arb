@@ -530,5 +530,108 @@
         "type": "int"
       }
     }
-  }
+  },
+  "signUp": "Sign Up",
+  "logIn": "Log in",
+  "usingEmail": "Using Email",
+  "usingPhoneNumber": "Using Phone Number",
+  "emailOrUsername": "Email or Username",
+  "phoneNumber": "Phone Number",
+  "enterPassword": "Enter Password",
+  "rememberMe": "Remember me",
+  "forgotPassword": "Forgot Password?",
+  "forgotPasswordTitle": "Forgot Password",
+  "dontHaveAnAccount": "Don't have an account? ",
+  "dontHaveAnAccountFull": "Don't Have an account? ",
+  "alreadyHaveAnAccount": "Already have an account? ",
+  "signUpButton": "Sign up",
+  "logInWithEmailAddress": "Log in with Email Address",
+  "backToLogin": "Back to Login",
+  "verifyByEmail": "Verify By Email",
+  "verifyByPhone": "Verify By Phone",
+  "next": "Next",
+  "verifyOtp": "Verify OTP",
+  "verifyOtpTitle": "Verify OTP",
+  "enterOtp": "Enter OTP",
+  "enterOtpSentToPhone": "Enter the OTP sent to your phone number {phone}",
+  "@enterOtpSentToPhone": {
+    "description": "OTP verification instruction",
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "didntReceiveOtp": "Didn't receive OTP? ",
+  "resend": "Resend",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "enterEmail": "Enter Email",
+  "createPassword": "Create Password",
+  "confirmNewPassword": "Confirm New Password",
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "selectCountry": "Select Country",
+  "selectDistrict": "Select District",
+  "selectCity": "Select City",
+  "completeSignup": "Complete Signup",
+  "liveLocation": "Live Location",
+  "thisFieldIsRequired": "This field is required",
+  "required": "Required",
+  "enterValidPhoneNumber": "Enter a valid phone number",
+  "minimum6Characters": "Minimum 6 characters",
+  "invalidEmail": "Invalid email",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "invalidPhone": "Invalid phone",
+  "pleaseEnterYourPhoneNumber": "Please enter your phone number",
+  "pleaseEnterYourEmail": "Please enter your email",
+  "enterValidEmail": "Enter a valid email",
+  "invalidOtp": "Invalid OTP",
+  "enterPhoneNumberBelow": "Enter your phone number below. We'll send a verification code to proceed with resetting your password",
+  "enterEmailBelow": "Enter your email address below. We'll send a password reset link to proceed with resetting your password",
+  "passwordResetSent": "Password reset link/code sent successfully!",
+  "failedToSendReset": "Failed to send reset link/code. Please check your input.",
+  "welcomeBack": "Welcome back, {name}!",
+  "@welcomeBack": {
+    "description": "Welcome message after login",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidCredentials": "Invalid credentials. Please try again.",
+  "verificationSuccessful": "Verification successful! You are now signed in.",
+  "verificationSuccessfulManual": "Verification successful! Please sign in manually.",
+  "verificationSuccessfulContinue": "Verification successful! Please sign in to continue.",
+  "otpVerificationFailed": "OTP verification failed",
+  "networkError": "Network error: {error}",
+  "@networkError": {
+    "description": "Network error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "otpSentToPhone": "OTP sent to your phone. Please verify to complete signup.",
+  "signupFailed": "Signup failed",
+  "pleaseAgreeToTerms": "Please agree to the Terms of Service and Privacy Policy to continue",
+  "otpResendFunctionalityComingSoon": "OTP resend functionality coming soon",
+  "signUpAs": "Sign up as",
+  "user": "User",
+  "realEstate": "Real Estate",
+  "serviceProvider": "Service Provider",
+  "signUpAsRealEstate": "Sign Up as Real Estate",
+  "signUpAsServiceProvider": "Sign Up as Service Provider",
+  "realEstateAgent": "Real Estate Agent",
+  "realEstateCompany": "Real Estate Company",
+  "individualServiceProvider": "Individual Service Provider",
+  "serviceProviderCompany": "Service Provider Company",
+  "forFreelancersOrSelfEmployed": "For Freelancers or Self-employed Providers",
+  "forBusinessesWithTeam": "For Businesses with a team or registered office",
+  "companyName": "Company Name"
 }

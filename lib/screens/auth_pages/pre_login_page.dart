@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../widgets/auth_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PreLoginPage extends StatelessWidget {
   const PreLoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -46,7 +48,7 @@ class PreLoginPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   // Login button that navigates directly to email login.
                   AuthButton(
-                    label: 'Log In',
+                    label: l10n.logIn,
                     leadingIcon: Icons.login,
                     onPressed: () => Navigator.pushNamed(context, '/loginEmail'),
                     filled: true,
@@ -54,7 +56,7 @@ class PreLoginPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   // Signup button placeholder.
                   AuthButton(
-                    label: 'Sign Up',
+                    label: l10n.signUp,
                     leadingIcon: Icons.person_add_alt,
                     onPressed: () => Navigator.pushNamed(context, '/signupOptions'),
                     filled: false,

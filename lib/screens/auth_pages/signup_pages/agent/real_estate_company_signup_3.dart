@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RealEstateCompanySignupPage3 extends StatefulWidget {
   const RealEstateCompanySignupPage3({super.key});
@@ -57,6 +58,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -114,9 +116,9 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Sign Up',
-                          style: TextStyle(
+                        Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -128,7 +130,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                             Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
                             const SizedBox(width: 4),
                             Text(
-                              'Live Location',
+                              l10n.liveLocation,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -155,7 +157,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                             child: DropdownButtonFormField<String>(
                               value: _selectedCountry.isEmpty ? null : _selectedCountry,
                               decoration: InputDecoration(
-                                hintText: 'Select Country',
+                                hintText: l10n.selectCountry,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -173,7 +175,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                                   _selectedCountry = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -188,7 +190,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                             child: DropdownButtonFormField<String>(
                               value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
                               decoration: InputDecoration(
-                                hintText: 'Select District',
+                                hintText: l10n.selectDistrict,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -206,7 +208,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                                   _selectedDistrict = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -222,7 +224,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                             child: DropdownButtonFormField<String>(
                               value: _selectedCity.isEmpty ? null : _selectedCity,
                               decoration: InputDecoration(
-                                hintText: 'Select City',
+                                hintText: l10n.selectCity,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -240,7 +242,7 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                                   _selectedCity = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -259,9 +261,9 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                                 ),
                                 elevation: 0,
                               ),
-                              child: const Text(
-                                'Next',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.next,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -274,15 +276,15 @@ class _RealEstateCompanySignupPage3State extends State<RealEstateCompanySignupPa
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Already have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.alreadyHaveAnAccount,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.logIn,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

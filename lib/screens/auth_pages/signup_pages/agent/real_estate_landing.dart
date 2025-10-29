@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RealEstateLandingPage extends StatelessWidget {
   const RealEstateLandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -66,9 +68,9 @@ class RealEstateLandingPage extends StatelessWidget {
                         child: const Icon(Icons.arrow_back, size: 24),
                       ),
                       const SizedBox(width: 16),
-                      const Text(
-                        'Sign Up as Real Estate',
-                        style: TextStyle(
+                      Text(
+                        l10n.signUpAsRealEstate,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -81,8 +83,8 @@ class RealEstateLandingPage extends StatelessWidget {
                   // Real Estate Agent option
                   _buildSignupOption(
                     icon: Icons.person_outline,
-                    label: 'Real Estate Agent',
-                    description: 'For Freelancers or Self-employed Providers',
+                    label: l10n.realEstateAgent,
+                    description: l10n.forFreelancersOrSelfEmployed,
                     onTap: () {
                       Navigator.pushNamed(context, '/realEstateSignup1');
                     },
@@ -92,8 +94,8 @@ class RealEstateLandingPage extends StatelessWidget {
                   // Real Estate Company option
                   _buildSignupOption(
                     icon: Icons.business_outlined,
-                    label: 'Real Estate Company',
-                    description: 'For Businesses with a team or registered office',
+                    label: l10n.realEstateCompany,
+                    description: l10n.forBusinessesWithTeam,
                     onTap: () {
                       Navigator.pushNamed(context, '/realEstateCompanySignup1');
                     },
@@ -106,12 +108,12 @@ class RealEstateLandingPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an account? "),
+                      Text(l10n.alreadyHaveAnAccount),
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.logIn,
+                          style: const TextStyle(
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
                           ),

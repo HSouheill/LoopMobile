@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../../environment.dart';
 import '../../../../widgets/terms_privacy_agreement.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceProviderSignupPage2 extends StatefulWidget {
   const ServiceProviderSignupPage2({super.key});
@@ -50,10 +51,11 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
 
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
+      final l10n = AppLocalizations.of(context)!;
       if (!_isAgreedToTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please agree to the Terms of Service and Privacy Policy to continue'),
+          SnackBar(
+            content: Text(l10n.pleaseAgreeToTerms),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,9 +86,10 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
         if (response.statusCode == 202) {
           final data = json.decode(response.body);
           if (mounted) {
+            final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('OTP sent to your phone. Please verify to complete signup.'),
+              SnackBar(
+                content: Text(l10n.otpSentToPhone),
                 backgroundColor: Colors.green,
               ),
             );
@@ -101,7 +104,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(errorData['message'] ?? 'Signup failed'),
+                content: Text(errorData['message'] ?? l10n.signupFailed),
                 backgroundColor: Colors.red,
               ),
             );
@@ -111,7 +114,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Network error: ${e.toString()}'),
+              content: Text(l10n.networkError(e.toString())),
               backgroundColor: Colors.red,
             ),
           );
@@ -126,6 +129,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -183,9 +187,9 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                           child: const Icon(Icons.arrow_back, size: 24),
                         ),
                         const SizedBox(width: 16),
-                        const Text(
-                          'Sign Up',
-                          style: TextStyle(
+                        Text(
+                          l10n.signUp,
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -250,8 +254,8 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                                     ),
                                     keyboardType: TextInputType.phone,
                                     validator: (v) {
-                                      if (v == null || v.isEmpty) return 'Required';
-                                      if (v.length < 8) return 'Invalid phone';
+                                      if (v == null || v.isEmpty) return l10n.required;
+                                      if (v.length < 8) return l10n.invalidPhone;
                                       return null;
                                     },
                                   ),
@@ -271,7 +275,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                             child: DropdownButtonFormField<String>(
                               value: _selectedCountry.isEmpty ? null : _selectedCountry,
                               decoration: InputDecoration(
-                                hintText: 'Select Country',
+                                hintText: l10n.selectCountry,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.public, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -289,7 +293,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                                   _selectedCountry = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -304,7 +308,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                             child: DropdownButtonFormField<String>(
                               value: _selectedDistrict.isEmpty ? null : _selectedDistrict,
                               decoration: InputDecoration(
-                                hintText: 'Select District',
+                                hintText: l10n.selectDistrict,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -322,7 +326,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                                   _selectedDistrict = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -338,7 +342,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                             child: DropdownButtonFormField<String>(
                               value: _selectedCity.isEmpty ? null : _selectedCity,
                               decoration: InputDecoration(
-                                hintText: 'Select City',
+                                hintText: l10n.selectCity,
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 prefixIcon: Icon(Icons.location_city, color: Colors.grey[400]),
                                 border: InputBorder.none,
@@ -356,7 +360,7 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                                   _selectedCity = newValue ?? '';
                                 });
                               },
-                              validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
+                              validator: (v) => (v == null || v.isEmpty) ? l10n.required : null,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -395,9 +399,9 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : const Text(
-                                      'Complete Signup',
-                                      style: TextStyle(
+                                  : Text(
+                                      l10n.completeSignup,
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -410,15 +414,15 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Already have an account? ",
-                                style: TextStyle(color: Colors.grey),
+                              Text(
+                                l10n.alreadyHaveAnAccount,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
                                 onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.logIn,
+                                  style: const TextStyle(
                                     color: Colors.blue,
                                     decoration: TextDecoration.underline,
                                   ),

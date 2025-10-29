@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../widgets/auth_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupOptionsPage extends StatelessWidget {
   const SignupOptionsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -64,9 +66,9 @@ class SignupOptionsPage extends StatelessWidget {
                         child: const Icon(Icons.arrow_back, size: 24),
                       ),
                       const SizedBox(width: 16),
-                      const Text(
-                        'Sign up as',
-                        style: TextStyle(
+                      Text(
+                        l10n.signUpAs,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -79,7 +81,7 @@ class SignupOptionsPage extends StatelessWidget {
                   // User signup option
                   _buildSignupOption(
                     icon: Icons.person_outline,
-                    label: 'User',
+                    label: l10n.user,
                     onTap: () {
                       Navigator.pushNamed(context, '/userSignup1');
                     },
@@ -89,7 +91,7 @@ class SignupOptionsPage extends StatelessWidget {
                   // Real Estate signup option
                   _buildSignupOption(
                     icon: Icons.business_outlined,
-                    label: 'Real Estate',
+                    label: l10n.realEstate,
                     onTap: () {
                       Navigator.pushNamed(context, '/realEstateLanding');
                     },
@@ -100,7 +102,7 @@ class SignupOptionsPage extends StatelessWidget {
                   // Service Provider signup option
                   _buildSignupOption(
                     icon: Icons.home_work_outlined,
-                    label: 'Service Provider',
+                    label: l10n.serviceProvider,
                     onTap: () {
                       Navigator.pushNamed(context, '/serviceProviderLanding');
                     },
@@ -112,12 +114,12 @@ class SignupOptionsPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Already have an account? "),
+                      Text(l10n.alreadyHaveAnAccount),
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(context, '/loginLanding'),
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.logIn,
+                          style: const TextStyle(
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
                           ),
