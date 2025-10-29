@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../screens/agents/agent_search_results_page.dart';
 
 class SearchOnlyWidget extends StatefulWidget {
@@ -51,8 +52,8 @@ class _SearchOnlyWidgetState extends State<SearchOnlyWidget> {
                   child: TextField(
                     controller: _searchController,
                     cursorColor: Color.fromARGB(255, 69, 100, 201),
-                    decoration: const InputDecoration(
-                      hintText: 'Search agents...',
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)?.searchAgents ?? 'Search agents...',
                       // remove all borders
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -61,9 +62,9 @@ class _SearchOnlyWidgetState extends State<SearchOnlyWidget> {
                       filled: true,
                       fillColor: Colors.transparent,
                       isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                       // placeholder color same as icon
-                      hintStyle: TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
+                      hintStyle: const TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                     ),
                     onSubmitted: (_) => _performSearch(),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/agent_service.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import 'single_agent_page.dart';
@@ -100,9 +101,10 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Results for "${widget.searchQuery}"'),
+        title: Text(l10n?.searchResultsFor(widget.searchQuery) ?? 'Search Results for "${widget.searchQuery}"'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -125,12 +127,17 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
                 Icon(Icons.search, color: Colors.grey.shade600),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    'Found ${agents.length} agents for "${widget.searchQuery}"',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 14,
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return Text(
+                        l10n?.foundAgentsFor(agents.length, widget.searchQuery) ?? 'Found ${agents.length} agents for "${widget.searchQuery}"',
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 14,
+                        ),
+                      );
+                    }
                   ),
                 ),
               ],
@@ -148,13 +155,17 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
 
   Widget _buildContent() {
     if (isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Searching agents...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Builder(
+              builder: (context) {
+                return Text(AppLocalizations.of(context)?.searchingAgents ?? 'Searching agents...');
+              }
+            ),
           ],
         ),
       );
@@ -172,7 +183,7 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Error searching agents',
+              AppLocalizations.of(context)?.errorSearchingAgents ?? 'Error searching agents',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -188,7 +199,7 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _retry,
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
             ),
           ],
         ),
@@ -207,7 +218,7 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No agents found',
+              AppLocalizations.of(context)?.noAgentsFound ?? 'No agents found',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -216,7 +227,7 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Try searching with different keywords',
+              AppLocalizations.of(context)?.tryDifferentKeywordsAgent ?? 'Try searching with different keywords',
               style: TextStyle(color: Colors.grey.shade600),
             ),
           ],

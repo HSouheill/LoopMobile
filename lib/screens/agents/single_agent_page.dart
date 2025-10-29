@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import '../../widgets/agent_listings_reviews_widget.dart';
 import '../../models/review.dart';
@@ -93,11 +94,12 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
         ),
       );
 
+      final l10n = AppLocalizations.of(context);
       final token = AuthService.token;
       if (token == null) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please log in to start a chat')),
+          SnackBar(content: Text(l10n?.pleaseLoginToStartChatAgent ?? 'Please log in to start a chat')),
         );
         return;
       }
@@ -131,7 +133,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to start chat. Please try again.')),
+          SnackBar(content: Text(AppLocalizations.of(context)?.failedToStartChatAgent ?? 'Failed to start chat. Please try again.')),
         );
       }
     } catch (e) {
@@ -145,11 +147,12 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
     try {
+      final l10n = AppLocalizations.of(context);
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not make phone call')),
+          SnackBar(content: Text(l10n?.couldNotMakePhoneCallAgent ?? 'Could not make phone call')),
         );
       }
     } catch (e) {
@@ -175,8 +178,9 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
         mode: LaunchMode.externalApplication,
       );
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error opening link: ${e.toString()}')),
+        SnackBar(content: Text(l10n?.errorOpeningLinkAgent(e.toString()) ?? 'Error opening link: ${e.toString()}')),
       );
     }
   }
@@ -215,10 +219,15 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle.light,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
-                onPressed: _showReportDialog,
-                tooltip: 'Report this agent',
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context);
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    onPressed: _showReportDialog,
+                    tooltip: l10n?.reportAgentTooltip ?? 'Report this agent',
+                  );
+                }
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -386,9 +395,9 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                               children: [
                                 const Icon(Icons.info_outline, color: Colors.black, size: 24),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'About',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)?.aboutAgent ?? 'About',
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -429,7 +438,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          widget.agent.customText ?? 'No description available.',
+                          widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available.'),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.grey[700],
@@ -450,7 +459,9 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                               child: Row(
                                 children: [
                                   Text(
-                                    _isExpanded ? 'Read Less' : 'Read More',
+                                    _isExpanded 
+                                        ? (AppLocalizations.of(context)?.readLessAgent ?? 'Read Less')
+                                        : (AppLocalizations.of(context)?.readMoreAgent ?? 'Read More'),
                                     style: const TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.w600,
@@ -480,9 +491,9 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                           children: [
                             const Icon(Icons.search, color: Colors.black, size: 24),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Details',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)?.detailsAgent ?? 'Details',
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -492,13 +503,13 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                         const SizedBox(height: 16),
                         _buildDetailRow(
                           icon: Icons.email,
-                          label: 'Email:',
+                          label: AppLocalizations.of(context)?.emailAgent ?? 'Email:',
                           value: 'johnsmith@email.com',
                         ),
                         const SizedBox(height: 12),
                         _buildDetailRow(
                           icon: Icons.map,
-                          label: 'Service Areas:',
+                          label: AppLocalizations.of(context)?.serviceAreas ?? 'Service Areas:',
                           value: 'Beirut, Baabda, Keserwan, Metn',
                         ),
                       ],
@@ -520,7 +531,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                           SizedBox(
                             width: double.infinity,
                             height: 50,
-                            child: ElevatedButton(
+                              child: ElevatedButton(
                               onPressed: _startChat,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
@@ -530,9 +541,9 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                                 ),
                                 elevation: 2,
                               ),
-                              child: const Text(
-                                'Start Chat',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context)?.startChat ?? 'Start Chat',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -546,7 +557,10 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                             child: OutlinedButton.icon(
                               onPressed: _showReportDialog,
                               icon: const Icon(Icons.flag, color: Colors.red),
-                              label: const Text('Report this agent', style: TextStyle(color: Colors.red)),
+                              label: Text(
+                                AppLocalizations.of(context)?.reportAgent ?? 'Report this agent',
+                                style: const TextStyle(color: Colors.red)
+                              ),
                               style: OutlinedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
@@ -613,12 +627,17 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
               child: const Icon(Icons.person, size: 80, color: Colors.white),
             ),
             const SizedBox(height: 16),
-            Text(
-              'No profile image',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
+            Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context);
+                return Text(
+                  l10n?.noProfileImage ?? 'No profile image',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 16,
+                  ),
+                );
+              }
             ),
           ],
         ),
@@ -666,7 +685,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               Text(
-                'Failed to load agent data',
+                AppLocalizations.of(context)?.failedToLoadAgentData ?? 'Failed to load agent data',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -678,7 +697,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadAgentData,
-                child: const Text('Retry'),
+                child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
               ),
             ],
           ),
@@ -687,10 +706,10 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     }
 
     if (_agentData == null) {
-      return const SizedBox(
+      return SizedBox(
         height: 200,
         child: Center(
-          child: Text('No agent data available'),
+          child: Text(AppLocalizations.of(context)?.noAgentDataAvailable ?? 'No agent data available'),
         ),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/review_service.dart';
@@ -174,21 +175,24 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Listing'),
-        content: Text('Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          title: Text(l10n?.deleteListing ?? 'Delete Listing'),
+          content: Text(l10n?.deleteListingConfirm(listing.title) ?? 'Are you sure you want to delete "${listing.title}"? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n?.cancel ?? 'Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text(l10n?.delete ?? 'Delete'),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirmed == true) {
@@ -208,13 +212,13 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
           if (success) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Listing deleted successfully')),
+              SnackBar(content: Text(AppLocalizations.of(context)?.listingDeletedSuccessfully ?? 'Listing deleted successfully')),
             );
             // Refresh the data
             await _refreshData();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Failed to delete listing')),
+              SnackBar(content: Text(AppLocalizations.of(context)?.failedToDeleteListing ?? 'Failed to delete listing')),
             );
           }
         }
@@ -222,7 +226,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
         if (mounted) {
           Navigator.of(context).pop(); // Close loading dialog
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting listing: $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)?.errorDeletingListing(e.toString()) ?? 'Error deleting listing: $e')),
           );
         }
       }
@@ -263,21 +267,25 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     if (reviews.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
-        child: const Center(
+        child: Center(
           child: Column(
             children: [
-              Icon(
+              const Icon(
                 Icons.reviews_outlined,
                 size: 48,
                 color: Colors.grey,
               ),
-              SizedBox(height: 8),
-              Text(
-                'No reviews yet',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
+              const SizedBox(height: 8),
+              Builder(
+                builder: (context) {
+                  return Text(
+                    AppLocalizations.of(context)?.noReviewsYet ?? 'No reviews yet',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  );
+                }
               ),
             ],
           ),
@@ -414,9 +422,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
         child: AppBar(
           title: Container(
             padding: const EdgeInsets.only(top: 15, left: 50),
-            child: const Text(
-              "Agent Dashboard",
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)?.agentDashboard ?? "Agent Dashboard",
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
               ),
@@ -476,9 +484,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Stats",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)?.stats ?? "Stats",
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF1E1E1E),
@@ -491,10 +499,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 children: [
                   StatCardList(
                     items: [
-                      {"title": "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
-                      {"title": "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
-                      {"title": "Active Listings:", "value": "${agentInfo?['activeListings'] ?? 0}"},
-                      {"title": "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
+                      {"title": AppLocalizations.of(context)?.totalListings ?? "Total Listings:", "value": "${agentInfo?['totalListings'] ?? 0}"},
+                      {"title": AppLocalizations.of(context)?.profileViews ?? "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
+                      {"title": AppLocalizations.of(context)?.activeListings ?? "Active Listings:", "value": "${agentInfo?['activeListings'] ?? 0}"},
+                      {"title": AppLocalizations.of(context)?.totalChats ?? "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
                     ],
                   ),
                 ],
@@ -503,7 +511,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               Center(
                 child: DynamicGradientButton(
-                  buttonText: "+  Add New Listing",
+                  buttonText: AppLocalizations.of(context)?.addNewListing ?? "+  Add New Listing",
                   onTap: () {
                     Navigator.pushNamed(context, '/listing-type-selection');
                   },
@@ -520,10 +528,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 height: 40,
                 child: Stack(
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
-                        "Inactive Listings",
-                        style: TextStyle(
+                        AppLocalizations.of(context)?.inactiveListings ?? "Inactive Listings",
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
@@ -539,9 +547,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             await Navigator.pushNamed(context, '/inactive-listings-page');
                             _onListingOperationComplete();
                           },
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)?.seeAll ?? "See all",
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF1E1E1E),
                               fontWeight: FontWeight.w300,
@@ -563,11 +571,11 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   ),
                 )
               else if (inactiveListings.isEmpty)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Text(
-                      'No inactive listings',
+                      AppLocalizations.of(context)?.noInactiveListings ?? 'No inactive listings',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
@@ -631,9 +639,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Text(
-                        "Listings Left",
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)?.listingsLeft ?? "Listings Left",
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF0048FF),
@@ -648,9 +656,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                     onTap: () {
                       // action for "Upgrade Plan"
                     },
-                    child: const Text(
-                      "Upgrade Plan",
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context)?.upgradePlan ?? "Upgrade Plan",
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Color(0xFFEA4435),
@@ -669,10 +677,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 height: 40,
                 child: Stack(
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
-                        "My Listings",
-                        style: TextStyle(
+                        AppLocalizations.of(context)?.myListings ?? "My Listings",
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
@@ -688,9 +696,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             await Navigator.pushNamed(context, '/my-listings-page');
                             _onListingOperationComplete();
                           },
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)?.seeAll ?? "See all",
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF1E1E1E),
                               fontWeight: FontWeight.w300,
@@ -711,11 +719,11 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   ),
                 )
               else if (activeListings.isEmpty)
-                const Center(
+                Center(
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(20),
                     child: Text(
-                      'No active listings',
+                      AppLocalizations.of(context)?.noActiveListings ?? 'No active listings',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
@@ -755,13 +763,13 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   onSold: (title) {
                     // TODO: Implement sold functionality
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Sold functionality not implemented yet')),
+                      SnackBar(content: Text(AppLocalizations.of(context)?.soldFunctionalityNotImplemented ?? 'Sold functionality not implemented yet')),
                     );
                   },
                   onBoost: (title) {
                     // TODO: Implement boost functionality
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Boost functionality not implemented yet')),
+                      SnackBar(content: Text(AppLocalizations.of(context)?.boostFunctionalityNotImplemented ?? 'Boost functionality not implemented yet')),
                     );
                   },
                 ),
@@ -774,10 +782,10 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 height: 40,
                 child: Stack(
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
-                        "Rating & Reviews",
-                        style: TextStyle(
+                        AppLocalizations.of(context)?.ratingAndReviews ?? "Rating & Reviews",
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
@@ -792,9 +800,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                           onPressed: () {
                             Navigator.pushNamed(context, '/my-reviews');
                           },
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)?.seeAll ?? "See all",
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Color(0xFF1E1E1E),
                               fontWeight: FontWeight.w300,
@@ -813,9 +821,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               const SizedBox(height: 20),
 
-              const Text(
-                "Plans & Subscription",
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)?.plansAndSubscription ?? "Plans & Subscription",
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF1E1E1E),
@@ -833,9 +841,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Current Subscription",
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)?.currentSubscription ?? "Current Subscription",
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
@@ -870,9 +878,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             ),
                           ),
                           const SizedBox(width: 2),
-                          const Text(
-                            "days left",
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)?.daysLeft ?? "days left",
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0XFF0048FF),
@@ -920,13 +928,13 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 ],
               ),
 
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    "Links",
-                    style: TextStyle(
+                    AppLocalizations.of(context)?.links ?? "Links",
+                    style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                     ),

@@ -1,5 +1,6 @@
 // lib/widgets/agent_widgets/dynamic_agents_widget.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'agent_widgets/agent_service.dart';
 import './recommended_agents_widget.dart';
 import '../screens/agents/category_agents_page.dart';
@@ -41,16 +42,17 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
   }
 
   // Get title based on category
-  String get title {
+  String getTitle(BuildContext context) {
     if (widget.customTitle != null) return widget.customTitle!;
-
+    
+    final l10n = AppLocalizations.of(context);
     switch (widget.category) {
       case AgentCategory.featured:
-        return 'Featured Agents';
+        return l10n?.featuredAgents ?? 'Featured Agents';
       case AgentCategory.topRated:
-        return 'Top Agents';
+        return l10n?.topAgents ?? 'Top Agents';
       case AgentCategory.forYou:
-        return 'For You';
+        return l10n?.forYouAgents ?? 'For You';
     }
   }
 
@@ -89,8 +91,9 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
-          error = 'Failed to load agents: $e';
+          error = l10n?.failedToLoadAgentsWidget(e.toString()) ?? 'Failed to load agents: $e';
           isLoading = false;
         });
       }
@@ -128,7 +131,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      getTitle(context),
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -141,7 +144,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
               ),
               TextButton(
                 onPressed: _handleSeeAll,
-                child: const Text('See all'),
+                child: Text(AppLocalizations.of(context)?.seeAll ?? 'See all'),
               ),
             ],
           ),
@@ -171,23 +174,23 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _loadAgents,
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
                     ),
                   ],
                 ),
               ),
             )
           else if (agents.isEmpty)
-            const SizedBox(
+            SizedBox(
               height: 250,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.person_search, color: Colors.grey, size: 48),
-                    SizedBox(height: 16),
+                    const Icon(Icons.person_search, color: Colors.grey, size: 48),
+                    const SizedBox(height: 16),
                     Text(
-                      'No agents found',
+                      AppLocalizations.of(context)?.noAgentsFoundCategory ?? 'No agents found',
                       style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ],

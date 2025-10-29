@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/listing_service.dart';
@@ -273,14 +274,18 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                   height: 40,
                   child: Stack(
                     children: [
-                      const Center(
-                        child: Text(
-                          "Inactive Listings",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1E1E1E),
-                          ),
+                       Center(
+                        child: Builder(
+                          builder: (context) {
+                            return Text(
+                              AppLocalizations.of(context)?.inactiveListings ?? "Inactive Listings",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF1E1E1E),
+                              ),
+                            );
+                          }
                         ),
                       ),
                       Align(
@@ -316,11 +321,11 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     ),
                   )
                 else if (inactiveListings.isEmpty)
-                  const Center(
+                  Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       child: Text(
-                        'No inactive listings',
+                        AppLocalizations.of(context)?.noInactiveListings ?? 'No inactive listings',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
@@ -374,16 +379,16 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                   height: 40,
                   child: Stack(
                     children: [
-                      const Center(
-                        child: Text(
-                          "My Listings",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1E1E1E),
-                          ),
+                    Center(
+                      child: Text(
+                        AppLocalizations.of(context)?.myListings ?? "My Listings",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1E1E1E),
                         ),
                       ),
+                    ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Padding(
@@ -416,11 +421,11 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     ),
                   )
                 else if (activeListings.isEmpty)
-                  const Center(
+                  Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       child: Text(
-                        'No active listings',
+                        AppLocalizations.of(context)?.noActiveListings ?? 'No active listings',
                         style: TextStyle(color: Colors.grey),
                       ),
                     ),
@@ -474,13 +479,13 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 const SizedBox(height: 30),
 
                 // Links section
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
-                      "Links",
-                      style: TextStyle(
+                      AppLocalizations.of(context)?.links ?? "Links",
+                      style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 18,
                       ),
@@ -649,7 +654,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
           // Right: Edit Profile button
           Center(
             child: DynamicGradientButton(
-              buttonText: 'Edit Profile',
+              buttonText: AppLocalizations.of(context)?.editProfile ?? 'Edit Profile',
               onTap: () {
                 Navigator.pushNamed(context, '/profile');
               },

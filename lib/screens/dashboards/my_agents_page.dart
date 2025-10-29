@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/agent_service.dart';
 import '../../environment.dart';
 import 'agent_company_dashboard_screens/edit_agent_screen.dart';
@@ -59,7 +60,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
       });
       print('Error loading agents: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading agents: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context)?.errorLoadingAgents(e.toString()) ?? 'Error loading agents: $e')),
       );
     }
   }
@@ -91,7 +92,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Agents'),
+        title: Text(AppLocalizations.of(context)?.myAgents ?? 'My Agents'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -110,19 +111,29 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Total Agents: $totalAgents',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return Text(
+                        l10n?.totalAgents(totalAgents) ?? 'Total Agents: $totalAgents',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    }
                   ),
-                  Text(
-                    'Page $currentPage of $totalPages',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return Text(
+                        l10n?.pageOf(currentPage, totalPages) ?? 'Page $currentPage of $totalPages',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      );
+                    }
                   ),
                 ],
               ),
@@ -133,10 +144,10 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
               child: isLoading && agents.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : agents.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            'No agents found',
-                            style: TextStyle(
+                            AppLocalizations.of(context)?.noAgentsFoundMy ?? 'No agents found',
+                            style: const TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
                             ),
@@ -155,7 +166,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
                                       ? const CircularProgressIndicator()
                                       : ElevatedButton(
                                           onPressed: _loadMoreAgents,
-                                          child: const Text('Load More'),
+                                          child: Text(AppLocalizations.of(context)?.loadMore ?? 'Load More'),
                                         ),
                                 ),
                               );
@@ -194,7 +205,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            agent['email'] ?? 'No email',
+                                            agent['email'] ?? (AppLocalizations.of(context)?.noEmail ?? 'No email'),
                                             style: const TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey,
@@ -202,7 +213,7 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
                                           ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            agent['phone'] ?? 'No phone',
+                                            agent['phone'] ?? (AppLocalizations.of(context)?.noPhone ?? 'No phone'),
                                             style: const TextStyle(
                                               fontSize: 14,
                                               color: Colors.grey,
@@ -245,12 +256,17 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
-                                          'Joined: ${_formatDate(agent['createdAt'])}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
+                                        Builder(
+                                          builder: (context) {
+                                            final l10n = AppLocalizations.of(context);
+                                            return Text(
+                                              l10n?.joined(_formatDate(agent['createdAt'])) ?? 'Joined: ${_formatDate(agent['createdAt'])}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            );
+                                          }
                                         ),
                                       ],
                                     ),

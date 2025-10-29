@@ -182,5 +182,200 @@
       }
     }
   },
-  "failedToLoadServices": "فشل تحميل الخدمات"
+  "failedToLoadServices": "فشل تحميل الخدمات",
+  "pleaseLoginToStartChatAgent": "الرجاء تسجيل الدخول لبدء المحادثة",
+  "failedToStartChatAgent": "فشل بدء المحادثة. يرجى المحاولة مرة أخرى.",
+  "couldNotMakePhoneCallAgent": "تعذر الاتصال",
+  "errorOpeningLinkAgent": "خطأ في فتح الرابط: {error}",
+  "@errorOpeningLinkAgent": {
+    "description": "رسالة خطأ عند فتح رابط",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportAgent": "الإبلاغ عن هذا الوكيل",
+  "reportAgentTooltip": "الإبلاغ عن هذا الوكيل",
+  "aboutAgent": "حول",
+  "readMoreAgent": "اقرأ المزيد",
+  "readLessAgent": "اقرأ أقل",
+  "detailsAgent": "التفاصيل",
+  "emailAgent": "البريد الإلكتروني:",
+  "serviceAreas": "مناطق الخدمة:",
+  "noDescriptionAvailable": "لا يوجد وصف متاح.",
+  "noProfileImage": "لا توجد صورة للملف الشخصي",
+  "failedToLoadAgentData": "فشل تحميل بيانات الوكيل",
+  "noAgentDataAvailable": "لا توجد بيانات للوكيل متاحة",
+  "searchResultsFor": "نتائج البحث عن \"{query}\"",
+  "@searchResultsFor": {
+    "description": "عنوان نتائج البحث للوكلاء",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "foundAgentsFor": "تم العثور على {count} وكيلاً لـ \"{query}\"",
+  "@foundAgentsFor": {
+    "description": "رسالة عدد الوكلاء الموجودين",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchingAgents": "البحث عن الوكلاء...",
+  "errorSearchingAgents": "خطأ في البحث عن الوكلاء",
+  "noAgentsFound": "لم يتم العثور على وكلاء",
+  "tryDifferentKeywordsAgent": "جرب البحث بكلمات مفتاحية مختلفة",
+  "featuredAgents": "الوكلاء المميزون",
+  "topRatedAgents": "الوكلاء الأعلى تقييماً",
+  "recommendedAgentsTitle": "الوكلاء الموصى بهم",
+  "failedToLoadAgents": "فشل تحميل {categoryName}",
+  "@failedToLoadAgents": {
+    "description": "رسالة خطأ عند فشل تحميل الوكلاء حسب الفئة",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noAgentsFoundCategory": "لم يتم العثور على وكلاء",
+  "agentDashboard": "لوحة تحكم الوكيل",
+  "stats": "الإحصائيات",
+  "totalListings": "إجمالي القوائم:",
+  "profileViews": "مشاهدات الملف الشخصي:",
+  "activeListings": "القوائم النشطة:",
+  "totalChats": "إجمالي المحادثات:",
+  "addNewListing": "+  إضافة قائمة جديدة",
+  "inactiveListings": "القوائم غير النشطة",
+  "noInactiveListings": "لا توجد قوائم غير نشطة",
+  "listingsLeft": "القوائم المتبقية",
+  "upgradePlan": "ترقية الخطة",
+  "myListings": "قوائمي",
+  "noActiveListings": "لا توجد قوائم نشطة",
+  "ratingAndReviews": "التقييم والمراجعات",
+  "noReviewsYet": "لا توجد مراجعات بعد",
+  "plansAndSubscription": "الخطط والاشتراك",
+  "currentSubscription": "الاشتراك الحالي",
+  "daysLeft": "أيام متبقية",
+  "links": "الروابط",
+  "deleteListing": "حذف القائمة",
+  "deleteListingConfirm": "هل أنت متأكد أنك تريد حذف \"{title}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "@deleteListingConfirm": {
+    "description": "رسالة تأكيد حذف القائمة",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "listingDeletedSuccessfully": "تم حذف القائمة بنجاح",
+  "failedToDeleteListing": "فشل حذف القائمة",
+  "errorDeletingListing": "خطأ في حذف القائمة: {error}",
+  "@errorDeletingListing": {
+    "description": "رسالة خطأ عند حذف القائمة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "تعديل الملف الشخصي",
+  "soldFunctionalityNotImplemented": "وظيفة البيع غير مطبقة بعد",
+  "boostFunctionalityNotImplemented": "وظيفة التعزيز غير مطبقة بعد",
+  "hiUser": "مرحباً، {name}",
+  "@hiUser": {
+    "description": "تحية باسم المستخدم",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activePlan": "الخطة النشطة:",
+  "validUntil": "صالحة حتى: {date}",
+  "@validUntil": {
+    "description": "تاريخ الصلاحية",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlan": "لا توجد خطة",
+  "myAgents": "وكلائي",
+  "totalAgents": "إجمالي الوكلاء: {count}",
+  "@totalAgents": {
+    "description": "عدد الوكلاء الإجمالي",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pageOf": "الصفحة {current} من {total}",
+  "@pageOf": {
+    "description": "عرض رقم الصفحة",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noAgentsFoundMy": "لم يتم العثور على وكلاء",
+  "loadMore": "تحميل المزيد",
+  "noEmail": "لا يوجد بريد إلكتروني",
+  "noPhone": "لا يوجد هاتف",
+  "joined": "انضم: {date}",
+  "@joined": {
+    "description": "تاريخ الانضمام",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingAgents": "خطأ في تحميل الوكلاء: {error}",
+  "@errorLoadingAgents": {
+    "description": "رسالة خطأ تحميل الوكلاء",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "billingHistory": "سجل الفواتير",
+  "date": "التاريخ",
+  "totalPaid": "المبلغ الإجمالي المدفوع",
+  "searchAgents": "بحث عن الوكلاء...",
+  "topAgents": "أفضل الوكلاء",
+  "forYouAgents": "من أجلك",
+  "failedToLoadAgentsWidget": "فشل تحميل الوكلاء: {error}",
+  "@failedToLoadAgentsWidget": {
+    "description": "رسالة خطأ عند فشل تحميل الوكلاء في الويدجت",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "properties": "{count} عقار",
+  "@properties": {
+    "description": "نص عدد العقارات",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

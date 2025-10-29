@@ -1,6 +1,7 @@
 // lib/widgets/agent_widgets/recommended_agents_widget.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../environment.dart';
 import '../../screens/agents/single_agent_page.dart';
 import '../../services/favorite_service.dart';
@@ -180,7 +181,7 @@ class RecommendedAgentsWidget extends StatelessWidget {
               if (onSeeAll != null)
                 TextButton(
                   onPressed: onSeeAll,
-                  child: const Text('See all'),
+                  child: Text(AppLocalizations.of(context)?.seeAll ?? 'See all'),
                 ),
             ],
           ),
@@ -430,10 +431,19 @@ class _AgentCardState extends State<AgentCard> {
                 const SizedBox(height: 4),
                 // Conditional rendering of property count or custom text
                 if (widget.showPropertyCount)
-                  _buildInfoRow(Icons.business_center_outlined,
-                      '${widget.agent.propertyCount} Properties')
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return _buildInfoRow(Icons.business_center_outlined,
+                          l10n?.properties(widget.agent.propertyCount) ?? '${widget.agent.propertyCount} Properties');
+                    }
+                  )
                 else
-                  _buildCustomTextRow(widget.agent.customText ?? 'No description available'),
+                  Builder(
+                    builder: (context) {
+                      return _buildCustomTextRow(widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available'));
+                    }
+                  ),
                 const SizedBox(height: 4),
                 _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
                 const SizedBox(height: 4),

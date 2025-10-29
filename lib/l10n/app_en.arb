@@ -182,5 +182,200 @@
       }
     }
   },
-  "failedToLoadServices": "Failed to load services"
+  "failedToLoadServices": "Failed to load services",
+  "pleaseLoginToStartChatAgent": "Please log in to start a chat",
+  "failedToStartChatAgent": "Failed to start chat. Please try again.",
+  "couldNotMakePhoneCallAgent": "Could not make phone call",
+  "errorOpeningLinkAgent": "Error opening link: {error}",
+  "@errorOpeningLinkAgent": {
+    "description": "Error message when opening a link",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportAgent": "Report this agent",
+  "reportAgentTooltip": "Report this agent",
+  "aboutAgent": "About",
+  "readMoreAgent": "Read More",
+  "readLessAgent": "Read Less",
+  "detailsAgent": "Details",
+  "emailAgent": "Email:",
+  "serviceAreas": "Service Areas:",
+  "noDescriptionAvailable": "No description available.",
+  "noProfileImage": "No profile image",
+  "failedToLoadAgentData": "Failed to load agent data",
+  "noAgentDataAvailable": "No agent data available",
+  "searchResultsFor": "Search Results for \"{query}\"",
+  "@searchResultsFor": {
+    "description": "Search results title for agents",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "foundAgentsFor": "Found {count} agents for \"{query}\"",
+  "@foundAgentsFor": {
+    "description": "Found agents count message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchingAgents": "Searching agents...",
+  "errorSearchingAgents": "Error searching agents",
+  "noAgentsFound": "No agents found",
+  "tryDifferentKeywordsAgent": "Try searching with different keywords",
+  "featuredAgents": "Featured Agents",
+  "topRatedAgents": "Top Rated Agents",
+  "recommendedAgentsTitle": "Recommended Agents",
+  "failedToLoadAgents": "Failed to load {categoryName}",
+  "@failedToLoadAgents": {
+    "description": "Error message when failing to load agents by category",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noAgentsFoundCategory": "No agents found",
+  "agentDashboard": "Agent Dashboard",
+  "stats": "Stats",
+  "totalListings": "Total Listings:",
+  "profileViews": "Profile Views:",
+  "activeListings": "Active Listings:",
+  "totalChats": "Total Chats:",
+  "addNewListing": "+  Add New Listing",
+  "inactiveListings": "Inactive Listings",
+  "noInactiveListings": "No inactive listings",
+  "listingsLeft": "Listings Left",
+  "upgradePlan": "Upgrade Plan",
+  "myListings": "My Listings",
+  "noActiveListings": "No active listings",
+  "ratingAndReviews": "Rating & Reviews",
+  "noReviewsYet": "No reviews yet",
+  "plansAndSubscription": "Plans & Subscription",
+  "currentSubscription": "Current Subscription",
+  "daysLeft": "days left",
+  "links": "Links",
+  "deleteListing": "Delete Listing",
+  "deleteListingConfirm": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+  "@deleteListingConfirm": {
+    "description": "Delete listing confirmation message",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "listingDeletedSuccessfully": "Listing deleted successfully",
+  "failedToDeleteListing": "Failed to delete listing",
+  "errorDeletingListing": "Error deleting listing: {error}",
+  "@errorDeletingListing": {
+    "description": "Error message when deleting listing",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfile": "Edit Profile",
+  "soldFunctionalityNotImplemented": "Sold functionality not implemented yet",
+  "boostFunctionalityNotImplemented": "Boost functionality not implemented yet",
+  "hiUser": "Hi, {name}",
+  "@hiUser": {
+    "description": "Greeting with user name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activePlan": "Active Plan:",
+  "validUntil": "Valid Until: {date}",
+  "@validUntil": {
+    "description": "Valid until date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noPlan": "No Plan",
+  "myAgents": "My Agents",
+  "totalAgents": "Total Agents: {count}",
+  "@totalAgents": {
+    "description": "Total agents count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pageOf": "Page {current} of {total}",
+  "@pageOf": {
+    "description": "Page number display",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "noAgentsFoundMy": "No agents found",
+  "loadMore": "Load More",
+  "noEmail": "No email",
+  "noPhone": "No phone",
+  "joined": "Joined: {date}",
+  "@joined": {
+    "description": "Joined date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingAgents": "Error loading agents: {error}",
+  "@errorLoadingAgents": {
+    "description": "Error loading agents message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "billingHistory": "Billing History",
+  "date": "Date",
+  "totalPaid": "Total Paid",
+  "searchAgents": "Search agents...",
+  "topAgents": "Top Agents",
+  "forYouAgents": "For You",
+  "failedToLoadAgentsWidget": "Failed to load agents: {error}",
+  "@failedToLoadAgentsWidget": {
+    "description": "Error message when failing to load agents in widget",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "properties": "{count} Properties",
+  "@properties": {
+    "description": "Property count text",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

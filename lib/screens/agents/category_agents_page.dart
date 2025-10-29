@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/agent_widgets/agent_service.dart';
 import '../../widgets/dynamic_agents_widget.dart'; // For AgentCategory enum
 import '../../widgets/recommended_agents_widget.dart'; // For AgentCard
@@ -88,22 +89,24 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
     await _fetchPage(pageToFetch: 1);
   }
 
-  String get title {
+  String title(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (widget.category) {
       case AgentCategory.featured:
-        return 'Featured Agents';
+        return l10n?.featuredAgents ?? 'Featured Agents';
       case AgentCategory.topRated:
-        return 'Top Rated Agents';
+        return l10n?.topRatedAgents ?? 'Top Rated Agents';
       case AgentCategory.forYou:
-        return 'Recommended Agents';
+        return l10n?.recommendedAgentsTitle ?? 'Recommended Agents';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title(context)),
       ),
       body: isLoading && agents.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -114,18 +117,23 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
                   if (error != null)
                     Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Failed to load $title: $error',
-                        style: const TextStyle(color: Colors.red),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return Text(
+                            l10n?.failedToLoadAgents(title(context)) ?? 'Failed to load ${title(context)}: $error',
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
                       ),
                     ),
                   Expanded(
                     child: agents.isEmpty
                         ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
-                              SizedBox(height: 80),
-                              Center(child: Text('No agents found')),
+                            children: [
+                              const SizedBox(height: 80),
+                              Center(child: Text(l10n?.noAgentsFoundCategory ?? 'No agents found')),
                             ],
                           )
                         : GridView.builder(
@@ -154,12 +162,12 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
                       children: [
                         ElevatedButton(
                           onPressed: (meta == null || page <= 1) ? null : () => _goToPage(page - 1),
-                          child: const Text('Previous'),
+                          child: Text(l10n?.previous ?? 'Previous'),
                         ),
-                        Text('Page ${meta?.page ?? page} of ${meta?.pages ?? '?'}'),
+                        Text('${l10n?.page ?? 'Page'} ${meta?.page ?? page} ${l10n?.ofText ?? 'of'} ${meta?.pages ?? '?'}'),
                         ElevatedButton(
                           onPressed: (meta == null || (meta!.pages != 0 && page >= meta!.pages)) ? null : () => _goToPage(page + 1),
-                          child: const Text('Next'),
+                          child: Text(l10n?.next ?? 'Next'),
                         ),
                       ],
                     ),
