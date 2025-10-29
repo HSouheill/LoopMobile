@@ -15,7 +15,7 @@ class LoginLandingPage extends StatelessWidget {
             child: SizedBox(
               width: double.infinity, // This makes the box stretch to full width
               child: Image.asset(
-                'assets/Background.png',
+                'assets/BackgroundLogo.png',
                 fit: BoxFit.cover, // Ensures the image covers the full width without distortion
               ),
             ),

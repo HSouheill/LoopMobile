@@ -47,7 +47,7 @@ class _RealEstateCompanySignupPage1State extends State<RealEstateCompanySignupPa
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/Background.png',
+                'assets/BackgroundLogo.png',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(

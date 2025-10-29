@@ -66,7 +66,7 @@ class _ServiceProviderCompanySignupPage2State extends State<ServiceProviderCompa
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/Background.png',
+                'assets/BackgroundLogo.png',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(

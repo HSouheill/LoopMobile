@@ -65,7 +65,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/Background.png',
+                'assets/BackgroundLogo.png',
                 fit: BoxFit.cover,
                 // Add a color filter for a darker overlay to make the text on top more readable.
                 color: Colors.black.withOpacity(0.5),
