@@ -40,6 +40,7 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
   }
 
   Widget _buildListingsSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -49,7 +50,7 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
             const Icon(Icons.home, color: Colors.black, size: 24),
             const SizedBox(width: 8),
             Text(
-              "${widget.agent.firstName}'s Listings",
+              l10n.agentListingsTitle(widget.agent.firstName),
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -80,7 +81,7 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No listings available',
+                    l10n.noListingsAvailable,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 16,
@@ -89,7 +90,7 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'This agent hasn\'t posted any properties yet',
+                    l10n.agentNoListingsYet,
                     style: TextStyle(
                       color: Colors.grey[500],
                       fontSize: 14,

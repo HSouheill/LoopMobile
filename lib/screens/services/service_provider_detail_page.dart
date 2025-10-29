@@ -936,6 +936,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   }
 
   Widget _buildPortfolioSection() {
+    final l10n = AppLocalizations.of(context)!;
     final portfolioLink = widget.serviceProvider.portfolioLink;
     final hasPortfolio = portfolioLink.isNotEmpty;
 
@@ -946,9 +947,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
           children: [
             const Icon(Icons.picture_as_pdf, color: Colors.black, size: 24),
             const SizedBox(width: 8),
-            const Text(
-              'Portfolio',
-              style: TextStyle(
+            Text(
+              l10n.portfolio,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -974,25 +975,25 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                   onTap: _viewPortfolioPDF,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.picture_as_pdf,
                             size: 32,
                             color: Colors.red,
                           ),
-                          SizedBox(width: 14),
+                          const SizedBox(width: 14),
                           Text(
-                            "View Portfolio",
-                            style: TextStyle(
+                            l10n.viewPortfolio,
+                            style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
-                      Icon(
+                      const Icon(
                         Icons.arrow_forward_ios,
                         size: 10,
                         color: Colors.black,
@@ -1004,9 +1005,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
             ),
           ),
         ] else ...[
-          const Text(
-            'No portfolio available',
-            style: TextStyle(
+          Text(
+            l10n.noPortfolioAvailable,
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 15,
             ),
