@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../environment.dart';
@@ -31,9 +32,12 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
   }
 
   Future<void> _submitReview() async {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    
     if (_selectedRating == 0) {
       setState(() {
-        _errorMessage = 'Please select a rating';
+        _errorMessage = l10n.pleaseSelectRating;
       });
       return;
     }
@@ -41,7 +45,7 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
     // Check if user is authenticated
     if (!AuthService.isLoggedIn) {
       setState(() {
-        _errorMessage = 'Please log in to submit a review';
+        _errorMessage = l10n.pleaseLoginToSubmitReview;
       });
       return;
     }
@@ -73,36 +77,45 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
         widget.onReviewSubmitted();
         
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Review submitted successfully!'),
+            SnackBar(
+              content: Text(l10n.reviewSubmittedSuccessfully),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else if (response.statusCode == 401) {
         // Unauthorized - token expired or invalid
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _errorMessage = 'Session expired. Please log in again.';
+          _errorMessage = l10n.sessionExpired;
           _isSubmitting = false;
         });
       } else if (response.statusCode == 409) {
         // User already reviewed
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _errorMessage = 'You have already reviewed this agent';
+          _errorMessage = l10n.alreadyReviewedAgent;
           _isSubmitting = false;
         });
       } else {
         // Other error
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         final responseData = jsonDecode(response.body);
         setState(() {
-          _errorMessage = responseData['message'] ?? 'Failed to submit review';
+          _errorMessage = responseData['message'] ?? l10n.failedToSubmitReview;
           _isSubmitting = false;
         });
       }
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Network error: ${e.toString()}';
+        _errorMessage = l10n.networkErrorReview(e.toString());
         _isSubmitting = false;
       });
     }
@@ -130,6 +143,7 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(20),
@@ -146,9 +160,9 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
             children: [
               const Icon(Icons.edit, color: Colors.black, size: 20),
               const SizedBox(width: 8),
-              const Text(
-                'Write a Review',
-                style: TextStyle(
+              Text(
+                l10n.writeAReview,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -165,8 +179,10 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
                 const SizedBox(height: 8),
                 Text(
                   _selectedRating == 0 
-                    ? 'Tap to rate' 
-                    : '${_selectedRating} star${_selectedRating > 1 ? 's' : ''}',
+                    ? l10n.tapToRate 
+                    : (_selectedRating == 1 
+                        ? l10n.star(_selectedRating)
+                        : l10n.stars(_selectedRating)),
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontSize: 14,
@@ -183,7 +199,7 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
             controller: _commentController,
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'Share your experience with this agent...',
+              hintText: l10n.shareExperienceWithAgent,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.grey[300]!),
@@ -239,10 +255,10 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
                 ),
               ),
               child: _isSubmitting
-                ? const Row(
+                ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
@@ -250,13 +266,13 @@ class _ReviewSubmissionWidgetState extends State<ReviewSubmissionWidget> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Text('Submitting...'),
+                      const SizedBox(width: 8),
+                      Text(l10n.submitting),
                     ],
                   )
-                : const Text(
-                    'Submit Review',
-                    style: TextStyle(
+                : Text(
+                    l10n.submitReview,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),

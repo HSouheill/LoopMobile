@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/service_provider.dart';
 import '../models/review.dart';
 import '../environment.dart';
@@ -32,7 +33,7 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
   }
 
   Widget _buildReviewsSection(BuildContext context) {
- 
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,9 +42,9 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
           children: [
             const Icon(Icons.rate_review, color: Colors.black, size: 24),
             const SizedBox(width: 8),
-            const Text(
-              'Reviews',
-              style: TextStyle(
+            Text(
+              l10n.reviews,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -66,7 +67,7 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'See All ${widget.serviceProvider.reviewCount} Reviews',
+                      l10n.seeAllReviews(widget.serviceProvider.reviewCount),
                       style: const TextStyle(
                         color: Colors.blue,
                         fontSize: 14,
@@ -107,7 +108,7 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No reviews available',
+                    l10n.noReviewsAvailable,
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 16,
@@ -116,7 +117,7 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'This service provider hasn\'t received any reviews yet',
+                    l10n.serviceProviderNoReviewsYet,
                     style: TextStyle(
                       color: Colors.grey[500],
                       fontSize: 14,
@@ -131,16 +132,16 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
             children: [
               // Show up to 3 reviews
               ...widget.serviceProvider.reviews.take(3).map((review) => _buildReviewCard(context, review)),
-              
-              // Review Submission Widget
-              ReviewSubmissionWidget(
-                agentId: widget.serviceProvider.id,
-                onReviewSubmitted: () {
-                  widget.onReviewSubmitted?.call();
-                },
-              ),
             ],
           ),
+        
+        // Review Submission Widget (always shown, regardless of review count)
+        ReviewSubmissionWidget(
+          agentId: widget.serviceProvider.id,
+          onReviewSubmitted: () {
+            widget.onReviewSubmitted?.call();
+          },
+        ),
       ],
     );
   }
@@ -226,12 +227,17 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
               ),
               
               // Report button
-              IconButton(
-                icon: const Icon(Icons.flag, color: Colors.red, size: 18),
-                onPressed: () => _showReportDialog(context, review),
-                tooltip: 'Report this review',
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Colors.red, size: 18),
+                    onPressed: () => _showReportDialog(context, review),
+                    tooltip: l10n.reportThisReview,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  );
+                },
               ),
             ],
           ),

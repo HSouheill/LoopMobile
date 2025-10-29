@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/review.dart';
 import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;
@@ -119,111 +120,120 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header
-        Row(
-          children: [
-            const Icon(Icons.rate_review, color: Colors.black, size: 24),
-            const SizedBox(width: 8),
-            const Text(
-              'Reviews',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Spacer(),
-            if (widget.agent.reviews.isNotEmpty)
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/all-reviews',
-                    arguments: {
-                      'objectId': widget.agent.id,
-                      'table': 'user',
-                      'objectName': widget.agent.fullName,
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Row(
+              children: [
+                const Icon(Icons.rate_review, color: Colors.black, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.reviews,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                if (widget.agent.reviews.isNotEmpty)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/all-reviews',
+                        arguments: {
+                          'objectId': widget.agent.id,
+                          'table': 'user',
+                          'objectName': widget.agent.fullName,
+                        },
+                      );
                     },
-                  );
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'See All ${widget.agent.reviewCount} Reviews',
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.seeAllReviews(widget.agent.reviewCount),
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                     const SizedBox(width: 4),
                     const Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.blue,
                       size: 12,
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        
-        // Reviews
-        if (widget.agent.reviews.isEmpty)
-          Container(
-            height: 200,
-            margin: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.rate_review_outlined,
-                    size: 48,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No reviews available',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'This agent hasn\'t received any reviews yet',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14,
-                    ),
                   ),
                 ],
               ),
             ),
-          )
-        else
-          Column(
-            children: [
-              // Show up to 3 reviews
-              ...widget.agent.reviews.take(3).map((review) => _buildReviewCard(context, review)),
-              
-            ],
-          ),
-          
-          // Review Submission Widget
-          ReviewSubmissionWidget(
-            agentId: widget.agent.id,
-            onReviewSubmitted: () {
-              widget.onReviewSubmitted?.call();
-            },
-          ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        
+        // Reviews
+        Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            if (widget.agent.reviews.isEmpty) {
+              return Container(
+                height: 200,
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.rate_review_outlined,
+                        size: 48,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.noReviewsAvailable,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.agentNoReviewsYet,
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                // Show up to 3 reviews
+                ...widget.agent.reviews.take(3).map((review) => _buildReviewCard(context, review)),
+              ],
+            );
+          },
+        ),
+        
+        // Review Submission Widget
+        ReviewSubmissionWidget(
+          agentId: widget.agent.id,
+          onReviewSubmitted: () {
+            widget.onReviewSubmitted?.call();
+          },
+        ),
       ],
     );
   }
@@ -309,12 +319,17 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
               ),
               
               // Report button
-              IconButton(
-                icon: const Icon(Icons.flag, color: Colors.red, size: 18),
-                onPressed: () => _showReportDialog(context, review),
-                tooltip: 'Report this review',
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Colors.red, size: 18),
+                    onPressed: () => _showReportDialog(context, review),
+                    tooltip: l10n.reportThisReview,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  );
+                },
               ),
             ],
           ),

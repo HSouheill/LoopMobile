@@ -1193,5 +1193,131 @@
         "type": "String"
       }
     }
-  }
+  },
+  "myReviews": "My Reviews",
+  "totalReviews": "Total Reviews: {count}",
+  "@totalReviews": {
+    "description": "Total reviews count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReviews": "Error loading reviews",
+  "reviewsWillAppearHere": "Reviews will appear here when you receive them.",
+  "reviewsFor": "Reviews for {objectName}",
+  "@reviewsFor": {
+    "description": "Reviews page title",
+    "placeholders": {
+      "objectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadReviews": "Failed to load reviews",
+  "beFirstToReview": "Be the first to review this {table}!",
+  "@beFirstToReview": {
+    "description": "Message when no reviews exist",
+    "placeholders": {
+      "table": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewCount": "{count} Review",
+  "@reviewCount": {
+    "description": "Review count singular",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewCountPlural": "{count} Reviews",
+  "@reviewCountPlural": {
+    "description": "Review count plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadMoreReviews": "Load More Reviews",
+  "writeAReview": "Write a Review",
+  "tapToRate": "Tap to rate",
+  "star": "{count} star",
+  "@star": {
+    "description": "Star rating singular",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stars": "{count} stars",
+  "@stars": {
+    "description": "Star rating plural",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareExperienceWithAgent": "Share your experience with this agent...",
+  "pleaseSelectRating": "Please select a rating",
+  "pleaseLoginToSubmitReview": "Please log in to submit a review",
+  "reviewSubmittedSuccessfully": "Review submitted successfully!",
+  "sessionExpired": "Session expired. Please log in again.",
+  "alreadyReviewedAgent": "You have already reviewed this agent",
+  "failedToSubmitReview": "Failed to submit review",
+  "networkErrorReview": "Network error: {error}",
+  "@networkErrorReview": {
+    "description": "Network error for reviews",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "Submitting...",
+  "submitReview": "Submit Review",
+  "reportReview": "Report Review",
+  "reportReviewBy": "Report review by: {reviewerName}",
+  "@reportReviewBy": {
+    "description": "Report review dialog title",
+    "placeholders": {
+      "reviewerName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReportingReview": "Please select a reason for reporting this review:",
+  "additionalDetailsOptionalReview": "Additional details (optional):",
+  "provideAdditionalInformationReview": "Provide additional information about why you are reporting this review...",
+  "pleaseSelectReasonForReportingReview": "Please select a reason for reporting",
+  "errorSubmittingReviewReport": "Error submitting report: {error}",
+  "@errorSubmittingReviewReport": {
+    "description": "Error submitting review report",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "submitReport": "Submit Report",
+  "reportThisReview": "Report this review",
+  "reviews": "Reviews",
+  "seeAllReviews": "See All {count} Reviews",
+  "@seeAllReviews": {
+    "description": "See all reviews button",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReviewsAvailable": "No reviews available",
+  "serviceProviderNoReviewsYet": "This service provider hasn't received any reviews yet",
+  "agentNoReviewsYet": "This agent hasn't received any reviews yet"
 }

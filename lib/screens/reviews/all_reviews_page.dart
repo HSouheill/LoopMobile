@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/review_service.dart';
 import '../../models/review.dart';
 import '../../environment.dart';
@@ -83,15 +84,16 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: AppBar(
           title: Container(
             padding: const EdgeInsets.only(top: 15, left: 50),
-            child: const Text(
-              "My Reviews",
-              style: TextStyle(
+            child: Text(
+              l10n.myReviews,
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
               ),
@@ -149,7 +151,7 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  "Total Reviews: $totalCount",
+                  l10n.totalReviews(totalCount),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -158,7 +160,7 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
                 ),
               ),
             Expanded(
-              child: _buildReviewsList(),
+              child: _buildReviewsList(l10n),
             ),
           ],
         ),
@@ -166,7 +168,7 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
     );
   }
 
-  Widget _buildReviewsList() {
+  Widget _buildReviewsList(AppLocalizations l10n) {
     if (isLoading && reviews.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -183,7 +185,7 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Error loading reviews',
+              l10n.errorLoadingReviews,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -202,7 +204,7 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _refreshData,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -210,28 +212,28 @@ class _AllReviewsPageState extends State<AllReviewsPage> {
     }
 
     if (reviews.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.reviews_outlined,
               size: 64,
               color: Colors.grey,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              'No reviews yet',
-              style: TextStyle(
+              l10n.noReviewsYet,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E1E1E),
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              'Reviews will appear here when you receive them.',
-              style: TextStyle(
+              l10n.reviewsWillAppearHere,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
               ),

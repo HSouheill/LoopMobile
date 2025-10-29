@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/review.dart';
 import '../environment.dart';
 import 'review_report_dialog.dart';
@@ -92,12 +93,17 @@ class ReviewCardWidget extends StatelessWidget {
               
               // Report button
               const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.flag, color: Colors.red, size: 18),
-                onPressed: () => _showReportDialog(context),
-                tooltip: 'Report this review',
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Colors.red, size: 18),
+                    onPressed: () => _showReportDialog(context),
+                    tooltip: l10n.reportThisReview,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  );
+                },
               ),
             ],
           ),

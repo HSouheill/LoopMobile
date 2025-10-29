@@ -1193,5 +1193,131 @@
         "type": "String"
       }
     }
-  }
+  },
+  "myReviews": "مراجعاتي",
+  "totalReviews": "إجمالي المراجعات: {count}",
+  "@totalReviews": {
+    "description": "عدد المراجعات الإجمالي",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingReviews": "خطأ في تحميل المراجعات",
+  "reviewsWillAppearHere": "ستظهر المراجعات هنا عند استلامها.",
+  "reviewsFor": "مراجعات {objectName}",
+  "@reviewsFor": {
+    "description": "عنوان صفحة المراجعات",
+    "placeholders": {
+      "objectName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadReviews": "فشل تحميل المراجعات",
+  "beFirstToReview": "كن أول من يراجع هذا {table}!",
+  "@beFirstToReview": {
+    "description": "رسالة عندما لا توجد مراجعات",
+    "placeholders": {
+      "table": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewCount": "{count} مراجعة",
+  "@reviewCount": {
+    "description": "عدد المراجعات بالمفرد",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewCountPlural": "{count} مراجعة",
+  "@reviewCountPlural": {
+    "description": "عدد المراجعات بالجمع",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadMoreReviews": "تحميل المزيد من المراجعات",
+  "writeAReview": "اكتب مراجعة",
+  "tapToRate": "اضغط للتقييم",
+  "star": "نجمة {count}",
+  "@star": {
+    "description": "تقييم النجمة بالمفرد",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stars": "{count} نجوم",
+  "@stars": {
+    "description": "تقييم النجوم بالجمع",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shareExperienceWithAgent": "شارك تجربتك مع هذا الوكيل...",
+  "pleaseSelectRating": "يرجى اختيار تقييم",
+  "pleaseLoginToSubmitReview": "يرجى تسجيل الدخول لإرسال مراجعة",
+  "reviewSubmittedSuccessfully": "تم إرسال المراجعة بنجاح!",
+  "sessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+  "alreadyReviewedAgent": "لقد راجعت هذا الوكيل بالفعل",
+  "failedToSubmitReview": "فشل إرسال المراجعة",
+  "networkErrorReview": "خطأ في الشبكة: {error}",
+  "@networkErrorReview": {
+    "description": "خطأ الشبكة للمراجعات",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "submitting": "جاري الإرسال...",
+  "submitReview": "إرسال المراجعة",
+  "reportReview": "الإبلاغ عن المراجعة",
+  "reportReviewBy": "الإبلاغ عن مراجعة من: {reviewerName}",
+  "@reportReviewBy": {
+    "description": "عنوان حوار الإبلاغ عن المراجعة",
+    "placeholders": {
+      "reviewerName": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReportingReview": "يرجى اختيار سبب للإبلاغ عن هذه المراجعة:",
+  "additionalDetailsOptionalReview": "تفاصيل إضافية (اختياري):",
+  "provideAdditionalInformationReview": "قدم معلومات إضافية عن سبب الإبلاغ عن هذه المراجعة...",
+  "pleaseSelectReasonForReportingReview": "يرجى اختيار سبب للإبلاغ",
+  "errorSubmittingReviewReport": "خطأ في إرسال التقرير: {error}",
+  "@errorSubmittingReviewReport": {
+    "description": "خطأ في إرسال تقرير المراجعة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "submitReport": "إرسال التقرير",
+  "reportThisReview": "الإبلاغ عن هذه المراجعة",
+  "reviews": "المراجعات",
+  "seeAllReviews": "عرض جميع المراجعات {count}",
+  "@seeAllReviews": {
+    "description": "زر عرض جميع المراجعات",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noReviewsAvailable": "لا توجد مراجعات متاحة",
+  "serviceProviderNoReviewsYet": "لم يتلق مقدم الخدمة أي مراجعات حتى الآن",
+  "agentNoReviewsYet": "لم يتلق الوكيل أي مراجعات حتى الآن"
 }

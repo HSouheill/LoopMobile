@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/report_service.dart';
 
 class ReviewReportDialog extends StatefulWidget {
@@ -29,9 +30,10 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
   }
 
   Future<void> _submitReport() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedReason == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a reason for reporting')),
+        SnackBar(content: Text(l10n.pleaseSelectReasonForReportingReview)),
       );
       return;
     }
@@ -67,9 +69,10 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting report: $e'),
+            content: Text(l10n.errorSubmittingReviewReport(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -85,18 +88,19 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final reasonLabels = ReportService.getReasonLabels();
     final reasons = ReportService.getReportReasons();
 
     return AlertDialog(
-      title: const Text('Report Review'),
+      title: Text(l10n.reportReview),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Report review by: ${widget.reviewerName}',
+              l10n.reportReviewBy(widget.reviewerName),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -122,9 +126,9 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Please select a reason for reporting this review:',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n.selectReasonForReportingReview,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
             ...reasons.map((reason) {
@@ -141,17 +145,17 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
               );
             }).toList(),
             const SizedBox(height: 16),
-            const Text(
-              'Additional details (optional):',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n.additionalDetailsOptionalReview,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _detailsController,
               maxLines: 3,
               maxLength: 1000,
-              decoration: const InputDecoration(
-                hintText: 'Provide additional information about why you are reporting this review...',
+              decoration: InputDecoration(
+                hintText: l10n.provideAdditionalInformationReview,
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.all(12),
               ),
@@ -162,7 +166,7 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isSubmitting ? null : _submitReport,
@@ -179,7 +183,7 @@ class _ReviewReportDialogState extends State<ReviewReportDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : const Text('Submit Report'),
+              : Text(l10n.submitReport),
         ),
       ],
     );

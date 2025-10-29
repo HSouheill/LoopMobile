@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/review.dart';
 import '../../services/review_service.dart';
 import '../../widgets/review_card_widget.dart';
@@ -81,9 +82,10 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reviews for ${widget.objectName}'),
+        title: Text(l10n.reviewsFor(widget.objectName)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -95,11 +97,11 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
           ),
         ),
       ),
-      body: _buildBody(),
+      body: _buildBody(l10n),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AppLocalizations l10n) {
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -118,7 +120,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Failed to load reviews',
+              l10n.failedToLoadReviews,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -137,7 +139,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _refreshReviews,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -156,7 +158,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No reviews yet',
+              l10n.noReviewsYet,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -165,7 +167,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Be the first to review this ${widget.table}!',
+              l10n.beFirstToReview(widget.table),
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -181,7 +183,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
       child: Column(
         children: [
           // Reviews count and average rating
-          if (_pagination != null) _buildStatsHeader(),
+          if (_pagination != null) _buildStatsHeader(l10n),
           
           // Reviews list
           Expanded(
@@ -191,7 +193,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
               itemBuilder: (context, index) {
                 if (index == _reviews.length) {
                   // Load more button
-                  return _buildLoadMoreButton();
+                  return _buildLoadMoreButton(l10n);
                 }
                 
                 return ReviewCardWidget(
@@ -206,7 +208,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
     );
   }
 
-  Widget _buildStatsHeader() {
+  Widget _buildStatsHeader(AppLocalizations l10n) {
     if (_pagination == null) return const SizedBox.shrink();
 
     return Container(
@@ -224,14 +226,16 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${_pagination!.totalCount} Review${_pagination!.totalCount != 1 ? 's' : ''}',
+                  _pagination!.totalCount == 1 
+                    ? l10n.reviewCount(_pagination!.totalCount)
+                    : l10n.reviewCountPlural(_pagination!.totalCount),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  'Page ${_pagination!.currentPage} of ${_pagination!.totalPages}',
+                  l10n.pageOf(_pagination!.currentPage, _pagination!.totalPages),
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -245,7 +249,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
     );
   }
 
-  Widget _buildLoadMoreButton() {
+  Widget _buildLoadMoreButton(AppLocalizations l10n) {
     if (_isLoadingMore) {
       return const Padding(
         padding: EdgeInsets.all(16),
@@ -268,7 +272,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('Load More Reviews'),
+          child: Text(l10n.loadMoreReviews),
         ),
       ),
     );
