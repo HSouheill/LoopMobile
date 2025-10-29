@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import '../../models/job_detail.dart';
@@ -61,9 +62,10 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error picking file: ${e.toString()}'),
+            content: Text(l10n?.errorPickingFile(e.toString()) ?? 'Error picking file: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -77,9 +79,10 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     }
 
     if (!_isConfirmed) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please confirm that the submitted information is accurate'),
+        SnackBar(
+          content: Text(l10n?.pleaseConfirmInformationAccurate ?? 'Please confirm that the submitted information is accurate'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -89,17 +92,18 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
     // Check if user is signed in
     if (!AuthService.isLoggedIn) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Sign In Required'),
-            content: const Text('You need to be signed in to apply to jobs. Please sign in and try again.'),
+            title: Text(l10n?.signInRequired ?? 'Sign In Required'),
+            content: Text(l10n?.signInRequiredToApply ?? 'You need to be signed in to apply to jobs. Please sign in and try again.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(l10n?.ok ?? 'OK'),
               ),
             ],
           ),
@@ -156,20 +160,21 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
       if (mounted) {
         final data = jsonDecode(response.body);
         
+        final l10n = AppLocalizations.of(context);
         if (response.statusCode == 201) {
           // Success
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Application Submitted'),
-              content: const Text('Your application has been submitted successfully!'),
+              title: Text(l10n?.applicationSubmitted ?? 'Application Submitted'),
+              content: Text(l10n?.applicationSubmittedSuccessfully ?? 'Your application has been submitted successfully!'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close dialog
                     Navigator.of(context).pop(); // Go back to job detail page
                   },
-                  child: const Text('OK'),
+                  child: Text(l10n?.ok ?? 'OK'),
                 ),
               ],
             ),
@@ -179,14 +184,14 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Already Applied'),
-              content: Text(data['message'] ?? 'You have already applied to this job.'),
+              title: Text(l10n?.alreadyApplied ?? 'Already Applied'),
+              content: Text(data['message'] ?? (l10n?.alreadyAppliedToJob ?? 'You have already applied to this job.')),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close dialog
                   },
-                  child: const Text('OK'),
+                  child: Text(l10n?.ok ?? 'OK'),
                 ),
               ],
             ),
@@ -196,14 +201,14 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Error'),
-              content: Text(data['message'] ?? 'Failed to submit application. Please try again.'),
+              title: Text(l10n?.error ?? 'Error'),
+              content: Text(data['message'] ?? (l10n?.failedToSubmitApplication ?? 'Failed to submit application. Please try again.')),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK'),
+                  child: Text(l10n?.ok ?? 'OK'),
                 ),
               ],
             ),
@@ -216,17 +221,18 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
       });
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: Text('Network error: ${e.toString()}'),
+            title: Text(l10n?.error ?? 'Error'),
+            content: Text(l10n?.networkError(e.toString()) ?? 'Network error: ${e.toString()}'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('OK'),
+                child: Text(l10n?.ok ?? 'OK'),
               ),
             ],
           ),
@@ -246,12 +252,17 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Application Form',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Text(
+              l10n.applicationForm,
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          }
         ),
       ),
       body: SingleChildScrollView(
@@ -275,30 +286,40 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.search,
-                        color: Color(0xFF1976D2),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Job Details',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.search,
+                                color: Color(0xFF1976D2),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                l10n.jobDetails,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          _buildJobDetailItem(l10n.experienceRequired, '${widget.job.experienceRange['min'] ?? 0}-${widget.job.experienceRange['max'] ?? 1} years'),
+                          _buildJobDetailItem(l10n.skills, widget.job.skills.join(', ')),
+                          _buildJobDetailItem(l10n.workingHours, widget.job.workingHours),
+                          _buildJobDetailItem(l10n.contractType, widget.job.jobType),
+                          _buildJobDetailItem(l10n.jobType, widget.job.attendance),
+                          _buildJobDetailItem(l10n.benefits, 'Health Insurance, Paid Leave'),
+                        ],
+                      );
+                    }
                   ),
-                  const SizedBox(height: 20),
-                  _buildJobDetailItem('Required Experience', '${widget.job.experienceRange['min'] ?? 0}-${widget.job.experienceRange['max'] ?? 1} years'),
-                  _buildJobDetailItem('Skills', widget.job.skills.join(', ')),
-                  _buildJobDetailItem('Working Hours', widget.job.workingHours),
-                  _buildJobDetailItem('Contract Type', widget.job.jobType),
-                  _buildJobDetailItem('Job Type', widget.job.attendance),
-                  _buildJobDetailItem('Benefits', 'Health Insurance, Paid Leave'),
                 ],
               ),
             ),  
@@ -317,68 +338,85 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                     // First Name and Last Name Row
                     Row(
                       children: [
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _firstNameController,
-                            hint: 'First Name',
-                            icon: Icons.person_outline,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Required';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _lastNameController,
-                            hint: 'Last Name',
-                            icon: Icons.people_outline,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Required';
-                              }
-                              return null;
-                            },
-                          ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _firstNameController,
+                                    hint: l10n.firstName,
+                                    icon: Icons.person_outline,
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return l10n.required;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildTextField(
+                                    controller: _lastNameController,
+                                    hint: l10n.lastName,
+                                    icon: Icons.people_outline,
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return l10n.required;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     
                     // Email
-                    _buildTextField(
-                      controller: _emailController,
-                      hint: 'Enter Email',
-                      icon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Invalid email';
-                        }
-                        return null;
-                      },
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return _buildTextField(
+                          controller: _emailController,
+                          hint: l10n.enterEmail,
+                          icon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.required;
+                            }
+                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                              return l10n.invalidEmail;
+                            }
+                            return null;
+                          },
+                        );
+                      }
                     ),
                     const SizedBox(height: 16),
                     
                     // Phone Number with Country Code
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required';
-                        }
-                        return null;
-                      },
-                      style: const TextStyle(fontSize: 14),
-                      decoration: InputDecoration(
-                        hintText: 'Phone Number',
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.required;
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(fontSize: 14),
+                          decoration: InputDecoration(
+                            hintText: l10n.phoneNumber,
                         hintStyle: const TextStyle(color: Colors.grey),
                         prefixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -423,38 +461,50 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                         focusedErrorBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.red, width: 2),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-                      ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+                          ),
+                        );
+                      }
                     ),
                     const SizedBox(height: 16),
                     
                     // Expected Salary
-                    _buildTextField(
-                      controller: _expectedSalaryController,
-                      hint: 'Expected Salary',
-                      icon: Icons.monetization_on_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required';
-                        }
-                        return null;
-                      },
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return _buildTextField(
+                          controller: _expectedSalaryController,
+                          hint: l10n.expectedSalary,
+                          icon: Icons.monetization_on_outlined,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.required;
+                            }
+                            return null;
+                          },
+                        );
+                      }
                     ),
                     const SizedBox(height: 16),
                     
                     // Experience
-                    _buildTextField(
-                      controller: _experienceController,
-                      hint: 'Experience',
-                      icon: Icons.school_outlined,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required';
-                        }
-                        return null;
-                      },
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return _buildTextField(
+                          controller: _experienceController,
+                          hint: l10n.experience,
+                          icon: Icons.school_outlined,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.required;
+                            }
+                            return null;
+                          },
+                        );
+                      }
                     ),
                     const SizedBox(height: 16),
                     
@@ -481,13 +531,18 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Upload Portfolio (Optional)',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
-                                      ),
+                                    Builder(
+                                      builder: (context) {
+                                        final l10n = AppLocalizations.of(context)!;
+                                        return Text(
+                                          l10n.uploadPortfolioOptional,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black87,
+                                          ),
+                                        );
+                                      }
                                     ),
                                     if (_selectedFile != null) ...[
                                       const SizedBox(height: 4),
@@ -535,14 +590,19 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        const Expanded(
-                          child: Text(
-                            'I Confirm That The Submitted Information Is Accurate',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            return Expanded(
+                              child: Text(
+                                l10n.iConfirmInformationAccurate,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            );
+                          }
                         ),
                       ],
                     ),
@@ -561,44 +621,54 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                             ),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                            child: Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context)!;
+                                return Text(
+                                  l10n.cancel,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                );
+                              }
                             ),
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _submitApplication,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: const Color(0xFF1976D2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Apply',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                          child: Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context)!;
+                              return ElevatedButton(
+                                onPressed: _isLoading ? null : _submitApplication,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  backgroundColor: const Color(0xFF1976D2),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
+                                ),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : Text(
+                                        l10n.apply,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              );
+                            }
                           ),
                         ),
                       ],

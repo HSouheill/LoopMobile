@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/job_detail.dart';
 import '../../services/job_service.dart';
 import '../../widgets/job_report_dialog.dart';
@@ -40,10 +41,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
             pinned: true,
             backgroundColor: Colors.transparent,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
-                onPressed: _showReportDialog,
-                tooltip: 'Report this job',
+              Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context);
+                  return IconButton(
+                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    onPressed: _showReportDialog,
+                    tooltip: l10n?.reportThisJobTooltip ?? 'Report this job',
+                  );
+                }
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -209,59 +215,79 @@ class _JobDetailPageState extends State<JobDetailPage> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          'Company: ${widget.job.companyName}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            return Text(
+                              '${l10n.company} ${widget.job.companyName}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                          }
                         ),
                       ],
                     ),
                     const SizedBox(height: 30),
                     // Job Details section
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.blue[700],
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Job Details',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.blue[700],
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.jobDetails,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            // Job details list
+                            _buildDetailItem(l10n.experienceRequired, '${widget.job.experienceRange['min'] ?? 0}-${widget.job.experienceRange['max'] ?? 1} years'),
+                            _buildDetailItem(l10n.skills, widget.job.skills.join(', ')),
+                            _buildDetailItem(l10n.workingHours, widget.job.workingHours),
+                            _buildDetailItem(l10n.attendance, widget.job.attendance),
+                            _buildDetailItem(l10n.jobType, widget.job.jobType),
+                          ],
+                        );
+                      }
                     ),
-                    const SizedBox(height: 15),
-                    // Job details list
-                    _buildDetailItem('Experience Required', '${widget.job.experienceRange['min'] ?? 0}-${widget.job.experienceRange['max'] ?? 1} years'),
-                    _buildDetailItem('Skills', widget.job.skills.join(', ')),
-                    _buildDetailItem('Working Hours', widget.job.workingHours),
-                    _buildDetailItem('Attendance', widget.job.attendance),
-                    _buildDetailItem('Job Type', widget.job.jobType),
                     const SizedBox(height: 30),
                     // Job Description section
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.description,
-                          color: Colors.blue[700],
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Job Description',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return Row(
+                          children: [
+                            Icon(
+                              Icons.description,
+                              color: Colors.blue[700],
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.jobDescription,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
                     ),
                     const SizedBox(height: 15),
                     Text(
@@ -292,13 +318,18 @@ class _JobDetailPageState extends State<JobDetailPage> {
                             borderRadius: BorderRadius.circular(25),
                           ),
                         ),
-                        child: const Text(
-                          'Apply Now',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        child: Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            return Text(
+                              l10n.applyNow,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            );
+                          }
                         ),
                       ),
                     ),
@@ -307,16 +338,21 @@ class _JobDetailPageState extends State<JobDetailPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed: _showReportDialog,
-                        icon: const Icon(Icons.flag, color: Colors.red),
-                        label: const Text('Report this job', style: TextStyle(color: Colors.red)),
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          side: const BorderSide(color: Colors.red),
-                        ),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context)!;
+                          return OutlinedButton.icon(
+                            onPressed: _showReportDialog,
+                            icon: const Icon(Icons.flag, color: Colors.red),
+                            label: Text(l10n.reportThisJob, style: const TextStyle(color: Colors.red)),
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              side: const BorderSide(color: Colors.red),
+                            ),
+                          );
+                        }
                       ),
                     ),
                     const SizedBox(height: 20),

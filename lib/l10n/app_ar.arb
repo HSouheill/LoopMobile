@@ -656,6 +656,8 @@
     }
   },
   "search": "بحث...",
+  "searchJobs": "بحث عن الوظائف...",
+  "searchServiceProviders": "البحث عن مقدمي الخدمات...",
   "seeBlockedContacts": "عرض جهات الاتصال المحظورة",
   "pleaseSignInToAccessChats": "الرجاء تسجيل الدخول للوصول إلى محادثاتك",
   "errorLoadingChats": "خطأ في تحميل المحادثات: {error}",
@@ -1331,5 +1333,71 @@
   "serviceProviderNoReviewsYet": "لم يتلق مقدم الخدمة أي مراجعات حتى الآن",
   "agentNoReviewsYet": "لم يتلق الوكيل أي مراجعات حتى الآن",
   "noListingsAvailable": "لا توجد قوائم متاحة",
-  "agentNoListingsYet": "لم ينشر الوكيل أي عقارات حتى الآن"
+  "agentNoListingsYet": "لم ينشر الوكيل أي عقارات حتى الآن",
+  "reportThisJob": "الإبلاغ عن هذه الوظيفة",
+  "reportThisJobTooltip": "الإبلاغ عن هذه الوظيفة",
+  "jobDetails": "تفاصيل الوظيفة",
+  "jobDescription": "وصف الوظيفة",
+  "applyNow": "قدم الآن",
+  "experienceRequired": "الخبرة المطلوبة",
+  "skills": "المهارات",
+  "workingHours": "ساعات العمل",
+  "attendance": "الحضور",
+  "jobType": "نوع الوظيفة",
+  "applicationForm": "نموذج الطلب",
+  "uploadPortfolioOptional": "رفع المحفظة (اختياري)",
+  "expectedSalary": "الراتب المتوقع",
+  "phoneNumber": "رقم الهاتف",
+  "iConfirmInformationAccurate": "أؤكد أن المعلومات المقدمة دقيقة",
+  "apply": "تقديم",
+  "pleaseConfirmInformationAccurate": "يرجى التأكد من أن المعلومات المقدمة دقيقة",
+  "signInRequired": "تسجيل الدخول مطلوب",
+  "signInRequiredToApply": "يجب أن تكون مسجلاً للدخول للتقديم على الوظائف. يرجى تسجيل الدخول والمحاولة مرة أخرى.",
+  "applicationSubmitted": "تم تقديم الطلب",
+  "applicationSubmittedSuccessfully": "تم تقديم طلبك بنجاح!",
+  "alreadyApplied": "تم التقديم مسبقاً",
+  "alreadyAppliedToJob": "لقد تقدمت لهذه الوظيفة بالفعل.",
+  "failedToSubmitApplication": "فشل تقديم الطلب. يرجى المحاولة مرة أخرى.",
+  "networkError": "خطأ في الشبكة: {error}",
+  "@networkError": {
+    "description": "رسالة خطأ الشبكة",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorPickingFile": "خطأ في اختيار الملف: {error}",
+  "@errorPickingFile": {
+    "description": "رسالة خطأ اختيار الملف",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportJob": "الإبلاغ عن الوظيفة",
+  "reportJobTitle": "الإبلاغ عن: {jobTitle}",
+  "@reportJobTitle": {
+    "description": "عنوان الإبلاغ عن الوظيفة",
+    "placeholders": {
+      "jobTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReportingJob": "الرجاء اختيار سبب للإبلاغ عن هذه الوظيفة:",
+  "additionalDetailsAboutReportingJob": "قدم معلومات إضافية حول سبب إبلاغك عن هذه الوظيفة...",
+  "errorSubmittingReport": "خطأ في إرسال البلاغ: {error}",
+  "@errorSubmittingReport": {
+    "description": "رسالة خطأ إرسال البلاغ",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectReasonForReporting": "الرجاء اختيار سبب للإبلاغ",
+  "submitReport": "إرسال البلاغ",
+  "benefits": "المزايا"
 }

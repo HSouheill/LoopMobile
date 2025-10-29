@@ -284,6 +284,8 @@
     }
   },
   "cancel": "Cancel",
+  "ok": "OK",
+  "error": "Error",
   "delete": "Delete",
   "listingDeletedSuccessfully": "Listing deleted successfully",
   "failedToDeleteListing": "Failed to delete listing",
@@ -656,6 +658,8 @@
     }
   },
   "search": "Search...",
+  "searchJobs": "Search jobs...",
+  "searchServiceProviders": "Search service providers...",
   "seeBlockedContacts": "See Blocked Contacts",
   "pleaseSignInToAccessChats": "Please sign in to access your chats",
   "errorLoadingChats": "Error loading chats: {error}",
@@ -1331,5 +1335,71 @@
   "serviceProviderNoReviewsYet": "This service provider hasn't received any reviews yet",
   "agentNoReviewsYet": "This agent hasn't received any reviews yet",
   "noListingsAvailable": "No listings available",
-  "agentNoListingsYet": "This agent hasn't posted any properties yet"
+  "agentNoListingsYet": "This agent hasn't posted any properties yet",
+  "reportThisJob": "Report this job",
+  "reportThisJobTooltip": "Report this job",
+  "jobDetails": "Job Details",
+  "jobDescription": "Job Description",
+  "applyNow": "Apply Now",
+  "experienceRequired": "Experience Required",
+  "skills": "Skills",
+  "workingHours": "Working Hours",
+  "attendance": "Attendance",
+  "jobType": "Job Type",
+  "applicationForm": "Application Form",
+  "uploadPortfolioOptional": "Upload Portfolio (Optional)",
+  "expectedSalary": "Expected Salary",
+  "phoneNumber": "Phone Number",
+  "iConfirmInformationAccurate": "I Confirm That The Submitted Information Is Accurate",
+  "apply": "Apply",
+  "pleaseConfirmInformationAccurate": "Please confirm that the submitted information is accurate",
+  "signInRequired": "Sign In Required",
+  "signInRequiredToApply": "You need to be signed in to apply to jobs. Please sign in and try again.",
+  "applicationSubmitted": "Application Submitted",
+  "applicationSubmittedSuccessfully": "Your application has been submitted successfully!",
+  "alreadyApplied": "Already Applied",
+  "alreadyAppliedToJob": "You have already applied to this job.",
+  "failedToSubmitApplication": "Failed to submit application. Please try again.",
+  "networkError": "Network error: {error}",
+  "@networkError": {
+    "description": "Network error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorPickingFile": "Error picking file: {error}",
+  "@errorPickingFile": {
+    "description": "Error picking file message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportJob": "Report Job",
+  "reportJobTitle": "Report: {jobTitle}",
+  "@reportJobTitle": {
+    "description": "Report job title",
+    "placeholders": {
+      "jobTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "selectReasonForReportingJob": "Please select a reason for reporting this job:",
+  "additionalDetailsAboutReportingJob": "Provide additional information about why you are reporting this job...",
+  "errorSubmittingReport": "Error submitting report: {error}",
+  "@errorSubmittingReport": {
+    "description": "Error submitting report message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectReasonForReporting": "Please select a reason for reporting",
+  "submitReport": "Submit Report",
+  "benefits": "Benefits"
 }

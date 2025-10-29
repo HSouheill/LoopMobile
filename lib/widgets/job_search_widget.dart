@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../screens/services/job_search_results_page.dart';
 
 class JobSearchWidget extends StatefulWidget {
@@ -48,24 +49,29 @@ class _JobSearchWidgetState extends State<JobSearchWidget> {
                 const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
                 const SizedBox(width: 8.0),
                 Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    cursorColor: Color.fromARGB(255, 69, 100, 201),
-                    decoration: const InputDecoration(
-                      hintText: 'Search jobs...',
-                      // remove all borders
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      // keep background transparent
-                      filled: true,
-                      fillColor: Colors.transparent,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 12.0),
-                      // placeholder color same as icon
-                      hintStyle: TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
-                    ),
-                    onSubmitted: (_) => _performSearch(),
+                  child: Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return TextField(
+                        controller: _searchController,
+                        cursorColor: Color.fromARGB(255, 69, 100, 201),
+                        decoration: InputDecoration(
+                          hintText: l10n?.searchJobs ?? 'Search jobs...',
+                          // remove all borders
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          // keep background transparent
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
+                          // placeholder color same as icon
+                          hintStyle: const TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
+                        ),
+                        onSubmitted: (_) => _performSearch(),
+                      );
+                    }
                   ),
                 ),
                 IconButton(

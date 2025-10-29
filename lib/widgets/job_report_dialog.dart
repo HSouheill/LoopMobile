@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/report_service.dart';
 
 class JobReportDialog extends StatefulWidget {
@@ -28,8 +29,9 @@ class _JobReportDialogState extends State<JobReportDialog> {
 
   Future<void> _submitReport() async {
     if (_selectedReason == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a reason for reporting')),
+        SnackBar(content: Text(l10n?.pleaseSelectReasonForReporting ?? 'Please select a reason for reporting')),
       );
       return;
     }
@@ -65,9 +67,10 @@ class _JobReportDialogState extends State<JobReportDialog> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting report: $e'),
+            content: Text(l10n?.errorSubmittingReport(e.toString()) ?? 'Error submitting report: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -86,24 +89,25 @@ class _JobReportDialogState extends State<JobReportDialog> {
     final reasonLabels = ReportService.getReasonLabels();
     final reasons = ReportService.getReportReasons();
 
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Report Job'),
+      title: Text(l10n.reportJob),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Report: ${widget.jobTitle}',
+              l10n.reportJobTitle(widget.jobTitle),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Please select a reason for reporting this job:',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n.selectReasonForReportingJob,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
             ...reasons.map((reason) {
@@ -120,19 +124,19 @@ class _JobReportDialogState extends State<JobReportDialog> {
               );
             }).toList(),
             const SizedBox(height: 16),
-            const Text(
-              'Additional details (optional):',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              l10n.additionalDetailsOptional,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _detailsController,
               maxLines: 3,
               maxLength: 1000,
-              decoration: const InputDecoration(
-                hintText: 'Provide additional information about why you are reporting this job...',
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(12),
+              decoration: InputDecoration(
+                hintText: l10n.additionalDetailsAboutReportingJob,
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.all(12),
               ),
             ),
           ],
@@ -141,7 +145,7 @@ class _JobReportDialogState extends State<JobReportDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isSubmitting ? null : _submitReport,
@@ -158,7 +162,7 @@ class _JobReportDialogState extends State<JobReportDialog> {
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )
-              : const Text('Submit Report'),
+              : Text(l10n.submitReport),
         ),
       ],
     );
