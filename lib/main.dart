@@ -254,8 +254,9 @@ class _MainScreenState extends State<MainScreen> {
       _unreadChatCount = 0;
     });
     
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Logged out successfully')),
+      SnackBar(content: Text(l10n?.loggedOutSuccessfully ?? 'Logged out successfully')),
     );
   }
 
@@ -297,16 +298,17 @@ class _MainScreenState extends State<MainScreen> {
       );
     }
 
+    final l10n = AppLocalizations.of(context);
     final user = AuthService.currentUser;
-    final headerName = _isLoggedIn && user != null ? user.fullName : 'Guest';
+    final headerName = _isLoggedIn && user != null ? user.fullName : (l10n?.guest ?? 'Guest');
     final headerLocation = _isLoggedIn && user != null && user.city != null
         ? user.city!
         : (_isLoggedIn && user != null && user.location != null
             ? user.location!
             : "");
     final headerSubtitle = _isLoggedIn 
-        ? (user?.role == 'user' ? null : "Go to Dashboard")
-        : "Login";
+        ? (user?.role == 'user' ? null : (l10n?.goToDashboard ?? "Go to Dashboard"))
+        : (l10n?.login ?? "Login");
 
       return Scaffold(
       extendBody: true, // allow overlap with bottomNavigationBar
@@ -423,7 +425,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 10),
           // Updated to use callback for navigation
           FeaturedListingsWidget(
-            title: 'Featured Listings',
+            title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
             isMainPage: true,
             onSeeAll: () => mainScreenState
                 ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
@@ -433,7 +435,7 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 10),
           // Recommended Agents (featured, fetched from API, limited to 3 on main)
           FeaturedAgentsWidget(
-            title: 'Recommended Agents',
+            title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
             isMainPage: true,
             onSeeAll: () => mainScreenState?.navigateToTab(0),
           ),

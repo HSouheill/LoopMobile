@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/service_service.dart';
 import '../models/service_provider.dart';
 import '../screens/services/service_provider_detail_page.dart';
@@ -136,8 +137,9 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
       return _buildEmptyState();
     }
 
+    final l10n = AppLocalizations.of(context);
     return RecommendedAgentsWidget(
-      title: widget.category.displayName,
+      title: widget.category.getDisplayNameLocalized(l10n),
       agents: agents,
       showPropertyCount: false, // Services don't have property count
       onSeeAll: widget.showSeeAll ? _handleSeeAll : null,
@@ -146,13 +148,14 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
   }
 
   Widget _buildLoadingState() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.category.displayName,
+            widget.category.getDisplayNameLocalized(l10n),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -169,13 +172,15 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
   }
 
   Widget _buildErrorState() {
+    final l10n = AppLocalizations.of(context);
+    final categoryName = widget.category.getDisplayNameLocalized(l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.category.displayName,
+            categoryName,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -192,7 +197,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
                     const Icon(Icons.error_outline, color: Colors.red),
                     const SizedBox(height: 8),
                     Text(
-                      'Failed to load ${widget.category.displayName.toLowerCase()}',
+                      l10n?.failedToLoadCategory(categoryName) ?? 'Failed to load ${categoryName.toLowerCase()}',
                       style: const TextStyle(color: Colors.red),
                     ),
                     const SizedBox(height: 8),
@@ -211,13 +216,15 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
+    final categoryName = widget.category.getDisplayNameLocalized(l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.category.displayName,
+            categoryName,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -234,7 +241,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
                     const Icon(Icons.business_center_outlined, color: Colors.grey),
                     const SizedBox(height: 8),
                     Text(
-                      'No ${widget.category.displayName.toLowerCase()} found',
+                      l10n?.noCategoryFound(categoryName) ?? 'No ${categoryName.toLowerCase()} found',
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],

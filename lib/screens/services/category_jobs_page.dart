@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/job_service.dart';
 import '../../widgets/dynamic_jobs_widget.dart'; // For JobCategory enum and JobCard
 
@@ -85,19 +86,21 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
     await _fetchPage(pageToFetch: 1);
   }
 
-  String get title {
+  String _getTitle(AppLocalizations? l10n) {
     switch (widget.category) {
       case JobCategory.featured:
-        return 'Featured Jobs';
+        return l10n?.featuredJobs ?? 'Featured Jobs';
       case JobCategory.forYou:
-        return 'Recommended Jobs';
+        return l10n?.recommendedJobs ?? 'Recommended Jobs';
       case JobCategory.recent:
-        return 'Recent Jobs';
+        return l10n?.recentJobs ?? 'Recent Jobs';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final title = _getTitle(l10n);
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -115,7 +118,7 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
-                        'Failed to load $title: $error',
+                        '${l10n?.failedToLoadJobs ?? 'Failed to load'} $title: $error',
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
@@ -123,9 +126,9 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
                     child: jobs.isEmpty
                         ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
-                              SizedBox(height: 80),
-                              Center(child: Text('No jobs found')),
+                            children: [
+                              const SizedBox(height: 80),
+                              Center(child: Text(l10n?.noJobsFound ?? 'No jobs found')),
                             ],
                           )
                         : GridView.builder(
@@ -151,12 +154,12 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
                       children: [
                         ElevatedButton(
                           onPressed: (meta == null || page <= 1) ? null : () => _goToPage(page - 1),
-                          child: const Text('Previous'),
+                          child: Text(l10n?.previous ?? 'Previous'),
                         ),
-                        Text('Page ${meta?.page ?? page} of ${meta?.pages ?? '?'}'),
+                        Text('${l10n?.page ?? 'Page'} ${meta?.page ?? page} ${l10n?.ofText ?? 'of'} ${meta?.pages ?? '?'}'),
                         ElevatedButton(
                           onPressed: (meta == null || (meta!.pages != 0 && page >= meta!.pages)) ? null : () => _goToPage(page + 1),
-                          child: const Text('Next'),
+                          child: Text(l10n?.next ?? 'Next'),
                         ),
                       ],
                     ),

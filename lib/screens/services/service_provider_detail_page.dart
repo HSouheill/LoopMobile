@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/service_provider.dart';
 import '../../models/review.dart';
 import '../../services/service_service.dart';
@@ -95,6 +96,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   }
 
   Future<void> _startChat() async {
+    final l10n = AppLocalizations.of(context);
     try {
       // Show loading indicator
       showDialog(
@@ -109,7 +111,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
       if (token == null) {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please log in to start a chat')),
+          SnackBar(content: Text(l10n?.pleaseLoginToStartChat ?? 'Please log in to start a chat')),
         );
         return;
       }
@@ -143,13 +145,13 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to start chat. Please try again.')),
+          SnackBar(content: Text(l10n?.failedToStartChat ?? 'Failed to start chat. Please try again.')),
         );
       }
     } catch (e) {
       Navigator.pop(context); // Close loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        SnackBar(content: Text(l10n != null ? '${l10n.failedToStartChat}: ${e.toString()}' : 'Error: ${e.toString()}')),
       );
     }
   }
@@ -157,16 +159,17 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
   Future<void> _makePhoneCall(String phoneNumber) async {
     final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
     try {
+      final l10n = AppLocalizations.of(context);
       if (await canLaunchUrl(phoneUri)) {
         await launchUrl(phoneUri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not make phone call')),
+          SnackBar(content: Text(l10n?.couldNotMakePhoneCall ?? 'Could not make phone call')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error making phone call: ${e.toString()}')),
+        SnackBar(content: Text('${AppLocalizations.of(context)?.couldNotMakePhoneCall ?? 'Error making phone call'}: ${e.toString()}')),
       );
     }
   }
@@ -187,8 +190,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
         mode: LaunchMode.externalApplication,
       );
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error opening link: ${e.toString()}')),
+        SnackBar(content: Text('${l10n?.couldNotOpenLink ?? 'Error opening link'}: ${e.toString()}')),
       );
     }
   }
@@ -216,27 +220,30 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               );
             } catch (e) {
               // Show error message with copy option
+              final l10n = AppLocalizations.of(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Could not open portfolio. URL: $url'),
+                  content: Text('${l10n?.couldNotOpenLink ?? 'Could not open portfolio'}. URL: $url'),
                   backgroundColor: Colors.red,
                 ),
               );
             }
           }
         } catch (e) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error opening portfolio: ${e.toString()}'),
+              content: Text('${l10n?.errorOpeningPortfolio ?? 'Error opening portfolio'}: ${e.toString()}'),
               backgroundColor: Colors.red,
             ),
           );
         }
       }
     } else {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No portfolio available'),
+        SnackBar(
+          content: Text(l10n?.noPortfolioAvailable ?? 'No portfolio available'),
           backgroundColor: Colors.red,
         ),
       );
@@ -290,7 +297,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               IconButton(
                 icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
                 onPressed: _showReportDialog,
-                tooltip: 'Report this service provider',
+                tooltip: AppLocalizations.of(context)?.reportServiceProviderTooltip ?? 'Report this service provider',
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
@@ -454,9 +461,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                               children: [
                                 const Icon(Icons.info_outline, color: Colors.black, size: 24),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'About',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)?.about ?? 'About',
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -498,8 +505,17 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                         const SizedBox(height: 12),
                         Text(
                           widget.serviceProvider.role == 'service-provider-company' 
-                              ? 'Professional ${widget.serviceProvider.displayName} providing quality services in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.'
-                              : '${widget.serviceProvider.firstName} ${widget.serviceProvider.lastName} is a professional service provider based in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.',
+                              ? (AppLocalizations.of(context)?.professionalServiceProviderDescription(
+                                    widget.serviceProvider.displayName,
+                                    widget.serviceProvider.city ?? '',
+                                    widget.serviceProvider.country ?? '',
+                                  ) ?? 'Professional ${widget.serviceProvider.displayName} providing quality services in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.')
+                              : (AppLocalizations.of(context)?.individualServiceProviderDescription(
+                                    widget.serviceProvider.firstName,
+                                    widget.serviceProvider.lastName,
+                                    widget.serviceProvider.city ?? '',
+                                    widget.serviceProvider.country ?? '',
+                                  ) ?? '${widget.serviceProvider.firstName} ${widget.serviceProvider.lastName} is a professional service provider based in ${widget.serviceProvider.city}, ${widget.serviceProvider.country}.'),
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.grey[700],
@@ -519,7 +535,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                             child: Row(
                               children: [
                                 Text(
-                                  _isExpanded ? 'Read Less' : 'Read More',
+                                  _isExpanded ? (AppLocalizations.of(context)?.readLess ?? 'Read Less') : (AppLocalizations.of(context)?.readMore ?? 'Read More'),
                                   style: const TextStyle(
                                     color: Colors.green,
                                     fontWeight: FontWeight.w600,
@@ -552,9 +568,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                               children: [
                                 const Icon(Icons.work, color: Colors.black, size: 24),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Services',
-                                  style: TextStyle(
+                                Text(
+                                  AppLocalizations.of(context)?.services ?? 'Services',
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -573,15 +589,15 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                                   ),
                                 );
                               },
-                              child: const Text('See all'),
+                              child: Text(AppLocalizations.of(context)?.seeAll ?? 'See all'),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         if (widget.serviceProvider.services.isEmpty)
-                          const Text(
-                            'No services available',
-                            style: TextStyle(color: Colors.grey),
+                          Text(
+                            AppLocalizations.of(context)?.noServicesAvailable ?? 'No services available',
+                            style: const TextStyle(color: Colors.grey),
                           )
                         else
                           ...widget.serviceProvider.services.map((service) => 
@@ -602,9 +618,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                           children: [
                             const Icon(Icons.contact_phone, color: Colors.black, size: 24),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Contact Details',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)?.contactDetails ?? 'Contact Details',
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -614,26 +630,26 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                         const SizedBox(height: 16),
                         _buildDetailRow(
                           icon: Icons.email,
-                          label: 'Email:',
+                          label: AppLocalizations.of(context)?.email ?? 'Email:',
                           value: widget.serviceProvider.email,
                         ),
                         const SizedBox(height: 12),
                         _buildDetailRow(
                           icon: Icons.phone,
-                          label: 'Phone:',
+                          label: AppLocalizations.of(context)?.phone ?? 'Phone:',
                           value: widget.serviceProvider.phone,
                         ),
                         const SizedBox(height: 12),
                         _buildDetailRow(
                           icon: Icons.location_on,
-                          label: 'Location:',
+                          label: AppLocalizations.of(context)?.location ?? 'Location:',
                           value: widget.serviceProvider.location,
                         ),
                         if (widget.serviceProvider.companyName != null) ...[
                           const SizedBox(height: 12),
                           _buildDetailRow(
                             icon: Icons.business,
-                            label: 'Company:',
+                            label: AppLocalizations.of(context)?.company ?? 'Company:',
                             value: widget.serviceProvider.companyName!,
                           ),
                         ],
@@ -673,9 +689,9 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                                 ),
                                 elevation: 2,
                               ),
-                              child: const Text(
-                                'Start Chat',
-                                style: TextStyle(
+                              child: Text(
+                                AppLocalizations.of(context)?.startChat ?? 'Start Chat',
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -689,7 +705,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                             child: OutlinedButton.icon(
                               onPressed: _showReportDialog,
                               icon: const Icon(Icons.flag, color: Colors.red),
-                              label: const Text('Report this service provider', style: TextStyle(color: Colors.red)),
+                              label: Text(AppLocalizations.of(context)?.reportServiceProvider ?? 'Report this service provider', style: const TextStyle(color: Colors.red)),
                               style: OutlinedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
@@ -884,7 +900,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               Text(
-                'Failed to load reviews',
+                AppLocalizations.of(context)?.failedToLoadFeaturedServices ?? 'Failed to load reviews',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
@@ -896,7 +912,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadServiceProviderData,
-                child: const Text('Retry'),
+                child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
               ),
             ],
           ),
@@ -905,10 +921,10 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     }
 
     if (_serviceProviderData == null) {
-      return const SizedBox(
+      return SizedBox(
         height: 200,
         child: Center(
-          child: Text('No service provider data available'),
+          child: Text(AppLocalizations.of(context)?.noServiceProviderDataAvailable ?? 'No service provider data available'),
         ),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/my_service.dart';
 import '../../services/service_service.dart';
 
@@ -67,9 +68,10 @@ class _AgentServicesPageState extends State<AgentServicesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final title = widget.agentName != null && widget.agentName!.isNotEmpty
-        ? "${widget.agentName}'s Services"
-        : 'Services';
+        ? (l10n?.agentServicesTitle(widget.agentName!) ?? "${widget.agentName}'s Services")
+        : (l10n?.services ?? 'Services');
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -85,7 +87,7 @@ class _AgentServicesPageState extends State<AgentServicesPage> {
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text(
-                  'Failed to load services: $_error',
+                  '${l10n?.failedToLoadServices ?? 'Failed to load services'}: $_error',
                   style: const TextStyle(color: Colors.red),
                 ),
               ),
@@ -95,9 +97,9 @@ class _AgentServicesPageState extends State<AgentServicesPage> {
                   : _services.isEmpty
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
-                          children: const [
-                            SizedBox(height: 80),
-                            Center(child: Text('No services found')),
+                          children: [
+                            const SizedBox(height: 80),
+                            Center(child: Text(l10n?.noServicesFound ?? 'No services found')),
                           ],
                         )
                       : ListView.separated(
@@ -117,14 +119,14 @@ class _AgentServicesPageState extends State<AgentServicesPage> {
                 children: [
                   ElevatedButton(
                     onPressed: (_meta == null || _page <= 1) ? null : () => _goToPage(_page - 1),
-                    child: const Text('Previous'),
+                    child: Text(l10n?.previous ?? 'Previous'),
                   ),
-                  Text('Page ${_meta?.page ?? _page} of ${_meta?.pages ?? '?'}'),
+                  Text('${l10n?.page ?? 'Page'} ${_meta?.page ?? _page} ${l10n?.ofText ?? 'of'} ${_meta?.pages ?? '?'}'),
                   ElevatedButton(
                     onPressed: (_meta == null || (_meta!.pages != 0 && _page >= _meta!.pages))
                         ? null
                         : () => _goToPage(_page + 1),
-                    child: const Text('Next'),
+                    child: Text(l10n?.next ?? 'Next'),
                   ),
                 ],
               ),

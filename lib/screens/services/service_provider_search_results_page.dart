@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/service_service.dart';
 import '../../models/service_provider.dart';
 import '../../widgets/recommended_agents_widget.dart';
@@ -145,7 +146,7 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search: "${widget.searchQuery}"'),
+        title: Text(AppLocalizations.of(context)?.searchFor(widget.searchQuery) ?? 'Search: "${widget.searchQuery}"'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -180,13 +181,13 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('Searching service providers...'),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 16),
+          Text(AppLocalizations.of(context)?.searchingServiceProviders ?? 'Searching service providers...'),
         ],
       ),
     );
@@ -202,20 +203,20 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'Failed to search service providers',
+              AppLocalizations.of(context)?.failedToSearchServiceProviders ?? 'Failed to search service providers',
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              error ?? 'Unknown error occurred',
+              error ?? (AppLocalizations.of(context)?.unknownError ?? 'Unknown error occurred'),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => _loadSearchResults(isRefresh: true),
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
             ),
           ],
         ),
@@ -233,20 +234,20 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
             const Icon(Icons.search_off, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             Text(
-              'No service providers found',
+              AppLocalizations.of(context)?.noServiceProvidersFound ?? 'No service providers found',
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Try searching with different keywords',
+              AppLocalizations.of(context)?.tryDifferentKeywords ?? 'Try searching with different keywords',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
+              child: Text(AppLocalizations.of(context)?.goBack ?? 'Go Back'),
             ),
           ],
         ),

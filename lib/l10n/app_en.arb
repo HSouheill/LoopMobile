@@ -13,5 +13,174 @@
   "listings": "Listings",
   "home": "Home",
   "services": "Services",
-  "chat": "Chat"
+  "chat": "Chat",
+  "appTitle": "Flutter Navbar App",
+  "loggedOutSuccessfully": "Logged out successfully",
+  "guest": "Guest",
+  "goToDashboard": "Go to Dashboard",
+  "login": "Login",
+  "featuredListings": "Featured Listings",
+  "recommendedAgents": "Recommended Agents",
+  "latestMarketUpdates": "Latest Market Updates",
+  "supportCardDescription": "Facing Legal Issues Or Other Concerns Related To Your Property? Our Expert Support Team Is Just A Message Away Ready To Assist You",
+  "contactSupport": "Contact Support",
+  "featuredServices": "Featured Services",
+  "topRatedServices": "Top Rated Services",
+  "companyServices": "Company Services",
+  "individualServices": "Individual Services",
+  "featuredCompanies": "Featured Companies",
+  "failedToLoadFeaturedServiceProviders": "Failed to load featured service providers",
+  "errorFetchingFeaturedServiceProviders": "Error fetching featured service providers",
+  "failedToLoadTopRatedServiceProviders": "Failed to load top rated service providers",
+  "errorFetchingTopRatedServiceProviders": "Error fetching top rated service providers",
+  "failedToLoadServiceProviders": "Failed to load service providers",
+  "errorFetchingServiceProviders": "Error fetching service providers",
+  "noServiceProvidersFound": "No service providers found",
+  "failedToLoadServiceProvider": "Failed to load service provider",
+  "errorFetchingServiceProvider": "Error fetching service provider",
+  "noServiceProviderDataFound": "No service provider data found",
+  "failedToLoadMyServices": "Failed to load my services",
+  "errorFetchingMyServices": "Error fetching my services",
+  "failedToLoadAgentServices": "Failed to load agent services",
+  "errorFetchingAgentServices": "Error fetching agent services",
+  "failedToCreateService": "Failed to create service",
+  "pleaseEnterServiceTitle": "Please enter a service title",
+  "pleaseEnterValidEmail": "Please enter a valid email address",
+  "pleaseEnterValidPortfolioUrl": "Please enter a valid portfolio URL",
+  "pleaseCheckInputAndTryAgain": "Please check your input and try again",
+  "failedToCreateServiceTryAgain": "Failed to create service. Please try again.",
+  "unableToConnectToServer": "Unable to connect to server. Please check your internet connection and try again.",
+  "failedToUpdateService": "Failed to update service",
+  "failedToUpdateServiceTryAgain": "Failed to update service. Please try again.",
+  "failedToDeleteService": "Failed to delete service",
+  "failedToDeleteServiceTryAgain": "Failed to delete service. Please try again.",
+  "failedToSearchServiceProviders": "Failed to search service providers",
+  "errorSearchingServiceProviders": "Error searching service providers",
+  "failedToLoadCategory": "Failed to load {categoryName}",
+  "@failedToLoadCategory": {
+    "description": "Error message when failing to load a category of services",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noCategoryFound": "No {categoryName} found",
+  "@noCategoryFound": {
+    "description": "Message shown when no services found in a category",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noServicesFound": "No services found",
+  "featuredJobs": "Featured Jobs",
+  "forYouJobs": "For You",
+  "recentJobs": "Recent Jobs",
+  "recommendedJobs": "Recommended Jobs",
+  "failedToLoadJobs": "Failed to load jobs",
+  "errorFetchingJobs": "Error fetching jobs",
+  "noJobsFound": "No jobs found",
+  "failedToLoadJobDetails": "Failed to load job details",
+  "seeAll": "See all",
+  "previous": "Previous",
+  "next": "Next",
+  "retry": "Retry",
+  "page": "Page",
+  "ofText": "of",
+  "exploreJobs": "Explore Jobs",
+  "featuredServices": "Featured Services",
+  "showingCountOfTotal": "Showing {count} of {total} featured services",
+  "@showingCountOfTotal": {
+    "description": "Showing count and total for featured services",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToLoadFeaturedServices": "Failed to load featured services",
+  "noFeaturedServicesFound": "No featured services found",
+  "about": "About",
+  "readMore": "Read More",
+  "readLess": "Read Less",
+  "services": "Services",
+  "noServicesAvailable": "No services available",
+  "contactDetails": "Contact Details",
+  "email": "Email:",
+  "phone": "Phone:",
+  "location": "Location:",
+  "company": "Company:",
+  "startChat": "Start Chat",
+  "reportServiceProvider": "Report this service provider",
+  "reportServiceProviderTooltip": "Report this service provider",
+  "pleaseLoginToStartChat": "Please log in to start a chat",
+  "failedToStartChat": "Failed to start chat. Please try again.",
+  "couldNotMakePhoneCall": "Could not make phone call",
+  "couldNotOpenLink": "Could not open link",
+  "errorOpeningPortfolio": "Error opening portfolio",
+  "noPortfolioAvailable": "No portfolio available",
+  "noServiceProviderDataAvailable": "No service provider data available",
+  "professionalServiceProviderDescription": "Professional {displayName} providing quality services in {city}, {country}.",
+  "@professionalServiceProviderDescription": {
+    "description": "Description for service provider company",
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "individualServiceProviderDescription": "{firstName} {lastName} is a professional service provider based in {city}, {country}.",
+  "@individualServiceProviderDescription": {
+    "description": "Description for individual service provider",
+    "placeholders": {
+      "firstName": {
+        "type": "String"
+      },
+      "lastName": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "Search: \"{query}\"",
+  "@searchFor": {
+    "description": "Search results title",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchingServiceProviders": "Searching service providers...",
+  "failedToSearchServiceProviders": "Failed to search service providers",
+  "noServiceProvidersFound": "No service providers found",
+  "tryDifferentKeywords": "Try searching with different keywords",
+  "goBack": "Go Back",
+  "unknownError": "Unknown error occurred",
+  "agentServicesTitle": "{agentName}'s Services",
+  "@agentServicesTitle": {
+    "description": "Title for agent services page",
+    "placeholders": {
+      "agentName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadServices": "Failed to load services"
 }

@@ -13,5 +13,174 @@
   "listings": "قوائم",
   "home": "الرئيسية",
   "services": "خدمات",
-  "chat": "محادثة"
+  "chat": "محادثة",
+  "appTitle": "تطبيق شريط التنقل",
+  "loggedOutSuccessfully": "تم تسجيل الخروج بنجاح",
+  "guest": "ضيف",
+  "goToDashboard": "الذهاب إلى لوحة التحكم",
+  "login": "تسجيل الدخول",
+  "featuredListings": "القوائم المميزة",
+  "recommendedAgents": "الوكلاء الموصى بهم",
+  "latestMarketUpdates": "آخر تحديثات السوق",
+  "supportCardDescription": "تواجه مشاكل قانونية أو مخاوف أخرى متعلقة بممتلكاتك؟ فريق الدعم المختص لدينا على بعد رسالة واحدة فقط جاهز لمساعدتك",
+  "contactSupport": "اتصل بالدعم",
+  "featuredServices": "الخدمات المميزة",
+  "topRatedServices": "الخدمات الأعلى تقييماً",
+  "companyServices": "خدمات الشركات",
+  "individualServices": "الخدمات الفردية",
+  "featuredCompanies": "الشركات المميزة",
+  "failedToLoadFeaturedServiceProviders": "فشل تحميل مقدمي الخدمات المميزين",
+  "errorFetchingFeaturedServiceProviders": "خطأ في جلب مقدمي الخدمات المميزين",
+  "failedToLoadTopRatedServiceProviders": "فشل تحميل مقدمي الخدمات الأعلى تقييماً",
+  "errorFetchingTopRatedServiceProviders": "خطأ في جلب مقدمي الخدمات الأعلى تقييماً",
+  "failedToLoadServiceProviders": "فشل تحميل مقدمي الخدمات",
+  "errorFetchingServiceProviders": "خطأ في جلب مقدمي الخدمات",
+  "noServiceProvidersFound": "لم يتم العثور على مقدمي خدمات",
+  "failedToLoadServiceProvider": "فشل تحميل مقدم الخدمة",
+  "errorFetchingServiceProvider": "خطأ في جلب مقدم الخدمة",
+  "noServiceProviderDataFound": "لم يتم العثور على بيانات مقدم الخدمة",
+  "failedToLoadMyServices": "فشل تحميل خدماتي",
+  "errorFetchingMyServices": "خطأ في جلب خدماتي",
+  "failedToLoadAgentServices": "فشل تحميل خدمات الوكيل",
+  "errorFetchingAgentServices": "خطأ في جلب خدمات الوكيل",
+  "failedToCreateService": "فشل إنشاء الخدمة",
+  "pleaseEnterServiceTitle": "يرجى إدخال عنوان الخدمة",
+  "pleaseEnterValidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+  "pleaseEnterValidPortfolioUrl": "يرجى إدخال رابط محفظة صحيح",
+  "pleaseCheckInputAndTryAgain": "يرجى التحقق من المدخلات والمحاولة مرة أخرى",
+  "failedToCreateServiceTryAgain": "فشل إنشاء الخدمة. يرجى المحاولة مرة أخرى.",
+  "unableToConnectToServer": "تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.",
+  "failedToUpdateService": "فشل تحديث الخدمة",
+  "failedToUpdateServiceTryAgain": "فشل تحديث الخدمة. يرجى المحاولة مرة أخرى.",
+  "failedToDeleteService": "فشل حذف الخدمة",
+  "failedToDeleteServiceTryAgain": "فشل حذف الخدمة. يرجى المحاولة مرة أخرى.",
+  "failedToSearchServiceProviders": "فشل البحث عن مقدمي الخدمات",
+  "errorSearchingServiceProviders": "خطأ في البحث عن مقدمي الخدمات",
+  "failedToLoadCategory": "فشل تحميل {categoryName}",
+  "@failedToLoadCategory": {
+    "description": "رسالة خطأ عند فشل تحميل فئة من الخدمات",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noCategoryFound": "لم يتم العثور على {categoryName}",
+  "@noCategoryFound": {
+    "description": "رسالة تظهر عندما لا يتم العثور على خدمات في فئة",
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "noServicesFound": "لم يتم العثور على خدمات",
+  "featuredJobs": "الوظائف المميزة",
+  "forYouJobs": "من أجلك",
+  "recentJobs": "الوظائف الأخيرة",
+  "recommendedJobs": "الوظائف الموصى بها",
+  "failedToLoadJobs": "فشل تحميل الوظائف",
+  "errorFetchingJobs": "خطأ في جلب الوظائف",
+  "noJobsFound": "لم يتم العثور على وظائف",
+  "failedToLoadJobDetails": "فشل تحميل تفاصيل الوظيفة",
+  "seeAll": "عرض الكل",
+  "previous": "السابق",
+  "next": "التالي",
+  "retry": "إعادة المحاولة",
+  "page": "الصفحة",
+  "ofText": "من",
+  "exploreJobs": "استكشف الوظائف",
+  "featuredServices": "الخدمات المميزة",
+  "showingCountOfTotal": "عرض {count} من {total} خدمة مميزة",
+  "@showingCountOfTotal": {
+    "description": "عرض العدد والإجمالي للخدمات المميزة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "failedToLoadFeaturedServices": "فشل تحميل الخدمات المميزة",
+  "noFeaturedServicesFound": "لم يتم العثور على خدمات مميزة",
+  "about": "حول",
+  "readMore": "اقرأ المزيد",
+  "readLess": "اقرأ أقل",
+  "services": "الخدمات",
+  "noServicesAvailable": "لا توجد خدمات متاحة",
+  "contactDetails": "تفاصيل الاتصال",
+  "email": "البريد الإلكتروني:",
+  "phone": "الهاتف:",
+  "location": "الموقع:",
+  "company": "الشركة:",
+  "startChat": "بدء المحادثة",
+  "reportServiceProvider": "الإبلاغ عن مقدم الخدمة",
+  "reportServiceProviderTooltip": "الإبلاغ عن مقدم الخدمة",
+  "pleaseLoginToStartChat": "الرجاء تسجيل الدخول لبدء المحادثة",
+  "failedToStartChat": "فشل بدء المحادثة. يرجى المحاولة مرة أخرى.",
+  "couldNotMakePhoneCall": "تعذر الاتصال",
+  "couldNotOpenLink": "تعذر فتح الرابط",
+  "errorOpeningPortfolio": "خطأ في فتح المحفظة",
+  "noPortfolioAvailable": "لا توجد محفظة متاحة",
+  "noServiceProviderDataAvailable": "لا توجد بيانات لمقدم الخدمة متاحة",
+  "professionalServiceProviderDescription": "{displayName} محترف يقدم خدمات عالية الجودة في {city}، {country}.",
+  "@professionalServiceProviderDescription": {
+    "description": "وصف لشركة مقدم الخدمة",
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "individualServiceProviderDescription": "{firstName} {lastName} هو مقدم خدمات محترف مقيم في {city}، {country}.",
+  "@individualServiceProviderDescription": {
+    "description": "وصف لمقدم خدمة فردي",
+    "placeholders": {
+      "firstName": {
+        "type": "String"
+      },
+      "lastName": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "searchFor": "البحث: \"{query}\"",
+  "@searchFor": {
+    "description": "عنوان نتائج البحث",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "searchingServiceProviders": "البحث عن مقدمي الخدمات...",
+  "failedToSearchServiceProviders": "فشل البحث عن مقدمي الخدمات",
+  "noServiceProvidersFound": "لم يتم العثور على مقدمي خدمات",
+  "tryDifferentKeywords": "جرب البحث بكلمات مفتاحية مختلفة",
+  "goBack": "العودة",
+  "unknownError": "حدث خطأ غير معروف",
+  "agentServicesTitle": "خدمات {agentName}",
+  "@agentServicesTitle": {
+    "description": "عنوان صفحة خدمات الوكيل",
+    "placeholders": {
+      "agentName": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadServices": "فشل تحميل الخدمات"
 }

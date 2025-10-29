@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/job_service.dart';
 import '../services/favorite_service.dart';
 import '../screens/services/job_detail_page.dart';
@@ -9,6 +10,31 @@ enum JobCategory {
   featured,
   forYou,
   recent,
+}
+
+extension JobCategoryExtension on JobCategory {
+  String get displayName {
+    switch (this) {
+      case JobCategory.featured:
+        return 'Featured Jobs';
+      case JobCategory.forYou:
+        return 'For You';
+      case JobCategory.recent:
+        return 'Recent Jobs';
+    }
+  }
+  
+  String getDisplayNameLocalized(AppLocalizations? l10n) {
+    if (l10n == null) return displayName;
+    switch (this) {
+      case JobCategory.featured:
+        return l10n.featuredJobs;
+      case JobCategory.forYou:
+        return l10n.forYouJobs;
+      case JobCategory.recent:
+        return l10n.recentJobs;
+    }
+  }
 }
 
 class DynamicJobsWidget extends StatefulWidget {
@@ -41,17 +67,9 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
   }
 
   // Get title based on category
-  String get title {
+  String _getTitle(AppLocalizations? l10n) {
     if (widget.customTitle != null) return widget.customTitle!;
-
-    switch (widget.category) {
-      case JobCategory.featured:
-        return 'Featured Jobs';
-      case JobCategory.forYou:
-        return 'For You';
-      case JobCategory.recent:
-        return 'Recent Jobs';
-    }
+    return widget.category.getDisplayNameLocalized(l10n);
   }
 
   // Get filter parameters based on category
@@ -94,8 +112,9 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
-          error = 'Failed to load jobs: $e';
+          error = l10n?.failedToLoadJobs ?? 'Failed to load jobs: $e';
           isLoading = false;
         });
       }
@@ -118,6 +137,8 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final title = _getTitle(l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -144,7 +165,7 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
               ),
               TextButton(
                 onPressed: _handleSeeAll,
-                child: const Text('See all'),
+                child: Text(l10n?.seeAll ?? 'See all'),
               ),
             ],
           ),
@@ -174,24 +195,24 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _loadJobs,
-                      child: const Text('Retry'),
+                      child: Text(l10n?.retry ?? 'Retry'),
                     ),
                   ],
                 ),
               ),
             )
           else if (jobs.isEmpty)
-            const SizedBox(
+            SizedBox(
               height: 320,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.work_outline, color: Colors.grey, size: 48),
-                    SizedBox(height: 16),
+                    const Icon(Icons.work_outline, color: Colors.grey, size: 48),
+                    const SizedBox(height: 16),
                     Text(
-                      'No jobs found',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      l10n?.noJobsFound ?? 'No jobs found',
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ],
                 ),
@@ -329,9 +350,10 @@ class _JobCardState extends State<JobCard> {
           }
         } catch (e) {
           if (context.mounted) {
+            final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Failed to load job details: $e'),
+                content: Text(l10n?.failedToLoadJobDetails ?? 'Failed to load job details: $e'),
                 backgroundColor: Colors.red,
               ),
             );

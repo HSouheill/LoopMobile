@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/service_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/dynamic_services_widget.dart';
@@ -45,10 +46,10 @@ class ServicesPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50.0),
                     boxShadow: [], // Keeps it consistent with SupportCard (no shadow)
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Explore Jobs',
-                      style: TextStyle(
+                      AppLocalizations.of(context)?.exploreJobs ?? 'Explore Jobs',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

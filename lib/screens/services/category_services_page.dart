@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/service_service.dart';
 import '../../models/service_provider.dart';
 import '../../screens/services/service_provider_detail_page.dart';
@@ -121,9 +122,11 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final categoryName = widget.category.getDisplayNameLocalized(l10n);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.displayName),
+        title: Text(categoryName),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -136,7 +139,7 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Text(
-                  'Failed to load ${widget.category.displayName}: $error',
+                  l10n?.failedToLoadCategory(categoryName) ?? 'Failed to load $categoryName: $error',
                   style: const TextStyle(color: Colors.red),
                 ),
               ),
@@ -146,9 +149,9 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                   : agents.isEmpty
                           ? ListView(
                               physics: const AlwaysScrollableScrollPhysics(),
-                              children: const [
-                                SizedBox(height: 80),
-                                Center(child: Text('No services found')),
+                              children: [
+                                const SizedBox(height: 80),
+                                Center(child: Text(l10n?.noServicesFound ?? 'No services found')),
                               ],
                             )
                           : GridView.builder(
@@ -178,12 +181,12 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                 children: [
                   ElevatedButton(
                     onPressed: (meta == null || page <= 1) ? null : () => _goToPage(page - 1),
-                    child: const Text('Previous'),
+                    child: Text(l10n?.previous ?? 'Previous'),
                   ),
-                  Text('Page ${meta?.page ?? page} of ${meta?.pages ?? '?'}'),
+                  Text('${l10n?.page ?? 'Page'} ${meta?.page ?? page} ${l10n?.ofText ?? 'of'} ${meta?.pages ?? '?'}'),
                   ElevatedButton(
                     onPressed: (meta == null || (meta!.pages != 0 && page >= meta!.pages)) ? null : () => _goToPage(page + 1),
-                    child: const Text('Next'),
+                    child: Text(l10n?.next ?? 'Next'),
                   ),
                 ],
               ),

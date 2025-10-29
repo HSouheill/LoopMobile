@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/service_service.dart';
 import '../../models/service_provider.dart';
 import '../../screens/services/service_provider_detail_page.dart';
@@ -127,7 +128,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Featured Services'),
+        title: Text(AppLocalizations.of(context)?.featuredServices ?? 'Featured Services'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -149,13 +150,13 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Showing ${agents.length} of $totalServices featured services',
+                      AppLocalizations.of(context)?.showingCountOfTotal(agents.length, totalServices) ?? 'Showing ${agents.length} of $totalServices featured services',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
                     ),
                     Text(
-                      'Page $currentPage of $totalPages',
+                      '${AppLocalizations.of(context)?.page ?? 'Page'} $currentPage ${AppLocalizations.of(context)?.ofText ?? 'of'} $totalPages',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -191,7 +192,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'Failed to load featured services',
+              AppLocalizations.of(context)?.failedToLoadFeaturedServices ?? 'Failed to load featured services',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
@@ -206,7 +207,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _refreshServices,
-              child: const Text('Retry'),
+              child: Text(AppLocalizations.of(context)?.retry ?? 'Retry'),
             ),
           ],
         ),
@@ -214,15 +215,15 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
     }
 
     if (agents.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.business_center_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
+            const Icon(Icons.business_center_outlined, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
             Text(
-              'No featured services found',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
+              AppLocalizations.of(context)?.noFeaturedServicesFound ?? 'No featured services found',
+              style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
           ],
         ),
@@ -235,7 +236,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
         children: [
           // Use VerticalServicesWidget for stacked card layout
           VerticalServicesWidget(
-            title: 'Featured Services',
+            title: AppLocalizations.of(context)?.featuredServices ?? 'Featured Services',
             agents: agents,
             showPropertyCount: false,
             onAgentTap: _onAgentTap,
@@ -267,7 +268,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
           ElevatedButton.icon(
             onPressed: currentPage > 1 ? _loadPreviousPage : null,
             icon: const Icon(Icons.chevron_left),
-            label: const Text('Previous'),
+            label: Text(AppLocalizations.of(context)?.previous ?? 'Previous'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentPage > 1 ? null : Colors.grey[300],
             ),
@@ -290,7 +291,7 @@ class _FeaturedServicesPageState extends State<FeaturedServicesPage> {
           ElevatedButton.icon(
             onPressed: currentPage < totalPages ? _loadNextPage : null,
             icon: const Icon(Icons.chevron_right),
-            label: const Text('Next'),
+            label: Text(AppLocalizations.of(context)?.next ?? 'Next'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentPage < totalPages ? null : Colors.grey[300],
             ),

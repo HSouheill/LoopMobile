@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../environment.dart';
 import '../models/service_provider.dart';
 import '../models/my_service.dart';
@@ -331,26 +332,35 @@ class ServiceService {
         try {
           final errorData = json.decode(response.body);
           String userMessage = errorData['message'] ?? 'Failed to create service';
+          String? errorKey;
           
           // Make error messages more user-friendly
           if (userMessage.contains('Title is required')) {
             userMessage = 'Please enter a service title';
+            errorKey = 'pleaseEnterServiceTitle';
           } else if (userMessage.contains('Invalid email format')) {
             userMessage = 'Please enter a valid email address';
+            errorKey = 'pleaseEnterValidEmail';
           } else if (userMessage.contains('portfolioLink is not a valid URL')) {
             userMessage = 'Please enter a valid portfolio URL';
+            errorKey = 'pleaseEnterValidPortfolioUrl';
           } else if (userMessage.contains('Validation failed')) {
             userMessage = 'Please check your input and try again';
+            errorKey = 'pleaseCheckInputAndTryAgain';
+          } else {
+            errorKey = 'failedToCreateService';
           }
           
           return {
             'success': false,
+            'errorKey': errorKey,
             'error': userMessage,
             'statusCode': response.statusCode,
           };
         } catch (parseError) {
           return {
             'success': false,
+            'errorKey': 'failedToCreateServiceTryAgain',
             'error': 'Failed to create service. Please try again.',
             'statusCode': response.statusCode,
           };
@@ -359,6 +369,7 @@ class ServiceService {
     } catch (e) {
       return {
         'success': false,
+        'errorKey': 'unableToConnectToServer',
         'error': 'Unable to connect to server. Please check your internet connection and try again.',
       };
     }
@@ -398,6 +409,7 @@ class ServiceService {
         } catch (parseError) {
           return {
             'success': false,
+            'errorKey': 'failedToUpdateServiceTryAgain',
             'error': 'Failed to update service. Please try again.',
             'statusCode': response.statusCode,
           };
@@ -406,6 +418,7 @@ class ServiceService {
     } catch (e) {
       return {
         'success': false,
+        'errorKey': 'unableToConnectToServer',
         'error': 'Unable to connect to server. Please check your internet connection and try again.',
       };
     }
@@ -443,6 +456,7 @@ class ServiceService {
         } catch (parseError) {
           return {
             'success': false,
+            'errorKey': 'failedToDeleteServiceTryAgain',
             'error': 'Failed to delete service. Please try again.',
             'statusCode': response.statusCode,
           };
@@ -451,6 +465,7 @@ class ServiceService {
     } catch (e) {
       return {
         'success': false,
+        'errorKey': 'unableToConnectToServer',
         'error': 'Unable to connect to server. Please check your internet connection and try again.',
       };
  }
@@ -533,6 +548,22 @@ extension ServiceCategoryExtension on ServiceCategory {
         return 'Individual Services';
       case ServiceCategory.featuredCompanies:
         return 'Featured Companies';
+    }
+  }
+  
+  String getDisplayNameLocalized(AppLocalizations? l10n) {
+    if (l10n == null) return displayName;
+    switch (this) {
+      case ServiceCategory.featured:
+        return l10n.featuredServices;
+      case ServiceCategory.topRated:
+        return l10n.topRatedServices;
+      case ServiceCategory.companies:
+        return l10n.companyServices;
+      case ServiceCategory.individual:
+        return l10n.individualServices;
+      case ServiceCategory.featuredCompanies:
+        return l10n.featuredCompanies;
     }
   }
   

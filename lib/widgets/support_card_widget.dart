@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SupportCardWidget extends StatelessWidget {
   const SupportCardWidget({super.key});
@@ -43,10 +44,10 @@ class SupportCardWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: const Text(
-              'Facing Legal Issues Or Other Concerns Related To Your Property? Our Expert Support Team Is Just A Message Away Ready To Assist You',
+            child: Text(
+              AppLocalizations.of(context)?.supportCardDescription ?? 'Facing Legal Issues Or Other Concerns Related To Your Property? Our Expert Support Team Is Just A Message Away Ready To Assist You',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
@@ -70,10 +71,10 @@ class SupportCardWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50.0),
                 boxShadow: [], // Removes the shadows
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Contact Support',
-                  style: TextStyle(
+                  AppLocalizations.of(context)?.contactSupport ?? 'Contact Support',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketUpdate {
   final String title;
@@ -150,11 +151,11 @@ class _LatestUpdatesWidgetState extends State<LatestUpdatesWidget>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Text(
-            'Latest Market Updates',
-            style: TextStyle(
+            AppLocalizations.of(context)?.latestMarketUpdates ?? 'Latest Market Updates',
+            style: const TextStyle(
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
               color: Colors.black,
