@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 
 class DynamicSection extends StatefulWidget {
@@ -22,43 +23,55 @@ class DynamicSection extends StatefulWidget {
 class _DynamicSectionState extends State<DynamicSection> {
   late List<bool> switchStates;
   bool _isUpdating = false;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeSwitchStates();
+    switchStates = List.filled(widget.rows.length, false);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initializeSwitchStates();
+      _initialized = true;
+    }
   }
 
   void _initializeSwitchStates() {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null || widget.userOptions == null) {
+      return;
+    }
+
     switchStates = List.generate(widget.rows.length, (index) {
-      if (widget.userOptions == null) return false;
-      
       final rowText = widget.rows[index]['text'] ?? '';
       
-      // Map row text to user options
-      switch (rowText) {
-        case 'New Messages':
-          return widget.userOptions!.newMessagesNotifications;
-        case 'Listing Approval':
-          return widget.userOptions!.listingApprovalNotifications;
-        case 'Service Requests':
-          return widget.userOptions!.serviceRequestsNotifications;
-        case 'Promotions':
-          return widget.userOptions!.promotionsNotifications;
-        case 'Hide Social Links':
-          return widget.userOptions!.hideSocialLinks;
-        case 'Hide Contact Info':
-          return widget.userOptions!.hideContactInfo;
-        default:
-          return false;
+      // Map row text to user options (using translations)
+      if (rowText == l10n.newMessages) {
+        return widget.userOptions!.newMessagesNotifications;
+      } else if (rowText == l10n.listingApproval) {
+        return widget.userOptions!.listingApprovalNotifications;
+      } else if (rowText == l10n.serviceRequests) {
+        return widget.userOptions!.serviceRequestsNotifications;
+      } else if (rowText == l10n.promotions) {
+        return widget.userOptions!.promotionsNotifications;
+      } else if (rowText == l10n.hideSocialLinks) {
+        return widget.userOptions!.hideSocialLinks;
+      } else if (rowText == l10n.hideContactInfo) {
+        return widget.userOptions!.hideContactInfo;
       }
+      return false;
     });
   }
 
   @override
   void didUpdateWidget(DynamicSection oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.userOptions != widget.userOptions) {
+    if (oldWidget.userOptions != widget.userOptions || 
+        oldWidget.rows != widget.rows) {
       _initializeSwitchStates();
     }
   }
@@ -72,28 +85,23 @@ class _DynamicSectionState extends State<DynamicSection> {
     });
 
     final rowText = widget.rows[index]['text'] ?? '';
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return;
     
-    // Map row text to option name for API call
+    // Map row text to option name for API call (using translations)
     String? optionName;
-    switch (rowText) {
-      case 'New Messages':
-        optionName = 'newMessagesNotifications';
-        break;
-      case 'Listing Approval':
-        optionName = 'listingApprovalNotifications';
-        break;
-      case 'Service Requests':
-        optionName = 'serviceRequestsNotifications';
-        break;
-      case 'Promotions':
-        optionName = 'promotionsNotifications';
-        break;
-      case 'Hide Social Links':
-        optionName = 'hideSocialLinks';
-        break;
-      case 'Hide Contact Info':
-        optionName = 'hideContactInfo';
-        break;
+    if (rowText == l10n.newMessages) {
+      optionName = 'newMessagesNotifications';
+    } else if (rowText == l10n.listingApproval) {
+      optionName = 'listingApprovalNotifications';
+    } else if (rowText == l10n.serviceRequests) {
+      optionName = 'serviceRequestsNotifications';
+    } else if (rowText == l10n.promotions) {
+      optionName = 'promotionsNotifications';
+    } else if (rowText == l10n.hideSocialLinks) {
+      optionName = 'hideSocialLinks';
+    } else if (rowText == l10n.hideContactInfo) {
+      optionName = 'hideContactInfo';
     }
 
     if (optionName != null && widget.onOptionChanged != null) {
@@ -106,9 +114,10 @@ class _DynamicSectionState extends State<DynamicSection> {
         });
         
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to update setting: ${e.toString()}'),
+              content: Text(l10n.failedToUpdateSetting(e.toString())),
               backgroundColor: Colors.red,
             ),
           );

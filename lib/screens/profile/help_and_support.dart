@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 
 class HelpAndSupportPage extends StatefulWidget {
@@ -10,49 +11,62 @@ class HelpAndSupportPage extends StatefulWidget {
 
 class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     with TickerProviderStateMixin {
-  // Dynamic list of FAQs
-  final List<Map<String, String>> faqs = [
-    {
-      "title": "How do I update my contact information?",
-      "answer":
-          "To reset your password, go to settings and click on 'Reset Password'."
-    },
-    {
-      "title": "How do I list a new service?",
-      "answer": "You can contact support by emailing support@example.com."
-    },
-    {
-      "title": "Can I edit or delete a service I posted?",
-      "answer": "The tutorial is available under the 'Help' section in the app."
-    },
-    {
-      "title": "What happens after I receive a service request?",
-      "answer": "The tutorial is available under the 'Help' section in the app."
-    },
-    {
-      "title": "How do I delete my account?",
-      "answer": "The tutorial is available under the 'Help' section in the app."
-    },
-  ];
+  List<Map<String, String>> _buildFaqs(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {
+        "title": l10n.updateContactInformation,
+        "answer": l10n.resetPasswordAnswer,
+      },
+      {
+        "title": l10n.howToListNewService,
+        "answer": l10n.contactSupportAnswer,
+      },
+      {
+        "title": l10n.canEditOrDeleteService,
+        "answer": l10n.tutorialAvailableAnswer,
+      },
+      {
+        "title": l10n.whatHappensAfterServiceRequest,
+        "answer": l10n.tutorialAvailableAnswer,
+      },
+      {
+        "title": l10n.howDoIDeleteMyAccount,
+        "answer": l10n.tutorialAvailableAnswer,
+      },
+    ];
+  }
 
   // Track which panels are expanded
-  final List<bool> _expanded = [];
+  late List<bool> _expanded;
 
   // Submit ticket state
   bool _issueExpanded = false;
   String? _selectedIssue;
 
-  final List<String> issueOptions = [
-    "Payment Problem",
-    "Technical Error",
-    "Account Issue",
-    "Other"
-  ];
+  List<String> _buildIssueOptions(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.paymentProblem,
+      l10n.technicalError,
+      l10n.accountIssue,
+      l10n.other,
+    ];
+  }
 
   @override
   void initState() {
     super.initState();
-    _expanded.addAll(List.generate(faqs.length, (_) => false));
+    _expanded = [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final faqs = _buildFaqs(context);
+    if (_expanded.length != faqs.length) {
+      _expanded = List.generate(faqs.length, (_) => false);
+    }
   }
 
   @override
@@ -96,16 +110,21 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 ),
               ),
             ),
-            title: Container(
-              margin: const EdgeInsets.only(left: 50),
-              child: const Text(
-                "Help & Support",
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E1E1E),
-                  fontSize: 18,
-                ),
-              ),
+            title: Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                return Container(
+                  margin: const EdgeInsets.only(left: 50),
+                  child: Text(
+                    l10n.helpAndSupport,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1E1E1E),
+                      fontSize: 18,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -117,117 +136,138 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// FAQ section
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border:
-                          Border.all(color: const Color(0xFF0048FF), width: 1),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(faqs.length, (index) {
-                        return Column(
-                          children: [
-                            _buildRow(index),
-                            if (index != faqs.length - 1)
-                              const Divider(
-                                  height: 1, color: Color(0xFF0048FF)),
-                          ],
-                        );
-                      }),
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final faqs = _buildFaqs(context);
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border:
+                              Border.all(color: const Color(0xFF0048FF), width: 1),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(faqs.length, (index) {
+                            return Column(
+                              children: [
+                                _buildRow(context, index),
+                                if (index != faqs.length - 1)
+                                  const Divider(
+                                      height: 1, color: Color(0xFF0048FF)),
+                              ],
+                            );
+                          }),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 30),
 
                   /// Submit a ticket section
-                  const Center(
-                    child: Text(
-                      "Submit a Ticket",
-                      style: TextStyle(
-                        color: Color(0xFF1E1E1E),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Center(
+                        child: Text(
+                          l10n.submitATicket,
+                          style: const TextStyle(
+                            color: Color(0xFF1E1E1E),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
-                    "What's Your Issue About?",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E1E1E),
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Text(
+                        l10n.whatsYourIssueAbout,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
 
                   /// Select Issue Container
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _issueExpanded = !_issueExpanded;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 1),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: const Color(0xFF0048FF)),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      final issueOptions = _buildIssueOptions(context);
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _issueExpanded = !_issueExpanded;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 1),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFF0048FF)),
+                          ),
+                          child: Column(
                             children: [
-                              Text(
-                                _selectedIssue ?? "Select Issue",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF1E1E1E),
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    _selectedIssue ?? l10n.selectIssue,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF1E1E1E),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Icon(Icons.keyboard_arrow_down_rounded),
+                                ],
                               ),
-                              const Icon(Icons.keyboard_arrow_down_rounded),
+                              AnimatedSize(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: _issueExpanded
+                                    ? Column(
+                                        children: issueOptions.map((option) {
+                                          return ListTile(
+                                            dense: true, // reduces vertical height
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 0,
+                                                    vertical:
+                                                        0), // adjust as needed
+                                            title: Text(
+                                              option,
+                                              style: const TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                                color: Color(0xFF1E1E1E),
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedIssue = option;
+                                                _issueExpanded = false;
+                                              });
+                                            },
+                                          );
+                                        }).toList(),
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
                             ],
                           ),
-                          AnimatedSize(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            child: _issueExpanded
-                                ? Column(
-                                    children: issueOptions.map((option) {
-                                      return ListTile(
-                                        dense: true, // reduces vertical height
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 0,
-                                                vertical:
-                                                    0), // adjust as needed
-                                        title: Text(
-                                          option,
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xFF1E1E1E),
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            _selectedIssue = option;
-                                            _issueExpanded = false;
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                                  )
-                                : const SizedBox.shrink(),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 16),
@@ -273,9 +313,9 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                             ),
-                            decoration: const InputDecoration(
-                              hintText: "Describe your issue here...",
-                              hintStyle: TextStyle(
+                            decoration: InputDecoration(
+                              hintText: AppLocalizations.of(context)!.describeYourIssueHere,
+                              hintStyle: const TextStyle(
                                 color: Color(0xFF1E1E1E),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w400,
@@ -291,17 +331,22 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                   const SizedBox(height: 20),
 
                   /// Submit button
-                  Center(
-                    child: DynamicGradientButton(
-                      buttonText: "Submit Ticket",
-                      onTap: () {
-                        Navigator.pushNamed(context, '/contact-support');
-                      },
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 5),
-                      textColor: Colors.white,
-                      textSize: 15,
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Center(
+                        child: DynamicGradientButton(
+                          buttonText: l10n.submitTicket,
+                          onTap: () {
+                            Navigator.pushNamed(context, '/contact-support');
+                          },
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 5),
+                          textColor: Colors.white,
+                          textSize: 15,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -312,7 +357,8 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     );
   }
 
-  Widget _buildRow(int index) {
+  Widget _buildRow(BuildContext context, int index) {
+    final faqs = _buildFaqs(context);
     final faq = faqs[index];
     final isExpanded = _expanded[index];
 

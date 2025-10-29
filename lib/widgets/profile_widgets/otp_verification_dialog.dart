@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OtpVerificationDialog extends StatefulWidget {
   final String phoneNumber;
@@ -110,26 +111,31 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Verify Phone Number',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E1E1E),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Enter the 6-digit code sent to\n${widget.phoneNumber}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
+                  child: Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.verifyPhoneNumber,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1E1E1E),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.enter6DigitCode(widget.phoneNumber),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ],
@@ -230,15 +236,20 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
             const SizedBox(height: 24),
 
             // Resend Code Button
-            TextButton(
-              onPressed: widget.isLoading ? null : widget.onResend,
-              child: Text(
-                'Resend Code',
-                style: TextStyle(
-                  color: widget.isLoading ? Colors.grey : const Color(0xFF0048FF),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                return TextButton(
+                  onPressed: widget.isLoading ? null : widget.onResend,
+                  child: Text(
+                    l10n.resendCode,
+                    style: TextStyle(
+                      color: widget.isLoading ? Colors.grey : const Color(0xFF0048FF),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 16),
@@ -259,37 +270,47 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
                   ),
                   elevation: 0,
                 ),
-                child: widget.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : const Text(
-                        'Verify',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                child: Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context)!;
+                    return widget.isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            l10n.verify,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                  },
+                ),
               ),
             ),
 
             const SizedBox(height: 16),
 
             // Cancel Button
-            TextButton(
-              onPressed: widget.isLoading ? null : () => Navigator.of(context).pop(),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                return TextButton(
+                  onPressed: widget.isLoading ? null : () => Navigator.of(context).pop(),
+                  child: Text(
+                    l10n.cancel,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              },
             ),
               ],
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/favorite.dart';
 import '../../services/favorite_service.dart';
 import '../../widgets/favorite_card.dart';
@@ -89,17 +90,19 @@ class _FavoritesPageState extends State<FavoritesPage> {
           isLoadingMore = false;
         });
       } else {
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
           hasError = true;
-          errorMessage = result['message'] ?? 'Failed to load favorites';
+          errorMessage = result['message'] ?? l10n.failedToLoadFavorites;
           isLoading = false;
           isLoadingMore = false;
         });
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         hasError = true;
-        errorMessage = 'Network error occurred';
+        errorMessage = l10n.networkErrorOccurred;
         isLoading = false;
         isLoadingMore = false;
       });
@@ -127,24 +130,27 @@ class _FavoritesPageState extends State<FavoritesPage> {
           favorites.removeWhere((item) => item.id == favorite.id);
           totalCount--;
         });
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Removed from favorites'),
+          SnackBar(
+            content: Text(l10n.removedFromFavorites),
             backgroundColor: Colors.red,
           ),
         );
       } else {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Failed to remove favorite'),
+            content: Text(result['message'] ?? l10n.failedToRemoveFavorite),
             backgroundColor: Colors.red,
           ),
         );
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Network error occurred'),
+        SnackBar(
+          content: Text(l10n.networkErrorOccurred),
           backgroundColor: Colors.red,
         ),
       );
@@ -163,9 +169,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Favorites"),
+        title: Text(l10n.favoritesTitle),
         backgroundColor: Colors.blue,
         actions: [
           if (totalCount > 0)
@@ -173,7 +180,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               padding: const EdgeInsets.only(right: 16.0),
               child: Center(
                 child: Text(
-                  '$totalCount items',
+                  l10n.itemsCount(totalCount),
                   style: const TextStyle(fontSize: 14),
                 ),
               ),
@@ -194,6 +201,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
       );
     }
 
+    final l10n = AppLocalizations.of(context)!;
     if (hasError && favorites.isEmpty) {
       return Center(
         child: Column(
@@ -216,7 +224,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _loadFavorites(isRefresh: true),
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -235,7 +243,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No favorites yet',
+              l10n.noFavoritesYet,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey[600],
@@ -244,7 +252,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Items you favorite will appear here',
+              l10n.favoritesDescription,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -301,26 +309,32 @@ class _FavoritesPageState extends State<FavoritesPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (isLoadingMore)
-                  const Row(
-                    children: [
-                      SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      SizedBox(width: 8),
-                      Text('Loading more...'),
-                    ],
-                  )
-                else
-                  Text(
-                    'Showing ${favorites.length} of $totalCount items',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
-                  ),
+                Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context)!;
+                    if (isLoadingMore) {
+                      return Row(
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text(l10n.loadingMore),
+                        ],
+                      );
+                    } else {
+                      return Text(
+                        l10n.showingXOfYItems(favorites.length, totalCount),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../environment.dart';
 import 'package:http/http.dart' as http;
@@ -116,29 +117,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-// List for the 5 items in the horizontal scroll view
-  final List<Map<String, dynamic>> menuItems = [
-    {
-      'icon': Icons.headset_mic,
-      'text': 'Help & Support',
-      'color': Color(0xFF0048FF),
-    },
-    {
-      'icon': Icons.description,
-      'text': 'Terms & Conditions',
-      'color': Color(0xFF0048FF),
-    },
-    {
-      'icon': Icons.star,
-      'text': 'Favorites',
-      'color': Color(0xFF0048FF),
-    },
-    {
-      'icon': Icons.extension,
-      'text': 'Referrals',
-      'color': Color(0xFF0048FF),
-    },
-  ];
+  List<Map<String, dynamic>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {
+        'icon': Icons.headset_mic,
+        'text': l10n.helpAndSupport,
+        'color': Color(0xFF0048FF),
+      },
+      {
+        'icon': Icons.description,
+        'text': l10n.termsAndConditions,
+        'color': Color(0xFF0048FF),
+      },
+      {
+        'icon': Icons.star,
+        'text': l10n.favorites,
+        'color': Color(0xFF0048FF),
+      },
+      {
+        'icon': Icons.extension,
+        'text': l10n.referrals,
+        'color': Color(0xFF0048FF),
+      },
+    ];
+  }
 
   Future<void> _pickAndUploadImage() async {
     try {
@@ -184,9 +187,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await _updateProfileImage(responseData['filename'], userId);
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile image updated successfully!'),
+            SnackBar(
+              content: Text(l10n.profileImageUpdatedSuccessfully),
               backgroundColor: Colors.green,
             ),
           );
@@ -203,9 +207,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error uploading image: $e');
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating profile image: ${e.toString()}'),
+            content: Text(l10n.errorUpdatingProfileImage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -250,36 +255,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<ImageSource?> _showImageSourceDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<ImageSource>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Image Source'),
-          content: const Text('Choose where to get your profile image from:'),
+          title: Text(l10n.selectImageSource),
+          content: Text(l10n.chooseImageSource),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(ImageSource.camera),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.camera_alt, size: 18),
                   SizedBox(width: 4),
-                  Text('Camera'),
+                  Text(l10n.camera),
                 ],
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(ImageSource.gallery),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.photo_library, size: 18),
                   SizedBox(width: 4),
-                  Text('Gallery'),
+                  Text(l10n.gallery),
                 ],
               ),
             ),
@@ -290,16 +296,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLogoutDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
+          title: Text(l10n.logout),
+          content: Text(l10n.areYouSureLogout),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -312,7 +319,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Logout'),
+              child: Text(l10n.logout),
             ),
           ],
         );
@@ -321,43 +328,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showDeleteAccountDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            'Delete Account',
-            style: TextStyle(
+          title: Text(
+            l10n.deleteAccount,
+            style: const TextStyle(
               color: Colors.red,
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Column(
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '⚠️ WARNING: This action is NOT reversible!',
-                style: TextStyle(
+                l10n.deleteAccountWarning,
+                style: const TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
-                'Deleting your account will permanently remove:',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                l10n.deletingAccountWillRemove,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
-              SizedBox(height: 8),
-              Text('• All your personal data'),
-              Text('• All your listings and services'),
-              Text('• All your messages and chat history'),
-              Text('• All your reviews and favorites'),
-              Text('• All your subscriptions'),
-              SizedBox(height: 12),
+              const SizedBox(height: 8),
+              Text(l10n.allPersonalData),
+              Text(l10n.allListingsAndServices),
+              Text(l10n.allMessagesAndChatHistory),
+              Text(l10n.allReviewsAndFavorites),
+              Text(l10n.allSubscriptions),
+              const SizedBox(height: 12),
               Text(
-                'This action cannot be undone. Are you absolutely sure you want to delete your account?',
-                style: TextStyle(
+                l10n.deleteAccountConfirmation,
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.red,
                 ),
@@ -367,7 +375,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -375,9 +383,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await _deleteAccount();
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text(
-                'Delete Account',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: Text(
+                l10n.deleteAccount,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -388,17 +396,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _deleteAccount() async {
     try {
+      final l10n = AppLocalizations.of(context)!;
       // Show loading indicator
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return const AlertDialog(
+          return AlertDialog(
             content: Row(
               children: [
-                CircularProgressIndicator(),
-                SizedBox(width: 20),
-                Text('Deleting account...'),
+                const CircularProgressIndicator(),
+                const SizedBox(width: 20),
+                Text(l10n.deletingAccount),
               ],
             ),
           );
@@ -434,12 +443,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         // Close loading dialog if it's still open
         Navigator.of(context).pop();
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting account: ${e.toString()}'),
+            content: Text(l10n.errorDeletingAccount(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -451,11 +461,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
+    final l10n = AppLocalizations.of(context)!;
     // Validate passwords match
     if (newPassword != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
+        SnackBar(
+          content: Text(l10n.passwordsDoNotMatch),
           backgroundColor: Colors.red,
         ),
       );
@@ -561,10 +572,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final phoneParts = _extractPhoneParts(currentPhone);
     final currentPhoneNumber = phoneParts['phoneNumber'] ?? '';
     
+    final l10n = AppLocalizations.of(context)!;
     if (newEmail.toLowerCase() == currentEmail && newPhone == currentPhoneNumber) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No changes detected'),
+        SnackBar(
+          content: Text(l10n.noChangesDetected),
           backgroundColor: Colors.orange,
         ),
       );
@@ -587,10 +599,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _newPhoneNumber = phoneToSend;
       }
 
+      final l10n = AppLocalizations.of(context)!;
       if (emailToSend == null && phoneToSend == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No changes detected'),
+          SnackBar(
+            content: Text(l10n.noChangesDetected),
             backgroundColor: Colors.orange,
           ),
         );
@@ -620,9 +633,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error requesting OTP: ${e.toString()}'),
+            content: Text(l10n.errorRequestingOtp(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -697,9 +711,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error verifying OTP: ${e.toString()}'),
+            content: Text(l10n.errorVerifyingOtp(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -741,11 +756,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         if (result['success']) {
           _pendingEditId = result['pendingEditId'];
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('OTP resent successfully'),
+            SnackBar(
+              content: Text(l10n.otpResentSuccessfully),
               backgroundColor: Colors.green,
             ),
           );
@@ -760,9 +776,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error resending OTP: ${e.toString()}'),
+            content: Text(l10n.errorRequestingOtp(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -814,9 +831,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = AuthService.currentUser;
 
     if (user == null) {
-      return const Scaffold(
+      final l10n = AppLocalizations.of(context)!;
+      return Scaffold(
         body: Center(
-          child: Text('No user data available'),
+          child: Text(l10n.noUserDataAvailable),
         ),
       );
     }
@@ -928,7 +946,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   //User Info
                   _buildInfoCard(
-                      'Email', emailController, Icons.email_outlined),
+                      AppLocalizations.of(context)!.email, emailController, Icons.email_outlined),
 
                   const SizedBox(height: 20),
 
@@ -1010,23 +1028,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const SizedBox(width: 20.0),
                               // Phone Number Input Field
                               Expanded(
-                                child: TextField(
-                                  controller: phoneController,
-                                  decoration: InputDecoration(
-                                    hintText: phoneParts['phoneNumber']!.isEmpty 
-                                        ? 'Enter your phone number' 
-                                        : '00 123 456',
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                  keyboardType: TextInputType.phone,
-                                  style: TextStyle(
-                                    color: Color(0xFF1E1E1E),
-                                    fontWeight: FontWeight
-                                        .w400, // optional: adjust font size
-                                  ),
+                                child: Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context)!;
+                                    return TextField(
+                                      controller: phoneController,
+                                      decoration: InputDecoration(
+                                        hintText: phoneParts['phoneNumber']!.isEmpty 
+                                            ? l10n.enterYourPhoneNumber
+                                            : l10n.phoneNumberPlaceholder,
+                                        hintStyle: TextStyle(color: Colors.grey),
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                      ),
+                                      keyboardType: TextInputType.phone,
+                                      style: TextStyle(
+                                        color: Color(0xFF1E1E1E),
+                                        fontWeight: FontWeight
+                                            .w400, // optional: adjust font size
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],
@@ -1038,48 +1061,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   const SizedBox(height: 30),
 
-                  DynamicGradientButton(
-                    buttonText: _isEditingContact ? 'Processing...' : 'Edit Email & Number',
-                    onTap: _isEditingContact ? null : _editContact,
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return DynamicGradientButton(
+                        buttonText: _isEditingContact ? l10n.processing : l10n.editEmailAndNumber,
+                        onTap: _isEditingContact ? null : _editContact,
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 30),
 
 // new password and rewrite password section
-                  Column(
-                    children: [
-                      BuildNewPassword(
-                        Icons.lock_open_outlined,
-                        "Enter new password",
-                        obscureText: _obscureNewPassword,
-                        controller: newPasswordController,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscureNewPassword = !_obscureNewPassword;
-                          });
-                        },
-                      ),
-                      BuildNewPassword(
-                        Icons.lock_outline,
-                        "Re-enter password",
-                        obscureText: _obscureConfirmPassword,
-                        controller: confirmPasswordController,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ],
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Column(
+                        children: [
+                          BuildNewPassword(
+                            Icons.lock_open_outlined,
+                            l10n.enterNewPassword,
+                            obscureText: _obscureNewPassword,
+                            controller: newPasswordController,
+                            onToggleVisibility: () {
+                              setState(() {
+                                _obscureNewPassword = !_obscureNewPassword;
+                              });
+                            },
+                          ),
+                          BuildNewPassword(
+                            Icons.lock_outline,
+                            l10n.reEnterPassword,
+                            obscureText: _obscureConfirmPassword,
+                            controller: confirmPasswordController,
+                            onToggleVisibility: () {
+                              setState(() {
+                                _obscureConfirmPassword = !_obscureConfirmPassword;
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 20),
 
-                  DynamicGradientButton(
-                    buttonText: _isChangingPassword ? 'Changing...' : 'Change Password',
-                    onTap: _isChangingPassword ? null : _changePassword,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18.5, vertical: 7.0),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return DynamicGradientButton(
+                        buttonText: _isChangingPassword ? l10n.changing : l10n.changePassword,
+                        onTap: _isChangingPassword ? null : _changePassword,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18.5, vertical: 7.0),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 30),
@@ -1088,32 +1126,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   horizontalScroll(),
 
                   // Dynamic settings section
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: DynamicSection(
-                      title: 'Notification Settings',
-                      rows: const [
-                        {"text": "New Messages"},
-                        {"text": "Listing Approval"},
-                        {"text": "Service Requests"},
-                        {"text": "Promotions"},
-                      ],
-                      userOptions: user.options,
-                      onOptionChanged: _handleOptionChange,
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: DynamicSection(
-                      title: 'Privacy Settings',
-                      rows: const [
-                        {"text": "Hide Social Links"},
-                        {"text": "Hide Contact Info"},
-                      ],
-                      userOptions: user.options,
-                      onOptionChanged: _handleOptionChange,
-                    ),
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: DynamicSection(
+                              title: l10n.notificationSettings,
+                              rows: [
+                                {"text": l10n.newMessages},
+                                {"text": l10n.listingApproval},
+                                {"text": l10n.serviceRequests},
+                                {"text": l10n.promotions},
+                              ],
+                              userOptions: user.options,
+                              onOptionChanged: _handleOptionChange,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: DynamicSection(
+                              title: l10n.privacySettings,
+                              rows: [
+                                {"text": l10n.hideSocialLinks},
+                                {"text": l10n.hideContactInfo},
+                              ],
+                              userOptions: user.options,
+                              onOptionChanged: _handleOptionChange,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
 
                   // ! Manage links is missing in figma
@@ -1208,20 +1254,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             elevation: 2,
           ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min, // wrap content tightly
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.logout, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
-                'Logout',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          child: Builder(
+            builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return Row(
+                mainAxisSize: MainAxisSize.min, // wrap content tightly
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.logout, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    l10n.logout,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -1244,20 +1295,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             elevation: 2,
           ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min, // wrap content tightly
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.delete, color: Colors.white),
-              SizedBox(width: 8),
-              Text(
-                'Delete Account',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+          child: Builder(
+            builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return Row(
+                mainAxisSize: MainAxisSize.min, // wrap content tightly
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.delete, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    l10n.deleteAccount,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -1265,6 +1321,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   SizedBox horizontalScroll() {
+    final menuItems = _buildMenuItems(context);
     return SizedBox(
       height: 100,
       child: ListView.separated(

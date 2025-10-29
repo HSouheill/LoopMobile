@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReferralsPage extends StatefulWidget {
   const ReferralsPage({super.key});
@@ -10,15 +11,16 @@ class ReferralsPage extends StatefulWidget {
 class _ReferralsPageState extends State<ReferralsPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Referrals"),
+        title: Text(l10n.referralsTitle),
         backgroundColor: Colors.blue, // optional
       ),
-      body: const Center(
+      body: Center(
         child: Text(
-          "Hello, this is the Referrals screen",
-          style: TextStyle(fontSize: 18),
+          l10n.helloReferrals,
+          style: const TextStyle(fontSize: 18),
           textAlign: TextAlign.center,
         ),
       ),

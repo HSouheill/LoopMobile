@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileDashboardPage extends StatefulWidget {
   const ProfileDashboardPage({super.key});
@@ -10,15 +11,16 @@ class ProfileDashboardPage extends StatefulWidget {
 class _ProfileDashboardPageState extends State<ProfileDashboardPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile Dashboard"),
+        title: Text(l10n.profileDashboard),
         backgroundColor: Colors.blue, // optional
       ),
-      body: const Center(
+      body: Center(
         child: Text(
-          "Hello, this is the Profile Dashboard screen",
-          style: TextStyle(fontSize: 18),
+          l10n.helloProfileDashboard,
+          style: const TextStyle(fontSize: 18),
           textAlign: TextAlign.center,
         ),
       ),

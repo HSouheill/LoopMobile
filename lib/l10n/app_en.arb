@@ -1043,5 +1043,155 @@
   "soldButton": "Sold",
   "deleteButton": "Delete",
   "boostButton": "Boost",
-  "editButton": "Edit"
+  "editButton": "Edit",
+  "profileImageUpdatedSuccessfully": "Profile image updated successfully!",
+  "errorUpdatingProfileImage": "Error updating profile image: {error}",
+  "@errorUpdatingProfileImage": {
+    "description": "Error updating profile image message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectImageSource": "Select Image Source",
+  "chooseImageSource": "Choose where to get your profile image from:",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "logout": "Logout",
+  "areYouSureLogout": "Are you sure you want to logout?",
+  "deleteAccount": "Delete Account",
+  "deleteAccountWarning": "⚠️ WARNING: This action is NOT reversible!",
+  "deletingAccountWillRemove": "Deleting your account will permanently remove:",
+  "allPersonalData": "• All your personal data",
+  "allListingsAndServices": "• All your listings and services",
+  "allMessagesAndChatHistory": "• All your messages and chat history",
+  "allReviewsAndFavorites": "• All your reviews and favorites",
+  "allSubscriptions": "• All your subscriptions",
+  "deleteAccountConfirmation": "This action cannot be undone. Are you absolutely sure you want to delete your account?",
+  "deletingAccount": "Deleting account...",
+  "errorDeletingAccount": "Error deleting account: {error}",
+  "@errorDeletingAccount": {
+    "description": "Error deleting account message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "helpAndSupport": "Help & Support",
+  "termsAndConditions": "Terms & Conditions",
+  "favorites": "Favorites",
+  "referrals": "Referrals",
+  "noUserDataAvailable": "No user data available",
+  "email": "Email",
+  "enterYourPhoneNumber": "Enter your phone number",
+  "phoneNumberPlaceholder": "00 123 456",
+  "editEmailAndNumber": "Edit Email & Number",
+  "processing": "Processing...",
+  "enterNewPassword": "Enter new password",
+  "reEnterPassword": "Re-enter password",
+  "changePassword": "Change Password",
+  "changing": "Changing...",
+  "notificationSettings": "Notification Settings",
+  "newMessages": "New Messages",
+  "listingApproval": "Listing Approval",
+  "serviceRequests": "Service Requests",
+  "promotions": "Promotions",
+  "privacySettings": "Privacy Settings",
+  "hideSocialLinks": "Hide Social Links",
+  "hideContactInfo": "Hide Contact Info",
+  "profileDashboard": "Profile Dashboard",
+  "helloProfileDashboard": "Hello, this is the Profile Dashboard screen",
+  "favoritesTitle": "Favorites",
+  "itemsCount": "{count} items",
+  "@itemsCount": {
+    "description": "Items count display",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "retry": "Retry",
+  "noFavoritesYet": "No favorites yet",
+  "favoritesDescription": "Items you favorite will appear here",
+  "removedFromFavorites": "Removed from favorites",
+  "failedToRemoveFavorite": "Failed to remove favorite",
+  "networkErrorOccurred": "Network error occurred",
+  "failedToLoadFavorites": "Failed to load favorites",
+  "showingXOfYItems": "Showing {current} of {total} items",
+  "@showingXOfYItems": {
+    "description": "Showing current and total items count",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingMore": "Loading more...",
+  "referralsTitle": "Referrals",
+  "helloReferrals": "Hello, this is the Referrals screen",
+  "updateContactInformation": "How do I update my contact information?",
+  "resetPasswordAnswer": "To reset your password, go to settings and click on 'Reset Password'.",
+  "howToListNewService": "How do I list a new service?",
+  "contactSupportAnswer": "You can contact support by emailing support@example.com.",
+  "canEditOrDeleteService": "Can I edit or delete a service I posted?",
+  "tutorialAvailableAnswer": "The tutorial is available under the 'Help' section in the app.",
+  "whatHappensAfterServiceRequest": "What happens after I receive a service request?",
+  "howDoIDeleteMyAccount": "How do I delete my account?",
+  "submitATicket": "Submit a Ticket",
+  "whatsYourIssueAbout": "What's Your Issue About?",
+  "selectIssue": "Select Issue",
+  "paymentProblem": "Payment Problem",
+  "technicalError": "Technical Error",
+  "accountIssue": "Account Issue",
+  "other": "Other",
+  "describeYourIssueHere": "Describe your issue here...",
+  "submitTicket": "Submit Ticket",
+  "verifyPhoneNumber": "Verify Phone Number",
+  "enter6DigitCode": "Enter the 6-digit code sent to\n{phoneNumber}",
+  "@enter6DigitCode": {
+    "description": "Enter 6-digit code instruction",
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCode": "Resend Code",
+  "verify": "Verify",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "noChangesDetected": "No changes detected",
+  "otpResentSuccessfully": "OTP resent successfully",
+  "errorRequestingOtp": "Error requesting OTP: {error}",
+  "@errorRequestingOtp": {
+    "description": "Error requesting OTP message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorVerifyingOtp": "Error verifying OTP: {error}",
+  "@errorVerifyingOtp": {
+    "description": "Error verifying OTP message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateSetting": "Failed to update setting: {error}",
+  "@failedToUpdateSetting": {
+    "description": "Failed to update setting message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

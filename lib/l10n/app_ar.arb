@@ -731,6 +731,8 @@
       }
     }
   },
+  "delete": "حذف",
+  "report": "الإبلاغ",
   "startConversationPrompt": "ابدأ المحادثة!",
   "typeAMessage": "اكتب رسالة...",
   "you": "أنت",
@@ -1041,5 +1043,155 @@
   "soldButton": "تم البيع",
   "deleteButton": "حذف",
   "boostButton": "تعزيز",
-  "editButton": "تعديل"
+  "editButton": "تعديل",
+  "profileImageUpdatedSuccessfully": "تم تحديث صورة الملف الشخصي بنجاح!",
+  "errorUpdatingProfileImage": "خطأ في تحديث صورة الملف الشخصي: {error}",
+  "@errorUpdatingProfileImage": {
+    "description": "رسالة خطأ تحديث صورة الملف الشخصي",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectImageSource": "اختر مصدر الصورة",
+  "chooseImageSource": "اختر من أين تريد الحصول على صورة الملف الشخصي:",
+  "camera": "الكاميرا",
+  "gallery": "المعرض",
+  "logout": "تسجيل الخروج",
+  "areYouSureLogout": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "deleteAccount": "حذف الحساب",
+  "deleteAccountWarning": "⚠️ تحذير: هذا الإجراء غير قابل للعكس!",
+  "deletingAccountWillRemove": "حذف حسابك سيحذف نهائياً:",
+  "allPersonalData": "• جميع بياناتك الشخصية",
+  "allListingsAndServices": "• جميع قوائمك وخدماتك",
+  "allMessagesAndChatHistory": "• جميع رسائلك وسجل المحادثات",
+  "allReviewsAndFavorites": "• جميع مراجعاتك والمفضلة",
+  "allSubscriptions": "• جميع اشتراكاتك",
+  "deleteAccountConfirmation": "لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد تماماً أنك تريد حذف حسابك؟",
+  "deletingAccount": "جاري حذف الحساب...",
+  "errorDeletingAccount": "خطأ في حذف الحساب: {error}",
+  "@errorDeletingAccount": {
+    "description": "رسالة خطأ حذف الحساب",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "helpAndSupport": "المساعدة والدعم",
+  "termsAndConditions": "الشروط والأحكام",
+  "favorites": "المفضلة",
+  "referrals": "الإحالات",
+  "noUserDataAvailable": "لا توجد بيانات المستخدم متاحة",
+  "email": "البريد الإلكتروني",
+  "enterYourPhoneNumber": "أدخل رقم هاتفك",
+  "phoneNumberPlaceholder": "00 123 456",
+  "editEmailAndNumber": "تعديل البريد الإلكتروني والرقم",
+  "processing": "جاري المعالجة...",
+  "enterNewPassword": "أدخل كلمة المرور الجديدة",
+  "reEnterPassword": "أعد إدخال كلمة المرور",
+  "changePassword": "تغيير كلمة المرور",
+  "changing": "جاري التغيير...",
+  "notificationSettings": "إعدادات الإشعارات",
+  "newMessages": "رسائل جديدة",
+  "listingApproval": "موافقة القائمة",
+  "serviceRequests": "طلبات الخدمة",
+  "promotions": "العروض الترويجية",
+  "privacySettings": "إعدادات الخصوصية",
+  "hideSocialLinks": "إخفاء الروابط الاجتماعية",
+  "hideContactInfo": "إخفاء معلومات الاتصال",
+  "profileDashboard": "لوحة تحكم الملف الشخصي",
+  "helloProfileDashboard": "مرحباً، هذه هي شاشة لوحة تحكم الملف الشخصي",
+  "favoritesTitle": "المفضلة",
+  "itemsCount": "{count} عنصر",
+  "@itemsCount": {
+    "description": "عرض عدد العناصر",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "retry": "إعادة المحاولة",
+  "noFavoritesYet": "لا توجد مفضلات بعد",
+  "favoritesDescription": "العناصر التي تضيفها إلى المفضلة ستظهر هنا",
+  "removedFromFavorites": "تمت الإزالة من المفضلة",
+  "failedToRemoveFavorite": "فشل إزالة المفضلة",
+  "networkErrorOccurred": "حدث خطأ في الشبكة",
+  "failedToLoadFavorites": "فشل تحميل المفضلة",
+  "showingXOfYItems": "عرض {current} من {total} عنصر",
+  "@showingXOfYItems": {
+    "description": "عرض العدد الحالي والإجمالي للعناصر",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingMore": "جاري تحميل المزيد...",
+  "referralsTitle": "الإحالات",
+  "helloReferrals": "مرحباً، هذه هي شاشة الإحالات",
+  "updateContactInformation": "كيف أقوم بتحديث معلومات الاتصال الخاصة بي؟",
+  "resetPasswordAnswer": "لإعادة تعيين كلمة المرور الخاصة بك، انتقل إلى الإعدادات وانقر على 'إعادة تعيين كلمة المرور'.",
+  "howToListNewService": "كيف أقوم بإدراج خدمة جديدة؟",
+  "contactSupportAnswer": "يمكنك الاتصال بالدعم عبر البريد الإلكتروني support@example.com.",
+  "canEditOrDeleteService": "هل يمكنني تعديل أو حذف خدمة نشرتها؟",
+  "tutorialAvailableAnswer": "التعليمات متوفرة في قسم 'المساعدة' في التطبيق.",
+  "whatHappensAfterServiceRequest": "ماذا يحدث بعد أن أتلقى طلب خدمة؟",
+  "howDoIDeleteMyAccount": "كيف أقوم بحذف حسابي؟",
+  "submitATicket": "إرسال تذكرة",
+  "whatsYourIssueAbout": "بخصوص ماذا مشكلتك؟",
+  "selectIssue": "اختر المشكلة",
+  "paymentProblem": "مشكلة دفع",
+  "technicalError": "خطأ تقني",
+  "accountIssue": "مشكلة في الحساب",
+  "other": "أخرى",
+  "describeYourIssueHere": "اوصف مشكلتك هنا...",
+  "submitTicket": "إرسال التذكرة",
+  "verifyPhoneNumber": "التحقق من رقم الهاتف",
+  "enter6DigitCode": "أدخل الرمز المكون من 6 أرقام المرسل إلى\n{phoneNumber}",
+  "@enter6DigitCode": {
+    "description": "تعليمات إدخال رمز مكون من 6 أرقام",
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCode": "إعادة إرسال الرمز",
+  "verify": "التحقق",
+  "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+  "noChangesDetected": "لم يتم اكتشاف أي تغييرات",
+  "otpResentSuccessfully": "تم إعادة إرسال رمز التحقق بنجاح",
+  "errorRequestingOtp": "خطأ في طلب رمز التحقق: {error}",
+  "@errorRequestingOtp": {
+    "description": "رسالة خطأ طلب رمز التحقق",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorVerifyingOtp": "خطأ في التحقق من رمز التحقق: {error}",
+  "@errorVerifyingOtp": {
+    "description": "رسالة خطأ التحقق من رمز التحقق",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateSetting": "فشل تحديث الإعداد: {error}",
+  "@failedToUpdateSetting": {
+    "description": "رسالة فشل تحديث الإعداد",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }
