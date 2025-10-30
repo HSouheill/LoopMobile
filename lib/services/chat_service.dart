@@ -37,6 +37,37 @@ class ChatService {
     }
   }
 
+  // Search chats by participant name or content
+  static Future<List<Chat>> searchChats(String token, String query) async {
+    try {
+      final uri = Uri.parse('${baseUrl}chats/search')
+          .replace(queryParameters: {'q': query});
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          try {
+            return (data['chats'] as List)
+                .map((chat) => Chat.fromJson(chat))
+                .toList();
+          } catch (_) {
+            return [];
+          }
+        }
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
   // Get chat with specific user
   static Future<Chat?> getChatWithUser(
     String token, 

@@ -23,12 +23,16 @@ class _ChatListPageState extends State<ChatListPage> {
   StreamSubscription? _messageSubscription;
   StreamSubscription? _notificationSubscription;
   StreamSubscription? _readSubscription;
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
     _initializeSocket();
     _loadChats();
+    _searchController.addListener(_onSearchChanged);
   }
 
   Future<void> _initializeSocket() async {
@@ -164,6 +168,8 @@ class _ChatListPageState extends State<ChatListPage> {
     _messageSubscription?.cancel();
     _notificationSubscription?.cancel();
     _readSubscription?.cancel();
+    _searchDebounce?.cancel();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -207,6 +213,39 @@ class _ChatListPageState extends State<ChatListPage> {
         );
       }
     }
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
+      if (!mounted) return;
+      final token = AuthService.token;
+      if (token == null || !AuthService.isLoggedIn) return;
+
+      if (query.isEmpty) {
+        // Reset to full list
+        await _loadChats();
+        return;
+      }
+
+      setState(() {
+        _isSearching = true;
+      });
+      try {
+        final results = await ChatService.searchChats(token, query);
+        if (!mounted) return;
+        setState(() {
+          chats = results;
+          _isSearching = false;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _isSearching = false;
+        });
+      }
+    });
   }
 
   String _getOtherParticipantName(Chat chat, BuildContext context) {
@@ -323,6 +362,7 @@ class _ChatListPageState extends State<ChatListPage> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: TextField(
+                          controller: _searchController,
                           decoration: InputDecoration(
                             hintText: l10n?.search ?? 'Search...',
                             hintStyle: TextStyle(color: Colors.grey[500]),
@@ -331,7 +371,12 @@ class _ChatListPageState extends State<ChatListPage> {
                           ),
                         ),
                       ),
-                      Icon(Icons.tune, color: Colors.black87, size: 20),
+                      if (_isSearching)
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
                     ],
                   );
                 },
