@@ -1284,6 +1284,7 @@
   "pleaseLoginToSubmitReview": "Please log in to submit a review",
   "reviewSubmittedSuccessfully": "Review submitted successfully!",
   "sessionExpired": "Session expired. Please log in again.",
+  "pleaseLoginToAddListing": "Please log in to add listings",
   "alreadyReviewedAgent": "You have already reviewed this agent",
   "failedToSubmitReview": "Failed to submit review",
   "networkErrorReview": "Network error: {error}",

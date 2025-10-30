@@ -277,6 +277,19 @@ class _MainScreenState extends State<MainScreen> {
 
   // Method to show the modal when FAB is clicked
   void _showAddModal() {
+    if (!_isLoggedIn) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.pleaseLoginToAddListing ?? 'You need to be signed in to add listings'),
+        ),
+      );
+      Navigator.pushNamed(context, '/preLogin').then((_) {
+        _checkAuthStatus();
+      });
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

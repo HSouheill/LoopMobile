@@ -1282,6 +1282,7 @@
   "pleaseLoginToSubmitReview": "يرجى تسجيل الدخول لإرسال مراجعة",
   "reviewSubmittedSuccessfully": "تم إرسال المراجعة بنجاح!",
   "sessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+  "pleaseLoginToAddListing": "يرجى تسجيل الدخول لإضافة الإعلانات",
   "alreadyReviewedAgent": "لقد راجعت هذا الوكيل بالفعل",
   "failedToSubmitReview": "فشل إرسال المراجعة",
   "networkErrorReview": "خطأ في الشبكة: {error}",
