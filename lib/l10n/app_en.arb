@@ -1515,7 +1515,7 @@
   "phoneNumberIsRequired": "Phone number is required",
   "message": "Message",
   "describeIssueOrQuestionRequiredLabel": "Describe your issue or question *",
-  "describeIssueOrQuestionHint": "Please provide as much detail as possible about your issue or question...",
+  "describeIssueOrQuestionHint": "Please provide as much details as possible about your issue or question...",
   "messageIsRequired": "Message is required",
   "messageMinLength": "Message must be at least 10 characters long",
   "messageMaxLength": "Message must be less than 5000 characters",

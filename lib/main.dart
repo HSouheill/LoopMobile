@@ -8,6 +8,7 @@ import 'services/chat_service.dart';
 import 'services/socket_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
 import 'widgets/latest_updates_widget.dart';
@@ -48,10 +49,36 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   Locale _locale = const Locale('en'); // Default to English
 
-  void setLocale(Locale newLocale) {
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLocale();
+  }
+
+  Future<void> _loadSavedLocale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedCode = prefs.getString('app_locale_code');
+      if (savedCode != null && savedCode.isNotEmpty) {
+        setState(() {
+          _locale = Locale(savedCode);
+        });
+      }
+    } catch (_) {
+      // Ignore errors; default to English
+    }
+  }
+
+  Future<void> setLocale(Locale newLocale) async {
     setState(() {
       _locale = newLocale;
     });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('app_locale_code', newLocale.languageCode);
+    } catch (_) {
+      // Ignore persistence errors
+    }
   }
 
   @override
