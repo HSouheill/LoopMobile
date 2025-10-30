@@ -89,6 +89,11 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: Colors.blue,
+          selectionColor: Colors.blue.withOpacity(0.3),
+          selectionHandleColor: Colors.blue,
+        ),
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: Color.fromARGB(255, 69, 100, 201),
         ),
