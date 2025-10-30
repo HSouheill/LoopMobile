@@ -123,10 +123,11 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    const darkBlue = Color(0xFF4564C9);
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.contactSupportTitle),
-        backgroundColor: Colors.blue,
+        backgroundColor: darkBlue,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -354,7 +355,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitTicket,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: darkBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
