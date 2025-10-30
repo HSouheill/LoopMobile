@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../services/ticket_service.dart';
+import '../../services/auth_service.dart';
 
 class HelpAndSupportPage extends StatefulWidget {
   const HelpAndSupportPage({super.key});
@@ -11,6 +13,9 @@ class HelpAndSupportPage extends StatefulWidget {
 
 class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     with TickerProviderStateMixin {
+  final TextEditingController _descriptionController = TextEditingController();
+  bool _isSubmitting = false;
+
   List<Map<String, String>> _buildFaqs(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return [
@@ -58,6 +63,62 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
   void initState() {
     super.initState();
     _expanded = [];
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitSupportTicket() async {
+    final description = _descriptionController.text.trim();
+    if (description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a description')),
+      );
+      return;
+    }
+
+    // If user is not authenticated, route to contact support form to collect email/phone
+    if (!AuthService.isLoggedIn) {
+      Navigator.pushNamed(context, '/contact-support');
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final result = await TicketService.createTicketForAuthenticatedUser(
+        content: description,
+      );
+
+      if (!mounted) return;
+
+      if (result['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Ticket submitted successfully'), backgroundColor: Colors.green),
+        );
+        _descriptionController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Failed to submit ticket'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: ${e.toString()}'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   @override
@@ -307,6 +368,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                         /// Text area (no border)
                         Expanded(
                           child: TextField(
+                            controller: _descriptionController,
                             maxLines: 4,
                             style: const TextStyle(
                               color: Color(0xFF1E1E1E),
@@ -337,9 +399,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
                       return Center(
                         child: DynamicGradientButton(
                           buttonText: l10n.submitTicket,
-                          onTap: () {
-                            Navigator.pushNamed(context, '/contact-support');
-                          },
+                          onTap: _isSubmitting ? null : _submitSupportTicket,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 5),
                           textColor: Colors.white,
