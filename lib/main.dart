@@ -88,14 +88,42 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return Colors.blue;
+            }
+            return null; // default when not selected
+          }),
+          checkColor: const MaterialStatePropertyAll(Colors.white),
+          // no custom side so unchecked border stays default
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.blue,
+            side: const BorderSide(color: Colors.blue),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color.fromARGB(255, 66, 66, 66),
+          ),
+        ),
         textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.blue,
           selectionColor: Colors.blue.withOpacity(0.3),
           selectionHandleColor: Colors.blue,
         ),
         progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Color.fromARGB(255, 69, 100, 201),
+          color: Colors.blue,
         ),
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
