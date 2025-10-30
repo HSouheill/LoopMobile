@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/ticket_service.dart';
 import '../services/auth_service.dart';
 import '../utils/phone_validator.dart';
@@ -73,9 +74,10 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
       if (result['success']) {
         // Show success message
         if (mounted) {
+          final loc = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Ticket submitted successfully'),
+              content: Text(result['message'] ?? (loc?.ticketSubmittedSuccessfully ?? 'Ticket submitted successfully')),
               backgroundColor: Colors.green,
             ),
           );
@@ -90,9 +92,10 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
       } else {
         // Show error message
         if (mounted) {
+          final loc = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Failed to submit ticket'),
+              content: Text(result['message'] ?? (loc?.failedToSubmitTicket ?? 'Failed to submit ticket')),
               backgroundColor: Colors.red,
             ),
           );
@@ -100,9 +103,10 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
       }
     } catch (e) {
       if (mounted) {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('An error occurred: ${e.toString()}'),
+            content: Text(loc != null ? loc.errorOccurredWithDetails(e.toString()) : 'An error occurred: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -118,9 +122,10 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact Support'),
+        title: Text(l10n.contactSupportTitle),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -152,7 +157,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Need Help?',
+                            l10n.needHelp,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -162,8 +167,8 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                           const SizedBox(height: 4),
                           Text(
                             _isAuthenticated 
-                                ? 'We\'ll get back to you as soon as possible.'
-                                : 'Fill out the form below and we\'ll get back to you.',
+                                ? l10n.weWillGetBackSoon
+                                : l10n.fillFormAndWeWillGetBack,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.blue.shade600,
@@ -181,7 +186,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
               // Contact Information (only for non-authenticated users)
               if (!_isAuthenticated) ...[
                 Text(
-                  'Contact Information',
+                  l10n.contactInformation,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -194,18 +199,18 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address *',
-                    hintText: 'Enter your email address',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.emailAddressRequiredLabel,
+                    hintText: l10n.enterYourEmailAddress,
+                    prefixIcon: const Icon(Icons.email),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Email is required';
+                      return l10n.emailIsRequired;
                     }
                     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Please enter a valid email address';
+                      return l10n.pleaseEnterValidEmailAddress;
                     }
                     return null;
                   },
@@ -217,15 +222,15 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number *',
-                    hintText: 'Enter your phone number',
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.phoneNumberRequiredLabel,
+                    hintText: l10n.enterYourPhoneNumberText,
+                    prefixIcon: const Icon(Icons.phone),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Phone number is required';
+                      return l10n.phoneNumberIsRequired;
                     }
                     return PhoneValidator.validatePhoneNumber(value);
                   },
@@ -256,7 +261,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Contact Information',
+                              l10n.contactInformation,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -265,7 +270,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Email: ${AuthService.currentUser?.email ?? 'N/A'}',
+                              l10n.emailLabelWithValue(AuthService.currentUser?.email ?? l10n.unknown),
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.green.shade600,
@@ -273,7 +278,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                             ),
                             if (AuthService.currentUser?.phone != null)
                               Text(
-                                'Phone: ${AuthService.currentUser?.phone}',
+                                l10n.phoneLabelWithValue(AuthService.currentUser?.phone ?? ''),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.green.shade600,
@@ -291,7 +296,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
               
               // Message Content
               Text(
-                'Message',
+                l10n.message,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -303,22 +308,22 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
               TextFormField(
                 controller: _contentController,
                 maxLines: 6,
-                decoration: const InputDecoration(
-                  labelText: 'Describe your issue or question *',
-                  hintText: 'Please provide as much detail as possible about your issue or question...',
-                  prefixIcon: Icon(Icons.message),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.describeIssueOrQuestionRequiredLabel,
+                  hintText: l10n.describeIssueOrQuestionHint,
+                  prefixIcon: const Icon(Icons.message),
+                  border: const OutlineInputBorder(),
                   alignLabelWithHint: true,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Message is required';
+                    return l10n.messageIsRequired;
                   }
                   if (value.trim().length < 10) {
-                    return 'Message must be at least 10 characters long';
+                    return l10n.messageMinLength;
                   }
                   if (value.trim().length > 5000) {
-                    return 'Message must be less than 5000 characters';
+                    return l10n.messageMaxLength;
                   }
                   return null;
                 },
@@ -356,7 +361,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                     ),
                   ),
                   child: _isLoading
-                      ? const Row(
+                      ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
@@ -368,11 +373,11 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                               ),
                             ),
                             SizedBox(width: 12),
-                            Text('Submitting...'),
+                            Text(l10n.submitting),
                           ],
                         )
-                      : const Text(
-                          'Submit Ticket',
+                      : Text(
+                          l10n.submitTicket,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -400,7 +405,7 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'We typically respond within 48 hours. For urgent issues, please call our support line. You may only send one ticket per day.',
+                        l10n.supportResponseNote,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
