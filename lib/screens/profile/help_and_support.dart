@@ -25,19 +25,19 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
       },
       {
         "title": l10n.howToListNewService,
-        "answer": l10n.contactSupportAnswer,
+        "answer": l10n.listNewServiceAnswer,
       },
       {
         "title": l10n.canEditOrDeleteService,
-        "answer": l10n.tutorialAvailableAnswer,
+        "answer": l10n.editOrDeleteServiceAnswer,
       },
       {
         "title": l10n.whatHappensAfterServiceRequest,
-        "answer": l10n.tutorialAvailableAnswer,
+        "answer": l10n.viewRequestsAnswer,
       },
       {
         "title": l10n.howDoIDeleteMyAccount,
-        "answer": l10n.tutorialAvailableAnswer,
+        "answer": l10n.deleteAccountAnswer,
       },
     ];
   }
