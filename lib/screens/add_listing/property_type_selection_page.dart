@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PropertyTypeSelectionPage extends StatefulWidget {
   const PropertyTypeSelectionPage({super.key});
@@ -41,8 +42,8 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'List Your Property',
+        title: Text(
+          AppLocalizations.of(context)?.listYourProperty ?? 'List Your Property',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -81,7 +82,7 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                       ),
                       child: Center(
                         child: Text(
-                          'For Rent',
+                          AppLocalizations.of(context)?.forRent ?? 'For Rent',
                           style: TextStyle(
                             color: selectedListingFor == 'rent' 
                                 ? Colors.white 
@@ -116,7 +117,7 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                       ),
                       child: Center(
                         child: Text(
-                          'For Sale',
+                          AppLocalizations.of(context)?.forSale ?? 'For Sale',
                           style: TextStyle(
                             color: selectedListingFor == 'sale' 
                                 ? Colors.white 
@@ -141,9 +142,9 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Listing Type',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)?.listingType ?? 'Listing Type',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
@@ -163,9 +164,9 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedPropertyType,
-                  hint: const Text(
-                    'Select Type',
-                    style: TextStyle(
+                  hint: Text(
+                    AppLocalizations.of(context)?.selectType ?? 'Select Type',
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 16,
                     ),
@@ -179,7 +180,7 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                     return DropdownMenuItem<String>(
                       value: type['value'],
                       child: Text(
-                        type['label']!,
+                        _localizePropertyType(context, type['value']!),
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
@@ -198,9 +199,9 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
             const SizedBox(height: 30),
             // Rental period selection (only show for rent)
             if (selectedListingFor == 'rent') ...[
-              const Text(
-                'Rental Period',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)?.rentalPeriod ?? 'Rental Period',
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
@@ -223,7 +224,7 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                         activeColor: const Color(0xFF3B82F6),
                       ),
                       Text(
-                        period['label']!,
+                        _localizeRentalPeriod(context, period['value']!),
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
@@ -246,9 +247,9 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                     ),
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Clear',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.clear ?? 'Clear',
+                        style: const TextStyle(
                           color: Colors.black87,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -285,9 +286,9 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                               );
                             }
                           : null,
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.next ?? 'Next',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -303,5 +304,39 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
         ),
       ),
     );
+  }
+}
+
+String _localizePropertyType(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context);
+  switch (value) {
+    case 'apartment':
+      return l10n?.propertyTypeApartment ?? 'Apartment';
+    case 'chalet':
+      return l10n?.propertyTypeChalet ?? 'Chalet';
+    case 'studio':
+      return l10n?.propertyTypeStudio ?? 'Studio';
+    case 'commercial':
+      return l10n?.propertyTypeCommercial ?? 'Commercial';
+    case 'villa':
+      return l10n?.propertyTypeVilla ?? 'Villa';
+    case 'land':
+      return l10n?.propertyTypeLand ?? 'Land';
+    default:
+      return value;
+  }
+}
+
+String _localizeRentalPeriod(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context);
+  switch (value) {
+    case 'daily':
+      return l10n?.rentalPeriodDaily ?? 'Daily';
+    case 'monthly':
+      return l10n?.rentalPeriodMonthly ?? 'Monthly';
+    case 'yearly':
+      return l10n?.rentalPeriodYearly ?? 'Yearly';
+    default:
+      return value;
   }
 }

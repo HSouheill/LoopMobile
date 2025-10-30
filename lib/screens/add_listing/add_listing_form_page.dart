@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/listing_create_service.dart';
@@ -165,8 +166,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         _selectedImages.addAll(images);
       });
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking images: $e')),
+        SnackBar(content: Text(l10n?.errorPickingImages("$e") ?? 'Error picking images: $e')),
       );
     }
   }
@@ -219,13 +221,15 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         success = await ListingService.editListing(_editingListing!.id, listingData);
         
         if (success) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing updated successfully!')),
+            SnackBar(content: Text(l10n?.listingUpdatedSuccessfully ?? 'Listing updated successfully!')),
           );
           Navigator.popUntil(context, (route) => route.isFirst);
         } else {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to update listing. Please try again.')),
+            SnackBar(content: Text(l10n?.failedToUpdateListing ?? 'Failed to update listing. Please try again.')),
           );
         }
       } else {
@@ -236,19 +240,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         );
         
         if (success) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing created successfully!')),
+            SnackBar(content: Text(l10n?.listingCreatedSuccessfully ?? 'Listing created successfully!')),
           );
           Navigator.popUntil(context, (route) => route.isFirst);
         } else {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to create listing. Please try again.')),
+            SnackBar(content: Text(l10n?.failedToCreateListing ?? 'Failed to create listing. Please try again.')),
           );
         }
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text(l10n?.genericError("$e") ?? 'Error: $e')),
       );
     } finally {
       setState(() {
@@ -272,7 +279,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          _isEditMode ? 'Edit Property Details' : 'Add Property Details',
+          _isEditMode
+              ? (AppLocalizations.of(context)?.editPropertyDetails ?? 'Edit Property Details')
+              : (AppLocalizations.of(context)?.addPropertyDetails ?? 'Add Property Details'),
           style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -289,22 +298,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Basic Information
-              _buildSectionTitle('Basic Information'),
+              _buildSectionTitle(AppLocalizations.of(context)?.basicInformation ?? 'Basic Information'),
               const SizedBox(height: 15),
               
               _buildTextField(
                 controller: _titleController,
-                label: 'Property Title',
-                hint: 'Enter property title',
-                validator: (value) => value?.isEmpty == true ? 'Title is required' : null,
+                label: AppLocalizations.of(context)?.propertyTitle ?? 'Property Title',
+                hint: AppLocalizations.of(context)?.enterPropertyTitle ?? 'Enter property title',
+                validator: (value) => value?.isEmpty == true ? (AppLocalizations.of(context)?.titleIsRequired ?? 'Title is required') : null,
               ),
               
               const SizedBox(height: 15),
               
               _buildTextField(
                 controller: _descriptionController,
-                label: 'Description',
-                hint: 'Describe your property',
+                label: AppLocalizations.of(context)?.description ?? 'Description',
+                hint: AppLocalizations.of(context)?.describeYourProperty ?? 'Describe your property',
                 maxLines: 3,
               ),
               
@@ -312,25 +321,27 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               
               _buildTextField(
                 controller: _cityController,
-                label: 'City',
-                hint: 'Enter city',
-                validator: (value) => value?.isEmpty == true ? 'City is required' : null,
+                label: AppLocalizations.of(context)?.city ?? 'City',
+                hint: AppLocalizations.of(context)?.enterCity ?? 'Enter city',
+                validator: (value) => value?.isEmpty == true ? (AppLocalizations.of(context)?.cityIsRequired ?? 'City is required') : null,
               ),
               
               const SizedBox(height: 15),
               
               _buildTextField(
                 controller: _priceController,
-                label: listingFor == 'rent' ? 'Rental Price' : 'Sale Price',
-                hint: 'Enter price',
+                label: listingFor == 'rent'
+                    ? (AppLocalizations.of(context)?.rentalPrice ?? 'Rental Price')
+                    : (AppLocalizations.of(context)?.salePrice ?? 'Sale Price'),
+                hint: AppLocalizations.of(context)?.enterPrice ?? 'Enter price',
                 keyboardType: TextInputType.number,
-                validator: (value) => value?.isEmpty == true ? 'Price is required' : null,
+                validator: (value) => value?.isEmpty == true ? (AppLocalizations.of(context)?.priceIsRequired ?? 'Price is required') : null,
               ),
               
               const SizedBox(height: 30),
               
               // Property Details
-              _buildSectionTitle('Property Details'),
+              _buildSectionTitle(AppLocalizations.of(context)?.propertyDetails ?? 'Property Details'),
               const SizedBox(height: 15),
               
               Row(
@@ -338,7 +349,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   Expanded(
                     child: _buildTextField(
                       controller: _bedroomsController,
-                      label: 'Bedrooms',
+                      label: AppLocalizations.of(context)?.bedrooms ?? 'Bedrooms',
                       hint: '0',
                       keyboardType: TextInputType.number,
                     ),
@@ -347,7 +358,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   Expanded(
                     child: _buildTextField(
                       controller: _bathroomsController,
-                      label: 'Bathrooms',
+                      label: AppLocalizations.of(context)?.bathrooms ?? 'Bathrooms',
                       hint: '0',
                       keyboardType: TextInputType.number,
                     ),
@@ -362,7 +373,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   Expanded(
                     child: _buildTextField(
                       controller: _sizeController,
-                      label: 'Size (sq ft)',
+                      label: AppLocalizations.of(context)?.sizeSqFt ?? 'Size (sq ft)',
                       hint: '0',
                       keyboardType: TextInputType.number,
                     ),
@@ -371,8 +382,8 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   Expanded(
                     child: _buildTextField(
                       controller: _floorController,
-                      label: 'Floor',
-                      hint: 'Ground',
+                      label: AppLocalizations.of(context)?.floor ?? 'Floor',
+                      hint: AppLocalizations.of(context)?.ground ?? 'Ground',
                     ),
                   ),
                 ],
@@ -382,7 +393,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               
               _buildTextField(
                 controller: _buildingAgeController,
-                label: 'Building Age (years)',
+                label: AppLocalizations.of(context)?.buildingAgeYears ?? 'Building Age (years)',
                 hint: '0',
                 keyboardType: TextInputType.number,
               ),
@@ -392,8 +403,13 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               // Condition Dropdown
               _buildDropdown(
                 value: selectedCondition,
-                label: 'Condition',
-                items: conditions,
+                label: AppLocalizations.of(context)?.condition ?? 'Condition',
+                items: conditions
+                    .map((e) => {
+                          'value': e['value']!,
+                          'label': _localizeConditionLabel(context, e['value']!)
+                        })
+                    .toList(),
                 onChanged: (value) => setState(() => selectedCondition = value),
               ),
               
@@ -402,8 +418,13 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               // Papers Dropdown
               _buildDropdown(
                 value: selectedPapers,
-                label: 'Papers',
-                items: papers,
+                label: AppLocalizations.of(context)?.papers ?? 'Papers',
+                items: papers
+                    .map((e) => {
+                          'value': e['value']!,
+                          'label': _localizePapersLabel(context, e['value']!)
+                        })
+                    .toList(),
                 onChanged: (value) => setState(() => selectedPapers = value),
               ),
               
@@ -414,10 +435,10 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildSectionTitle('Property Images'),
+                    _buildSectionTitle(AppLocalizations.of(context)?.propertyImages ?? 'Property Images'),
                     if (_selectedImages.isNotEmpty)
                       Text(
-                        '${_selectedImages.length}/10 images',
+                        AppLocalizations.of(context)?.imagesCounter(_selectedImages.length) ?? '${_selectedImages.length}/10 images',
                         style: TextStyle(
                           fontSize: 14,
                           color: _selectedImages.length >= 10 ? Colors.red : Colors.grey[600],
@@ -453,8 +474,8 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                         const SizedBox(height: 8),
                         Text(
                           _selectedImages.length >= 10
-                              ? 'Maximum images reached (10/10)'
-                              : 'Tap to add images',
+                              ? (AppLocalizations.of(context)?.maxImagesReached ?? 'Maximum images reached (10/10)')
+                              : (AppLocalizations.of(context)?.tapToAddImages ?? 'Tap to add images'),
                           style: TextStyle(
                             color: _selectedImages.length >= 10 ? Colors.green[700] : Colors.grey[600],
                             fontSize: 16,
@@ -522,7 +543,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               const SizedBox(height: 30),
               
               // Amenities
-              _buildSectionTitle('Amenities'),
+              _buildSectionTitle(AppLocalizations.of(context)?.amenities ?? 'Amenities'),
               const SizedBox(height: 15),
               
               Wrap(
@@ -560,7 +581,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          _isEditMode ? 'Update Listing' : 'Create Listing',
+                          _isEditMode
+                              ? (AppLocalizations.of(context)?.updateListing ?? 'Update Listing')
+                              : (AppLocalizations.of(context)?.createListing ?? 'Create Listing'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -682,25 +705,60 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   }
 
   String _getAmenityLabel(String key) {
+    final l10n = AppLocalizations.of(context);
     switch (key) {
-      case 'furnished': return 'Furnished';
-      case 'terrace': return 'Terrace';
-      case 'privatePool': return 'Private Pool';
-      case 'storageRoom': return 'Storage Room';
-      case 'sharedPool': return 'Shared Pool';
-      case 'sharedGym': return 'Shared Gym';
-      case 'security': return 'Security';
-      case 'seaView': return 'Sea View';
-      case 'garden': return 'Garden';
-      case 'mountainView': return 'Mountain View';
-      case 'elevator': return 'Elevator';
-      case 'parking': return 'Parking';
-      case 'centralAC': return 'Central AC';
-      case 'heating': return 'Heating';
-      case 'solarSystem': return 'Solar System';
-      case 'electricity24_7': return '24/7 Electricity';
-      case 'maidRoom': return 'Maid Room';
+      case 'furnished': return l10n?.amenityFurnished ?? 'Furnished';
+      case 'terrace': return l10n?.amenityTerrace ?? 'Terrace';
+      case 'privatePool': return l10n?.amenityPrivatePool ?? 'Private Pool';
+      case 'storageRoom': return l10n?.amenityStorageRoom ?? 'Storage Room';
+      case 'sharedPool': return l10n?.amenitySharedPool ?? 'Shared Pool';
+      case 'sharedGym': return l10n?.amenitySharedGym ?? 'Shared Gym';
+      case 'security': return l10n?.amenitySecurity ?? 'Security';
+      case 'seaView': return l10n?.amenitySeaView ?? 'Sea View';
+      case 'garden': return l10n?.amenityGarden ?? 'Garden';
+      case 'mountainView': return l10n?.amenityMountainView ?? 'Mountain View';
+      case 'elevator': return l10n?.amenityElevator ?? 'Elevator';
+      case 'parking': return l10n?.amenityParking ?? 'Parking';
+      case 'centralAC': return l10n?.amenityCentralAC ?? 'Central AC';
+      case 'heating': return l10n?.amenityHeating ?? 'Heating';
+      case 'solarSystem': return l10n?.amenitySolarSystem ?? 'Solar System';
+      case 'electricity24_7': return l10n?.amenityElectricity247 ?? '24/7 Electricity';
+      case 'maidRoom': return l10n?.amenityMaidRoom ?? 'Maid Room';
       default: return key;
+    }
+  }
+
+  String _localizeConditionLabel(BuildContext context, String value) {
+    final l10n = AppLocalizations.of(context);
+    switch (value) {
+      case 'new':
+        return l10n?.conditionNew ?? 'New';
+      case 'excellent':
+        return l10n?.conditionExcellent ?? 'Excellent';
+      case 'good':
+        return l10n?.conditionGood ?? 'Good';
+      case 'needs_renovation':
+        return l10n?.conditionNeedsRenovation ?? 'Needs Renovation';
+      case 'old':
+        return l10n?.conditionOld ?? 'Old';
+      default:
+        return value;
+    }
+  }
+
+  String _localizePapersLabel(BuildContext context, String value) {
+    final l10n = AppLocalizations.of(context);
+    switch (value) {
+      case 'title_deed':
+        return l10n?.papersTitleDeed ?? 'Title Deed';
+      case 'rental_contract':
+        return l10n?.papersRentalContract ?? 'Rental Contract';
+      case 'under_construction':
+        return l10n?.papersUnderConstruction ?? 'Under Construction';
+      case 'other':
+        return l10n?.papersOther ?? 'Other';
+      default:
+        return value;
     }
   }
 }

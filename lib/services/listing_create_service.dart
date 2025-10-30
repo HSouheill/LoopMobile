@@ -33,9 +33,16 @@ class ListingCreateService {
             }
           });
         } else if (key == 'amenities' && value is Map) {
-          // Convert amenities map to JSON string
-          // Backend expects this as an object
-          request.fields[key] = jsonEncode(value);
+          // Send amenities as bracketed fields so backend gets proper object
+          final amenities = value as Map<String, dynamic>;
+          amenities.forEach((amenityKey, amenityValue) {
+            if (amenityValue != null) {
+              final strVal = (amenityValue is bool)
+                  ? (amenityValue ? 'true' : 'false')
+                  : amenityValue.toString();
+              request.fields['amenities[$amenityKey]'] = strVal;
+            }
+          });
         } else if (value is Map || value is List) {
           // Convert other complex types to JSON
           request.fields[key] = jsonEncode(value);

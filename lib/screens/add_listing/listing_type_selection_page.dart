@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ListingTypeSelectionPage extends StatefulWidget {
   const ListingTypeSelectionPage({super.key});
@@ -26,8 +27,8 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Before You List',
+        title: Text(
+          AppLocalizations.of(context)?.beforeYouList ?? 'Before You List',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -42,18 +43,18 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 20),
-            const Text(
-              "Let us know if you're the owner of the property or an agent listing on someone's behalf.",
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)?.beforeYouListSubtitle ?? "Let us know if you're the owner of the property or an agent listing on someone's behalf.",
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.black87,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: 30),
-            const Text(
-              'I am..',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)?.iAm ?? 'I am..',
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
@@ -71,9 +72,9 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedType,
-                  hint: const Text(
-                    'Select',
-                    style: TextStyle(
+                  hint: Text(
+                    AppLocalizations.of(context)?.select ?? 'Select',
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 16,
                     ),
@@ -87,7 +88,7 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
                     return DropdownMenuItem<String>(
                       value: type['value'],
                       child: Text(
-                        type['label']!,
+                        _localizeListingType(context, type['value']!),
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
@@ -115,9 +116,9 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
                     ),
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Back',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.back ?? 'Back',
+                        style: const TextStyle(
                           color: Colors.black87,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -148,9 +149,9 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
                               );
                             }
                           : null,
-                      child: const Text(
-                        'Next',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.next ?? 'Next',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -166,5 +167,17 @@ class _ListingTypeSelectionPageState extends State<ListingTypeSelectionPage> {
         ),
       ),
     );
+  }
+}
+
+String _localizeListingType(BuildContext context, String value) {
+  final l10n = AppLocalizations.of(context);
+  switch (value) {
+    case 'owner':
+      return l10n?.propertyOwner ?? 'Property Owner';
+    case 'agent':
+      return l10n?.realEstateAgent ?? 'Real Estate Agent';
+    default:
+      return value;
   }
 }

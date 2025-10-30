@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddListingModal extends StatelessWidget {
   const AddListingModal({super.key});
@@ -33,8 +34,8 @@ class AddListingModal extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Add New Listing',
+                    Text(
+                      AppLocalizations.of(context)?.addNewListing ?? 'Add New Listing',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -49,7 +50,7 @@ class AddListingModal extends StatelessWidget {
                 const SizedBox(height: 20),
                 _buildModalOption(
                   icon: Icons.location_city,
-                  title: 'Add New Building',
+                  title: AppLocalizations.of(context)?.addNewBuilding ?? 'Add New Building',
                   bgColor: Colors.orange[50],
                   iconColor: Colors.orange,
                   onTap: () {
@@ -60,7 +61,7 @@ class AddListingModal extends StatelessWidget {
                 const SizedBox(height: 15),
                 _buildModalOption(
                   icon: Icons.terrain,
-                  title: 'Add New Land',
+                  title: AppLocalizations.of(context)?.addNewLand ?? 'Add New Land',
                   bgColor: Colors.green[50],
                   iconColor: Colors.green,
                   onTap: () {
@@ -71,7 +72,7 @@ class AddListingModal extends StatelessWidget {
                 const SizedBox(height: 15),
                 _buildModalOption(
                   icon: Icons.business,
-                  title: 'Add New Property',
+                  title: AppLocalizations.of(context)?.addNewProperty ?? 'Add New Property',
                   bgColor: Colors.blue[50],
                   iconColor: Colors.blue,
                   onTap: () {
