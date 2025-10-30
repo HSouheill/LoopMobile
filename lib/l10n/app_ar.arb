@@ -1347,7 +1347,7 @@
   "applicationForm": "نموذج الطلب",
   "uploadPortfolioOptional": "رفع المحفظة (اختياري)",
   "expectedSalary": "الراتب المتوقع",
-  "phoneNumber": "رقم الهاتف",
+  
   "iConfirmInformationAccurate": "أؤكد أن المعلومات المقدمة دقيقة",
   "apply": "تقديم",
   "pleaseConfirmInformationAccurate": "يرجى التأكد من أن المعلومات المقدمة دقيقة",
@@ -1358,15 +1358,7 @@
   "alreadyApplied": "تم التقديم مسبقاً",
   "alreadyAppliedToJob": "لقد تقدمت لهذه الوظيفة بالفعل.",
   "failedToSubmitApplication": "فشل تقديم الطلب. يرجى المحاولة مرة أخرى.",
-  "networkError": "خطأ في الشبكة: {error}",
-  "@networkError": {
-    "description": "رسالة خطأ الشبكة",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  
   "errorPickingFile": "خطأ في اختيار الملف: {error}",
   "@errorPickingFile": {
     "description": "رسالة خطأ اختيار الملف",
@@ -1493,5 +1485,15 @@
   "propertyTypeLand": "أرض",
   "rentalPeriodDaily": "يومي",
   "rentalPeriodMonthly": "شهري",
-  "rentalPeriodYearly": "سنوي"
+  "rentalPeriodYearly": "سنوي",
+  "searchResultsTitle": "نتائج البحث",
+  "searchPropertiesHint": "ابحث عن العقارات...",
+  "searchAction": "بحث",
+  "noResultsFound": "لا توجد نتائج",
+  "errorSearching": "خطأ في البحث: {error}",
+  "@errorSearching": {"placeholders": {"error": {"type": "String"}}},
+  "searchTitleWithQuery": "بحث: {query}",
+  "@searchTitleWithQuery": {"placeholders": {"query": {"type": "String"}}},
+  "failedToLoadSearchResults": "فشل تحميل نتائج البحث: {error}",
+  "@failedToLoadSearchResults": {"placeholders": {"error": {"type": "String"}}}
 }

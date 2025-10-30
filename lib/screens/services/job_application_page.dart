@@ -336,45 +336,41 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // First Name and Last Name Row
-                    Row(
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            final l10n = AppLocalizations.of(context)!;
-                            return Row(
-                              children: [
-                                Expanded(
-                                  child: _buildTextField(
-                                    controller: _firstNameController,
-                                    hint: l10n.firstName,
-                                    icon: Icons.person_outline,
-                                    validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
-                                        return l10n.required;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: _buildTextField(
-                                    controller: _lastNameController,
-                                    hint: l10n.lastName,
-                                    icon: Icons.people_outline,
-                                    validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
-                                        return l10n.required;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                        ),
-                      ],
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _firstNameController,
+                                hint: l10n.firstName,
+                                icon: Icons.person_outline,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return l10n.required;
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildTextField(
+                                controller: _lastNameController,
+                                hint: l10n.lastName,
+                                icon: Icons.people_outline,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return l10n.required;
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }
                     ),
                     const SizedBox(height: 16),
                     

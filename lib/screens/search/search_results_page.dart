@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/listing_widgets/listing_card.dart';
 import 'advanced_filters_page.dart';
 
@@ -102,8 +103,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         _isLoading = false;
       });
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching: $e')),
+          SnackBar(content: Text(l10n?.errorLoadingListings(e.toString()) ?? 'Error searching: $e')),
         );
       }
     }
@@ -144,9 +146,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Results'),
+        title: Text(l10n?.listings ?? 'Search Results'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
@@ -169,7 +172,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                     controller: _searchController,
                     onSubmitted: (_) => _onSearchSubmitted(),
                     decoration: InputDecoration(
-                      hintText: 'Search properties...',
+                      hintText: l10n?.search ?? 'Search properties...',
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -184,7 +187,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                 const SizedBox(width: 8.0),
                 ElevatedButton(
                   onPressed: _onSearchSubmitted,
-                  child: const Text('Search'),
+                  child: Text(l10n?.search ?? 'Search'),
                 ),
               ],
             ),
@@ -195,10 +198,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
             child: _isLoading && _listings.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : _listings.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'No results found',
-                          style: TextStyle(fontSize: 16.0),
+                          l10n?.noListingsFound ?? 'No results found',
+                          style: const TextStyle(fontSize: 16.0),
                         ),
                       )
                     : RefreshIndicator(

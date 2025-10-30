@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/job_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../widgets/dynamic_jobs_widget.dart';
 
 class JobSearchResultsPage extends StatefulWidget {
@@ -99,6 +100,7 @@ class _JobSearchResultsPageState extends State<JobSearchResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Search: ${widget.searchQuery}'),
@@ -116,7 +118,7 @@ class _JobSearchResultsPageState extends State<JobSearchResultsPage> {
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text(
-                        'Failed to load search results: $error',
+                        (l10n?.failedToLoadJobs ?? 'Failed to load jobs') + (error != null ? ': $error' : ''),
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
@@ -124,9 +126,9 @@ class _JobSearchResultsPageState extends State<JobSearchResultsPage> {
                     child: jobs.isEmpty
                         ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
-                            children: const [
+                            children: [
                               SizedBox(height: 80),
-                              Center(child: Text('No jobs found')),
+                              Center(child: Text(l10n?.noJobsFound ?? 'No jobs found')),
                             ],
                           )
                         : GridView.builder(

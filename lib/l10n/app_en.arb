@@ -1349,7 +1349,7 @@
   "applicationForm": "Application Form",
   "uploadPortfolioOptional": "Upload Portfolio (Optional)",
   "expectedSalary": "Expected Salary",
-  "phoneNumber": "Phone Number",
+  
   "iConfirmInformationAccurate": "I Confirm That The Submitted Information Is Accurate",
   "apply": "Apply",
   "pleaseConfirmInformationAccurate": "Please confirm that the submitted information is accurate",
@@ -1360,15 +1360,7 @@
   "alreadyApplied": "Already Applied",
   "alreadyAppliedToJob": "You have already applied to this job.",
   "failedToSubmitApplication": "Failed to submit application. Please try again.",
-  "networkError": "Network error: {error}",
-  "@networkError": {
-    "description": "Network error message",
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
+  
   "errorPickingFile": "Error picking file: {error}",
   "@errorPickingFile": {
     "description": "Error picking file message",
@@ -1495,5 +1487,15 @@
   "propertyTypeLand": "Land",
   "rentalPeriodDaily": "Daily",
   "rentalPeriodMonthly": "Monthly",
-  "rentalPeriodYearly": "Yearly"
+  "rentalPeriodYearly": "Yearly",
+  "searchResultsTitle": "Search Results",
+  "searchPropertiesHint": "Search properties...",
+  "searchAction": "Search",
+  "noResultsFound": "No results found",
+  "errorSearching": "Error searching: {error}",
+  "@errorSearching": {"placeholders": {"error": {"type": "String"}}},
+  "searchTitleWithQuery": "Search: {query}",
+  "@searchTitleWithQuery": {"placeholders": {"query": {"type": "String"}}},
+  "failedToLoadSearchResults": "Failed to load search results: {error}",
+  "@failedToLoadSearchResults": {"placeholders": {"error": {"type": "String"}}}
 }
