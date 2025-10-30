@@ -358,14 +358,15 @@ class _ChatListPageState extends State<ChatListPage> {
                   final l10n = AppLocalizations.of(context);
                   return Row(
                     children: [
-                      Icon(Icons.search, color: Colors.blue[600], size: 20),
+                      Icon(Icons.search, color: const Color.fromARGB(255, 69, 100, 201), size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: TextField(
                           controller: _searchController,
+                          cursorColor: const Color.fromARGB(255, 69, 100, 201),
                           decoration: InputDecoration(
                             hintText: l10n?.search ?? 'Search...',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            hintStyle: const TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),

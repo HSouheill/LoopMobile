@@ -46,8 +46,6 @@ class _ServiceSearchWidgetState extends State<ServiceSearchWidget> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
-                const SizedBox(width: 8.0),
                 Expanded(
                   child: Builder(
                     builder: (context) {
