@@ -135,11 +135,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'text': l10n.favorites,
         'color': Color(0xFF0048FF),
       },
-      {
-        'icon': Icons.extension,
-        'text': l10n.referrals,
-        'color': Color(0xFF0048FF),
-      },
+      // {
+      //   'icon': Icons.extension,
+      //   'text': l10n.referrals,
+      //   'color': Color(0xFF0048FF),
+      // },
     ];
   }
 
