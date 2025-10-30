@@ -322,7 +322,7 @@ class _ServiceProviderCompanyDashboardPageState
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Hi, ${user!.fullName}',
+                  (AppLocalizations.of(context)?.hiUser(user!.fullName)) ?? 'Hi, ${user!.fullName}',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

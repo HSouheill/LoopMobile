@@ -109,7 +109,7 @@ class SocialLinksDisplayWidget extends StatelessWidget {
               ),
             ),
             title: Text(
-              link['name'] ?? 'Unknown',
+              link['name'] ?? (AppLocalizations.of(context)?.unknown ?? 'Unknown'),
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
