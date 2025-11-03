@@ -103,7 +103,7 @@ class ListingService {
     String? category,
     int page = 1,
     int limit = 20,
-    String sort = 'score',
+    String? sort,
     Map<String, dynamic>? filters,
   }) async {
     try {
@@ -111,10 +111,25 @@ class ListingService {
         'q': query,
         'page': page.toString(),
         'limit': limit.toString(),
-        'sort': sort,
-        if (category != null) 'type': category,
       };
 
+      // Extract type from category parameter or filters
+      String? typeValue = category;
+      if (filters != null && filters['type'] != null) {
+        typeValue = filters['type'].toString();
+      }
+      if (typeValue != null && typeValue.isNotEmpty) {
+        queryParams['type'] = typeValue;
+      }
+
+      // Extract sort from filters if not provided directly, or use default
+      String? sortValue = sort;
+      if (filters != null && filters['sort'] != null) {
+        sortValue = filters['sort'].toString();
+      }
+      if (sortValue != null && sortValue.isNotEmpty) {
+        queryParams['sort'] = sortValue;
+      }
 
       // Add filter parameters
       if (filters != null) {
@@ -133,6 +148,13 @@ class ListingService {
         if (filters['condition'] != null) {
           queryParams['condition'] = filters['condition'].toString();
         }
+        // Only send paymentFrequency if listingFor is 'rent' (payment frequency only applies to rentals)
+        final listingFor = filters['listingFor']?.toString().toLowerCase();
+        if (filters['paymentFrequency'] != null && 
+            filters['paymentFrequency'].toString().isNotEmpty &&
+            listingFor == 'rent') {
+          queryParams['paymentFrequency'] = filters['paymentFrequency'].toString().toLowerCase().trim();
+        }
         // Add amenity filters
         final amenityFilters = <String>[];
         if (filters['parking'] == true) amenityFilters.add('parking');
@@ -149,6 +171,9 @@ class ListingService {
 
       final uri = Uri.parse('${Environment.apiUrl}listings/search')
           .replace(queryParameters: queryParams);
+      
+      // Debug: Uncomment to see the URL being sent
+      // print('Search URL: $uri');
       
       final response = await http.get(uri);
 

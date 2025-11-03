@@ -30,6 +30,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   int? _minBathrooms;
   int? _maxBathrooms;
   String? _selectedCondition;
+  String? _selectedPaymentFrequency;
   bool? _hasParking;
   bool? _hasElevator;
   bool? _hasPool;
@@ -48,6 +49,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
   final List<String> _listingForOptions = ['sale', 'rent'];
   
+  final List<String> _paymentFrequencyOptions = ['daily', 'monthly', 'yearly'];
 
   final List<String> _conditionOptions = [
     'excellent',
@@ -75,6 +77,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _minBathrooms = widget.initialFilters!['minBathrooms'];
       _maxBathrooms = widget.initialFilters!['maxBathrooms'];
       _selectedCondition = widget.initialFilters!['condition'];
+      _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
       _hasParking = widget.initialFilters!['parking'];
       _hasElevator = widget.initialFilters!['elevator'];
       _hasPool = widget.initialFilters!['pool'];
@@ -82,11 +85,11 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _hasSecurity = widget.initialFilters!['security'];
       _isFurnished = widget.initialFilters!['furnished'];
     } else {
-      // Set default values to first options when no initial filters
-      _selectedType = _propertyTypes.first;
-      _selectedListingFor = _listingForOptions.first;
-      _selectedCondition = _conditionOptions.first;
-      _selectedSort = 'score';
+      // Set default values to null (Any) when no initial filters
+      _selectedType = null;
+      _selectedListingFor = null;
+      _selectedCondition = null;
+      _selectedSort = null;
     }
   }
 
@@ -109,6 +112,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _minBathrooms = null;
       _maxBathrooms = null;
       _selectedCondition = null;
+      _selectedPaymentFrequency = null;
       _hasParking = null;
       _hasElevator = null;
       _hasPool = null;
@@ -132,6 +136,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     if (_minBathrooms != null) filters['minBathrooms'] = _minBathrooms;
     if (_maxBathrooms != null) filters['maxBathrooms'] = _maxBathrooms;
     if (_selectedCondition != null) filters['condition'] = _selectedCondition;
+    if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
+      filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
+    }
     if (_hasParking != null) filters['parking'] = _hasParking;
     if (_hasElevator != null) filters['elevator'] = _hasElevator;
     if (_hasPool != null) filters['pool'] = _hasPool;
@@ -185,12 +192,18 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
-                items: _propertyTypes.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type.toUpperCase()),
-                  );
-                }).toList(),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ..._propertyTypes.map((type) {
+                    return DropdownMenuItem(
+                      value: type,
+                      child: Text(type.toUpperCase()),
+                    );
+                  }).toList(),
+                ],
                 onChanged: (value) {
                   setState(() {
                     _selectedType = value;
@@ -206,19 +219,59 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
-                items: _listingForOptions.map((option) {
-                  return DropdownMenuItem(
-                    value: option,
-                    child: Text(option.toUpperCase()),
-                  );
-                }).toList(),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ..._listingForOptions.map((option) {
+                    return DropdownMenuItem(
+                      value: option,
+                      child: Text(option.toUpperCase()),
+                    );
+                  }).toList(),
+                ],
                 onChanged: (value) {
                   setState(() {
                     _selectedListingFor = value;
+                    // Clear payment frequency when switching to sale or Any (not applicable)
+                    if (value == 'sale' || value == null) {
+                      _selectedPaymentFrequency = null;
+                    }
                   });
                 },
               ),
               const SizedBox(height: 16.0),
+
+              // Payment Frequency - only show for rent
+              if (_selectedListingFor == 'rent') ...[
+                _buildSectionTitle('Payment Frequency'),
+                DropdownButtonFormField<String>(
+                  value: _selectedPaymentFrequency,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select payment frequency',
+                  ),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('Any'),
+                    ),
+                    ..._paymentFrequencyOptions.map((frequency) {
+                      return DropdownMenuItem(
+                        value: frequency,
+                        child: Text(frequency.substring(0, 1).toUpperCase() + frequency.substring(1)),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedPaymentFrequency = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+              ],
 
               // City
               _buildSectionTitle('City'),
@@ -346,12 +399,18 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
-                items: _conditionOptions.map((condition) {
-                  return DropdownMenuItem(
-                    value: condition,
-                    child: Text(condition.replaceAll('_', ' ').toUpperCase()),
-                  );
-                }).toList(),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ..._conditionOptions.map((condition) {
+                    return DropdownMenuItem(
+                      value: condition,
+                      child: Text(condition.replaceAll('_', ' ').toUpperCase()),
+                    );
+                  }).toList(),
+                ],
                 onChanged: (value) {
                   setState(() {
                     _selectedCondition = value;
@@ -402,6 +461,10 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                   border: OutlineInputBorder(),
                 ),
                 items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
                   DropdownMenuItem(value: 'score', child: Text('Relevance')),
                   DropdownMenuItem(value: 'date_desc', child: Text('Newest First')),
                   DropdownMenuItem(value: 'date_asc', child: Text('Oldest First')),
