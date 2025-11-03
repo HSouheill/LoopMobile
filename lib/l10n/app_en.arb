@@ -1433,7 +1433,7 @@
   "propertyDetails": "Property Details",
   "bedrooms": "Bedrooms",
   "bathrooms": "Bathrooms",
-  "sizeSqFt": "Size (sq ft)",
+  "sizeSqFt": "Size (sq meters)",
   "floor": "Floor",
   "ground": "Ground",
   "buildingAgeYears": "Building Age (years)",

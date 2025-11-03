@@ -1431,7 +1431,7 @@
   "propertyDetails": "تفاصيل العقار",
   "bedrooms": "غرف النوم",
   "bathrooms": "الحمامات",
-  "sizeSqFt": "المساحة (قدم²)",
+  "sizeSqFt": "المساحة (متر²)",
   "floor": "الطابق",
   "ground": "أرضي",
   "buildingAgeYears": "عمر البناء (بالسنوات)",
