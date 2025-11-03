@@ -174,6 +174,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       appBar: AppBar(
         title: Text(l10n.favoritesTitle),
         backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           if (totalCount > 0)
             Padding(
@@ -181,7 +183,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
               child: Center(
                 child: Text(
                   l10n.itemsCount(totalCount),
-                  style: const TextStyle(fontSize: 14),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -266,18 +271,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Column(
       children: [
          Expanded(
-           child: GridView.builder(
+           child: ListView.builder(
              controller: _scrollController,
              padding: const EdgeInsets.all(8.0),
-             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-               crossAxisCount: 2,
-               childAspectRatio: 0.9, // Made cards shorter
-               crossAxisSpacing: 8.0,
-               mainAxisSpacing: 8.0,
-             ),
-             itemCount: favorites.length + (isLoadingMore ? 1 : 0),
-             itemBuilder: (context, index) {
-               if (index == favorites.length) {
+             itemCount: (favorites.length / 2).ceil() + (isLoadingMore ? 1 : 0),
+             itemBuilder: (context, rowIndex) {
+               if (rowIndex >= (favorites.length / 2).ceil()) {
                  // Loading indicator for next page
                  return const Center(
                    child: Padding(
@@ -287,11 +286,40 @@ class _FavoritesPageState extends State<FavoritesPage> {
                  );
                }
 
-               final favorite = favorites[index];
-               return FavoriteCard(
-                 favorite: favorite,
-                 onTap: () => _onFavoriteTap(favorite),
-                 onRemove: () => _removeFavorite(favorite),
+               // Build a row with 2 cards (or 1 if odd number)
+               final firstIndex = rowIndex * 2;
+               final secondIndex = firstIndex + 1;
+               final hasSecondCard = secondIndex < favorites.length;
+
+               return Padding(
+                 padding: const EdgeInsets.only(bottom: 8.0),
+                 child: Row(
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                   children: [
+                     Expanded(
+                       child: Padding(
+                         padding: const EdgeInsets.only(right: 4.0),
+                         child: FavoriteCard(
+                           favorite: favorites[firstIndex],
+                           onTap: () => _onFavoriteTap(favorites[firstIndex]),
+                           onRemove: () => _removeFavorite(favorites[firstIndex]),
+                         ),
+                       ),
+                     ),
+                     Expanded(
+                       child: Padding(
+                         padding: EdgeInsets.only(left: 4.0),
+                         child: hasSecondCard
+                             ? FavoriteCard(
+                                 favorite: favorites[secondIndex],
+                                 onTap: () => _onFavoriteTap(favorites[secondIndex]),
+                                 onRemove: () => _removeFavorite(favorites[secondIndex]),
+                               )
+                             : const SizedBox.shrink(),
+                       ),
+                     ),
+                   ],
+                 ),
                );
              },
            ),

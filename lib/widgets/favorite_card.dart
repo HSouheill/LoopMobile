@@ -20,7 +20,7 @@ class FavoriteCard extends StatelessWidget {
     final imageUrl = _getImageUrl(details.displayImage);
     
     return Card(
-      margin: const EdgeInsets.all(8.0),
+      margin: EdgeInsets.zero,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -30,6 +30,7 @@ class FavoriteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Image section
             ClipRRect(
@@ -46,6 +47,7 @@ class FavoriteCard extends StatelessWidget {
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Title and type
                   Row(
