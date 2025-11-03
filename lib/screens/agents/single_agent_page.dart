@@ -203,6 +203,30 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     );
   }
 
+  // Helper method to extract city and country from location string
+  String _getCityAndCountry(String location) {
+    if (location.isEmpty) return location;
+    
+    // Split by comma and trim each part
+    final parts = location.split(',').map((part) => part.trim()).toList();
+    
+    if (parts.isEmpty) return location;
+    
+    // If only one part, return it as city (or assume it's the full location)
+    if (parts.length == 1) return parts[0];
+    
+    // Take first part as city and last part as country
+    final city = parts[0];
+    final country = parts[parts.length - 1];
+    
+    // Only show city and country if they're different, otherwise just show city
+    if (city == country) {
+      return city;
+    }
+    
+    return '$city, $country';
+  }
+
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
@@ -340,7 +364,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                                   const Icon(Icons.location_on, color: Colors.white, size: 16),
                                   const SizedBox(width: 4),
                                   Text(
-                                    widget.agent.location,
+                                    _getCityAndCountry(widget.agent.location),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
