@@ -428,6 +428,7 @@ class PropertyListing {
   final int? buildingAge;
   final String? papers;
   final DateTime? availableFrom;
+  final String? paymentFrequency;
   // Owner information
   final String? ownerFirstName;
   final String? ownerLastName;
@@ -462,6 +463,7 @@ class PropertyListing {
     this.buildingAge,
     this.papers,
     this.availableFrom,
+    this.paymentFrequency,
     this.ownerFirstName,
     this.ownerLastName,
     this.ownerEmail,
@@ -618,6 +620,7 @@ class PropertyListing {
     if (json['buildingAge'] is num)
       buildingAge = (json['buildingAge'] as num).toInt();
     String? papers = json['papers']?.toString();
+    String? paymentFrequency = json['paymentFrequency']?.toString();
 
     return PropertyListing(
       id: json['_id']?.toString() ?? '',
@@ -644,6 +647,7 @@ class PropertyListing {
       buildingAge: buildingAge,
       papers: papers,
       availableFrom: availableFrom,
+      paymentFrequency: paymentFrequency,
       ownerFirstName: ownerFirstName,
       ownerLastName: ownerLastName,
       ownerEmail: ownerEmail,

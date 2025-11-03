@@ -185,10 +185,20 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       final String? rentalPeriod = args?['rentalPeriod'];
       final double priceValue = double.tryParse(_priceController.text) ?? 0;
       
-      // Determine payment frequency
-      String paymentFrequency = 'sale';
+      // Determine payment frequency - only for rent, must be one of: 'daily', 'monthly', 'yearly'
+      String? paymentFrequency;
       if (listingFor == 'rent') {
-        paymentFrequency = rentalPeriod ?? 'monthly'; // Default to monthly if not specified
+        // Validate and set paymentFrequency from rentalPeriod
+        final validFrequencies = ['daily', 'monthly', 'yearly'];
+        if (rentalPeriod != null && validFrequencies.contains(rentalPeriod)) {
+          paymentFrequency = rentalPeriod;
+        } else if (_editingListing?.paymentFrequency != null && validFrequencies.contains(_editingListing!.paymentFrequency)) {
+          // For edit mode, use existing paymentFrequency if available
+          paymentFrequency = _editingListing!.paymentFrequency;
+        } else {
+          // Default to monthly if not specified
+          paymentFrequency = 'monthly';
+        }
       }
       
       final listingData = {
@@ -197,7 +207,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         'type': args?['propertyType'] ?? _editingListing?.type,
         'listingFor': listingFor,
         'price': priceValue,
-        'paymentFrequency': paymentFrequency,
+        if (paymentFrequency != null) 'paymentFrequency': paymentFrequency,
         'location': {
           'city': _cityController.text.trim(),
         },
