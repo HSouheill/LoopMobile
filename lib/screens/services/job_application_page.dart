@@ -735,6 +735,11 @@ class _JobApplicationPageState extends State<JobApplicationPage> {
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Icon(icon, color: const Color(0xFF1976D2), size: 20),
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 48,
+          minHeight: 48,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
         border: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF1976D2), width: 2),
         ),
