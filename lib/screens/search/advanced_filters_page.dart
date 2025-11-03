@@ -50,10 +50,10 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   
 
   final List<String> _conditionOptions = [
-    'new',
     'excellent',
     'good',
     'needs_renovation',
+    'new',
     'old',
   ];
 
