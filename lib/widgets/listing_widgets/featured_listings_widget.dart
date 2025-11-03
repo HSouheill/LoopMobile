@@ -255,7 +255,7 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
       },
       child: Container(
         width: 250,
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
         child: Card(
           color: Colors.transparent,
           elevation: 0,
@@ -268,6 +268,7 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Stack(
                 children: [
@@ -357,29 +358,33 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                   ),
                 ],
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                       Text(
                         widget.listing.title,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Text(
                         widget.listing.price,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.green,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           const Icon(Icons.person, size: 16, color: Colors.grey),
@@ -389,12 +394,15 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                               widget.listing.agentName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: Colors.grey),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 3),
                       Row(
                         children: [
                           const Icon(Icons.location_on, size: 16, color: Colors.blue),
@@ -402,7 +410,10 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                           Expanded(
                             child: Text(
                               widget.listing.location,
-                              style: const TextStyle(color: Colors.blue),
+                              style: const TextStyle(
+                                color: Colors.blue,
+                                fontSize: 13,
+                              ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
@@ -412,7 +423,6 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                     ],
                   ),
                 ),
-              ),
             ],
           ),
         ),

@@ -208,12 +208,12 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
 
     return GridView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.75,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+        childAspectRatio: 0.58, // Lower ratio = taller cards to fit content
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 12,
       ),
       itemCount: listings.length + (isLoading ? 2 : 0), // Add loading placeholders
       itemBuilder: (context, index) {
