@@ -24,6 +24,10 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
   void initState() {
     super.initState();
     _checkAuthStatus();
+    // Add listener to update character count when text changes
+    _contentController.addListener(() {
+      setState(() {});
+    });
   }
 
   void _checkAuthStatus() {
