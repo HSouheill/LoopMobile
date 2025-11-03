@@ -814,7 +814,17 @@ class _SingleListingPageState extends State<SingleListingPage> {
     
     // Listing type
     if (widget.listing.listingFor != null) {
-      details.add(_buildPropertyDetail('${l10n?.availableForLabel ?? 'Available for:'} ${widget.listing.listingFor!.toUpperCase()}'));
+      String listingForText = widget.listing.listingFor!.toUpperCase();
+      // Add paymentFrequency in brackets for rent listings
+      if (widget.listing.listingFor!.toLowerCase() == 'rent' && 
+          widget.listing.paymentFrequency != null && 
+          widget.listing.paymentFrequency!.isNotEmpty) {
+        String paymentFreq = widget.listing.paymentFrequency!.toLowerCase();
+        // Capitalize first letter for display
+        paymentFreq = paymentFreq[0].toUpperCase() + paymentFreq.substring(1);
+        listingForText += ' ($paymentFreq)';
+      }
+      details.add(_buildPropertyDetail('${l10n?.availableForLabel ?? 'Available for:'} $listingForText'));
     }
     
     // Available from
