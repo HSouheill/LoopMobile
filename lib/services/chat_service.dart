@@ -37,11 +37,18 @@ class ChatService {
     }
   }
 
-  // Search chats by participant name or content
+  // Search chats by participant name (requires minimum 2 characters)
   static Future<List<Chat>> searchChats(String token, String query) async {
     try {
+      final trimmedQuery = query.trim();
+      
+      // Validate minimum length (backend requires at least 2 characters)
+      if (trimmedQuery.length < 2) {
+        return [];
+      }
+
       final uri = Uri.parse('${baseUrl}chats/search')
-          .replace(queryParameters: {'q': query});
+          .replace(queryParameters: {'q': trimmedQuery});
       final response = await http.get(
         uri,
         headers: {
@@ -61,6 +68,10 @@ class ChatService {
             return [];
           }
         }
+      } else if (response.statusCode == 400) {
+        // Handle validation error (query too short)
+        // Return empty list for validation errors
+        return [];
       }
       return [];
     } catch (e) {

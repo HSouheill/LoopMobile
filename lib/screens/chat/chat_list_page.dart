@@ -229,6 +229,16 @@ class _ChatListPageState extends State<ChatListPage> {
         return;
       }
 
+      // Only search if query is at least 2 characters (backend requirement)
+      if (query.length < 2) {
+        // If query is less than 2 characters, show empty results
+        setState(() {
+          chats = [];
+          _isSearching = false;
+        });
+        return;
+      }
+
       setState(() {
         _isSearching = true;
       });
@@ -244,6 +254,15 @@ class _ChatListPageState extends State<ChatListPage> {
         setState(() {
           _isSearching = false;
         });
+        if (mounted) {
+          final l10n = AppLocalizations.of(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n != null ? l10n.errorLoadingChats(e.toString()) : 'Error searching chats: $e'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       }
     });
   }
