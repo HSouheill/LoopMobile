@@ -44,7 +44,6 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
 
   final List<Map<String, String>> papers = [
     {'value': 'title_deed', 'label': 'Title Deed'},
-    {'value': 'rental_contract', 'label': 'Rental Contract'},
     {'value': 'under_construction', 'label': 'Under Construction'},
     {'value': 'other', 'label': 'Other'},
   ];
