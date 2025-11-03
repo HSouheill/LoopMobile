@@ -97,6 +97,10 @@ class _LatestUpdatesWidgetState extends State<LatestUpdatesWidget>
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1.0,
+        ),
         // Keeping transparent background as in original
       ),
       child: Row(
