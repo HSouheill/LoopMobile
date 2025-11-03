@@ -513,7 +513,11 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 child: DynamicGradientButton(
                   buttonText: AppLocalizations.of(context)?.addNewListing ?? "+  Add New Listing",
                   onTap: () {
-                    Navigator.pushNamed(context, '/listing-type-selection');
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner'},
+                    );
                   },
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

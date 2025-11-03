@@ -55,7 +55,11 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.orange,
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/listing-type-selection');
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner'},
+                    );
                   },
                 ),
                 const SizedBox(height: 15),
@@ -66,7 +70,11 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.green,
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/listing-type-selection');
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner'},
+                    );
                   },
                 ),
                 const SizedBox(height: 15),
@@ -77,7 +85,11 @@ class AddListingModal extends StatelessWidget {
                   iconColor: Colors.blue,
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/listing-type-selection');
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner'},
+                    );
                   },
                 ),
               ],
