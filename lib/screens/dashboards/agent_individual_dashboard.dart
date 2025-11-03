@@ -956,6 +956,8 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                     ),
                 ],
               ),
+
+              const SizedBox(height: 40),
               // ---------------------------------
             ],
           ),

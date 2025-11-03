@@ -510,7 +510,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
               ],
             ),
 

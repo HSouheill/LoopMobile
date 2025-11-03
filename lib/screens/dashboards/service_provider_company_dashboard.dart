@@ -228,7 +228,7 @@ class _ServiceProviderCompanyDashboardPageState
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                 ],
               ),
 
