@@ -293,6 +293,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle.light,
+            automaticallyImplyLeading: false,
             actions: [
               IconButton(
                 icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),

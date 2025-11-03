@@ -242,6 +242,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             systemOverlayStyle: SystemUiOverlayStyle.light,
+            automaticallyImplyLeading: false,
             actions: [
               Builder(
                 builder: (context) {

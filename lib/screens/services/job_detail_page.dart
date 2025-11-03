@@ -40,6 +40,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
             floating: false,
             pinned: true,
             backgroundColor: Colors.transparent,
+            automaticallyImplyLeading: false,
             actions: [
               Builder(
                 builder: (context) {
