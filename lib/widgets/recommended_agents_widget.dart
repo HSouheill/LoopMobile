@@ -212,12 +212,16 @@ class AgentCard extends StatefulWidget {
   final Agent agent;
   final bool showPropertyCount;
   final Function(Agent)? onTap;
+  final double? width; // Optional width for horizontal list (null = expand in grid)
+  final EdgeInsets? margin; // Optional margin
 
   const AgentCard({
     super.key, 
     required this.agent,
     required this.showPropertyCount,
     this.onTap,
+    this.width,
+    this.margin,
   });
 
   @override
@@ -314,8 +318,8 @@ class _AgentCardState extends State<AgentCard> {
         }
       },
       child: Container(
-      width: 200, // Card width
-      margin: const EdgeInsets.only(right: 16.0),
+      width: widget.width ?? 200, // Default to 200 for horizontal lists, use provided width or expand in grid
+      margin: widget.margin ?? const EdgeInsets.only(right: 16.0), // Use provided margin or default
       decoration: BoxDecoration(
         color: Colors.transparent, // Transparent background
         border: Border.all(
@@ -326,6 +330,7 @@ class _AgentCardState extends State<AgentCard> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Image with overlay icons
           Stack(
@@ -419,6 +424,7 @@ class _AgentCardState extends State<AgentCard> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   widget.agent.name,
@@ -449,7 +455,7 @@ class _AgentCardState extends State<AgentCard> {
                 const SizedBox(height: 4),
                 _buildInfoRow(
                     Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
-                    iconColor: Colors.amber),
+                    iconColor: Colors.amber                ),
               ],
             ),
           ),

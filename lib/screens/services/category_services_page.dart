@@ -158,7 +158,7 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                               padding: const EdgeInsets.all(16.0),
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.75,
+                                childAspectRatio: 0.62, // Lower ratio = taller cards to fit content
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
                               ),
@@ -169,6 +169,8 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                                   agent: agent,
                                   showPropertyCount: false,
                                   onTap: _onAgentTap,
+                                  width: double.infinity, // Let grid determine width by expanding
+                                  margin: EdgeInsets.zero, // Grid spacing handles margins
                                 );
                               },
                             ),
