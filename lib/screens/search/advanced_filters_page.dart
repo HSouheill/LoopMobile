@@ -31,12 +31,27 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   int? _maxBathrooms;
   String? _selectedCondition;
   String? _selectedPaymentFrequency;
-  bool? _hasParking;
-  bool? _hasElevator;
-  bool? _hasPool;
-  bool? _hasGarden;
-  bool? _hasSecurity;
-  bool? _isFurnished;
+  
+  // Amenities - using same structure as add_listing_form_page.dart
+  Map<String, bool> amenities = {
+    'furnished': false,
+    'terrace': false,
+    'privatePool': false,
+    'storageRoom': false,
+    'sharedPool': false,
+    'sharedGym': false,
+    'security': false,
+    'seaView': false,
+    'garden': false,
+    'mountainView': false,
+    'elevator': false,
+    'parking': false,
+    'centralAC': false,
+    'heating': false,
+    'solarSystem': false,
+    'electricity24_7': false,
+    'maidRoom': false,
+  };
 
   final List<String> _propertyTypes = [
     'apartment',
@@ -78,12 +93,35 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _maxBathrooms = widget.initialFilters!['maxBathrooms'];
       _selectedCondition = widget.initialFilters!['condition'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
-      _hasParking = widget.initialFilters!['parking'];
-      _hasElevator = widget.initialFilters!['elevator'];
-      _hasPool = widget.initialFilters!['pool'];
-      _hasGarden = widget.initialFilters!['garden'];
-      _hasSecurity = widget.initialFilters!['security'];
-      _isFurnished = widget.initialFilters!['furnished'];
+      
+      // Initialize amenities from initial filters
+      if (widget.initialFilters!['amenities'] != null) {
+        final amenityList = widget.initialFilters!['amenities'];
+        if (amenityList is String) {
+          // Parse comma-separated string
+          final amenityArray = amenityList.split(',').map((a) => a.trim().toLowerCase()).toList();
+          for (String key in amenities.keys) {
+            if (amenityArray.contains(key.toLowerCase())) {
+              amenities[key] = true;
+            }
+          }
+        } else if (amenityList is List) {
+          // Parse list
+          for (String key in amenities.keys) {
+            if (amenityList.any((a) => a.toString().toLowerCase() == key.toLowerCase())) {
+              amenities[key] = true;
+            }
+          }
+        }
+      }
+      
+      // Keep backward compatibility with old format
+      if (widget.initialFilters!['parking'] == true) amenities['parking'] = true;
+      if (widget.initialFilters!['elevator'] == true) amenities['elevator'] = true;
+      if (widget.initialFilters!['pool'] == true) amenities['sharedPool'] = true;
+      if (widget.initialFilters!['garden'] == true) amenities['garden'] = true;
+      if (widget.initialFilters!['security'] == true) amenities['security'] = true;
+      if (widget.initialFilters!['furnished'] == true) amenities['furnished'] = true;
     } else {
       // Set default values to null (Any) when no initial filters
       _selectedType = null;
@@ -113,12 +151,11 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _maxBathrooms = null;
       _selectedCondition = null;
       _selectedPaymentFrequency = null;
-      _hasParking = null;
-      _hasElevator = null;
-      _hasPool = null;
-      _hasGarden = null;
-      _hasSecurity = null;
-      _isFurnished = null;
+      
+      // Reset all amenities to false
+      for (String key in amenities.keys) {
+        amenities[key] = false;
+      }
     });
   }
 
@@ -139,12 +176,19 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
     }
-    if (_hasParking != null) filters['parking'] = _hasParking;
-    if (_hasElevator != null) filters['elevator'] = _hasElevator;
-    if (_hasPool != null) filters['pool'] = _hasPool;
-    if (_hasGarden != null) filters['garden'] = _hasGarden;
-    if (_hasSecurity != null) filters['security'] = _hasSecurity;
-    if (_isFurnished != null) filters['furnished'] = _isFurnished;
+    
+    // Collect selected amenities
+    final selectedAmenities = <String>[];
+    amenities.forEach((key, value) {
+      if (value == true) {
+        selectedAmenities.add(key);
+      }
+    });
+    
+    // Send amenities as comma-separated string matching backend API
+    if (selectedAmenities.isNotEmpty) {
+      filters['amenities'] = selectedAmenities.join(',');
+    }
 
     Navigator.pop(context, {
       'query': _searchController.text.trim(),
@@ -419,38 +463,25 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Amenities
+              // Amenities - using FilterChips like add_listing_form_page.dart
               _buildSectionTitle('Amenities'),
-              _buildAmenityCheckbox('Parking', _hasParking, (value) {
-                setState(() {
-                  _hasParking = value;
-                });
-              }),
-              _buildAmenityCheckbox('Elevator', _hasElevator, (value) {
-                setState(() {
-                  _hasElevator = value;
-                });
-              }),
-              _buildAmenityCheckbox('Pool', _hasPool, (value) {
-                setState(() {
-                  _hasPool = value;
-                });
-              }),
-              _buildAmenityCheckbox('Garden', _hasGarden, (value) {
-                setState(() {
-                  _hasGarden = value;
-                });
-              }),
-              _buildAmenityCheckbox('Security', _hasSecurity, (value) {
-                setState(() {
-                  _hasSecurity = value;
-                });
-              }),
-              _buildAmenityCheckbox('Furnished', _isFurnished, (value) {
-                setState(() {
-                  _isFurnished = value;
-                });
-              }),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: amenities.keys.map((key) {
+                  return FilterChip(
+                    label: Text(_getAmenityLabel(key)),
+                    selected: amenities[key]!,
+                    onSelected: (selected) {
+                      setState(() {
+                        amenities[key] = selected;
+                      });
+                    },
+                    selectedColor: const Color(0xFF3B82F6).withOpacity(0.2),
+                    checkmarkColor: const Color(0xFF3B82F6),
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 16.0),
 
               // Sort Options
@@ -518,17 +549,26 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     );
   }
 
-  Widget _buildAmenityCheckbox(
-    String title,
-    bool? value,
-    Function(bool?) onChanged,
-  ) {
-    return CheckboxListTile(
-      title: Text(title),
-      value: value ?? false,
-      onChanged: onChanged,
-      controlAffinity: ListTileControlAffinity.leading,
-      contentPadding: EdgeInsets.zero,
-    );
+  String _getAmenityLabel(String key) {
+    switch (key) {
+      case 'furnished': return 'Furnished';
+      case 'terrace': return 'Terrace';
+      case 'privatePool': return 'Private Pool';
+      case 'storageRoom': return 'Storage Room';
+      case 'sharedPool': return 'Shared Pool';
+      case 'sharedGym': return 'Shared Gym';
+      case 'security': return 'Security';
+      case 'seaView': return 'Sea View';
+      case 'garden': return 'Garden';
+      case 'mountainView': return 'Mountain View';
+      case 'elevator': return 'Elevator';
+      case 'parking': return 'Parking';
+      case 'centralAC': return 'Central AC';
+      case 'heating': return 'Heating';
+      case 'solarSystem': return 'Solar System';
+      case 'electricity24_7': return '24/7 Electricity';
+      case 'maidRoom': return 'Maid Room';
+      default: return key;
+    }
   }
 }

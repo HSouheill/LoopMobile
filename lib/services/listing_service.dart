@@ -155,7 +155,23 @@ class ListingService {
             listingFor == 'rent') {
           queryParams['paymentFrequency'] = filters['paymentFrequency'].toString().toLowerCase().trim();
         }
-        // Add amenity filters
+        // Amenities filter - supports comma-separated string from backend API
+        if (filters['amenities'] != null) {
+          final amenitiesValue = filters['amenities'];
+          if (amenitiesValue is String && amenitiesValue.isNotEmpty) {
+            // Already in comma-separated format from advanced_filters_page
+            queryParams['amenities'] = amenitiesValue;
+          } else if (amenitiesValue is List) {
+            // Support list format as well
+            final amenityList = amenitiesValue.map((a) => a.toString().trim()).where((a) => a.isNotEmpty).toList();
+            if (amenityList.isNotEmpty) {
+              queryParams['amenities'] = amenityList.join(',');
+            }
+          }
+        }
+        
+        // Backward compatibility: support old format with individual boolean fields
+        // This can be removed in the future if we confirm all code uses the new format
         final amenityFilters = <String>[];
         if (filters['parking'] == true) amenityFilters.add('parking');
         if (filters['elevator'] == true) amenityFilters.add('elevator');
@@ -163,8 +179,9 @@ class ListingService {
         if (filters['garden'] == true) amenityFilters.add('garden');
         if (filters['security'] == true) amenityFilters.add('security');
         if (filters['furnished'] == true) amenityFilters.add('furnished');
-
-        if (amenityFilters.isNotEmpty) {
+        
+        // Only use old format if new format is not present
+        if (amenityFilters.isNotEmpty && !queryParams.containsKey('amenities')) {
           queryParams['amenities'] = amenityFilters.join(',');
         }
       }
