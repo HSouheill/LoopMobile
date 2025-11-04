@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/job_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../widgets/dynamic_jobs_widget.dart';
 
 class JobSearchResultsPage extends StatefulWidget {

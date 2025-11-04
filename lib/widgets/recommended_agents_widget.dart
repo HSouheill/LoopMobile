@@ -1,7 +1,7 @@
 // lib/widgets/agent_widgets/recommended_agents_widget.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../environment.dart';
 import '../../screens/agents/single_agent_page.dart';
 import '../../services/favorite_service.dart';

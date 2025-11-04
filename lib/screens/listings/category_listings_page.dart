@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '/services/listing_service.dart' hide ListingCategory;
 import 'listings_category.dart'; // import enum with localization support
 import '../../widgets/listing_widgets/featured_listings_widget.dart' as flw; // reuse shared card UI

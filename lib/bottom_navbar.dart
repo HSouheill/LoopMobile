@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Import localization file
+import 'package:loopflutter/l10n/app_localizations.dart'; // Import localization file
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;

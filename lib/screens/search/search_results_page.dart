@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/listing_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../widgets/listing_widgets/listing_card.dart';
 import 'advanced_filters_page.dart';
 

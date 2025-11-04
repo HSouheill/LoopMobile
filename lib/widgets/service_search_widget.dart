@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../screens/services/service_provider_search_results_page.dart';
 
 class ServiceSearchWidget extends StatefulWidget {

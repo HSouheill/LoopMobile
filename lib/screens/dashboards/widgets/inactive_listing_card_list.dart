@@ -1,6 +1,6 @@
 // lib/screens/inactive_listings/widgets/inactive_listing_card_list.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../../widgets/listing_image_widget.dart';
 
 class InactiveListingCardList extends StatelessWidget {

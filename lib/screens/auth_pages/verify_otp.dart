@@ -4,7 +4,7 @@ import 'dart:convert';
 import '../../environment.dart';
 import '../../services/auth_service.dart';
 import '../../main.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 
 class VerifyOtpPage extends StatefulWidget {
   const VerifyOtpPage({super.key});

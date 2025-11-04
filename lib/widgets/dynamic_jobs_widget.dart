@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../services/job_service.dart';
 import '../services/favorite_service.dart';
 import '../screens/services/job_detail_page.dart';
