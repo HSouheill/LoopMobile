@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.20.2
   cupertino_icons: ^1.0.8
   salomon_bottom_bar: ^3.3.2
   http: ^1.1.1
