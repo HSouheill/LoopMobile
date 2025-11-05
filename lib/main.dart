@@ -6,6 +6,7 @@ import 'services/auth_service.dart';
 import 'services/device_uuid_service.dart';
 import 'services/chat_service.dart';
 import 'services/socket_service.dart';
+import 'services/location_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -173,6 +174,7 @@ class _MainScreenState extends State<MainScreen> {
   bool _isLoading = true;
   bool _isLoggedIn = false;
   int _unreadChatCount = 0;
+  String? _currentLocation; // Store detected location
   StreamSubscription? _messageSubscription;
   StreamSubscription? _notificationSubscription;
   StreamSubscription? _readSubscription;
@@ -192,6 +194,7 @@ class _MainScreenState extends State<MainScreen> {
     _checkAuthStatus();
     _setupSocketListeners();
     _startUnreadCountTimer();
+    _detectCurrentLocation(); // Detect location on app launch
   }
 
   @override
@@ -293,6 +296,31 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  /// Detect current location from device GPS
+  /// This runs on app launch and refreshes the location
+  Future<void> _detectCurrentLocation() async {
+    try {
+      // Try to get last known location first for faster display
+      final lastKnown = await LocationService.getLastKnownCity();
+      if (lastKnown != null && mounted) {
+        setState(() {
+          _currentLocation = lastKnown;
+        });
+      }
+
+      // Then refresh with current location in background
+      final cityName = await LocationService.refreshCurrentCity();
+      if (cityName != null && mounted) {
+        setState(() {
+          _currentLocation = cityName;
+        });
+      }
+    } catch (e) {
+      // Silently fail - location is optional
+      print('Error detecting location: $e');
+    }
+  }
+
   void _handleSubtitleTap() {
     if (_isLoggedIn) {
       Navigator.pushNamed(context, '/dashboard');
@@ -374,11 +402,16 @@ class _MainScreenState extends State<MainScreen> {
     final l10n = AppLocalizations.of(context);
     final user = AuthService.currentUser;
     final headerName = _isLoggedIn && user != null ? user.fullName : (l10n?.guest ?? 'Guest');
-    final headerLocation = _isLoggedIn && user != null && user.city != null
-        ? user.city!
-        : (_isLoggedIn && user != null && user.location != null
-            ? user.location!
-            : "");
+    
+    // Priority: detected current location > user.city > user.location > empty
+    // Always show real-time detected location if available, regardless of login status
+    final headerLocation = _currentLocation ?? 
+        (_isLoggedIn && user != null && user.city != null
+            ? user.city!
+            : (_isLoggedIn && user != null && user.location != null
+                ? user.location!
+                : ""));
+    
     final headerSubtitle = _isLoggedIn 
         ? (user?.role == 'user' ? null : (l10n?.goToDashboard ?? "Go to Dashboard"))
         : (l10n?.login ?? "Login");
