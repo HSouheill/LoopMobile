@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../models/review.dart';
 import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;

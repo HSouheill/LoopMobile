@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../services/ticket_service.dart';
 import '../../services/auth_service.dart';

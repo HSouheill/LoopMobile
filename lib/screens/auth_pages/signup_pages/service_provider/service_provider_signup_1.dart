@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../utils/password_validator.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 
 class ServiceProviderSignupPage1 extends StatefulWidget {
   const ServiceProviderSignupPage1({super.key});

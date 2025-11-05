@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '/services/listing_service.dart' hide ListingCategory;
 import '../../screens/listings/listings_category.dart'; // import enum with localization support
 import '../../screens/listings/category_listings_page.dart';

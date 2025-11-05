@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../widgets/agent_widgets/agent_service.dart';
 import '../../widgets/dynamic_agents_widget.dart'; // For AgentCategory enum
 import '../../widgets/recommended_agents_widget.dart'; // For AgentCard

@@ -6,7 +6,7 @@ import 'services/auth_service.dart';
 import 'services/device_uuid_service.dart';
 import 'services/chat_service.dart';
 import 'services/socket_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/search_and_categories_widget.dart';

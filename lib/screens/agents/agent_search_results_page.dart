@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/agent_service.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import 'single_agent_page.dart';

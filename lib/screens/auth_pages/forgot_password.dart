@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 // import '../services/auth_service.dart'; // Commented out as this is a new page and auth service functions may differ.
 
 class ForgotPasswordPage extends StatefulWidget {

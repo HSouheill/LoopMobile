@@ -1,6 +1,6 @@
 // enums/listing_category.dart
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 
 enum ListingCategory {
   // Enum values with their specific properties

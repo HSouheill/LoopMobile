@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/agent_service.dart';
 import '../../environment.dart';
 import 'agent_company_dashboard_screens/edit_agent_screen.dart';

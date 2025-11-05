@@ -1,6 +1,6 @@
 // lib/widgets/agent_widgets/dynamic_agents_widget.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import 'agent_widgets/agent_service.dart';
 import './recommended_agents_widget.dart';
 import '../screens/agents/category_agents_page.dart';
