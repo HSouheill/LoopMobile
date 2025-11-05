@@ -7,6 +7,7 @@ import 'services/device_uuid_service.dart';
 import 'services/chat_service.dart';
 import 'services/socket_service.dart';
 import 'services/location_service.dart';
+import 'services/badge_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -217,7 +218,10 @@ class _MainScreenState extends State<MainScreen> {
     // Connect socket and fetch unread count if logged in
     if (isAuthenticated) {
       await _connectSocket();
-      _fetchUnreadCount();
+      await _fetchUnreadCount();
+    } else {
+      // Clear badge if not logged in
+      await BadgeService().clearBadge();
     }
   }
 
@@ -237,35 +241,37 @@ class _MainScreenState extends State<MainScreen> {
   void _setupSocketListeners() {
     // Listen to message events to update unread count
     _messageSubscription = SocketService.instance.messageStream.listen(
-      (message) {
+      (message) async {
         // When a new message arrives from another user, fetch updated count
         final currentUserId = AuthService.currentUser?.id;
         if (message.senderId != currentUserId) {
-          _fetchUnreadCount();
+          await _fetchUnreadCount();
         }
       },
     );
 
     // Listen to notification events to update unread count
     _notificationSubscription = SocketService.instance.notificationStream.listen(
-      (data) {
+      (data) async {
         final unreadCount = data['unreadCount'] as int?;
         if (unreadCount != null) {
           setState(() {
             _unreadChatCount = unreadCount;
           });
+          // Update app badge count
+          await BadgeService().updateBadgeCount(unreadCount);
         }
       },
     );
 
     // Listen to read events to decrease unread count
     _readSubscription = SocketService.instance.readStream.listen(
-      (data) {
+      (data) async {
         final readBy = data['readBy'] as String?;
         final currentUserId = AuthService.currentUser?.id;
         // If current user read messages, fetch updated count
         if (readBy == currentUserId) {
-          _fetchUnreadCount();
+          await _fetchUnreadCount();
         }
       },
     );
@@ -289,6 +295,8 @@ class _MainScreenState extends State<MainScreen> {
           setState(() {
             _unreadChatCount = count;
           });
+          // Update app badge count
+          await BadgeService().updateBadgeCount(count);
         }
       } catch (e) {
         // Silently fail
@@ -335,6 +343,9 @@ class _MainScreenState extends State<MainScreen> {
     
     // Disconnect socket and reset unread count
     SocketService.instance.disconnect();
+    
+    // Clear app badge on logout
+    await BadgeService().clearBadge();
     
     setState(() {
       _isLoggedIn = false;
