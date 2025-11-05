@@ -49,7 +49,7 @@ class SocketService {
       // Extract base URL from API URL
       final apiUrl = Environment.apiUrl;
       final uri = Uri.parse(apiUrl.replaceFirst('/api/', ''));
-      final socketUrl = 'http://${uri.host}:${uri.port}';
+      final socketUrl = 'https://${uri.host}:${uri.port}'; //!CHANGE TO HTTPS FOR PRODUCTION DEPLOYMENT
       
       _socket = IO.io(socketUrl, IO.OptionBuilder()
           .setTransports(['websocket'])
