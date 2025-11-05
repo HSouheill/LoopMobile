@@ -27,6 +27,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   String? selectedCondition = 'good';
   String? selectedPapers = 'title_deed';
   List<XFile> _selectedImages = [];
+  XFile? _selectedVideo;
   bool _isLoading = false;
   bool _isEditMode = false;
   PropertyListing? _editingListing;
@@ -172,6 +173,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     }
   }
 
+  Future<void> _pickVideo() async {
+    try {
+      final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+      if (video != null) {
+        setState(() {
+          _selectedVideo = video;
+        });
+      }
+    } catch (e) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n?.errorPickingImages("$e") ?? 'Error picking video: $e')),
+      );
+    }
+  }
+
   Future<void> _submitListing() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -246,6 +263,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         success = await ListingCreateService.createListing(
           listingData,
           _selectedImages,
+          _selectedVideo,
         );
         
         if (success) {
@@ -544,6 +562,111 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                           ),
                         );
                       },
+                    ),
+                  ),
+                ],
+                
+                const SizedBox(height: 30),
+                
+                // Video Upload Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildSectionTitle('Property Video (Optional)'),
+                    if (_selectedVideo != null)
+                      Text(
+                        'Video selected',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.green[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                
+                GestureDetector(
+                  onTap: _pickVideo,
+                  child: Container(
+                    width: double.infinity,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: _selectedVideo != null ? Colors.green[400]! : Colors.grey[300]!,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      color: _selectedVideo != null ? Colors.green[50] : Colors.grey[50],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _selectedVideo != null ? Icons.check_circle : Icons.videocam,
+                          size: 40,
+                          color: _selectedVideo != null ? Colors.green : Colors.grey[400],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedVideo != null
+                              ? 'Video selected. Tap to change'
+                              : 'Tap to add video (optional)',
+                          style: TextStyle(
+                            color: _selectedVideo != null ? Colors.green[700] : Colors.grey[600],
+                            fontSize: 16,
+                            fontWeight: _selectedVideo != null ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                if (_selectedVideo != null) ...[
+                  const SizedBox(height: 15),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey[50],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.video_file, color: Colors.grey[700]),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _selectedVideo!.name,
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedVideo = null;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

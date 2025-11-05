@@ -5,10 +5,11 @@ import '../environment.dart';
 import 'auth_service.dart';
 
 class ListingCreateService {
-  // Create a new listing with image upload
+  // Create a new listing with image and video upload
   static Future<bool> createListing(
     Map<String, dynamic> listingData,
     List<XFile>? images,
+    XFile? video,
   ) async {
     try {
       final url = Uri.parse('${Environment.apiUrl}listings/create');
@@ -63,6 +64,17 @@ class ListingCreateService {
           );
           request.files.add(multipartFile);
         }
+      }
+      
+      // Add video file (optional)
+      if (video != null) {
+        final videoBytes = await video.readAsBytes();
+        final videoMultipartFile = http.MultipartFile.fromBytes(
+          'video', // Field name expected by backend
+          videoBytes,
+          filename: video.name,
+        );
+        request.files.add(videoMultipartFile);
       }
       
       // Send the request
