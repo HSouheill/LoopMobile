@@ -170,7 +170,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   int _currentIndex = 2; // start at index 2
   bool _isLoading = true;
   bool _isLoggedIn = false;
@@ -192,6 +192,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkAuthStatus();
     _setupSocketListeners();
     _startUnreadCountTimer();
@@ -200,11 +201,21 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _messageSubscription?.cancel();
     _notificationSubscription?.cancel();
     _readSubscription?.cancel();
     _unreadCountTimer?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Update badge when app comes to foreground
+    if (state == AppLifecycleState.resumed && _isLoggedIn) {
+      _fetchUnreadCount();
+    }
   }
 
   Future<void> _checkAuthStatus() async {

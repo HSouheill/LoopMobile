@@ -7,6 +7,32 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- Badge permissions for different Android manufacturers -->
+    <!-- Samsung -->
+    <uses-permission android:name="com.sec.android.provider.badge.permission.READ"/>
+    <uses-permission android:name="com.sec.android.provider.badge.permission.WRITE"/>
+    <!-- Huawei -->
+    <uses-permission android:name="com.huawei.android.launcher.permission.CHANGE_BADGE"/>
+    <!-- HTC -->
+    <uses-permission android:name="com.htc.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.htc.launcher.permission.UPDATE_SHORTCUT"/>
+    <!-- Sony -->
+    <uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE"/>
+    <!-- Xiaomi -->
+    <uses-permission android:name="com.miui.mipush.RECEIVE_MESSAGE"/>
+    <uses-permission android:name="com.miui.mipush.SEND_MESSAGE"/>
+    <!-- Oppo -->
+    <uses-permission android:name="com.oppo.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.oppo.launcher.permission.WRITE_SETTINGS"/>
+    <!-- Vivo -->
+    <uses-permission android:name="com.vivo.launcher.permission.CHANGE_BADGE"/>
+    <!-- ZUK -->
+    <uses-permission android:name="com.zui.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.zui.launcher.permission.WRITE_SETTINGS"/>
+    <!-- OnePlus -->
+    <uses-permission android:name="com.oneplus.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="com.oneplus.launcher.permission.WRITE_SETTINGS"/>
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
