@@ -457,6 +457,7 @@ class PropertyListing {
   final String? status;
   // Extended fields for single listing page
   final List<String>? images;
+  final String? video;
   final String? currency;
   final num? priceValue;
   final DateTime? createdAt;
@@ -492,6 +493,7 @@ class PropertyListing {
     this.listingFor,
     this.status,
     this.images,
+    this.video,
     this.currency,
     this.priceValue,
     this.createdAt,
@@ -663,6 +665,12 @@ class PropertyListing {
       buildingAge = (json['buildingAge'] as num).toInt();
     String? papers = json['papers']?.toString();
     String? paymentFrequency = json['paymentFrequency']?.toString();
+    
+    // Handle video - build full URL if present
+    String? video;
+    if (json['video'] != null && json['video'].toString().isNotEmpty) {
+      video = _buildImageUrl(json['video'].toString());
+    }
 
     return PropertyListing(
       id: json['_id']?.toString() ?? '',
@@ -676,6 +684,7 @@ class PropertyListing {
       listingFor: json['listingFor']?.toString(),
       status: json['status']?.toString(),
       images: images,
+      video: video,
       currency: currency,
       priceValue: priceValue,
       createdAt: createdAt,

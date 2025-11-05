@@ -5,6 +5,7 @@ import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/report_dialog.dart';
+import 'package:video_player/video_player.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -19,6 +20,9 @@ class _SingleListingPageState extends State<SingleListingPage> {
   PageController _pageController = PageController();
   int _currentImageIndex = 0;
   bool _isExpanded = false;
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+  bool _videoHasError = false;
 
   String get _ownerDisplayName {
     if (widget.listing.ownerFirstName != null && widget.listing.ownerLastName != null) {
@@ -35,13 +39,31 @@ class _SingleListingPageState extends State<SingleListingPage> {
     return widget.listing.ownerPhone ?? widget.listing.contactPhone;
   }
 
-  // Get all images from the listing
+  // Check if a URL is a video
+  bool _isVideoUrl(String url) {
+    final videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+    return videoExtensions.any((ext) => url.toLowerCase().endsWith(ext));
+  }
+
+  // Get all images from the listing (including video thumbnail)
   List<String> get _allImages {
+    List<String> mediaItems = [];
+    
+    // Add all images
     if (widget.listing.images != null && widget.listing.images!.isNotEmpty) {
-      return widget.listing.images!;
+      mediaItems.addAll(widget.listing.images!);
+    } else {
+      // Fallback to main image if no additional images
+      mediaItems.add(widget.listing.imageUrl);
     }
-    // Fallback to main image if no additional images
-    return [widget.listing.imageUrl];
+    
+    // Add video as image (if video exists)
+    if (widget.listing.video != null && widget.listing.video!.isNotEmpty) {
+      // Video URL is already fully constructed (e.g., http://localhost:3000/api/assets/filename.mp4)
+      mediaItems.add(widget.listing.video!);
+    }
+    
+    return mediaItems;
   }
 
   String get _formattedPrice {
@@ -190,9 +212,76 @@ class _SingleListingPageState extends State<SingleListingPage> {
     );
   }
 
+  void _initializeVideoPlayer(String videoUrl) {
+    if (_videoController != null) {
+      _videoController!.dispose();
+    }
+    
+    print('Attempting to load video from URL: $videoUrl');
+    
+    setState(() {
+      _isVideoInitialized = false;
+      _videoHasError = false;
+    });
+    
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+      ..initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true;
+          _videoHasError = false;
+        });
+        _videoController!.setLooping(true);
+        _videoController!.play();
+        print('Video initialized successfully');
+      }).catchError((error) {
+        print('Error initializing video: $error');
+        print('Video URL that failed: $videoUrl');
+        setState(() {
+          _isVideoInitialized = false;
+          _videoHasError = true;
+        });
+      });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Debug: Print video URL if exists
+    if (widget.listing.video != null) {
+      print('Listing has video: ${widget.listing.video}');
+    }
+    // Initialize video player if the first media item is a video
+    if (_allImages.isNotEmpty && _isVideoUrl(_allImages[0])) {
+      _initializeVideoPlayer(_allImages[0]);
+    }
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentImageIndex = index;
+    });
+    
+    // Check if the current page is a video
+    if (index < _allImages.length && _isVideoUrl(_allImages[index])) {
+      _initializeVideoPlayer(_allImages[index]);
+    } else {
+      // Pause and dispose video if switching away from video
+      if (_videoController != null) {
+        _videoController!.pause();
+        _videoController!.dispose();
+        _videoController = null;
+        setState(() {
+          _isVideoInitialized = false;
+          _videoHasError = false;
+        });
+      }
+    }
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
+    _videoController?.dispose();
     super.dispose();
   }
 
@@ -208,28 +297,135 @@ class _SingleListingPageState extends State<SingleListingPage> {
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
-                  // Image PageView
+                  // Image/Video PageView
                   PageView.builder(
                     controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
+                    onPageChanged: _onPageChanged,
                     itemCount: _allImages.length,
                     itemBuilder: (context, index) {
-                      return Image.network(
-                        _allImages[index],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
+                      final mediaUrl = _allImages[index];
+                      final isVideo = _isVideoUrl(mediaUrl);
+                      
+                      // Display video player or image
+                      if (isVideo) {
+                        // This is a video item
+                        if (_currentImageIndex == index) {
+                          // Current page is a video - show video player
+                          if (_videoHasError) {
+                            // Error state for video
+                            return Container(
+                              color: Colors.black,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.error_outline,
+                                      color: Colors.red,
+                                      size: 64,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      'Failed to load video',
+                                      style: TextStyle(color: Colors.white, fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Check console for URL',
+                                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        _initializeVideoPlayer(mediaUrl);
+                                      },
+                                      icon: const Icon(Icons.refresh),
+                                      label: const Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else if (_isVideoInitialized && _videoController != null) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (_videoController!.value.isPlaying) {
+                                    _videoController!.pause();
+                                  } else {
+                                    _videoController!.play();
+                                  }
+                                });
+                              },
+                              child: Stack(
+                                children: [
+                                  // Video player filling the space
+                                  SizedBox.expand(
+                                    child: FittedBox(
+                                      fit: BoxFit.cover,
+                                      child: SizedBox(
+                                        width: _videoController!.value.size.width,
+                                        height: _videoController!.value.size.height,
+                                        child: VideoPlayer(_videoController!),
+                                      ),
+                                    ),
+                                  ),
+                                  // Play button overlay (only show when paused)
+                                  if (!_videoController!.value.isPlaying)
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.6),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                          size: 48,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            // Loading state for video
+                            return Container(
+                              color: Colors.black,
+                              child: const Center(
+                                child: CircularProgressIndicator(color: Colors.white),
+                              ),
+                            );
+                          }
+                        } else {
+                          // Not current page but is video - show placeholder
                           return Container(
-                            color: Colors.grey[300],
+                            color: Colors.black,
                             child: const Center(
-                              child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                              child: Icon(
+                                Icons.videocam,
+                                color: Colors.white,
+                                size: 64,
+                              ),
                             ),
                           );
-                        },
-                      );
+                        }
+                      } else {
+                        // Display image
+                        return Image.network(
+                          mediaUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                              ),
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                   
