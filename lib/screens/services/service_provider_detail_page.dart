@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/service_provider.dart';
 import '../../models/review.dart';
 import '../../services/service_service.dart';
@@ -261,6 +262,79 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     }
   }
 
+  // Helper function to get icon and color for a platform
+  Map<String, dynamic>? _getPlatformIconAndColor(String platformName) {
+    final platform = platformName.toLowerCase();
+    
+    switch (platform) {
+      case 'facebook':
+        return {
+          'icon': FontAwesomeIcons.facebook,
+          'color': const Color(0xFF1877F2), // Facebook blue
+        };
+      case 'instagram':
+        return {
+          'icon': FontAwesomeIcons.instagram,
+          'color': const Color(0xFFE4405F), // Instagram pink/red
+        };
+      case 'twitter':
+        return {
+          'icon': FontAwesomeIcons.twitter,
+          'color': const Color(0xFF1DA1F2), // Twitter blue
+        };
+      case 'linkedin':
+        return {
+          'icon': FontAwesomeIcons.linkedin,
+          'color': const Color(0xFF0077B5), // LinkedIn blue
+        };
+      case 'youtube':
+        return {
+          'icon': FontAwesomeIcons.youtube,
+          'color': const Color(0xFFFF0000), // YouTube red
+        };
+      case 'tiktok':
+        return {
+          'icon': FontAwesomeIcons.tiktok,
+          'color': const Color(0xFF000000), // TikTok black
+        };
+      case 'snapchat':
+        return {
+          'icon': FontAwesomeIcons.snapchat,
+          'color': const Color(0xFFFFFC00), // Snapchat yellow
+        };
+      case 'pinterest':
+        return {
+          'icon': FontAwesomeIcons.pinterest,
+          'color': const Color(0xFFBD081C), // Pinterest red
+        };
+      case 'reddit':
+        return {
+          'icon': FontAwesomeIcons.reddit,
+          'color': const Color(0xFFFF4500), // Reddit orange
+        };
+      case 'discord':
+        return {
+          'icon': FontAwesomeIcons.discord,
+          'color': const Color(0xFF5865F2), // Discord blurple
+        };
+      case 'telegram':
+        return {
+          'icon': FontAwesomeIcons.telegram,
+          'color': const Color(0xFF0088CC), // Telegram blue
+        };
+      case 'whatsapp':
+        return {
+          'icon': FontAwesomeIcons.whatsapp,
+          'color': const Color(0xFF25D366), // WhatsApp green
+        };
+      default:
+        return {
+          'icon': Icons.link,
+          'color': Colors.grey,
+        };
+    }
+  }
+
   // Helper to render stars
   Widget _buildStars(double rating) {
     final int full = rating.floor();
@@ -483,22 +557,20 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                                   ),
                                 if (_serviceProviderData?.phone.isNotEmpty == true)
                                   const SizedBox(width: 8),
-                                // Instagram icon (purple)
-                                if (_getSocialLink('instagram') != null)
-                                  _socialIcon(
-                                    icon: Icons.camera_alt,
-                                    color: Colors.purple,
-                                    onTap: () => _openSocialLink(_getSocialLink('instagram')!.link),
-                                  ),
-                                if (_getSocialLink('instagram') != null)
-                                  const SizedBox(width: 8),
-                                // Facebook icon (blue)
-                                if (_getSocialLink('facebook') != null)
-                                  _socialIcon(
-                                    icon: Icons.facebook,
-                                    color: Colors.blue,
-                                    onTap: () => _openSocialLink(_getSocialLink('facebook')!.link),
-                                  ),
+                                // Display all social links with proper icons
+                                ...(_serviceProviderData?.socialLinks ?? []).map((socialLink) {
+                                  final platformData = _getPlatformIconAndColor(socialLink.name);
+                                  if (platformData == null) return const SizedBox.shrink();
+                                  
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: _socialIcon(
+                                      icon: platformData['icon'] as IconData,
+                                      color: platformData['color'] as Color,
+                                      onTap: () => _openSocialLink(socialLink.link),
+                                    ),
+                                  );
+                                }),
                               ],
                             ),
                           ],
