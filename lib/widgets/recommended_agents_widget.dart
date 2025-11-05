@@ -30,9 +30,6 @@ class Agent {
 
   // Enhanced factory constructor for JSON parsing
   factory Agent.fromJson(Map<String, dynamic> json) {
-    // Debug print the JSON being parsed
-    print('DEBUG: Parsing agent JSON: $json');
-    
     return Agent(
       // Handle the actual backend field names
       id: _getStringValue(json, ['_id', 'id']) ?? '',
@@ -251,7 +248,7 @@ class _AgentCardState extends State<AgentCard> {
         });
       }
     } catch (e) {
-      print('Error checking favorite status: $e');
+      // Error checking favorite status
     }
   }
 

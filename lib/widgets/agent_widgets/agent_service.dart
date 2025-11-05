@@ -25,9 +25,6 @@ class AgentService {
       final url =
           Uri.parse('${baseUrl}agents-routes/get-all-agents$queryString');
 
-      // Debug print the URL being called
-      print('DEBUG: Calling URL: $url');
-
       final response = await http.get(
         url,
         headers: {
@@ -37,15 +34,8 @@ class AgentService {
         },
       );
 
-      // Debug print the response
-      print('DEBUG: Response status: ${response.statusCode}');
-      print('DEBUG: Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-
-        // Debug print the parsed data structure
-        print('DEBUG: Parsed data keys: ${data.keys}');
 
         // Try multiple possible data structures
         List<dynamic> agentsJson = [];
@@ -58,32 +48,21 @@ class AgentService {
         } else if (data.containsKey('result')) {
           agentsJson = data['result'] as List<dynamic>;
         } else {
-          // If none of the expected keys exist, print available keys
-          print('DEBUG: Available keys in response: ${data.keys}');
           throw Exception(
               'Unexpected response structure. Available keys: ${data.keys}');
         }
 
-        print('DEBUG: Found ${agentsJson.length} agents in response');
-
         // Convert to Agent objects
         final agents = agentsJson.map((json) {
-          try {
-            return Agent.fromJson(json);
-          } catch (e) {
-            print('DEBUG: Error parsing agent: $json, Error: $e');
-            rethrow;
-          }
+          return Agent.fromJson(json);
         }).toList();
 
-        print('DEBUG: Successfully parsed ${agents.length} agents');
         return agents;
       } else {
         throw Exception(
             'Failed to load agents: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('DEBUG: Exception in getAgents: $e');
       throw Exception('Network error: $e');
     }
   }
@@ -136,17 +115,12 @@ class AgentService {
 
       final url = Uri.parse('${baseUrl}agents-routes/get-all-agents').replace(queryParameters: queryParams);
 
-      print('DEBUG: Calling paginated URL: $url');
-
       final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json',
         },
       );
-
-      print('DEBUG: Paginated response status: ${response.statusCode}');
-      print('DEBUG: Paginated response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -184,7 +158,6 @@ class AgentService {
         throw Exception('Failed to load agents: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('DEBUG: Exception in getAllAgents: $e');
       throw Exception('Network error: $e');
     }
   }

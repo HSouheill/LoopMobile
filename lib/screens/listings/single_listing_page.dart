@@ -217,8 +217,6 @@ class _SingleListingPageState extends State<SingleListingPage> {
       _videoController!.dispose();
     }
     
-    print('Attempting to load video from URL: $videoUrl');
-    
     setState(() {
       _isVideoInitialized = false;
       _videoHasError = false;
@@ -232,10 +230,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
         });
         _videoController!.setLooping(true);
         _videoController!.play();
-        print('Video initialized successfully');
       }).catchError((error) {
-        print('Error initializing video: $error');
-        print('Video URL that failed: $videoUrl');
         setState(() {
           _isVideoInitialized = false;
           _videoHasError = true;
@@ -246,10 +241,6 @@ class _SingleListingPageState extends State<SingleListingPage> {
   @override
   void initState() {
     super.initState();
-    // Debug: Print video URL if exists
-    if (widget.listing.video != null) {
-      print('Listing has video: ${widget.listing.video}');
-    }
     // Initialize video player if the first media item is a video
     if (_allImages.isNotEmpty && _isVideoUrl(_allImages[0])) {
       _initializeVideoPlayer(_allImages[0]);

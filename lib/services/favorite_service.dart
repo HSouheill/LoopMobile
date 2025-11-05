@@ -41,7 +41,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Toggle favorite error: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
@@ -82,7 +81,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Add favorite error: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
@@ -123,7 +121,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Remove favorite error: $e');
       return {
         'success': false,
         'message': 'Network error occurred',
@@ -159,7 +156,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Check favorite error: $e');
       return {
         'success': false,
         'isFavorited': false,
@@ -195,7 +191,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Get user favorites error: $e');
       return {
         'success': false,
         'data': null,
@@ -228,7 +223,6 @@ class FavoriteService {
         };
       }
     } catch (e) {
-      print('Get user favorites error: $e');
       return {
         'success': false,
         'favorites': [],

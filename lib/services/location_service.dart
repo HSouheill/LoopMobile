@@ -18,15 +18,12 @@ class LocationService {
       // Check if we have a valid cached location
       final cachedCity = await _getCachedCity();
       if (cachedCity != null) {
-        print('LocationService: Using cached city: $cachedCity');
         return cachedCity;
       }
 
       // Fetch fresh location
-      print('LocationService: Fetching fresh location...');
       return await _fetchCurrentCity();
     } catch (e) {
-      print('LocationService: Error getting current city: $e');
       return null;
     }
   }
@@ -34,10 +31,8 @@ class LocationService {
   /// Force refresh location (used on app launch)
   static Future<String?> refreshCurrentCity() async {
     try {
-      print('LocationService: Force refreshing location...');
       return await _fetchCurrentCity();
     } catch (e) {
-      print('LocationService: Error refreshing city: $e');
       return null;
     }
   }
@@ -58,7 +53,7 @@ class LocationService {
         }
       }
     } catch (e) {
-      print('LocationService: Error reading cache: $e');
+      // Error reading cache
     }
     return null;
   }
@@ -69,7 +64,6 @@ class LocationService {
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('LocationService: Location services are disabled');
         return null;
       }
 
@@ -78,13 +72,11 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print('LocationService: Location permission denied');
           return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        print('LocationService: Location permission permanently denied');
         return null;
       }
 
@@ -93,8 +85,6 @@ class LocationService {
         desiredAccuracy: LocationAccuracy.medium,
         timeLimit: const Duration(seconds: 10),
       );
-
-      print('LocationService: Got position: ${position.latitude}, ${position.longitude}');
 
       // Convert coordinates to address
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -112,8 +102,6 @@ class LocationService {
                           placemark.administrativeArea;
 
         if (cityName != null && cityName.isNotEmpty) {
-          print('LocationService: Detected city: $cityName');
-          
           // Cache the result
           await _cacheCity(cityName);
           
@@ -121,13 +109,10 @@ class LocationService {
         }
       }
 
-      print('LocationService: Could not determine city from location');
       return null;
     } on TimeoutException catch (e) {
-      print('LocationService: Timeout getting location: $e');
       return null;
     } catch (e) {
-      print('LocationService: Error fetching city: $e');
       return null;
     }
   }
@@ -138,9 +123,8 @@ class LocationService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_currentLocationKey, cityName);
       await prefs.setInt(_locationTimestampKey, DateTime.now().millisecondsSinceEpoch);
-      print('LocationService: Cached city: $cityName');
     } catch (e) {
-      print('LocationService: Error caching city: $e');
+      // Error caching city
     }
   }
 
@@ -150,9 +134,8 @@ class LocationService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_currentLocationKey);
       await prefs.remove(_locationTimestampKey);
-      print('LocationService: Cache cleared');
     } catch (e) {
-      print('LocationService: Error clearing cache: $e');
+      // Error clearing cache
     }
   }
 
@@ -162,7 +145,6 @@ class LocationService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(_currentLocationKey);
     } catch (e) {
-      print('LocationService: Error reading last known city: $e');
       return null;
     }
   }
@@ -174,7 +156,6 @@ class LocationService {
       return permission == LocationPermission.always || 
              permission == LocationPermission.whileInUse;
     } catch (e) {
-      print('LocationService: Error checking permission: $e');
       return false;
     }
   }

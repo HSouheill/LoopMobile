@@ -189,9 +189,6 @@ class ListingService {
       final uri = Uri.parse('${Environment.apiUrl}listings/search')
           .replace(queryParameters: queryParams);
       
-      // Debug: Uncomment to see the URL being sent
-      // print('Search URL: $uri');
-      
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -279,12 +276,9 @@ class ListingService {
       if (response.statusCode == 201) {
         return true;
       } else {
-        print('Failed to create listing: ${response.statusCode}');
-        print('Response: ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error creating listing: $e');
       return false;
     }
   }

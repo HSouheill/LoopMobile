@@ -56,7 +56,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
       setState(() {
         isLoading = false;
       });
-      print('Error loading agent info: $e');
     }
   }
 
@@ -75,7 +74,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
       setState(() {
         inactiveListingsLoading = false;
       });
-      print('Error loading inactive listings: $e');
     }
   }
 
@@ -94,7 +92,6 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
       setState(() {
         activeListingsLoading = false;
       });
-      print('Error loading active listings: $e');
     }
   }
 

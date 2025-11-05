@@ -46,7 +46,7 @@ class InactiveListingCardList extends StatelessWidget {
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
                   onActivate: () {
-                    print("${item['description']} Activated!");
+                    // Listing activated
                   },
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
@@ -75,7 +75,7 @@ class InactiveListingCardList extends StatelessWidget {
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
                   onActivate: () {
-                    print("${item['description']} Activated!");
+                    // Listing activated
                   },
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );

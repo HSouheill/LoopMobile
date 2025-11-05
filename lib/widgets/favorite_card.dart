@@ -175,8 +175,6 @@ class FavoriteCard extends StatelessWidget {
       imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
-        // Log the error for debugging but don't show it to user
-        print('Image load error for $imageUrl: $error');
         return _buildPlaceholder(itemType);
       },
       loadingBuilder: (context, child, loadingProgress) {

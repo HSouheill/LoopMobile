@@ -58,7 +58,6 @@ class _MyAgentsPageState extends State<MyAgentsPage> {
       setState(() {
         isLoading = false;
       });
-      print('Error loading agents: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)?.errorLoadingAgents(e.toString()) ?? 'Error loading agents: $e')),
       );

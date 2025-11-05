@@ -53,7 +53,6 @@ class _ServiceProviderIndividualDashboardPageState
       setState(() {
         isLoading = false;
       });
-      print('Error loading agent info: $e');
     }
   }
 

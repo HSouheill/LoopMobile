@@ -191,7 +191,7 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
         });
       }
     } catch (e) {
-      print('Error checking favorite status: $e');
+      // Error checking favorite status
     }
   }
 

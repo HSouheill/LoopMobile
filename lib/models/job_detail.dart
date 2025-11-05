@@ -51,10 +51,7 @@ class JobDetail {
   }
 
   static Map<String, int> _parseExperienceRange(dynamic experienceRange) {
-    print('DEBUG JobDetail: Parsing experienceRange: $experienceRange (type: ${experienceRange.runtimeType})');
-    
     if (experienceRange == null) {
-      print('DEBUG JobDetail: experienceRange is null, returning defaults');
       return {'min': 0, 'max': 1};
     }
     
@@ -62,18 +59,14 @@ class JobDetail {
       final min = experienceRange['min'];
       final max = experienceRange['max'];
       
-      print('DEBUG JobDetail: min: $min (type: ${min.runtimeType}), max: $max (type: ${max.runtimeType})');
-      
       final result = {
         'min': min is int ? min : int.tryParse(min?.toString() ?? '0') ?? 0,
         'max': max is int ? max : int.tryParse(max?.toString() ?? '1') ?? 1,
       };
       
-      print('DEBUG JobDetail: Parsed result: $result');
       return result;
     }
     
-    print('DEBUG JobDetail: experienceRange is not a Map, returning defaults');
     return {'min': 0, 'max': 1};
   }
 

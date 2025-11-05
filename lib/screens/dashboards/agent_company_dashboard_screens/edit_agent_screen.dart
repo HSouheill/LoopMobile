@@ -77,7 +77,7 @@ class _EditAgentScreenState extends State<EditAgentScreen>
       try {
         _selectedDOB = DateTime.parse(widget.agent['DOB']);
       } catch (e) {
-        print('Error parsing DOB: $e');
+        // Error parsing DOB
       }
     }
     

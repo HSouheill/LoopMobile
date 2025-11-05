@@ -205,7 +205,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         throw Exception(responseData['message'] ?? 'Failed to upload image');
       }
     } catch (e) {
-      print('Error uploading image: $e');
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -249,7 +248,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             errorData['message'] ?? 'Failed to update profile image');
       }
     } catch (e) {
-      print('Error updating profile image: $e');
       rethrow;
     }
   }

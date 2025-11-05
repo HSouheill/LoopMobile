@@ -62,7 +62,6 @@ class _ServiceProviderCompanyDashboardPageState
       setState(() {
         isLoading = false;
       });
-      print('Error loading agent info: $e');
     }
   }
 
@@ -80,7 +79,6 @@ class _ServiceProviderCompanyDashboardPageState
       setState(() {
         isLoadingJobs = false;
       });
-      print('Error loading my jobs: $e');
     }
   }
 
@@ -101,7 +99,6 @@ class _ServiceProviderCompanyDashboardPageState
       setState(() {
         isLoadingApplications = false;
       });
-      print('Error loading applications: $e');
     }
   }
 

@@ -86,7 +86,7 @@ class _JobCardState extends State<JobCard> {
         });
       }
     } catch (e) {
-      print('Error checking favorite status: $e');
+      // Error checking favorite status
     }
   }
 

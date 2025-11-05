@@ -317,7 +317,6 @@ class _MainScreenState extends State<MainScreen> {
       }
     } catch (e) {
       // Silently fail - location is optional
-      print('Error detecting location: $e');
     }
   }
 

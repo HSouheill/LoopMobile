@@ -60,7 +60,6 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       setState(() {
         isLoading = false;
       });
-      print('Error loading agent info: $e');
     }
   }
 
@@ -75,7 +74,6 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       setState(() {
         reviewsLoading = false;
       });
-      print('Error loading reviews: $e');
     }
   }
 
@@ -94,7 +92,6 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       setState(() {
         inactiveListingsLoading = false;
       });
-      print('Error loading inactive listings: $e');
     }
   }
 
@@ -113,7 +110,6 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       setState(() {
         activeListingsLoading = false;
       });
-      print('Error loading active listings: $e');
     }
   }
 

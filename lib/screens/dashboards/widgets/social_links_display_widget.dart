@@ -72,7 +72,7 @@ class SocialLinksDisplayWidget extends StatelessWidget {
           mode: LaunchMode.externalApplication,
         );
       } catch (e) {
-        print('Error launching URL: $e');
+        // Error launching URL
       }
     }
   }
