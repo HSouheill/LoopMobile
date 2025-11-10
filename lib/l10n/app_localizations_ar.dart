@@ -493,10 +493,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancel => 'إلغاء';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'موافق';
 
   @override
-  String get error => 'Error';
+  String get error => 'خطأ';
 
   @override
   String get delete => 'حذف';
