@@ -297,13 +297,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String professionalServiceProviderDescription(
-      String displayName, String city, String country) {
+    String displayName,
+    String city,
+    String country,
+  ) {
     return 'Professional $displayName providing quality services in $city, $country.';
   }
 
   @override
   String individualServiceProviderDescription(
-      String firstName, String lastName, String city, String country) {
+    String firstName,
+    String lastName,
+    String city,
+    String country,
+  ) {
     return '$firstName $lastName is a professional service provider based in $city, $country.';
   }
 

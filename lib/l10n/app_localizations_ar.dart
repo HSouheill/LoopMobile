@@ -294,13 +294,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String professionalServiceProviderDescription(
-      String displayName, String city, String country) {
+    String displayName,
+    String city,
+    String country,
+  ) {
     return '$displayName محترف يقدم خدمات عالية الجودة في $city، $country.';
   }
 
   @override
   String individualServiceProviderDescription(
-      String firstName, String lastName, String city, String country) {
+    String firstName,
+    String lastName,
+    String city,
+    String country,
+  ) {
     return '$firstName $lastName هو مقدم خدمات محترف مقيم في $city، $country.';
   }
 
