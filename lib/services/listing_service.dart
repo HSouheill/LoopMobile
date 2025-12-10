@@ -148,6 +148,9 @@ class ListingService {
         if (filters['condition'] != null) {
           queryParams['condition'] = filters['condition'].toString();
         }
+        if (filters['furnishing'] != null) {
+          queryParams['furnishing'] = filters['furnishing'].toString();
+        }
         if (filters['minBedrooms'] != null) {
           queryParams['minBedrooms'] = filters['minBedrooms'].toString();
         }
@@ -482,6 +485,7 @@ class PropertyListing {
   final String? condition;
   final int? buildingAge;
   final String? papers;
+  final String? furnishing;
   final DateTime? availableFrom;
   final String? paymentFrequency;
   // Owner information
@@ -518,6 +522,7 @@ class PropertyListing {
     this.condition,
     this.buildingAge,
     this.papers,
+    this.furnishing,
     this.availableFrom,
     this.paymentFrequency,
     this.ownerFirstName,
@@ -676,6 +681,7 @@ class PropertyListing {
     if (json['buildingAge'] is num)
       buildingAge = (json['buildingAge'] as num).toInt();
     String? papers = json['papers']?.toString();
+    String? furnishing = json['furnishing']?.toString();
     String? paymentFrequency = json['paymentFrequency']?.toString();
     
     // Handle video - build full URL if present
@@ -709,6 +715,7 @@ class PropertyListing {
       condition: condition,
       buildingAge: buildingAge,
       papers: papers,
+      furnishing: furnishing,
       availableFrom: availableFrom,
       paymentFrequency: paymentFrequency,
       ownerFirstName: ownerFirstName,

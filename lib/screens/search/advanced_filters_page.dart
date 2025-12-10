@@ -31,6 +31,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   double? _minSize;
   double? _maxSize;
   String? _selectedCondition;
+  String? _selectedFurnishing;
   String? _selectedPaymentFrequency;
   
   // Amenities - using same structure as add_listing_form_page.dart
@@ -87,6 +88,12 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'needs_renovation',
   ];
 
+  final List<String> _furnishingOptions = [
+    'unfurnished',
+    'semi_furnished',
+    'fully_furnished',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -106,6 +113,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _minSize = widget.initialFilters!['minSize']?.toDouble();
       _maxSize = widget.initialFilters!['maxSize']?.toDouble();
       _selectedCondition = widget.initialFilters!['condition'];
+      _selectedFurnishing = widget.initialFilters!['furnishing'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
       
       // Initialize amenities from initial filters
@@ -164,6 +172,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _minSize = null;
       _maxSize = null;
       _selectedCondition = null;
+      _selectedFurnishing = null;
       _selectedPaymentFrequency = null;
       
       // Reset all amenities to false
@@ -194,6 +203,13 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     if (_minSize != null) filters['minSize'] = _minSize;
     if (_maxSize != null) filters['maxSize'] = _maxSize;
     if (_selectedCondition != null) filters['condition'] = _selectedCondition;
+    if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
+      // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
+      final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
+      if (_furnishingOptions.contains(furnishingValue)) {
+        filters['furnishing'] = furnishingValue;
+      }
+    }
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
     }
@@ -495,6 +511,33 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
+              // Furnishing
+              _buildSectionTitle('Furnishing'),
+              DropdownButtonFormField<String>(
+                value: _selectedFurnishing,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ..._furnishingOptions.map((furnishing) {
+                    return DropdownMenuItem(
+                      value: furnishing,
+                      child: Text(_formatFurnishingLabel(furnishing)),
+                    );
+                  }).toList(),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFurnishing = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+
               // Amenities - using FilterChips like add_listing_form_page.dart
               _buildSectionTitle('Amenities'),
               Wrap(
@@ -591,6 +634,22 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
         return 'Needs Renovation';
       default:
         return condition.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
+    }
+  }
+
+  String _formatFurnishingLabel(String furnishing) {
+    switch (furnishing) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
+      default:
+        return furnishing.replaceAll('_', ' ').split(' ').map((word) {
           if (word.isEmpty) return word;
           return word[0].toUpperCase() + word.substring(1).toLowerCase();
         }).join(' ');

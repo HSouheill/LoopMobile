@@ -26,6 +26,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
 
   String? selectedCondition = 'ready';
   String? selectedPapers = 'title_deed';
+  String? selectedFurnishing;
   List<XFile> _selectedImages = [];
   XFile? _selectedVideo;
   bool _isLoading = false;
@@ -45,6 +46,12 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     {'value': 'title_deed', 'label': 'Title Deed'},
     {'value': 'under_construction', 'label': 'Under Construction'},
     {'value': 'other', 'label': 'Other'},
+  ];
+
+  final List<Map<String, String>> furnishingOptions = [
+    {'value': 'unfurnished', 'label': 'Unfurnished'},
+    {'value': 'semi_furnished', 'label': 'Semi-Furnished'},
+    {'value': 'fully_furnished', 'label': 'Fully Furnished'},
   ];
 
   // Amenities
@@ -145,6 +152,10 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         
         if (_editingListing!.papers != null) {
           selectedPapers = _editingListing!.papers;
+        }
+        
+        if (_editingListing!.furnishing != null) {
+          selectedFurnishing = _editingListing!.furnishing;
         }
         
         // Set amenities
@@ -249,6 +260,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         'condition': selectedCondition,
         'buildingAge': int.tryParse(_buildingAgeController.text) ?? 0,
         'papers': selectedPapers,
+        if (selectedFurnishing != null) 'furnishing': selectedFurnishing,
         'amenities': amenities,
         'isPublished': false,
         'status': _editingListing?.status ?? 'pending',
@@ -467,6 +479,21 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                         })
                     .toList(),
                 onChanged: (value) => setState(() => selectedPapers = value),
+              ),
+              
+              const SizedBox(height: 15),
+              
+              // Furnishing Dropdown
+              _buildDropdown(
+                value: selectedFurnishing,
+                label: 'Furnishing',
+                items: furnishingOptions
+                    .map((e) => {
+                          'value': e['value']!,
+                          'label': _localizeFurnishingLabel(context, e['value']!)
+                        })
+                    .toList(),
+                onChanged: (value) => setState(() => selectedFurnishing = value),
               ),
               
               const SizedBox(height: 30),
@@ -914,6 +941,19 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         return l10n?.papersUnderConstruction ?? 'Under Construction';
       case 'other':
         return l10n?.papersOther ?? 'Other';
+      default:
+        return value;
+    }
+  }
+
+  String _localizeFurnishingLabel(BuildContext context, String value) {
+    switch (value) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
       default:
         return value;
     }

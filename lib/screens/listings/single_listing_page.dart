@@ -999,6 +999,11 @@ class _SingleListingPageState extends State<SingleListingPage> {
       details.add(_buildPropertyDetail('${l10n?.papersLabel ?? 'Papers:'} ${_formatPapers(widget.listing.papers!)}'));
     }
     
+    // Furnishing
+    if (widget.listing.furnishing != null) {
+      details.add(_buildPropertyDetail('Furnishing: ${_formatFurnishing(widget.listing.furnishing!)}'));
+    }
+    
     // Listing type
     if (widget.listing.listingFor != null) {
       String listingForText = widget.listing.listingFor!.toUpperCase();
@@ -1084,6 +1089,22 @@ class _SingleListingPageState extends State<SingleListingPage> {
         return 'Building Permit';
       default:
         return papers.toUpperCase();
+    }
+  }
+  
+  String _formatFurnishing(String furnishing) {
+    switch (furnishing.toLowerCase()) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
+      default:
+        return furnishing.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
     }
   }
 }
