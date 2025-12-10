@@ -66,6 +66,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     'solarSystem': false,
     'electricity24_7': false,
     'maidRoom': false,
+    'accessible': false,
+    'atticLoft': false,
+    'builtInKitchenAppliances': false,
+    'builtInWardrobes': false,
+    'concierge': false,
+    'coveredParking': false,
+    'fireplace': false,
+    'petsAllowed': false,
+    'playroom': false,
+    'privateGarden': false,
+    'privateGym': false,
+    'privateJacuzzi': false,
+    'sharedSpa': false,
+    'studyRoom': false,
+    'balcony': false,
+    'walkInCloset': false,
   };
 
   @override
@@ -854,6 +870,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       case 'solarSystem': return l10n?.amenitySolarSystem ?? 'Solar System';
       case 'electricity24_7': return l10n?.amenityElectricity247 ?? '24/7 Electricity';
       case 'maidRoom': return l10n?.amenityMaidRoom ?? 'Maid Room';
+      case 'accessible': return 'Accessible';
+      case 'atticLoft': return 'Attic/Loft';
+      case 'builtInKitchenAppliances': return 'Built-in Kitchen Appliances';
+      case 'builtInWardrobes': return 'Built-in Wardrobes';
+      case 'concierge': return 'Concierge';
+      case 'coveredParking': return 'Covered Parking';
+      case 'fireplace': return 'Fireplace';
+      case 'petsAllowed': return 'Pets Allowed';
+      case 'playroom': return 'Playroom';
+      case 'privateGarden': return 'Private Garden';
+      case 'privateGym': return 'Private Gym';
+      case 'privateJacuzzi': return 'Private Jacuzzi';
+      case 'sharedSpa': return 'Shared Spa';
+      case 'studyRoom': return 'Study Room';
+      case 'balcony': return 'Balcony';
+      case 'walkInCloset': return 'Walk-in Closet';
       default: return key;
     }
   }
