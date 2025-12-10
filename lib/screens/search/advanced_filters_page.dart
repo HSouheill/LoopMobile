@@ -314,14 +314,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               const SizedBox(height: 16.0),
 
               // Price Range
-              _buildSectionTitle('Price Range'),
+              _buildSectionTitle('Price'),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       initialValue: _minPrice?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Min Price',
+                        labelText: 'Min',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
@@ -335,7 +335,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                     child: TextFormField(
                       initialValue: _maxPrice?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Max Price',
+                        labelText: 'Max',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
