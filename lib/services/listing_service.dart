@@ -160,6 +160,12 @@ class ListingService {
         if (filters['maxBathrooms'] != null) {
           queryParams['maxBathrooms'] = filters['maxBathrooms'].toString();
         }
+        if (filters['minSize'] != null) {
+          queryParams['minSize'] = filters['minSize'].toString();
+        }
+        if (filters['maxSize'] != null) {
+          queryParams['maxSize'] = filters['maxSize'].toString();
+        }
         // Only send paymentFrequency if listingFor is 'rent' (payment frequency only applies to rentals)
         final listingFor = filters['listingFor']?.toString().toLowerCase();
         if (filters['paymentFrequency'] != null && 

@@ -28,6 +28,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   double? _maxPrice;
   int? _bedrooms;
   int? _bathrooms;
+  double? _minSize;
+  double? _maxSize;
   String? _selectedCondition;
   String? _selectedPaymentFrequency;
   
@@ -87,6 +89,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       // Use minBedrooms/maxBedrooms for backward compatibility, prefer min if both exist
       _bedrooms = widget.initialFilters!['minBedrooms'] ?? widget.initialFilters!['maxBedrooms'];
       _bathrooms = widget.initialFilters!['minBathrooms'] ?? widget.initialFilters!['maxBathrooms'];
+      _minSize = widget.initialFilters!['minSize']?.toDouble();
+      _maxSize = widget.initialFilters!['maxSize']?.toDouble();
       _selectedCondition = widget.initialFilters!['condition'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
       
@@ -143,6 +147,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _maxPrice = null;
       _bedrooms = null;
       _bathrooms = null;
+      _minSize = null;
+      _maxSize = null;
       _selectedCondition = null;
       _selectedPaymentFrequency = null;
       
@@ -171,6 +177,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       filters['minBathrooms'] = _bathrooms;
       filters['maxBathrooms'] = _bathrooms;
     }
+    if (_minSize != null) filters['minSize'] = _minSize;
+    if (_maxSize != null) filters['maxSize'] = _maxSize;
     if (_selectedCondition != null) filters['condition'] = _selectedCondition;
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
@@ -404,6 +412,41 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                         setState(() {
                           _bathrooms = value;
                         });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+
+              // Size Range
+              _buildSectionTitle('Size (m²)'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _minSize?.toString(),
+                      decoration: const InputDecoration(
+                        labelText: 'Min Size',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        _minSize = double.tryParse(value);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _maxSize?.toString(),
+                      decoration: const InputDecoration(
+                        labelText: 'Max Size',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        _maxSize = double.tryParse(value);
                       },
                     ),
                   ),
