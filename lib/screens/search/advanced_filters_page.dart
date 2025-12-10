@@ -589,16 +589,68 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: _clearAllFilters,
-                      child: const Text('Clear All'),
+                    child: GestureDetector(
+                      onTap: _clearAllFilters,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color.fromARGB(255, 103, 155, 218),
+                              const Color.fromARGB(255, 69, 100, 201),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Clear All',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: _applyFilters,
-                      child: const Text('Search'),
+                    child: GestureDetector(
+                      onTap: _applyFilters,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color.fromARGB(255, 103, 155, 218),
+                              const Color.fromARGB(255, 69, 100, 201),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Search',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -819,7 +871,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(16.0),
           border: Border.all(
             color: Colors.grey[300]!,
             width: 1.0,
