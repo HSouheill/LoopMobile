@@ -124,7 +124,12 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.tune, color: Colors.black87),
+                  icon: const Icon(
+                    Icons.tune,
+                    color: Color.fromARGB(255, 69, 100, 201),
+                    size: 30,
+                  ),
+                  iconSize: 30,
                   onPressed: _openAdvancedFilters,
                 ),
               ],

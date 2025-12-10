@@ -155,7 +155,12 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         elevation: 1,
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune),
+            icon: const Icon(
+              Icons.tune,
+              color: Color.fromARGB(255, 69, 100, 201),
+              size: 30,
+            ),
+            iconSize: 30,
             onPressed: _openAdvancedFilters,
           ),
         ],
