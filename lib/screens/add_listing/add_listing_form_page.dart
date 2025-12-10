@@ -24,7 +24,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   final _floorController = TextEditingController();
   final _buildingAgeController = TextEditingController();
 
-  String? selectedCondition = 'good';
+  String? selectedCondition = 'ready';
   String? selectedPapers = 'title_deed';
   List<XFile> _selectedImages = [];
   XFile? _selectedVideo;
@@ -36,11 +36,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   final ImagePicker _picker = ImagePicker();
 
   final List<Map<String, String>> conditions = [
-    {'value': 'new', 'label': 'New'},
-    {'value': 'excellent', 'label': 'Excellent'},
-    {'value': 'good', 'label': 'Good'},
+    {'value': 'under_construction', 'label': 'Under Construction'},
+    {'value': 'ready', 'label': 'Ready'},
     {'value': 'needs_renovation', 'label': 'Needs Renovation'},
-    {'value': 'old', 'label': 'Old'},
   ];
 
   final List<Map<String, String>> papers = [
@@ -861,18 +859,13 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   }
 
   String _localizeConditionLabel(BuildContext context, String value) {
-    final l10n = AppLocalizations.of(context);
     switch (value) {
-      case 'new':
-        return l10n?.conditionNew ?? 'New';
-      case 'excellent':
-        return l10n?.conditionExcellent ?? 'Excellent';
-      case 'good':
-        return l10n?.conditionGood ?? 'Good';
+      case 'under_construction':
+        return 'Under Construction';
+      case 'ready':
+        return 'Ready';
       case 'needs_renovation':
-        return l10n?.conditionNeedsRenovation ?? 'Needs Renovation';
-      case 'old':
-        return l10n?.conditionOld ?? 'Old';
+        return 'Needs Renovation';
       default:
         return value;
     }

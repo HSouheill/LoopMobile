@@ -66,11 +66,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   final List<String> _paymentFrequencyOptions = ['daily', 'monthly', 'yearly'];
 
   final List<String> _conditionOptions = [
-    'excellent',
-    'good',
+    'under_construction',
+    'ready',
     'needs_renovation',
-    'new',
-    'old',
   ];
 
   @override
@@ -469,7 +467,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                   ..._conditionOptions.map((condition) {
                     return DropdownMenuItem(
                       value: condition,
-                      child: Text(condition.replaceAll('_', ' ').toUpperCase()),
+                      child: Text(_formatConditionLabel(condition)),
                     );
                   }).toList(),
                 ],
@@ -565,6 +563,22 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
         ),
       ),
     );
+  }
+
+  String _formatConditionLabel(String condition) {
+    switch (condition) {
+      case 'under_construction':
+        return 'Under Construction';
+      case 'ready':
+        return 'Ready';
+      case 'needs_renovation':
+        return 'Needs Renovation';
+      default:
+        return condition.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
+    }
   }
 
   String _getAmenityLabel(String key) {
