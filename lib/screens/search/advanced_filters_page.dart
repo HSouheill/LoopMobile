@@ -741,18 +741,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     required IconData icon,
   }) {
     final isSelected = _selectedType == type;
-    // Flip colors: blue by default, gray when selected
-    final gradientColors = isSelected
-        ? [
-            Colors.grey[300]!,
-            Colors.grey[400]!,
-          ]
-        : [
-            const Color.fromARGB(255, 103, 155, 218),
-            const Color.fromARGB(255, 69, 100, 201),
-          ];
+    // Keep same gradient colors for both selected and unselected
+    final gradientColors = [
+      const Color.fromARGB(255, 103, 155, 218),
+      const Color.fromARGB(255, 69, 100, 201),
+    ];
     final iconColor = Colors.white;
-    final textColor = isSelected ? Colors.grey[700]! : Colors.black87;
+    final textColor = isSelected ? Colors.blue[700]! : Colors.black87;
+    final fontWeight = isSelected ? FontWeight.bold : FontWeight.normal;
 
     return GestureDetector(
       onTap: () {
@@ -771,6 +767,16 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color.fromARGB(153, 120, 120, 120),
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
             ),
             child: Icon(icon, color: iconColor, size: 30),
           ),
@@ -780,6 +786,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
             style: TextStyle(
               fontSize: 12.0,
               color: textColor,
+              fontWeight: fontWeight,
             ),
           ),
         ],
@@ -805,28 +812,28 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isSelected
-                ? [
-                    const Color.fromARGB(255, 103, 155, 218),
-                    const Color.fromARGB(255, 69, 100, 201),
-                  ]
-                : [
-                    Colors.grey[300]!,
-                    Colors.grey[400]!,
-                  ],
+            colors: [
+              const Color.fromARGB(255, 103, 155, 218),
+              const Color.fromARGB(255, 69, 100, 201),
+            ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(8.0),
-          border: isSelected
-              ? Border.all(
-                  color: const Color.fromARGB(255, 69, 100, 201),
-                  width: 2.0,
-                )
-              : Border.all(
-                  color: Colors.grey[300]!,
-                  width: 1.0,
-                ),
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color.fromARGB(138, 116, 116, 116),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           label.toUpperCase(),
@@ -834,7 +841,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
           style: TextStyle(
             fontSize: 16.0,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Colors.white : Colors.grey[700]!,
+            color: isSelected ? Colors.white : Colors.white,
           ),
         ),
       ),

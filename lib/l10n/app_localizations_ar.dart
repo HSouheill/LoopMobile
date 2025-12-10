@@ -17,6 +17,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get agents => 'وكلاء';
 
   @override
+  String get realEstate => 'عقارات';
+
+  @override
   String get listings => 'قوائم';
 
   @override
@@ -982,9 +985,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get user => 'مستخدم';
-
-  @override
-  String get realEstate => 'عقارات';
 
   @override
   String get serviceProvider => 'مقدم خدمة';

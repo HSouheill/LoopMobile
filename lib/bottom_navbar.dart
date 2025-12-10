@@ -41,7 +41,7 @@ class BottomNavBar extends StatelessWidget {
         items: [
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.people, 0),
-            label: localizations.agents,
+            label: localizations.realEstate,
           ),
           BottomNavigationBarItem(
             icon: _buildIcon(Icons.apartment, 1),

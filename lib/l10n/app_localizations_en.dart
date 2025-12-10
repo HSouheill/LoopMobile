@@ -17,6 +17,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agents => 'Agents';
 
   @override
+  String get realEstate => 'Real Estate';
+
+  @override
   String get listings => 'Listings';
 
   @override
@@ -988,9 +991,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get user => 'User';
-
-  @override
-  String get realEstate => 'Real Estate';
 
   @override
   String get serviceProvider => 'Service Provider';

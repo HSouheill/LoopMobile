@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Agents'**
   String get agents;
 
+  /// No description provided for @realEstate.
+  ///
+  /// In en, this message translates to:
+  /// **'Real Estate'**
+  String get realEstate;
+
   /// No description provided for @listings.
   ///
   /// In en, this message translates to:
@@ -1840,12 +1846,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User'**
   String get user;
-
-  /// No description provided for @realEstate.
-  ///
-  /// In en, this message translates to:
-  /// **'Real Estate'**
-  String get realEstate;
 
   /// No description provided for @serviceProvider.
   ///
