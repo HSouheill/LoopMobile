@@ -62,8 +62,6 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'villa',
     'land',
   ];
-
-  final List<String> _listingForOptions = ['sale', 'rent'];
   
   final List<String> _paymentFrequencyOptions = ['daily', 'monthly', 'yearly'];
 
@@ -126,7 +124,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     } else {
       // Set default values to null (Any) when no initial filters
       _selectedType = null;
-      _selectedListingFor = null;
+      _selectedListingFor = 'rent'; // Default to rent
       _selectedCondition = null;
       _selectedSort = null;
     }
@@ -141,7 +139,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   void _clearAllFilters() {
     setState(() {
       _selectedType = null;
-      _selectedListingFor = null;
+      _selectedListingFor = 'rent'; // Default to rent
       _selectedCity = null;
       _selectedSort = null;
       _minPrice = null;
@@ -220,15 +218,30 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Search Query
-              TextFormField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Search',
-                  hintText: 'Enter search terms...',
-                  border: OutlineInputBorder(),
-                ),
+              // TextFormField(
+              //   controller: _searchController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Search',
+              //     hintText: 'Enter search terms...',
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
+              // const SizedBox(height: 24.0),
+
+              // Listing For
+              _buildSectionTitle('Listing For'),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildListingForButton('sale', 'Sale'),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: _buildListingForButton('rent', 'Rent'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24.0),
+              const SizedBox(height: 16.0),
 
               // Property Type
               _buildSectionTitle('Property Type'),
@@ -253,37 +266,6 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                     );
                   }).toList(),
                 ],
-              ),
-              const SizedBox(height: 16.0),
-
-              // Listing For
-              _buildSectionTitle('Listing For'),
-              DropdownButtonFormField<String>(
-                value: _selectedListingFor,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('Any'),
-                  ),
-                  ..._listingForOptions.map((option) {
-                    return DropdownMenuItem(
-                      value: option,
-                      child: Text(option.toUpperCase()),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedListingFor = value;
-                    // Clear payment frequency when switching to sale or Any (not applicable)
-                    if (value == 'sale' || value == null) {
-                      _selectedPaymentFrequency = null;
-                    }
-                  });
-                },
               ),
               const SizedBox(height: 16.0),
 
@@ -660,6 +642,60 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildListingForButton(String value, String label) {
+    final isSelected = _selectedListingFor == value;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedListingFor = value;
+          // Clear payment frequency when switching to sale (not applicable)
+          if (value == 'sale') {
+            _selectedPaymentFrequency = null;
+          }
+        });
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isSelected
+                ? [
+                    const Color.fromARGB(255, 103, 155, 218),
+                    const Color.fromARGB(255, 69, 100, 201),
+                  ]
+                : [
+                    Colors.grey[300]!,
+                    Colors.grey[400]!,
+                  ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(8.0),
+          border: isSelected
+              ? Border.all(
+                  color: const Color.fromARGB(255, 69, 100, 201),
+                  width: 2.0,
+                )
+              : Border.all(
+                  color: Colors.grey[300]!,
+                  width: 1.0,
+                ),
+        ),
+        child: Text(
+          label.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Colors.white : Colors.grey[700]!,
+          ),
+        ),
       ),
     );
   }
