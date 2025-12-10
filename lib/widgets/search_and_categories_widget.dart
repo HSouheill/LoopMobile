@@ -203,10 +203,10 @@ class StickySearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   StickySearchHeaderDelegate({required this.child});
 
   @override
-  double get minExtent => 140.0; // Approximate height of the widget
+  double get minExtent => 170.0; // Approximate height of the widget
 
   @override
-  double get maxExtent => 140.0;
+  double get maxExtent => 170.0;
 
   @override
   Widget build(
