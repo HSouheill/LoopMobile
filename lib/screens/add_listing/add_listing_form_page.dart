@@ -26,7 +26,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
 
   String? selectedCondition = 'ready';
   String? selectedPapers = 'title_deed';
-  String? selectedFurnishing;
+  String? selectedFurnishing = 'unfurnished';
   List<XFile> _selectedImages = [];
   XFile? _selectedVideo;
   bool _isLoading = false;
