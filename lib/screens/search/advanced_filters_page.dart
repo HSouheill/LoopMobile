@@ -26,10 +26,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   String? _selectedSort;
   double? _minPrice;
   double? _maxPrice;
-  int? _minBedrooms;
-  int? _maxBedrooms;
-  int? _minBathrooms;
-  int? _maxBathrooms;
+  int? _bedrooms;
+  int? _bathrooms;
   String? _selectedCondition;
   String? _selectedPaymentFrequency;
   
@@ -86,10 +84,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedSort = widget.initialFilters!['sort'];
       _minPrice = widget.initialFilters!['minPrice']?.toDouble();
       _maxPrice = widget.initialFilters!['maxPrice']?.toDouble();
-      _minBedrooms = widget.initialFilters!['minBedrooms'];
-      _maxBedrooms = widget.initialFilters!['maxBedrooms'];
-      _minBathrooms = widget.initialFilters!['minBathrooms'];
-      _maxBathrooms = widget.initialFilters!['maxBathrooms'];
+      // Use minBedrooms/maxBedrooms for backward compatibility, prefer min if both exist
+      _bedrooms = widget.initialFilters!['minBedrooms'] ?? widget.initialFilters!['maxBedrooms'];
+      _bathrooms = widget.initialFilters!['minBathrooms'] ?? widget.initialFilters!['maxBathrooms'];
       _selectedCondition = widget.initialFilters!['condition'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
       
@@ -144,10 +141,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedSort = null;
       _minPrice = null;
       _maxPrice = null;
-      _minBedrooms = null;
-      _maxBedrooms = null;
-      _minBathrooms = null;
-      _maxBathrooms = null;
+      _bedrooms = null;
+      _bathrooms = null;
       _selectedCondition = null;
       _selectedPaymentFrequency = null;
       
@@ -167,10 +162,15 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     if (_selectedSort != null) filters['sort'] = _selectedSort;
     if (_minPrice != null) filters['minPrice'] = _minPrice;
     if (_maxPrice != null) filters['maxPrice'] = _maxPrice;
-    if (_minBedrooms != null) filters['minBedrooms'] = _minBedrooms;
-    if (_maxBedrooms != null) filters['maxBedrooms'] = _maxBedrooms;
-    if (_minBathrooms != null) filters['minBathrooms'] = _minBathrooms;
-    if (_maxBathrooms != null) filters['maxBathrooms'] = _maxBathrooms;
+    // Set both min and max to the same value for bedrooms and bathrooms
+    if (_bedrooms != null) {
+      filters['minBedrooms'] = _bedrooms;
+      filters['maxBedrooms'] = _bedrooms;
+    }
+    if (_bathrooms != null) {
+      filters['minBathrooms'] = _bathrooms;
+      filters['maxBathrooms'] = _bathrooms;
+    }
     if (_selectedCondition != null) filters['condition'] = _selectedCondition;
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
@@ -348,69 +348,62 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Bedrooms
-              _buildSectionTitle('Bedrooms'),
+              // Bedrooms & Bathrooms
+              _buildSectionTitle('Bedrooms & Bathrooms'),
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      initialValue: _minBedrooms?.toString(),
+                    child: DropdownButtonFormField<int>(
+                      value: _bedrooms,
                       decoration: const InputDecoration(
-                        labelText: 'Min Bedrooms',
                         border: OutlineInputBorder(),
+                        hintText: 'Bedrooms',
+                        labelText: 'Bedrooms',
                       ),
-                      keyboardType: TextInputType.number,
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
+                        ...List.generate(15, (index) => index + 1).map((count) {
+                          return DropdownMenuItem<int>(
+                            value: count,
+                            child: Text('$count'),
+                          );
+                        }).toList(),
+                      ],
                       onChanged: (value) {
-                        _minBedrooms = int.tryParse(value);
+                        setState(() {
+                          _bedrooms = value;
+                        });
                       },
                     ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    child: TextFormField(
-                      initialValue: _maxBedrooms?.toString(),
+                    child: DropdownButtonFormField<int>(
+                      value: _bathrooms,
                       decoration: const InputDecoration(
-                        labelText: 'Max Bedrooms',
                         border: OutlineInputBorder(),
+                        hintText: 'Bathrooms',
+                        labelText: 'Bathrooms',
                       ),
-                      keyboardType: TextInputType.number,
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
+                        ...List.generate(15, (index) => index + 1).map((count) {
+                          return DropdownMenuItem<int>(
+                            value: count,
+                            child: Text('$count'),
+                          );
+                        }).toList(),
+                      ],
                       onChanged: (value) {
-                        _maxBedrooms = int.tryParse(value);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-
-              // Bathrooms
-              _buildSectionTitle('Bathrooms'),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: _minBathrooms?.toString(),
-                      decoration: const InputDecoration(
-                        labelText: 'Min Bathrooms',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        _minBathrooms = int.tryParse(value);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: _maxBathrooms?.toString(),
-                      decoration: const InputDecoration(
-                        labelText: 'Max Bathrooms',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        _maxBathrooms = int.tryParse(value);
+                        setState(() {
+                          _bathrooms = value;
+                        });
                       },
                     ),
                   ),
