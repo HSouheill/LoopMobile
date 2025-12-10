@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 
 class AdvancedFiltersPage extends StatefulWidget {
   final String initialQuery;
@@ -231,28 +232,27 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
               // Property Type
               _buildSectionTitle('Property Type'),
-              DropdownButtonFormField<String>(
-                value: _selectedType,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('Any'),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: [
+                  // Any option
+                  _buildPropertyTypeButton(
+                    context,
+                    type: null,
+                    label: 'Any',
+                    icon: Icons.home,
                   ),
+                  // Property type buttons
                   ..._propertyTypes.map((type) {
-                    return DropdownMenuItem(
-                      value: type,
-                      child: Text(type.toUpperCase()),
+                    return _buildPropertyTypeButton(
+                      context,
+                      type: type,
+                      label: _getPropertyTypeLabel(context, type),
+                      icon: _getPropertyTypeIcon(type),
                     );
                   }).toList(),
                 ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedType = value;
-                  });
-                },
               ),
               const SizedBox(height: 16.0),
 
@@ -570,5 +570,97 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       case 'maidRoom': return 'Maid Room';
       default: return key;
     }
+  }
+
+  IconData _getPropertyTypeIcon(String type) {
+    switch (type) {
+      case 'apartment':
+        return Icons.apartment;
+      case 'chalet':
+        return Icons.house_siding;
+      case 'studio':
+        return Icons.home_work;
+      case 'commercial':
+        return Icons.business;
+      case 'villa':
+        return Icons.villa;
+      case 'land':
+        return Icons.landscape;
+      default:
+        return Icons.home;
+    }
+  }
+
+  String _getPropertyTypeLabel(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context);
+    switch (type) {
+      case 'apartment':
+        return l10n?.propertyTypeApartment ?? 'Apartment';
+      case 'chalet':
+        return l10n?.propertyTypeChalet ?? 'Chalet';
+      case 'studio':
+        return l10n?.propertyTypeStudio ?? 'Studio';
+      case 'commercial':
+        return l10n?.propertyTypeCommercial ?? 'Commercial';
+      case 'villa':
+        return l10n?.propertyTypeVilla ?? 'Villa';
+      case 'land':
+        return l10n?.propertyTypeLand ?? 'Land';
+      default:
+        return type;
+    }
+  }
+
+  Widget _buildPropertyTypeButton(
+    BuildContext context, {
+    required String? type,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedType == type;
+    // Flip colors: blue by default, gray when selected
+    final gradientColors = isSelected
+        ? [
+            Colors.grey[300]!,
+            Colors.grey[400]!,
+          ]
+        : [
+            const Color.fromARGB(255, 103, 155, 218),
+            const Color.fromARGB(255, 69, 100, 201),
+          ];
+    final iconColor = Colors.white;
+    final textColor = isSelected ? Colors.grey[700]! : Colors.black87;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedType = type;
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            child: Icon(icon, color: iconColor, size: 30),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.0,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
