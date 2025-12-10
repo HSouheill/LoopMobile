@@ -33,6 +33,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   String? _selectedCondition;
   String? _selectedFurnishing;
   String? _selectedPaymentFrequency;
+  String? _selectedOwnership;
   
   // Amenities - using same structure as add_listing_form_page.dart
   Map<String, bool> amenities = {
@@ -115,6 +116,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedCondition = widget.initialFilters!['condition'];
       _selectedFurnishing = widget.initialFilters!['furnishing'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
+      _selectedOwnership = widget.initialFilters!['ownership'];
       
       // Initialize amenities from initial filters
       if (widget.initialFilters!['amenities'] != null) {
@@ -174,6 +176,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedCondition = null;
       _selectedFurnishing = null;
       _selectedPaymentFrequency = null;
+      _selectedOwnership = null;
       
       // Reset all amenities to false
       for (String key in amenities.keys) {
@@ -212,6 +215,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     }
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
+    }
+    if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
+      filters['ownership'] = _selectedOwnership;
     }
     
     // Collect selected amenities
@@ -347,6 +353,40 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 ),
                 onChanged: (value) {
                   _selectedCity = value.trim().isEmpty ? null : value.trim();
+                },
+              ),
+              const SizedBox(height: 16.0),
+
+              // Ownership
+              _buildSectionTitle('Ownership'),
+              DropdownButtonFormField<String>(
+                value: _selectedOwnership,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Select ownership',
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'user',
+                    child: Text('Owner'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'agent-individual',
+                    child: Text('Agent'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'agent-company',
+                    child: Text('Company'),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedOwnership = value;
+                  });
                 },
               ),
               const SizedBox(height: 16.0),

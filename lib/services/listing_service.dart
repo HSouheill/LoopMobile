@@ -176,6 +176,9 @@ class ListingService {
             listingFor == 'rent') {
           queryParams['paymentFrequency'] = filters['paymentFrequency'].toString().toLowerCase().trim();
         }
+        if (filters['ownership'] != null && filters['ownership'].toString().isNotEmpty) {
+          queryParams['ownership'] = filters['ownership'].toString();
+        }
         // Amenities filter - supports comma-separated string from backend API
         if (filters['amenities'] != null) {
           final amenitiesValue = filters['amenities'];
