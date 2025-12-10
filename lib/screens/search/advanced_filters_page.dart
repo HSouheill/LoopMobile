@@ -34,6 +34,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   String? _selectedFurnishing;
   String? _selectedPaymentFrequency;
   String? _selectedOwnership;
+  String? _selectedFloor;
   
   // Amenities - using same structure as add_listing_form_page.dart
   Map<String, bool> amenities = {
@@ -117,6 +118,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedFurnishing = widget.initialFilters!['furnishing'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
       _selectedOwnership = widget.initialFilters!['ownership'];
+      _selectedFloor = widget.initialFilters!['floor'];
       
       // Initialize amenities from initial filters
       if (widget.initialFilters!['amenities'] != null) {
@@ -177,6 +179,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedFurnishing = null;
       _selectedPaymentFrequency = null;
       _selectedOwnership = null;
+      _selectedFloor = null;
       
       // Reset all amenities to false
       for (String key in amenities.keys) {
@@ -218,6 +221,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     }
     if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
       filters['ownership'] = _selectedOwnership;
+    }
+    if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
+      filters['floor'] = _selectedFloor;
     }
     
     // Collect selected amenities
@@ -521,6 +527,37 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16.0),
+
+              // Floor
+              _buildSectionTitle('Floor'),
+              DropdownButtonFormField<String>(
+                value: _selectedFloor,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Select floor',
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ...List.generate(16, (index) {
+                    final floorValue = index - 5; // -5 to 10
+                    final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
+                    final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
+                    return DropdownMenuItem<String>(
+                      value: backendValue,
+                      child: Text(displayValue),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFloor = value;
+                  });
+                },
               ),
               const SizedBox(height: 16.0),
 

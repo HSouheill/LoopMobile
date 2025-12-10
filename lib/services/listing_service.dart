@@ -179,6 +179,9 @@ class ListingService {
         if (filters['ownership'] != null && filters['ownership'].toString().isNotEmpty) {
           queryParams['ownership'] = filters['ownership'].toString();
         }
+        if (filters['floor'] != null && filters['floor'].toString().isNotEmpty) {
+          queryParams['floor'] = filters['floor'].toString();
+        }
         // Amenities filter - supports comma-separated string from backend API
         if (filters['amenities'] != null) {
           final amenitiesValue = filters['amenities'];
