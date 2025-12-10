@@ -540,73 +540,84 @@ class HomePage extends StatelessWidget {
     // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
 
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SearchAndCategoriesWidget(),
-          const SizedBox(height: 10),
-          ImageSliderWidget(imageUrls: sliderImages),
-          const SizedBox(height: 10),
-          LatestUpdatesWidget(updates: marketUpdates),
-          const SizedBox(height: 10),
-          // Updated to use callback for navigation
-          FeaturedListingsWidget(
-            title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
-            isMainPage: true,
-            onSeeAll: () => mainScreenState
-                ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
+    return CustomScrollView(
+      slivers: [
+        // Sticky search and categories widget
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: StickySearchHeaderDelegate(
+            child: const SearchAndCategoriesWidget(),
           ),
-          const SizedBox(height: 10),
-          const SupportCardWidget(),
-          const SizedBox(height: 10),
-          // Recommended Agents (featured, fetched from API, limited to 3 on main)
-          FeaturedAgentsWidget(
-            title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
-            isMainPage: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(0),
+        ),
+        // Rest of the content
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              ImageSliderWidget(imageUrls: sliderImages),
+              const SizedBox(height: 10),
+              LatestUpdatesWidget(updates: marketUpdates),
+              const SizedBox(height: 10),
+              // Updated to use callback for navigation
+              FeaturedListingsWidget(
+                title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
+                isMainPage: true,
+                onSeeAll: () => mainScreenState
+                    ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
+              ),
+              const SizedBox(height: 10),
+              const SupportCardWidget(),
+              const SizedBox(height: 10),
+              // Recommended Agents (featured, fetched from API, limited to 3 on main)
+              FeaturedAgentsWidget(
+                title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
+                isMainPage: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(0),
+              ),
+              // Featured Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.featured,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Featured Companies section - featured company providers
+              DynamicServicesWidget(
+                category: ServiceCategory.featuredCompanies,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Companies Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.companies,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Individual Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.individual,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Featured Jobs section - now fetched dynamically
+              DynamicJobsWidget(
+                category: JobCategory.featured,
+                limit: 3,
+                onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
+              ),
+              const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
+            ],
           ),
-          // Featured Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.featured,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Featured Companies section - featured company providers
-          DynamicServicesWidget(
-            category: ServiceCategory.featuredCompanies,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Companies Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.companies,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Individual Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.individual,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Featured Jobs section - now fetched dynamically
-          DynamicJobsWidget(
-            category: JobCategory.featured,
-            limit: 3,
-            onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
-          ),
-          const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

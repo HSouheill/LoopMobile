@@ -190,3 +190,30 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
     );
   }
 }
+
+// Sticky header delegate for SearchAndCategoriesWidget
+class StickySearchHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  StickySearchHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 140.0; // Approximate height of the widget
+
+  @override
+  double get maxExtent => 140.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white, // Background color to prevent content showing through
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(StickySearchHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child;
+  }
+}
