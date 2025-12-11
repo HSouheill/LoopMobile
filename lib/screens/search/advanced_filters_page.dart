@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
+import 'city_selection_page.dart';
 
 class AdvancedFiltersPage extends StatefulWidget {
   final String initialQuery;
@@ -351,15 +352,38 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
               // City
               _buildSectionTitle('City'),
-              TextFormField(
-                initialValue: _selectedCity,
-                decoration: const InputDecoration(
-                  hintText: 'Enter city name',
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (value) {
-                  _selectedCity = value.trim().isEmpty ? null : value.trim();
+              GestureDetector(
+                onTap: () async {
+                  final selectedCity = await Navigator.push<String?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CitySelectionPage(
+                        selectedCity: _selectedCity,
+                      ),
+                    ),
+                  );
+                  if (selectedCity != _selectedCity) {
+                    setState(() {
+                      _selectedCity = selectedCity;
+                    });
+                  }
                 },
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select city',
+                    suffixIcon: Icon(Icons.arrow_drop_down),
+                  ),
+                  child: Text(
+                    _selectedCity ?? 'Any',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: _selectedCity != null
+                          ? Colors.black87
+                          : Colors.black87,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16.0),
 
