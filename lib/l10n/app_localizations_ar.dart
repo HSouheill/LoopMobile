@@ -241,6 +241,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get about => 'حول';
 
   @override
+  String get description => 'الوصف';
+
+  @override
   String get readMore => 'اقرأ المزيد';
 
   @override
@@ -2036,9 +2039,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get titleIsRequired => 'العنوان مطلوب';
-
-  @override
-  String get description => 'الوصف';
 
   @override
   String get describeYourProperty => 'صف عقارك';

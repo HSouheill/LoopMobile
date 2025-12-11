@@ -244,6 +244,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
+  String get description => 'Description';
+
+  @override
   String get readMore => 'Read More';
 
   @override
@@ -2054,9 +2057,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get titleIsRequired => 'Title is required';
-
-  @override
-  String get description => 'Description';
 
   @override
   String get describeYourProperty => 'Describe your property';

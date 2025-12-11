@@ -107,6 +107,7 @@
   "failedToLoadFeaturedServices": "Failed to load featured services",
   "noFeaturedServicesFound": "No featured services found",
   "about": "About",
+  "description": "Description",
   "readMore": "Read More",
   "readLess": "Read Less",
   "services": "Services",

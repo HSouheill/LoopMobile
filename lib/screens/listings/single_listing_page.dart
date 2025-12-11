@@ -700,7 +700,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                                   builder: (context) {
                                     final l10n = AppLocalizations.of(context);
                                     return Text(
-                                      l10n?.about ?? 'Description',
+                                      l10n?.description ?? 'Description',
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,

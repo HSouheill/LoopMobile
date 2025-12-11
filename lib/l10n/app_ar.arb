@@ -107,6 +107,7 @@
   "failedToLoadFeaturedServices": "فشل تحميل الخدمات المميزة",
   "noFeaturedServicesFound": "لم يتم العثور على خدمات مميزة",
   "about": "حول",
+  "description": "الوصف",
   "readMore": "اقرأ المزيد",
   "readLess": "اقرأ أقل",
   "services": "الخدمات",
