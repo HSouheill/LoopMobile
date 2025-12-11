@@ -495,6 +495,7 @@ class PropertyListing {
   final DateTime? availableFrom;
   final String? paymentFrequency;
   // Owner information
+  final String? ownerId;
   final String? ownerFirstName;
   final String? ownerLastName;
   final String? ownerEmail;
@@ -534,6 +535,7 @@ class PropertyListing {
     this.furnishing,
     this.availableFrom,
     this.paymentFrequency,
+    this.ownerId,
     this.ownerFirstName,
     this.ownerLastName,
     this.ownerEmail,
@@ -624,6 +626,7 @@ class PropertyListing {
 
     // Handle owner/agent name and owner information
     String agentName = 'Unknown Agent';
+    String? ownerId;
     String? ownerFirstName;
     String? ownerLastName;
     String? ownerEmail;
@@ -635,6 +638,7 @@ class PropertyListing {
     if (json['owner'] != null) {
       final owner = json['owner'];
       if (owner is Map<String, dynamic>) {
+        ownerId = owner['_id']?.toString();
         ownerFirstName = owner['firstName']?.toString();
         ownerLastName = owner['lastName']?.toString();
         ownerEmail = owner['email']?.toString();
@@ -736,6 +740,7 @@ class PropertyListing {
       furnishing: furnishing,
       availableFrom: availableFrom,
       paymentFrequency: paymentFrequency,
+      ownerId: ownerId,
       ownerFirstName: ownerFirstName,
       ownerLastName: ownerLastName,
       ownerEmail: ownerEmail,

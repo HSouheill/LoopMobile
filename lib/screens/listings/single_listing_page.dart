@@ -7,6 +7,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/report_dialog.dart';
 import 'package:video_player/video_player.dart';
 import '../../environment.dart';
+import '../../services/chat_service.dart';
+import '../../services/auth_service.dart';
+import '../../models/chat.dart';
+import '../chat/chat_conversation_page.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -225,6 +229,77 @@ class _SingleListingPageState extends State<SingleListingPage> {
         listingTitle: widget.listing.title,
       ),
     );
+  }
+
+  Future<void> _startChat() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final l10n = AppLocalizations.of(context);
+      final token = AuthService.token;
+      if (token == null) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.pleaseLoginToStartChatAgent ?? 'Please log in to start a chat')),
+        );
+        return;
+      }
+
+      // Get owner ID from the listing
+      final ownerId = widget.listing.ownerId;
+      if (ownerId == null || ownerId.isEmpty) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Owner information not available')),
+        );
+        return;
+      }
+
+      // First, try to get existing chat with the owner
+      Chat? existingChat = await ChatService.getChatWithUser(token, ownerId);
+      
+      Chat? chat = existingChat;
+      
+      // If no existing chat, create a new one
+      if (chat == null) {
+        chat = await ChatService.createChat(
+          token: token,
+          otherUserId: ownerId,
+        );
+      }
+
+      Navigator.pop(context); // Close loading dialog
+
+      if (chat != null) {
+        // Navigate to chat conversation page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatConversationPage(
+              chat: chat!,
+              otherParticipantName: _ownerDisplayName,
+              otherParticipantImage: _ownerProfileImageUrl,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)?.failedToStartChatAgent ?? 'Failed to start chat. Please try again.')),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   void _initializeVideoPlayer(String videoUrl) {
@@ -1230,30 +1305,66 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 
                 const SizedBox(height: 12),
                 
-                // "See profile" link
-                GestureDetector(
-                  onTap: () {
-                    // TODO: Navigate to profile page
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'See profile',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                // Chat button and See profile link in a row
+                Row(
+                  children: [
+                    // Chat button
+                    GestureDetector(
+                      onTap: _startChat,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.chat,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Chat',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.chevron_right,
-                        size: 18,
-                        color: Colors.black87,
+                    ),
+                    const SizedBox(width: 12),
+                    // "See profile" link
+                    GestureDetector(
+                      onTap: () {
+                        // TODO: Navigate to profile page
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'See profile',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: Colors.black87,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
