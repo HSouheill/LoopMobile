@@ -11,6 +11,23 @@ class ListingCard extends StatelessWidget {
     required this.listing,
   });
 
+  String _formatTimeAgo(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -165,6 +182,18 @@ class ListingCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Time ago display below location
+                  if (listing.createdAt != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatTimeAgo(listing.createdAt),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                   if (listing.bedrooms != null || listing.bathrooms != null) ...[
                     const SizedBox(height: 8),
                     Row(
