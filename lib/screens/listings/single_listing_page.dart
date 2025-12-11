@@ -11,6 +11,9 @@ import '../../services/chat_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/chat.dart';
 import '../chat/chat_conversation_page.dart';
+import '../../services/agent_service.dart';
+import '../../widgets/recommended_agents_widget.dart';
+import '../agents/single_agent_page.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -298,6 +301,58 @@ class _SingleListingPageState extends State<SingleListingPage> {
       Navigator.pop(context); // Close loading dialog
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _viewProfile() async {
+    try {
+      // Get owner ID from the listing
+      final ownerId = widget.listing.ownerId;
+      if (ownerId == null || ownerId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Owner information not available')),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Fetch agent data using the new endpoint
+      final responseData = await AgentService.getAgentById(ownerId);
+      
+      Navigator.pop(context); // Close loading dialog
+
+      // The response has a 'user' key containing the actual user data
+      final userData = responseData['user'];
+      if (userData == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid response format from server')),
+        );
+        return;
+      }
+
+      // Convert the fetched data to Agent object
+      final agent = Agent.fromJson(userData);
+
+      // Navigate to single agent page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleAgentPage(agent: agent),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog if still open
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading profile: ${e.toString()}')),
       );
     }
   }
@@ -1341,9 +1396,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                     const SizedBox(width: 12),
                     // "See profile" link
                     GestureDetector(
-                      onTap: () {
-                        // TODO: Navigate to profile page
-                      },
+                      onTap: _viewProfile,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

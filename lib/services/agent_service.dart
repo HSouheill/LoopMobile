@@ -73,6 +73,26 @@ class AgentService {
     }
   }
 
+  // Get agent by ID using the new endpoint
+  static Future<Map<String, dynamic>> getAgentById(String agentId) async {
+    try {
+      final url = Uri.parse('$baseUrl/get-agent-by-id/$agentId?withReviews=true&withListings=true');
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load agent: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching agent by ID: $e');
+    }
+  }
+
   // New method to fetch my agents
   static Future<Map<String, dynamic>> getMyAgents({int page = 1, int limit = 20}) async {
     try {
