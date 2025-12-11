@@ -5,6 +5,7 @@ import '../environment.dart';
 import 'listing_widgets/featured_listings_widget.dart' as flw;
 import 'review_submission_widget.dart';
 import 'review_report_dialog.dart';
+import '../screens/agents/agent_listings_page.dart';
 
 class AgentListingsReviewsWidget extends StatefulWidget {
   final AgentWithListingsAndReviews agent;
@@ -56,6 +57,40 @@ class _AgentListingsReviewsWidgetState extends State<AgentListingsReviewsWidget>
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const Spacer(),
+            if (widget.agent.listings.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AgentListingsPage(
+                        agentId: widget.agent.id,
+                        agentName: widget.agent.fullName,
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'See all',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.blue,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 16),
