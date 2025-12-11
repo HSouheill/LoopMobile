@@ -499,6 +499,9 @@ class PropertyListing {
   final String? ownerLastName;
   final String? ownerEmail;
   final String? ownerPhone;
+  final String? ownerRole;
+  final String? ownerCompanyName;
+  final String? ownerProfileImage;
   // Contact information
   final String? contactPhone;
   final String? contactEmail;
@@ -535,6 +538,9 @@ class PropertyListing {
     this.ownerLastName,
     this.ownerEmail,
     this.ownerPhone,
+    this.ownerRole,
+    this.ownerCompanyName,
+    this.ownerProfileImage,
     this.contactPhone,
     this.contactEmail,
   });
@@ -622,6 +628,9 @@ class PropertyListing {
     String? ownerLastName;
     String? ownerEmail;
     String? ownerPhone;
+    String? ownerRole;
+    String? ownerCompanyName;
+    String? ownerProfileImage;
 
     if (json['owner'] != null) {
       final owner = json['owner'];
@@ -630,6 +639,9 @@ class PropertyListing {
         ownerLastName = owner['lastName']?.toString();
         ownerEmail = owner['email']?.toString();
         ownerPhone = owner['phone']?.toString();
+        ownerRole = owner['role']?.toString();
+        ownerCompanyName = owner['companyName']?.toString();
+        ownerProfileImage = owner['profileImage']?.toString();
 
         // Set agent name to full name if available, otherwise fallback to email
         if (ownerFirstName != null && ownerLastName != null) {
@@ -728,6 +740,9 @@ class PropertyListing {
       ownerLastName: ownerLastName,
       ownerEmail: ownerEmail,
       ownerPhone: ownerPhone,
+      ownerRole: ownerRole,
+      ownerCompanyName: ownerCompanyName,
+      ownerProfileImage: ownerProfileImage,
       contactPhone: contactPhone,
       contactEmail: contactEmail,
     );

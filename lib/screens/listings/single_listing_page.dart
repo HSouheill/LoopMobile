@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/report_dialog.dart';
 import 'package:video_player/video_player.dart';
+import '../../environment.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -74,6 +75,20 @@ class _SingleListingPageState extends State<SingleListingPage> {
       return formatter.format(price);
     }
     return widget.listing.price;
+  }
+
+  // Build owner profile image URL
+  String? get _ownerProfileImageUrl {
+    if (widget.listing.ownerProfileImage == null || widget.listing.ownerProfileImage!.isEmpty) {
+      return null;
+    }
+    final image = widget.listing.ownerProfileImage!;
+    // If it's already a full URL, return as is
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    // Build full URL
+    return '${Environment.apiUrl}assets/$image';
   }
 
   String _formattedDate(BuildContext context) {
@@ -594,25 +609,33 @@ class _SingleListingPageState extends State<SingleListingPage> {
                               color: Colors.blue,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.person, size: 18, color: Colors.green),
-                              const SizedBox(width: 6),
-                              Text(
-                                _ownerDisplayName,
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // const SizedBox(height: 8),
+                          // Row(
+                          //   mainAxisSize: MainAxisSize.min,
+                          //   children: [
+                          //     const Icon(Icons.person, size: 18, color: Colors.green),
+                          //     const SizedBox(width: 6),
+                          //     Text(
+                          //       _ownerDisplayName,
+                          //       style: const TextStyle(
+                          //         color: Colors.green,
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w500,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Owner Card Section
+                    if (widget.listing.ownerRole != null || 
+                        widget.listing.ownerFirstName != null || 
+                        widget.listing.ownerCompanyName != null)
+                      _buildOwnerCard(),
                     
                     const SizedBox(height: 32),
                     
@@ -1085,6 +1108,188 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOwnerCard() {
+    final isAgentCompany = widget.listing.ownerRole == 'agent-company';
+    final hasCompanyName = widget.listing.ownerCompanyName != null && 
+                          widget.listing.ownerCompanyName!.isNotEmpty;
+    
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side - Owner information
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // "Listed by agency" or "Listed by agent" heading
+                Text(
+                  isAgentCompany ? 'Listed by agency' : 'Listed by agent',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // Company name (if agent-company) or Agent name
+                if (isAgentCompany && hasCompanyName)
+                  Text(
+                    widget.listing.ownerCompanyName!,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  )
+                else if (widget.listing.ownerFirstName != null || widget.listing.ownerLastName != null)
+                  Text(
+                    _ownerDisplayName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                
+                const SizedBox(height: 8),
+                
+                // Verified Business badge (if agent-company and has companyName)
+                if (isAgentCompany && hasCompanyName)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            size: 12,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Verified Business',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Agent name (if agent-company, show below company)
+                if (isAgentCompany && hasCompanyName && 
+                    (widget.listing.ownerFirstName != null || widget.listing.ownerLastName != null)) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _ownerDisplayName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+                
+                const SizedBox(height: 12),
+                
+                // "See profile" link
+                GestureDetector(
+                  onTap: () {
+                    // TODO: Navigate to profile page
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'See profile',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: Colors.black87,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right side - Profile image
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: _ownerProfileImageUrl != null
+                ? Image.network(
+                    _ownerProfileImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.person,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                  ),
             ),
           ),
         ],
