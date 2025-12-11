@@ -614,62 +614,45 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       ),
                     ),
                     
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     
-                    // Agent Info
-                    // Row(
-                    //   children: [
-                    //     const Icon(Icons.person, color: Colors.green, size: 20),
-                    //     const SizedBox(width: 8),
-                    //     Text(
-                    //       widget.listing.agentName,
-                    //       style: const TextStyle(
-                    //         color: Colors.green,
-                    //         fontSize: 16,
-                    //         fontWeight: FontWeight.w500,
-                    //         decoration: TextDecoration.underline,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    
-                    // const SizedBox(height: 32),
-                    
-                    // Property Details Section
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.search, color: Colors.grey, size: 20),
-                              const SizedBox(width: 8),
-                              Builder(
-                                builder: (context) {
-                                  final l10n = AppLocalizations.of(context);
-                                  return Text(
-                                    l10n?.propertyDetails ?? 'Property Details',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  );
-                                }
-                              ),
-                            ],
+                    // Property Details Section - Table-like design
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header outside the table
+                        Row(
+                          children: [
+                            const Icon(Icons.search, color: Colors.grey, size: 20),
+                            const SizedBox(width: 8),
+                            Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context);
+                                return Text(
+                                  l10n?.propertyDetails ?? 'Property Details',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                );
+                              }
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Property details table with alternating backgrounds
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.blue.withOpacity(0.2)),
                           ),
-                          const SizedBox(height: 16),
-                          
-                          // Dynamic property details
-                          ...(_buildPropertyDetailsList(context)),
-                        ],
-                      ),
+                          child: Column(
+                            children: _buildPropertyDetailsTable(context),
+                          ),
+                        ),
+                      ],
                     ),
                     
                     const SizedBox(height: 32),
@@ -952,13 +935,16 @@ class _SingleListingPageState extends State<SingleListingPage> {
     );
   }
   
-  List<Widget> _buildPropertyDetailsList(BuildContext context) {
+  List<Widget> _buildPropertyDetailsTable(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    List<Widget> details = [];
+    List<Map<String, String>> details = [];
     
     // Size
     if (widget.listing.size != null) {
-      details.add(_buildPropertyDetail(l10n?.sizeLabel(widget.listing.size.toString()) ?? 'Size: ${widget.listing.size} sqm'));
+      details.add({
+        'label': 'Size',
+        'value': l10n?.sizeLabel(widget.listing.size.toString()) ?? '${widget.listing.size} sqm',
+      });
     }
     
     // Bedrooms and Bathrooms
@@ -971,37 +957,58 @@ class _SingleListingPageState extends State<SingleListingPage> {
       roomInfo = l10n?.bathroomsOnly(widget.listing.bathrooms.toString()) ?? '${widget.listing.bathrooms} Bathrooms';
     }
     if (roomInfo.isNotEmpty) {
-      details.add(_buildPropertyDetail(roomInfo));
+      details.add({
+        'label': 'Rooms',
+        'value': roomInfo,
+      });
     }
     
     // Property type
     if (widget.listing.type != null) {
-      details.add(_buildPropertyDetail('${l10n?.typeLabel ?? 'Type:'} ${widget.listing.type!.toUpperCase()}'));
+      details.add({
+        'label': l10n?.typeLabel ?? 'Type',
+        'value': widget.listing.type!.toUpperCase(),
+      });
     }
     
     // Floor
     if (widget.listing.floor != null) {
-      details.add(_buildPropertyDetail('${l10n?.floorLabel ?? 'Floor:'} ${widget.listing.floor}'));
+      details.add({
+        'label': l10n?.floorLabel ?? 'Floor',
+        'value': widget.listing.floor.toString(),
+      });
     }
     
     // Condition
     if (widget.listing.condition != null) {
-      details.add(_buildPropertyDetail('${l10n?.conditionLabel ?? 'Condition:'} ${widget.listing.condition!.toUpperCase()}'));
+      details.add({
+        'label': l10n?.conditionLabel ?? 'Condition',
+        'value': widget.listing.condition!.toUpperCase(),
+      });
     }
     
     // Building age
     if (widget.listing.buildingAge != null) {
-      details.add(_buildPropertyDetail(l10n?.buildingAgeLabel(widget.listing.buildingAge.toString()) ?? 'Building Age: ${widget.listing.buildingAge} years'));
+      details.add({
+        'label': 'Building Age',
+        'value': l10n?.buildingAgeLabel(widget.listing.buildingAge.toString()) ?? '${widget.listing.buildingAge} years',
+      });
     }
     
     // Papers
     if (widget.listing.papers != null) {
-      details.add(_buildPropertyDetail('${l10n?.papersLabel ?? 'Papers:'} ${_formatPapers(widget.listing.papers!)}'));
+      details.add({
+        'label': l10n?.papersLabel ?? 'Papers',
+        'value': _formatPapers(widget.listing.papers!),
+      });
     }
     
     // Furnishing
     if (widget.listing.furnishing != null) {
-      details.add(_buildPropertyDetail('Furnishing: ${_formatFurnishing(widget.listing.furnishing!)}'));
+      details.add({
+        'label': 'Furnishing',
+        'value': _formatFurnishing(widget.listing.furnishing!),
+      });
     }
     
     // Listing type
@@ -1016,41 +1023,74 @@ class _SingleListingPageState extends State<SingleListingPage> {
         paymentFreq = paymentFreq[0].toUpperCase() + paymentFreq.substring(1);
         listingForText += ' ($paymentFreq)';
       }
-      details.add(_buildPropertyDetail('${l10n?.availableForLabel ?? 'Available for:'} $listingForText'));
+      details.add({
+        'label': l10n?.availableForLabel ?? 'Available for',
+        'value': listingForText,
+      });
     }
     
     // Available from
     if (widget.listing.availableFrom != null) {
       final availableDate = DateFormat('MMMM yyyy').format(widget.listing.availableFrom!);
-      details.add(_buildPropertyDetail(l10n?.availableFromLabel(availableDate) ?? 'Available from: $availableDate'));
+      details.add({
+        'label': 'Available from',
+        'value': availableDate,
+      });
     }
     
-    return details;
+    // Build rows with alternating backgrounds
+    return details.asMap().entries.map((entry) {
+      int index = entry.key;
+      Map<String, String> detail = entry.value;
+      bool isEven = index % 2 == 0;
+      bool isFirst = index == 0;
+      bool isLast = index == details.length - 1;
+      
+      return _buildPropertyDetailRow(
+        detail['label']!,
+        detail['value']!,
+        isEven: isEven,
+        isFirst: isFirst,
+        isLast: isLast,
+      );
+    }).toList();
   }
   
-  Widget _buildPropertyDetail(String detail) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+  Widget _buildPropertyDetailRow(String label, String value, {bool isEven = false, bool isFirst = false, bool isLast = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: isEven ? Colors.transparent : Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.only(
+          topLeft: isFirst ? const Radius.circular(12) : Radius.zero,
+          topRight: isFirst ? const Radius.circular(12) : Radius.zero,
+          bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
+          bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
+        ),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 12),
           Expanded(
+            flex: 2,
             child: Text(
-              detail,
+              label,
               style: TextStyle(
                 color: Colors.grey[700],
-                fontSize: 16,
-                height: 1.5,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
