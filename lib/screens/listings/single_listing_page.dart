@@ -1117,8 +1117,19 @@ class _SingleListingPageState extends State<SingleListingPage> {
 
   Widget _buildOwnerCard() {
     final isAgentCompany = widget.listing.ownerRole == 'agent-company';
+    final isAgentIndividual = widget.listing.ownerRole == 'agent-individual';
     final hasCompanyName = widget.listing.ownerCompanyName != null && 
                           widget.listing.ownerCompanyName!.isNotEmpty;
+    
+    // Determine the heading text based on role
+    String headingText;
+    if (isAgentCompany) {
+      headingText = 'Listed by agency';
+    } else if (isAgentIndividual) {
+      headingText = 'Listed by agent';
+    } else {
+      headingText = 'Listed by individual';
+    }
     
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1134,9 +1145,9 @@ class _SingleListingPageState extends State<SingleListingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // "Listed by agency" or "Listed by agent" heading
+                // "Listed by agency", "Listed by agent", or "Listed by individual" heading
                 Text(
-                  isAgentCompany ? 'Listed by agency' : 'Listed by agent',
+                  headingText,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
