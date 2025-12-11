@@ -20,6 +20,7 @@ import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
+import 'services/news_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
@@ -498,9 +499,68 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 }
 
+// Helper function to format relative time
+String _formatRelativeTime(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays > 7) {
+    return '${difference.inDays ~/ 7} week${difference.inDays ~/ 7 > 1 ? 's' : ''} ago';
+  } else if (difference.inDays > 0) {
+    return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+  } else {
+    return 'Just now';
+  }
+}
+
 // Updated HomePage class in main.dart
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<MarketUpdate> _marketUpdates = [];
+  bool _isLoadingNews = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNews();
+  }
+
+  Future<void> _fetchNews() async {
+    try {
+      final newsResponse = await NewsService.getNews();
+      final marketUpdates = newsResponse.data.map((newsItem) {
+        return MarketUpdate(
+          title: newsItem.body,
+          time: _formatRelativeTime(newsItem.createdAt),
+        );
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _marketUpdates = marketUpdates;
+          _isLoadingNews = false;
+        });
+      }
+    } catch (e) {
+      // If news fetch fails, use empty list or show error silently
+      if (mounted) {
+        setState(() {
+          _marketUpdates = [];
+          _isLoadingNews = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -514,31 +574,7 @@ class HomePage extends StatelessWidget {
       'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg1NjkzMjEtaW1hZ2VfMS1renAycXhwOC5wbmc.png',
     ];
 
-    final List<MarketUpdate> marketUpdates = [
-      MarketUpdate(
-        title:
-            'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
-        time: '1 Hour ago',
-      ),
-      MarketUpdate(
-        title:
-            'New report shows rising demand for sustainable housing in urban centers.',
-        time: '3 Hours ago',
-      ),
-      MarketUpdate(
-        title:
-            'Local council approves new zoning laws for mixed-use developments.',
-        time: 'Yesterday',
-      ),
-      MarketUpdate(
-        title:
-            'Property values in the city\'s downtown core see record growth.',
-        time: '2 days ago',
-      ),
-    ];
-
     // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
-
 
     return CustomScrollView(
       slivers: [
@@ -557,7 +593,14 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 24),
               ImageSliderWidget(imageUrls: sliderImages),
               const SizedBox(height: 10),
-              LatestUpdatesWidget(updates: marketUpdates),
+              _isLoadingNews
+                  ? const SizedBox(
+                      height: 100,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _marketUpdates.isEmpty
+                      ? const SizedBox.shrink()
+                      : LatestUpdatesWidget(updates: _marketUpdates),
               const SizedBox(height: 10),
               // Updated to use callback for navigation
               FeaturedListingsWidget(
