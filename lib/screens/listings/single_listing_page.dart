@@ -662,7 +662,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: Colors.blue.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -670,14 +670,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           children: [
                             Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
-                                ),
+                                const Icon(Icons.info_outline, color: Colors.grey, size: 16),
                                 const SizedBox(width: 8),
                                 Builder(
                                   builder: (context) {
@@ -739,7 +732,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: Colors.blue.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
