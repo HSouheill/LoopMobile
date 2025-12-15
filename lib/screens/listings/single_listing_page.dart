@@ -14,6 +14,7 @@ import '../chat/chat_conversation_page.dart';
 import '../../services/agent_service.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import '../agents/single_agent_page.dart';
+import 'listing_media_gallery_page.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -73,6 +74,10 @@ class _SingleListingPageState extends State<SingleListingPage> {
     
     return mediaItems;
   }
+
+  int get _mediaCount => _allImages.length;
+  int get _videoCount => _allImages.where(_isVideoUrl).length;
+  int get _photoCount => _mediaCount - _videoCount;
 
   String get _formattedPrice {
     if (widget.listing.priceValue != null) {
@@ -414,6 +419,20 @@ class _SingleListingPageState extends State<SingleListingPage> {
     }
   }
 
+  void _openGallery(int initialIndex) {
+    if (_allImages.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListingMediaGalleryPage(
+          mediaUrls: _allImages,
+          initialIndex: initialIndex,
+          title: widget.listing.title,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -549,20 +568,46 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         }
                       } else {
                         // Display image
-                        return Image.network(
-                          mediaUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Center(
-                                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                              ),
-                            );
-                          },
+                        return GestureDetector(
+                          onTap: () => _openGallery(index),
+                          child: Image.network(
+                            mediaUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[300],
+                                child: const Center(
+                                  child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       }
                     },
+                  ),
+                  
+                  // Media counter
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _videoCount > 0
+                            ? '$_photoCount photos · $_videoCount video${_videoCount > 1 ? 's' : ''}'
+                            : '$_photoCount photos',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                   
                   // Navigation arrows
