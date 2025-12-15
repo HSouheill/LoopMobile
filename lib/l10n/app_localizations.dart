@@ -419,7 +419,7 @@ abstract class AppLocalizations {
   /// No description provided for @forYouJobs.
   ///
   /// In en, this message translates to:
-  /// **'For You'**
+  /// **'Job Vacancies'**
   String get forYouJobs;
 
   /// No description provided for @recentJobs.

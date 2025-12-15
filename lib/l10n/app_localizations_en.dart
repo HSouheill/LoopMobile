@@ -188,7 +188,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featuredJobs => 'Featured Jobs';
 
   @override
-  String get forYouJobs => 'For You';
+  String get forYouJobs => 'Job Vacancies';
 
   @override
   String get recentJobs => 'Recent Jobs';

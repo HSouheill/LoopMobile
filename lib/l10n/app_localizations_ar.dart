@@ -185,7 +185,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get featuredJobs => 'الوظائف المميزة';
 
   @override
-  String get forYouJobs => 'من أجلك';
+  String get forYouJobs => 'الوظائف الشاغرة';
 
   @override
   String get recentJobs => 'الوظائف الأخيرة';
