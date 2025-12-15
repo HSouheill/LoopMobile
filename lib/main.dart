@@ -26,6 +26,7 @@ import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
 import 'screens/chat/chat.dart';
 import 'screens/add_listing/widgets/add_listing_modal.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -133,7 +134,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale,
       routes: appRoutes(),
-      home: const MainScreen(),
+      home: const SplashScreen(),
     );
   }
 }

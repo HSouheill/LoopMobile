@@ -50,6 +50,7 @@ flutter:
     - assets/support.png
     - assets/BackgroundLogo.png
     - assets/Watermark.png
+    - assets/animation.mp4
   #   - images/a_dot_ham.jpeg
 
 flutter_launcher_icons:
