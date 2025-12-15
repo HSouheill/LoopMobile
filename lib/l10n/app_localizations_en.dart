@@ -215,6 +215,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get seeAll => 'See all';
 
   @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get newestFirst => 'Newest First';
+
+  @override
+  String get oldestFirst => 'Oldest First';
+
+  @override
+  String get priceLowToHigh => 'Price: Low to High';
+
+  @override
+  String get priceHighToLow => 'Price: High to Low';
+
+  @override
   String get previous => 'Previous';
 
   @override

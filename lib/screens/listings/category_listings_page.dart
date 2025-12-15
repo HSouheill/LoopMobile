@@ -20,6 +20,7 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
   String? error;
   List<PropertyListing> listings = [];
   ListingMeta? meta;
+  String selectedSort = 'date_desc'; // Default: newest first
 
   @override
   void initState() {
@@ -42,13 +43,13 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
           page: pageToFetch,
           limit: limit,
           isFeatured: true,
-          sort: 'date_desc',
+          sort: selectedSort,
         );
       } else if (widget.category == ListingCategory.newListings) {
         resp = await ListingService.getAllListings(
           page: pageToFetch,
           limit: limit,
-          sort: 'date_desc',
+          sort: selectedSort,
         );
       } else {
         // types (apartment / chalet / commercial)
@@ -56,7 +57,7 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
           page: pageToFetch,
           limit: limit,
           type: widget.category.apiType,
-          sort: 'date_desc',
+          sort: selectedSort,
         );
       }
 
@@ -86,6 +87,21 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
     await _fetchPage(pageToFetch: 1);
   }
 
+  String _getSortLabel(String sort, AppLocalizations? l10n) {
+    switch (sort) {
+      case 'date_desc':
+        return l10n?.newestFirst ?? 'Newest';
+      case 'date_asc':
+        return l10n?.oldestFirst ?? 'Oldest';
+      case 'price_asc':
+        return 'Price ↑';
+      case 'price_desc':
+        return 'Price ↓';
+      default:
+        return l10n?.newestFirst ?? 'Newest';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -94,7 +110,112 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: isLoading && listings.isEmpty
+      body: Column(
+        children: [
+          // Compact sorting button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                PopupMenuButton<String>(
+                  icon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.sort,
+                        size: 18,
+                        color: Colors.grey[700],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _getSortLabel(selectedSort, l10n),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        size: 18,
+                        color: Colors.grey[700],
+                      ),
+                    ],
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'date_desc',
+                      child: Row(
+                        children: [
+                          if (selectedSort == 'date_desc')
+                            const Icon(Icons.check, size: 18, color: Colors.blue)
+                          else
+                            const SizedBox(width: 18),
+                          const SizedBox(width: 8),
+                          Text(l10n?.newestFirst ?? 'Newest First'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'date_asc',
+                      child: Row(
+                        children: [
+                          if (selectedSort == 'date_asc')
+                            const Icon(Icons.check, size: 18, color: Colors.blue)
+                          else
+                            const SizedBox(width: 18),
+                          const SizedBox(width: 8),
+                          Text(l10n?.oldestFirst ?? 'Oldest First'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'price_asc',
+                      child: Row(
+                        children: [
+                          if (selectedSort == 'price_asc')
+                            const Icon(Icons.check, size: 18, color: Colors.blue)
+                          else
+                            const SizedBox(width: 18),
+                          const SizedBox(width: 8),
+                          Text(l10n?.priceLowToHigh ?? 'Price: Low to High'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'price_desc',
+                      child: Row(
+                        children: [
+                          if (selectedSort == 'price_desc')
+                            const Icon(Icons.check, size: 18, color: Colors.blue)
+                          else
+                            const SizedBox(width: 18),
+                          const SizedBox(width: 8),
+                          Text(l10n?.priceHighToLow ?? 'Price: High to Low'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (String value) {
+                    if (value != selectedSort) {
+                      setState(() {
+                        selectedSort = value;
+                      });
+                      // Reset to page 1 and fetch with new sort
+                      _fetchPage(pageToFetch: 1);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Main content
+          Expanded(
+            child: isLoading && listings.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: _onRefresh,
@@ -153,6 +274,9 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

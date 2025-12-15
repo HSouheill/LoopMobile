@@ -212,6 +212,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get seeAll => 'عرض الكل';
 
   @override
+  String get sortBy => 'ترتيب حسب';
+
+  @override
+  String get newestFirst => 'الأحدث أولاً';
+
+  @override
+  String get oldestFirst => 'الأقدم أولاً';
+
+  @override
+  String get priceLowToHigh => 'السعر: من الأقل إلى الأعلى';
+
+  @override
+  String get priceHighToLow => 'السعر: من الأعلى إلى الأقل';
+
+  @override
   String get previous => 'السابق';
 
   @override

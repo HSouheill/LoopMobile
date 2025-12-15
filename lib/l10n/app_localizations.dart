@@ -470,6 +470,36 @@ abstract class AppLocalizations {
   /// **'See all'**
   String get seeAll;
 
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @newestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest First'**
+  String get newestFirst;
+
+  /// No description provided for @oldestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest First'**
+  String get oldestFirst;
+
+  /// No description provided for @priceLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get priceLowToHigh;
+
+  /// No description provided for @priceHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get priceHighToLow;
+
   /// No description provided for @previous.
   ///
   /// In en, this message translates to:
