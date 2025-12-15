@@ -98,9 +98,38 @@ class AgentService {
     required String agentId,
     int page = 1,
     int limit = 10,
+    String? sort,
+    String? listingFor,
+    String? city,
+    String? type,
+    double? minPrice,
+    double? maxPrice,
+    int? minBedrooms,
+    int? maxBedrooms,
+    int? minBathrooms,
+    int? maxBathrooms,
+    double? minSize,
+    double? maxSize,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/agent-listings/$agentId?page=$page&limit=$limit');
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+        if (sort != null) 'sort': sort,
+        if (listingFor != null) 'listingFor': listingFor,
+        if (city != null) 'city': city,
+        if (type != null) 'type': type,
+        if (minPrice != null) 'minPrice': minPrice.toString(),
+        if (maxPrice != null) 'maxPrice': maxPrice.toString(),
+        if (minBedrooms != null) 'minBedrooms': minBedrooms.toString(),
+        if (maxBedrooms != null) 'maxBedrooms': maxBedrooms.toString(),
+        if (minBathrooms != null) 'minBathrooms': minBathrooms.toString(),
+        if (maxBathrooms != null) 'maxBathrooms': maxBathrooms.toString(),
+        if (minSize != null) 'minSize': minSize.toString(),
+        if (maxSize != null) 'maxSize': maxSize.toString(),
+      };
+      
+      final url = Uri.parse('$baseUrl/agent-listings/$agentId').replace(queryParameters: queryParams);
       final response = await http.get(
         url,
         headers: AuthService.getAuthHeaders(),
