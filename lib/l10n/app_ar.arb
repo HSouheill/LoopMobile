@@ -30,6 +30,7 @@
   "companyServices": "خدمات الشركات",
   "individualServices": "الخدمات الفردية",
   "featuredCompanies": "الشركات المميزة",
+  "topCompanies": "أفضل الشركات",
   "failedToLoadFeaturedServiceProviders": "فشل تحميل مقدمي الخدمات المميزين",
   "errorFetchingFeaturedServiceProviders": "خطأ في جلب مقدمي الخدمات المميزين",
   "failedToLoadTopRatedServiceProviders": "فشل تحميل مقدمي الخدمات الأعلى تقييماً",

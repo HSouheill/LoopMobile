@@ -43,6 +43,7 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             limit: limit,
             isFeatured: true,
             sort: 'featured',
+            agentType: 'individual',
           );
           break;
         case AgentCategory.topRated:
@@ -51,6 +52,7 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             limit: limit,
             minRating: '4.5',
             sort: 'featured',
+            agentType: 'individual',
           );
           break;
         case AgentCategory.forYou:
@@ -59,6 +61,25 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             limit: limit,
             personalized: true,
             sort: 'featured',
+            agentType: 'individual',
+          );
+          break;
+        case AgentCategory.featuredCompanies:
+          resp = await AgentService.getAllAgents(
+            page: pageToFetch,
+            limit: limit,
+            isFeatured: true,
+            sort: 'featured',
+            agentType: 'company',
+          );
+          break;
+        case AgentCategory.topCompanies:
+          resp = await AgentService.getAllAgents(
+            page: pageToFetch,
+            limit: limit,
+            minRating: '4.5',
+            sort: 'featured',
+            agentType: 'company',
           );
           break;
       }
@@ -98,6 +119,10 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
         return l10n?.topRatedAgents ?? 'Top Rated Agents';
       case AgentCategory.forYou:
         return l10n?.recommendedAgentsTitle ?? 'Recommended Agents';
+      case AgentCategory.featuredCompanies:
+        return l10n?.featuredCompanies ?? 'Featured Companies';
+      case AgentCategory.topCompanies:
+        return l10n?.topCompanies ?? 'Top Companies';
     }
   }
 

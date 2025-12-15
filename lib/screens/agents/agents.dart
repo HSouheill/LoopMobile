@@ -28,19 +28,24 @@ class AgentsPage extends StatelessWidget {
           ImageSliderWidget(imageUrls: agentSliderImages),
           const SizedBox(height: 10),
           
-          // Featured agents section with dynamic filtering
+          // Featured companies section
+          const DynamicAgentsWidget(
+            category: AgentCategory.featuredCompanies,
+          ),
+          
+          // Top companies section
+          const DynamicAgentsWidget(
+            category: AgentCategory.topCompanies,
+          ),
+          
+          // Featured agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.featured,
           ),
           
-          // Top rated agents section with dynamic filtering
+          // Top rated agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.topRated,
-          ),
-          
-          // For you agents section with dynamic filtering
-          const DynamicAgentsWidget(
-            category: AgentCategory.forYou,
           ),
 
           const SizedBox(height: 110),

@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'Featured Companies'**
   String get featuredCompanies;
 
+  /// No description provided for @topCompanies.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Companies'**
+  String get topCompanies;
+
   /// No description provided for @failedToLoadFeaturedServiceProviders.
   ///
   /// In en, this message translates to:

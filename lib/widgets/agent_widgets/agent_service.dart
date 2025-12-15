@@ -67,6 +67,7 @@ class AgentService {
     }
   }
 
+
   // Get featured agents
   static Future<List<Agent>> getFeaturedAgents(
       {String sort = 'featured', int? limit}) async {
@@ -102,6 +103,7 @@ class AgentService {
     String? sort = 'featured',
     String? minRating,
     bool? personalized,
+    String? agentType,
   }) async {
     try {
       final queryParams = <String, String>{
@@ -111,6 +113,7 @@ class AgentService {
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (minRating != null) 'minRating': minRating,
         if (personalized != null) 'personalized': personalized.toString(),
+        if (agentType != null) 'agentType': agentType,
       };
 
       final url = Uri.parse('${baseUrl}agents-routes/get-all-agents').replace(queryParameters: queryParams);

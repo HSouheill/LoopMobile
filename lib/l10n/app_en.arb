@@ -30,6 +30,7 @@
   "companyServices": "Company Services",
   "individualServices": "Individual Services",
   "featuredCompanies": "Featured Companies",
+  "topCompanies": "Top Companies",
   "failedToLoadFeaturedServiceProviders": "Failed to load featured service providers",
   "errorFetchingFeaturedServiceProviders": "Error fetching featured service providers",
   "failedToLoadTopRatedServiceProviders": "Failed to load top rated service providers",
