@@ -405,13 +405,19 @@ class _AgentCardState extends State<AgentCard> {
                 ),
               ),
               Positioned(
-                bottom: 8,
-                right: 8,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white.withOpacity(0.8),
-                  radius: 16,
-                  child: Icon(Icons.shortcut,
-                      color: Colors.blue.shade700, size: 20),
+                bottom: 10,
+                right: 10,
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade600,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: const Icon(
+                    Icons.share,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ],
