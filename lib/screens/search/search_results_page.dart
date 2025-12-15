@@ -72,8 +72,14 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     try {
       ListingsResponse response;
       
-      // If we have a category but no query, use getAllListings with type filter
-      if (_currentCategory != null && _currentQuery.isEmpty) {
+      // Use searchListings if we have filters OR a query, otherwise use getAllListings for simple category-only searches
+      // This ensures that when filters are applied (e.g., from advanced filters page), we use searchListings
+      // which properly handles all filter parameters
+      final hasFilters = _currentFilters.isNotEmpty;
+      final hasQuery = _currentQuery.isNotEmpty;
+      
+      if (_currentCategory != null && !hasQuery && !hasFilters) {
+        // Simple category-only search without filters - use getAllListings
         response = await ListingService.getAllListings(
           page: _currentPage,
           limit: 20,
@@ -81,6 +87,8 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
           sort: 'date_desc',
         );
       } else {
+        // Use searchListings when we have filters, query, or both
+        // This ensures all filters are properly applied
         response = await ListingService.searchListings(
           query: _currentQuery,
           category: _currentCategory,
