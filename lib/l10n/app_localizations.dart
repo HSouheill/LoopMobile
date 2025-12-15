@@ -1331,6 +1331,12 @@ abstract class AppLocalizations {
   /// **'Amenities'**
   String get amenitiesLabel;
 
+  /// No description provided for @relatedListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Related Listings'**
+  String get relatedListings;
+
   /// No description provided for @propertyCodeLabel.
   ///
   /// In en, this message translates to:

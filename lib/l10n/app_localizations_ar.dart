@@ -698,6 +698,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get amenitiesLabel => 'وسائل الراحة';
 
   @override
+  String get relatedListings => 'عقارات مشابهة';
+
+  @override
   String get propertyCodeLabel => 'رمز العقار:';
 
   @override

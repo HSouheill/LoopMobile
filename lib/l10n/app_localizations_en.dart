@@ -704,6 +704,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amenitiesLabel => 'Amenities';
 
   @override
+  String get relatedListings => 'Related Listings';
+
+  @override
   String get propertyCodeLabel => 'Property Code:';
 
   @override

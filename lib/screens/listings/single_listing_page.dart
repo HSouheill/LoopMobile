@@ -15,6 +15,7 @@ import '../../services/agent_service.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import '../agents/single_agent_page.dart';
 import 'listing_media_gallery_page.dart';
+import '../../widgets/listing_widgets/featured_listings_widget.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -32,6 +33,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _videoHasError = false;
+  List<PropertyListing> _relatedListings = [];
+  bool _isLoadingRelated = false;
 
   String get _ownerDisplayName {
     if (widget.listing.ownerFirstName != null && widget.listing.ownerLastName != null) {
@@ -394,6 +397,30 @@ class _SingleListingPageState extends State<SingleListingPage> {
     // Initialize video player if the first media item is a video
     if (_allImages.isNotEmpty && _isVideoUrl(_allImages[0])) {
       _initializeVideoPlayer(_allImages[0]);
+    }
+    // Load related listings
+    _loadRelatedListings();
+  }
+
+  Future<void> _loadRelatedListings() async {
+    setState(() {
+      _isLoadingRelated = true;
+    });
+
+    try {
+      final response = await ListingService.getSimilarListings(widget.listing.id);
+      if (mounted) {
+        setState(() {
+          _relatedListings = response.listings;
+          _isLoadingRelated = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingRelated = false;
+        });
+      }
     }
   }
 
@@ -998,6 +1025,77 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       ),
                     
                     const SizedBox(height: 32),
+                    
+                    // Related Listings Section
+                    if (_isLoadingRelated || _relatedListings.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.home_work_outlined, color: Colors.grey, size: 20),
+                                const SizedBox(width: 8),
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context);
+                                    return Text(
+                                      l10n?.relatedListings ?? 'Related Listings',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    );
+                                  }
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            if (_isLoadingRelated)
+                              const SizedBox(
+                                height: 330,
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            else if (_relatedListings.isEmpty)
+                              const SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: Text(
+                                    'No related listings found',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            else
+                              SizedBox(
+                                height: 330,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _relatedListings.length,
+                                  itemBuilder: (context, index) {
+                                    final listing = _relatedListings[index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: PropertyListingCard(listing: listing),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    
+                    if (_isLoadingRelated || _relatedListings.isNotEmpty)
+                      const SizedBox(height: 32),
                     
                     // Property Code and Listed Date
                     Column(

@@ -350,6 +350,23 @@ class ListingService {
       return false;
     }
   }
+
+  // Get similar/related listings
+  static Future<ListingsResponse> getSimilarListings(String listingId) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/get-similar?id=$listingId');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ListingsResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to load similar listings: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching similar listings: $e');
+    }
+  }
 }
 
 // Note: ListingCategory enum with localized support is in lib/screens/listings/listings_category.dart
