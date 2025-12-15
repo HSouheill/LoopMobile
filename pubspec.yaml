@@ -49,6 +49,7 @@ flutter:
     - assets/chatbg.png
     - assets/support.png
     - assets/BackgroundLogo.png
+    - assets/Watermark.png
   #   - images/a_dot_ham.jpeg
 
 flutter_launcher_icons:

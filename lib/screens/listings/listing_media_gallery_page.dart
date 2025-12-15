@@ -185,16 +185,30 @@ class _ListingMediaGalleryPageState extends State<ListingMediaGalleryPage> {
 
               return Center(
                 child: InteractiveViewer(
-                  child: Image.network(
-                    mediaUrl,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.black,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image, color: Colors.white, size: 48),
-                      );
-                    },
+                  child: Stack(
+                    children: [
+                      Image.network(
+                        mediaUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.black,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.broken_image, color: Colors.white, size: 48),
+                          );
+                        },
+                      ),
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: 0.3,
+                          child: Image.asset(
+                            'assets/Watermark.png',
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );

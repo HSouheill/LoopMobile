@@ -570,17 +570,32 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         // Display image
                         return GestureDetector(
                           onTap: () => _openGallery(index),
-                          child: Image.network(
-                            mediaUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[300],
-                                child: const Center(
-                                  child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.network(
+                                mediaUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Center(
+                                      child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                    ),
+                                  );
+                                },
+                              ),
+                              Positioned.fill(
+                                child: Opacity(
+                                  opacity: 0.3,
+                                  child: Image.asset(
+                                    'assets/Watermark.png',
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                  ),
                                 ),
-                              );
-                            },
+                              ),
+                            ],
                           ),
                         );
                       }
