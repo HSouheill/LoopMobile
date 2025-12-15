@@ -184,6 +184,18 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         case 'land':
           typeLabel = l10n?.propertyTypeLand ?? 'Land';
           break;
+        case 'industrial':
+          typeLabel = l10n?.propertyTypeIndustrial ?? 'Industrial';
+          break;
+        case 'room':
+          typeLabel = l10n?.propertyTypeRoom ?? 'Room';
+          break;
+        case 'building':
+          typeLabel = l10n?.propertyTypeBuilding ?? 'Building';
+          break;
+        case 'international':
+          typeLabel = l10n?.propertyTypeInternational ?? 'International';
+          break;
       }
       labels.add(typeLabel);
     }

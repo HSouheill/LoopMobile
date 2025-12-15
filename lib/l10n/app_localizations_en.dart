@@ -2253,6 +2253,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get propertyTypeLand => 'Land';
 
   @override
+  String get propertyTypeIndustrial => 'Industrial';
+
+  @override
+  String get propertyTypeRoom => 'Room';
+
+  @override
+  String get propertyTypeBuilding => 'Building';
+
+  @override
+  String get propertyTypeInternational => 'International';
+
+  @override
   String get rentalPeriodDaily => 'Daily';
 
   @override

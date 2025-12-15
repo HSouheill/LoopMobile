@@ -2233,6 +2233,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get propertyTypeLand => 'أرض';
 
   @override
+  String get propertyTypeIndustrial => 'صناعي';
+
+  @override
+  String get propertyTypeRoom => 'غرفة';
+
+  @override
+  String get propertyTypeBuilding => 'مبنى';
+
+  @override
+  String get propertyTypeInternational => 'دولي';
+
+  @override
   String get rentalPeriodDaily => 'يومي';
 
   @override

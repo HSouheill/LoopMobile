@@ -4043,6 +4043,30 @@ abstract class AppLocalizations {
   /// **'Land'**
   String get propertyTypeLand;
 
+  /// No description provided for @propertyTypeIndustrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Industrial'**
+  String get propertyTypeIndustrial;
+
+  /// No description provided for @propertyTypeRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get propertyTypeRoom;
+
+  /// No description provided for @propertyTypeBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get propertyTypeBuilding;
+
+  /// No description provided for @propertyTypeInternational.
+  ///
+  /// In en, this message translates to:
+  /// **'International'**
+  String get propertyTypeInternational;
+
   /// No description provided for @rentalPeriodDaily.
   ///
   /// In en, this message translates to:

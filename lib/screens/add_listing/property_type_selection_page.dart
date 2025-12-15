@@ -20,6 +20,10 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
     {'value': 'commercial', 'label': 'Commercial'},
     {'value': 'villa', 'label': 'Villa'},
     {'value': 'land', 'label': 'Land'},
+    {'value': 'industrial', 'label': 'Industrial'},
+    {'value': 'room', 'label': 'Room'},
+    {'value': 'building', 'label': 'Building'},
+    {'value': 'international', 'label': 'International'},
   ];
 
   final List<Map<String, String>> rentalPeriods = [
@@ -322,6 +326,14 @@ String _localizePropertyType(BuildContext context, String value) {
       return l10n?.propertyTypeVilla ?? 'Villa';
     case 'land':
       return l10n?.propertyTypeLand ?? 'Land';
+    case 'industrial':
+      return l10n?.propertyTypeIndustrial ?? 'Industrial';
+    case 'room':
+      return l10n?.propertyTypeRoom ?? 'Room';
+    case 'building':
+      return l10n?.propertyTypeBuilding ?? 'Building';
+    case 'international':
+      return l10n?.propertyTypeInternational ?? 'International';
     default:
       return value;
   }

@@ -81,6 +81,10 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'commercial',
     'villa',
     'land',
+    'industrial',
+    'room',
+    'building',
+    'international',
   ];
   
   final List<String> _paymentFrequencyOptions = ['daily', 'monthly', 'yearly'];
@@ -862,6 +866,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
         return Icons.villa;
       case 'land':
         return Icons.landscape;
+      case 'industrial':
+        return Icons.factory;
+      case 'room':
+        return Icons.meeting_room;
+      case 'building':
+        return Icons.business_center;
+      case 'international':
+        return Icons.public;
       default:
         return Icons.home;
     }
@@ -882,6 +894,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
         return l10n?.propertyTypeVilla ?? 'Villa';
       case 'land':
         return l10n?.propertyTypeLand ?? 'Land';
+      case 'industrial':
+        return l10n?.propertyTypeIndustrial ?? 'Industrial';
+      case 'room':
+        return l10n?.propertyTypeRoom ?? 'Room';
+      case 'building':
+        return l10n?.propertyTypeBuilding ?? 'Building';
+      case 'international':
+        return l10n?.propertyTypeInternational ?? 'International';
       default:
         return type;
     }
