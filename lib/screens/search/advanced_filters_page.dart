@@ -246,301 +246,6 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     });
   }
 
-  List<Map<String, dynamic>> _getSelectedFilters(BuildContext context) {
-    final List<Map<String, dynamic>> selectedFilters = [];
-
-    // Listing For
-    if (_selectedListingFor != null && _selectedListingFor != 'rent') {
-      selectedFilters.add({
-        'label': _selectedListingFor == 'sale' ? 'Sale' : _selectedListingFor!,
-        'type': 'listingFor',
-        'onRemove': () {
-          setState(() {
-            _selectedListingFor = 'rent';
-          });
-        },
-      });
-    }
-
-    // Property Type
-    if (_selectedType != null) {
-      selectedFilters.add({
-        'label': _getPropertyTypeLabel(context, _selectedType!),
-        'type': 'type',
-        'onRemove': () {
-          setState(() {
-            _selectedType = null;
-          });
-        },
-      });
-    }
-
-    // Payment Frequency
-    if (_selectedPaymentFrequency != null) {
-      selectedFilters.add({
-        'label': _selectedPaymentFrequency!.substring(0, 1).toUpperCase() + 
-                 _selectedPaymentFrequency!.substring(1),
-        'type': 'paymentFrequency',
-        'onRemove': () {
-          setState(() {
-            _selectedPaymentFrequency = null;
-          });
-        },
-      });
-    }
-
-    // City
-    if (_selectedCity != null && _selectedCity!.isNotEmpty) {
-      selectedFilters.add({
-        'label': _selectedCity!,
-        'type': 'city',
-        'onRemove': () {
-          setState(() {
-            _selectedCity = null;
-          });
-        },
-      });
-    }
-
-    // Ownership
-    if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
-      String ownershipLabel = _selectedOwnership!;
-      if (_selectedOwnership == 'user') ownershipLabel = 'Owner';
-      else if (_selectedOwnership == 'agent-individual') ownershipLabel = 'Agent';
-      else if (_selectedOwnership == 'agent-company') ownershipLabel = 'Company';
-      
-      selectedFilters.add({
-        'label': ownershipLabel,
-        'type': 'ownership',
-        'onRemove': () {
-          setState(() {
-            _selectedOwnership = null;
-          });
-        },
-      });
-    }
-
-    // Price Range
-    if (_minPrice != null || _maxPrice != null) {
-      String priceLabel = '';
-      if (_minPrice != null && _maxPrice != null) {
-        priceLabel = '${_minPrice!.toStringAsFixed(0)} - ${_maxPrice!.toStringAsFixed(0)}';
-      } else if (_minPrice != null) {
-        priceLabel = 'Min: ${_minPrice!.toStringAsFixed(0)}';
-      } else if (_maxPrice != null) {
-        priceLabel = 'Max: ${_maxPrice!.toStringAsFixed(0)}';
-      }
-      
-      selectedFilters.add({
-        'label': priceLabel,
-        'type': 'price',
-        'onRemove': () {
-          setState(() {
-            _minPrice = null;
-            _maxPrice = null;
-          });
-        },
-      });
-    }
-
-    // Bedrooms
-    if (_bedrooms != null) {
-      selectedFilters.add({
-        'label': '$_bedrooms Bedroom${_bedrooms! > 1 ? 's' : ''}',
-        'type': 'bedrooms',
-        'onRemove': () {
-          setState(() {
-            _bedrooms = null;
-          });
-        },
-      });
-    }
-
-    // Bathrooms
-    if (_bathrooms != null) {
-      selectedFilters.add({
-        'label': '$_bathrooms Bathroom${_bathrooms! > 1 ? 's' : ''}',
-        'type': 'bathrooms',
-        'onRemove': () {
-          setState(() {
-            _bathrooms = null;
-          });
-        },
-      });
-    }
-
-    // Size Range
-    if (_minSize != null || _maxSize != null) {
-      String sizeLabel = '';
-      if (_minSize != null && _maxSize != null) {
-        sizeLabel = '${_minSize!.toStringAsFixed(0)} - ${_maxSize!.toStringAsFixed(0)} m²';
-      } else if (_minSize != null) {
-        sizeLabel = 'Min: ${_minSize!.toStringAsFixed(0)} m²';
-      } else if (_maxSize != null) {
-        sizeLabel = 'Max: ${_maxSize!.toStringAsFixed(0)} m²';
-      }
-      
-      selectedFilters.add({
-        'label': sizeLabel,
-        'type': 'size',
-        'onRemove': () {
-          setState(() {
-            _minSize = null;
-            _maxSize = null;
-          });
-        },
-      });
-    }
-
-    // Floor
-    if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
-      selectedFilters.add({
-        'label': 'Floor: $_selectedFloor',
-        'type': 'floor',
-        'onRemove': () {
-          setState(() {
-            _selectedFloor = null;
-          });
-        },
-      });
-    }
-
-    // Condition
-    if (_selectedCondition != null) {
-      selectedFilters.add({
-        'label': _formatConditionLabel(_selectedCondition!),
-        'type': 'condition',
-        'onRemove': () {
-          setState(() {
-            _selectedCondition = null;
-          });
-        },
-      });
-    }
-
-    // Furnishing
-    if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
-      selectedFilters.add({
-        'label': _formatFurnishingLabel(_selectedFurnishing!),
-        'type': 'furnishing',
-        'onRemove': () {
-          setState(() {
-            _selectedFurnishing = null;
-          });
-        },
-      });
-    }
-
-    // Amenities
-    amenities.forEach((key, value) {
-      if (value == true) {
-        selectedFilters.add({
-          'label': _getAmenityLabel(key),
-          'type': 'amenity',
-          'key': key,
-          'onRemove': () {
-            setState(() {
-              amenities[key] = false;
-            });
-          },
-        });
-      }
-    });
-
-    // Sort
-    if (_selectedSort != null) {
-      String sortLabel = '';
-      switch (_selectedSort) {
-        case 'score':
-          sortLabel = 'Relevance';
-          break;
-        case 'date_desc':
-          sortLabel = 'Newest First';
-          break;
-        case 'date_asc':
-          sortLabel = 'Oldest First';
-          break;
-        case 'price_asc':
-          sortLabel = 'Price: Low to High';
-          break;
-        case 'price_desc':
-          sortLabel = 'Price: High to Low';
-          break;
-        default:
-          sortLabel = _selectedSort!;
-      }
-      
-      selectedFilters.add({
-        'label': sortLabel,
-        'type': 'sort',
-        'onRemove': () {
-          setState(() {
-            _selectedSort = null;
-          });
-        },
-      });
-    }
-
-    return selectedFilters;
-  }
-
-  Widget _buildSelectedFiltersChips() {
-    final selectedFilters = _getSelectedFilters(context);
-    
-    if (selectedFilters.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
-      ),
-      child: Wrap(
-        spacing: 8.0,
-        runSpacing: 8.0,
-        children: selectedFilters.map((filter) {
-          return GestureDetector(
-            onTap: filter['onRemove'],
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-              decoration: BoxDecoration(
-                color: const Color(0xFF3B82F6).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20.0),
-                border: Border.all(
-                  color: const Color(0xFF3B82F6).withOpacity(0.3),
-                  width: 1.0,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    filter['label'],
-                    style: const TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFF3B82F6),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(width: 6.0),
-                  Icon(
-                    Icons.close,
-                    size: 16.0,
-                    color: const Color(0xFF3B82F6),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -558,29 +263,23 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            // Selected Filters Chips
-            _buildSelectedFiltersChips(),
-            // Main Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Search Query
-                    // TextFormField(
-                    //   controller: _searchController,
-                    //   decoration: const InputDecoration(
-                    //     labelText: 'Search',
-                    //     hintText: 'Enter search terms...',
-                    //     border: OutlineInputBorder(),
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 24.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Search Query
+              // TextFormField(
+              //   controller: _searchController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Search',
+              //     hintText: 'Enter search terms...',
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
+              // const SizedBox(height: 24.0),
 
-                    // Listing For
+              // Listing For
               _buildSectionTitle('Listing For'),
               Row(
                 children: [
@@ -1058,11 +757,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 ],
               ),
               const SizedBox(height: 32.0),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
