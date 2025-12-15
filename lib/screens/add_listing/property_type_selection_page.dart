@@ -33,6 +33,21 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final String? preselectedType = args?['preselectedType'];
+      // Only pre-select if it's a valid property type (not 'property' which is just a generic term)
+      if (preselectedType != null && preselectedType != 'property' && mounted) {
+        setState(() {
+          selectedPropertyType = preselectedType;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String listingType = args?['listingType'] ?? 'owner';
