@@ -262,23 +262,46 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
     if (reviews.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.2),
+            width: 1,
+          ),
+        ),
         child: Center(
           child: Column(
             children: [
-              const Icon(
-                Icons.reviews_outlined,
-                size: 48,
-                color: Colors.grey,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 103, 155, 218),
+                      Color.fromARGB(255, 69, 100, 201),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.reviews_outlined,
+                  size: 32,
+                  color: Colors.white,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Builder(
                 builder: (context) {
                   return Text(
                     AppLocalizations.of(context)?.noReviewsYet ?? 'No reviews yet',
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.grey,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
                     ),
                   );
                 }
@@ -301,19 +324,40 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(152, 255, 255, 255),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(
+          color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Profile image
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.blue, width: 1),
+              border: Border.all(
+                color: const Color.fromARGB(255, 69, 100, 201),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: ClipOval(
               child: review.userProfileImage.isNotEmpty
@@ -323,13 +367,15 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       errorBuilder: (context, error, stackTrace) {
                       return const Icon(
                         Icons.person,
-                        color: Colors.blue,
+                        color: Color.fromARGB(255, 69, 100, 201),
+                        size: 24,
                       );
                       },
                     )
                   : const Icon(
                       Icons.person,
-                      color: Colors.blue,
+                      color: Color.fromARGB(255, 69, 100, 201),
+                      size: 24,
                     ),
             ),
           ),
@@ -412,128 +458,63 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
       );
     }
 
+    // Split location into district and governance if it has a comma
+    String district = '';
+    String governance = '';
+    if (user!.location != null && user!.location!.contains(',')) {
+      final parts = user!.location!.split(',');
+      district = parts[0].trim();
+      governance = parts[1].trim();
+    } else if (user!.location != null) {
+      district = user!.location!;
+    }
+
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: AppBar(
-          title: Container(
-            padding: const EdgeInsets.only(top: 15, left: 50),
-            child: Text(
-              AppLocalizations.of(context)?.agentDashboard ?? "Agent Dashboard",
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          centerTitle: false,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFF64B5F6), // blue.shade300
-                  Color(0xFF42A5F5), // blue.shade400
-                  Color(0xFF2196F3), // blue.shade500
-                  Color(0xFF1976D2), // blue.shade700
-                ],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-              ),
-            ),
-          ),
-          leading: Container(
-            margin: const EdgeInsets.only(top: 15),
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.blue, width: 1),
-                  borderRadius: BorderRadius.circular(50.0),
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.arrow_back_rounded,
-                    color: Colors.blue,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(top: 15, right: 16),
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.blue, width: 1),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/favorites');
-                    },
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)?.favorites ?? 'Favorites',
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.star,
-                          color: Color(0xFFFFBA00),
-                          size: 16,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-          titleSpacing: 0,
-        ),
-      ),
-      // To allow scrolling for more listings, wrap the Column in a SingleChildScrollView
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: SingleChildScrollView(
-          child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
+            Column(
+              children: [
+                // AppBar background
+                SizedBox(
+                  height: 130,
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image:
+                            AssetImage("assets/serverProviderBackground.png"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 50), // space for avatar
+
+                // User info + button
+                userInfoAndEditButton(district, governance, context),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
               Text(
                 AppLocalizations.of(context)?.stats ?? "Stats",
                 style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
                   color: Color(0xFF1E1E1E),
+                  letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -548,7 +529,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 32),
 
               Center(
                 child: DynamicGradientButton(
@@ -561,12 +542,12 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                     );
                   },
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   textSize: 16,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 28),
 
               // NEW ROW: Inactive Listings title + See all button
               SizedBox(
@@ -580,6 +561,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
@@ -596,8 +578,8 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             AppLocalizations.of(context)?.seeAll ?? "See all",
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF1E1E1E),
-                              fontWeight: FontWeight.w300,
+                              color: Color.fromARGB(255, 69, 100, 201),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -619,9 +601,23 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: Text(
-                      AppLocalizations.of(context)?.noInactiveListings ?? 'No inactive listings',
-                      style: TextStyle(color: Colors.grey),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)?.noInactiveListings ?? 'No inactive listings',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 )
@@ -673,26 +669,48 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Left Column
-                  Row(
-                    children: [
-                      Text(
-                        "${agentInfo?['listingsLeft'] ?? 0}", // Use backend value for listings left
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue,
-                        ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 103, 155, 218),
+                          Color.fromARGB(255, 69, 100, 201),
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        AppLocalizations.of(context)?.listingsLeft ?? "Listings Left",
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.blue,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "${agentInfo?['listingsLeft'] ?? 0}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          AppLocalizations.of(context)?.listingsLeft ?? "Listings Left",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 20),
 
@@ -701,14 +719,17 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                     onTap: () {
                       // action for "Upgrade Plan"
                     },
-                    child: Text(
-                      AppLocalizations.of(context)?.upgradePlan ?? "Upgrade Plan",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFEA4435),
-                        decoration: TextDecoration.underline,
-                        decorationColor: Color(0xFFEA4435),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Text(
+                        AppLocalizations.of(context)?.upgradePlan ?? "Upgrade Plan",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFEA4435),
+                          decoration: TextDecoration.underline,
+                          decorationColor: Color(0xFFEA4435),
+                        ),
                       ),
                     ),
                   ),
@@ -729,6 +750,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
@@ -745,8 +767,8 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             AppLocalizations.of(context)?.seeAll ?? "See all",
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF1E1E1E),
-                              fontWeight: FontWeight.w300,
+                              color: Color.fromARGB(255, 69, 100, 201),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -767,9 +789,23 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
-                    child: Text(
-                      AppLocalizations.of(context)?.noActiveListings ?? 'No active listings',
-                      style: TextStyle(color: Colors.grey),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)?.noActiveListings ?? 'No active listings',
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 )
@@ -834,6 +870,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF1E1E1E),
+                          letterSpacing: 0.3,
                         ),
                       ),
                     ),
@@ -849,8 +886,8 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             AppLocalizations.of(context)?.seeAll ?? "See all",
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Color(0xFF1E1E1E),
-                              fontWeight: FontWeight.w300,
+                              color: Color.fromARGB(255, 69, 100, 201),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -862,16 +899,20 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
               const SizedBox(height: 20),
 
-              _buildReviewsSection(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _buildReviewsSection(),
+              ),
 
               const SizedBox(height: 20),
 
               Text(
                 AppLocalizations.of(context)?.plansAndSubscription ?? "Plans & Subscription",
                 style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
                   color: Color(0xFF1E1E1E),
+                  letterSpacing: 0.5,
                 ),
               ),
 
@@ -891,44 +932,47 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 4), // spacing between the two rows
+                      const SizedBox(height: 6),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(
-                                1), // space between border and icon
+                            padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0XFF1E1E1E), // border color
-                                width: 1, // border thickness
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 103, 155, 218),
+                                  Color.fromARGB(255, 69, 100, 201),
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
                               ),
                             ),
                             child: const Icon(
                               Icons.priority_high,
                               size: 10,
-                              color: Color(0xFF1E1E1E),
+                              color: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Text(
                             _calculateDaysLeft(agentInfo?['user']?['planExpiresAt']),
                             style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Color.fromARGB(255, 69, 100, 201),
                             ),
                           ),
-                          const SizedBox(width: 2),
+                          const SizedBox(width: 4),
                           Text(
                             AppLocalizations.of(context)?.daysLeft ?? "days left",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue,
+                              color: Color.fromARGB(255, 69, 100, 201),
                             ),
                           ),
                         ],
@@ -942,12 +986,33 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.blue,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color.fromARGB(255, 103, 155, 218),
+                              Color.fromARGB(255, 69, 100, 201),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          agentInfo?['subscribedPlan']?['name'] ?? 'No Plan',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -973,41 +1038,237 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 ],
               ),
 
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    AppLocalizations.of(context)?.links ?? "Links",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                    ),
-                  ),
+              Text(
+                AppLocalizations.of(context)?.links ?? "Links",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: Color(0xFF1E1E1E),
+                  letterSpacing: 0.3,
                 ),
               ),
 
-              Column(
-                children: [
-                  AddSocialAccountWidget(
-                    onRefresh: _refreshData,
-                  ),
-                  const SizedBox(height: 10),
-                  // Display existing social links
-                  if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
-                    SocialLinksDisplayWidget(
-                      socialLinks: agentInfo!['user']['socialLinks'],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    AddSocialAccountWidget(
                       onRefresh: _refreshData,
                     ),
-                ],
+                    const SizedBox(height: 10),
+                    // Display existing social links
+                    if (agentInfo != null && agentInfo!['user'] != null && agentInfo!['user']['socialLinks'] != null)
+                      SocialLinksDisplayWidget(
+                        socialLinks: agentInfo!['user']['socialLinks'],
+                        onRefresh: _refreshData,
+                      ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 40),
               // ---------------------------------
-            ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            Positioned(
+              top: 30,
+              left: 16,
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.blue,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.blue,
+                      size: 16,
+                    ),
+                    onPressed: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // Favorites button
+            Positioned(
+              top: 30,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/favorites');
+                  },
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.favorites ?? 'Favorites',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.star,
+                        color: Color(0xFFFFBA00),
+                        size: 14,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Profile avatar overlapping AppBar
+            Positioned(
+              top: 75,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
+                child: ClipOval(
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: user!.profileImage != null &&
+                            user!.profileImage!.isNotEmpty
+                        ? Image.network(
+                            '${Environment.apiUrl}assets/${user!.profileImage!}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/defaultProfileImage.png',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            'assets/defaultProfileImage.png',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        ),
+      ),
+    );
+  }
+
+  Padding userInfoAndEditButton(
+      String district, String governance, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center, // vertical alignment
+        children: [
+          // Left column: user info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // fit to content height
+              children: [
+                // First row: Hi, firstname lastname
+                Text(
+                  'Hi, ${user!.fullName}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // Second row: district + governance
+                if (district.isNotEmpty)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.business,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        governance.isNotEmpty
+                            ? '$district, $governance'
+                            : district,
+                        style: const TextStyle(
+                            fontSize: 10, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+
+                // Third row: city
+                if (user!.city != null && user!.city!.isNotEmpty)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 12,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        user!.city!,
+                        style: const TextStyle(
+                            fontSize: 10, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
-        ),
-        ),
+
+          // Right: Edit Profile button
+          Center(
+            child: DynamicGradientButton(
+              buttonText: AppLocalizations.of(context)?.editProfile ?? 'Edit Profile',
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 17, vertical: 5.5), // optional
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1028,81 +1289,116 @@ class AgentPlanSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.88;
+    final cardHeight = 140.0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-      width: screenWidth * 0.76,
-      height: 115,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      width: cardWidth,
+      height: cardHeight,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Image.asset(
-                "assets/serverProviderBackground.png",
-                fit: BoxFit.cover,
+            // Background image on the left with curved edge clipping
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: cardWidth * 0.38,
+              child: ClipPath(
+                clipper: ImageCurvedClipper(),
+                child: Image.asset(
+                  "assets/serverProviderBackground.png",
+                  fit: BoxFit.cover,
+                  width: cardWidth * 0.38,
+                  height: cardHeight,
+                ),
               ),
             ),
-            Positioned.fill(
+            // Wavy green line separator - moved to align with the curve
+            Positioned(
+              left: cardWidth * 0.38 - 2, // Slight overlap for smooth transition
+              top: 0,
+              bottom: 0,
+              width: 6,
+              child: CustomPaint(
+                painter: WavyLinePainter(),
+                child: Container(),
+              ),
+            ),
+            // Blue gradient overlay on the right
+            Positioned(
+              left: cardWidth * 0.38,
+              top: 0,
+              right: 0,
+              bottom: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [
-                      Colors.black.withOpacity(0.4),
-                      Colors.transparent,
+                      Color.fromARGB(255, 103, 155, 218),
+                      Color.fromARGB(255, 69, 100, 201),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 55, top: 15, right: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    planTitle,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    width: screenWidth * 0.76 * 0.5,
-                    child: Text(
-                      planDescription,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 15, right: 10, bottom: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        planTitle,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: stats
-                        .map(
-                          (stat) => _PlanStatRowItem(
-                            icon: stat.icon,
-                            value: stat.value,
-                            label: stat.label,
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: cardWidth * 0.5,
+                        child: Text(
+                          planDescription,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
                           ),
-                        )
-                        .toList(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: stats
+                            .map(
+                              (stat) => _PlanStatRowItem(
+                                icon: stat.icon,
+                                value: stat.value,
+                                label: stat.label,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
@@ -1110,6 +1406,83 @@ class AgentPlanSection extends StatelessWidget {
       ),
     );
   }
+}
+
+// Custom clipper for curved edge on the right side of the image
+class ImageCurvedClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    
+    // Start from top-left
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    
+    // Create a more organic, flowing wave pattern
+    // These control points create the specific curve from your image
+    final waveAmplitude = size.height * 0.15;
+    
+    // First wave (top curve)
+    path.cubicTo(
+      size.width + waveAmplitude, size.height * 0.15,
+      size.width + waveAmplitude * 0.8, size.height * 0.35,
+      size.width, size.height * 0.5,
+    );
+    
+    // Second wave (middle dip)
+    path.cubicTo(
+      size.width - waveAmplitude * 0.6, size.height * 0.65,
+      size.width - waveAmplitude * 0.4, size.height * 0.8,
+      size.width, size.height,
+    );
+    
+    // Complete the path
+    path.lineTo(0, size.height);
+    path.close();
+    
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+// Custom painter for wavy green line
+class WavyLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF4CAF50) // Green color from the image
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    
+    final path = Path();
+    
+    // Create a wavy line that follows the same curve pattern
+    final waveHeight = size.height * 0.12;
+    final waveCount = 2;
+    final segmentHeight = size.height / waveCount;
+    
+    path.moveTo(size.width / 2, 0);
+    
+    for (int i = 0; i < waveCount; i++) {
+      final startY = i * segmentHeight;
+      final endY = startY + segmentHeight;
+      
+      // Create a smooth wavy curve
+      path.cubicTo(
+        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.25,
+        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.75,
+        size.width / 2, endY,
+      );
+    }
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// Data model for each stat
@@ -1136,6 +1509,7 @@ class _PlanStatRowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: Colors.white, size: 14),
         const SizedBox(width: 4),
@@ -1255,8 +1629,8 @@ Widget buildPaymentRow({
               dateTop,
               style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 2),
@@ -1265,7 +1639,7 @@ Widget buildPaymentRow({
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Colors.black54,
               ),
             ),
           ],
@@ -1279,8 +1653,8 @@ Widget buildPaymentRow({
               "\$",
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E1E),
+                fontWeight: FontWeight.w700,
+                color: Color.fromARGB(255, 69, 100, 201),
               ),
             ),
             Text(
@@ -1288,7 +1662,7 @@ Widget buildPaymentRow({
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1E1E1E),
+                color: Color.fromARGB(255, 69, 100, 201),
               ),
             ),
           ],
@@ -1312,15 +1686,16 @@ Widget billingHistorySection(BuildContext context) {
           children: [
             SizedBox(
               width: screenWidth * 0.27,
-              height: 1,
-              child: const DecoratedBox(
+              height: 2,
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0x00666666),
-                      Color(0xFF666666),
+                      Colors.transparent,
+                      const Color.fromARGB(255, 69, 100, 201),
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(1),
                 ),
               ),
             ),
@@ -1329,21 +1704,24 @@ Widget billingHistorySection(BuildContext context) {
               "Billing History",
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E1E1E),
+                letterSpacing: 0.3,
               ),
             ),
             const SizedBox(width: 8),
             SizedBox(
               width: screenWidth * 0.27,
-              height: 1,
-              child: const DecoratedBox(
+              height: 2,
+              child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF666666),
-                      Color(0x00666666),
+                      const Color.fromARGB(255, 69, 100, 201),
+                      Colors.transparent,
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(1),
                 ),
               ),
             ),
@@ -1358,21 +1736,21 @@ Widget billingHistorySection(BuildContext context) {
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text(
               "Date",
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E1E),
+                fontWeight: FontWeight.w700,
+                color: const Color.fromARGB(255, 69, 100, 201),
               ),
             ),
             Text(
               "Total Paid",
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF1E1E1E),
+                fontWeight: FontWeight.w700,
+                color: const Color.fromARGB(255, 69, 100, 201),
               ),
             ),
           ],

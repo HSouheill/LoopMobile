@@ -115,9 +115,9 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 6),
                                 useGradient: false,
-                                backgroundColor: const Color(0xFFF9FBFF),
+                                backgroundColor: Colors.white,
                                 borderColor: const Color(0xFFEA4435),
-                                borderWidth: 1.0,
+                                borderWidth: 1.5,
                                 textColor: const Color(0xFFEA4435),
                               ),
                             ),
@@ -131,6 +131,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                 onTap: () {},
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8),
+                                useGradient: true,
                               ),
                             ),
                           ),
@@ -149,10 +150,10 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
-                                    backgroundColor: const Color(0xFFF9FBFF),
-                                    borderColor: const Color(0xFF0048FF),
-                                    borderWidth: 1.0,
-                                    textColor: const Color(0xFF1E1E1E),
+                                    backgroundColor: Colors.white,
+                                    borderColor: const Color.fromARGB(255, 69, 100, 201),
+                                    borderWidth: 1.5,
+                                    textColor: const Color.fromARGB(255, 69, 100, 201),
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -164,9 +165,9 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 6),
                                     useGradient: false,
-                                    backgroundColor: const Color(0xFFF9FBFF),
+                                    backgroundColor: Colors.white,
                                     borderColor: const Color(0xFFEA4435),
-                                    borderWidth: 1.0,
+                                    borderWidth: 1.5,
                                     textColor: const Color(0xFFEA4435),
                                   ),
                                 ),
@@ -189,6 +190,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                     },
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
+                                    useGradient: true,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -199,6 +201,7 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                                     onTap: widget.onEdit,
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
+                                    useGradient: true,
                                   ),
                                 ),
                               ],

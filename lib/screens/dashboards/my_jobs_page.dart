@@ -134,7 +134,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: const Color(0xFF0048FF),
+        backgroundColor: const Color.fromARGB(255, 69, 100, 201),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -147,7 +147,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
-                color: Color(0xFF0048FF),
+                color: Color.fromARGB(255, 69, 100, 201),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -282,7 +282,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
             ),
           );
         },
-        backgroundColor: const Color(0xFF0048FF),
+        backgroundColor: const Color.fromARGB(255, 69, 100, 201),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -399,13 +399,13 @@ class _MyJobsPageState extends State<MyJobsPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF0048FF).withOpacity(0.1),
+                color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
                 'Experience: ${job.experienceRange['min'] ?? 0}-${job.experienceRange['max'] ?? 1} years',
                 style: const TextStyle(
-                  color: Color(0xFF0048FF),
+                  color: Color.fromARGB(255, 69, 100, 201),
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -482,7 +482,7 @@ class _MyJobsPageState extends State<MyJobsPage> {
                       },
                       icon: const Icon(
                         Icons.edit,
-                        color: Color(0xFF0048FF),
+                        color: Color.fromARGB(255, 69, 100, 201),
                         size: 20,
                       ),
                     ),

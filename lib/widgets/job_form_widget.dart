@@ -230,7 +230,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.existingJob != null ? 'Edit Job' : 'Create New Job'),
-        backgroundColor: const Color(0xFF0048FF),
+        backgroundColor: const Color.fromARGB(255, 69, 100, 201),
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -404,7 +404,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                     _isFeatured = value ?? false;
                   });
                 },
-                activeColor: const Color(0xFF0048FF),
+                activeColor: const Color.fromARGB(255, 69, 100, 201),
               ),
               const SizedBox(height: 24),
 
@@ -414,7 +414,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitForm,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0048FF),
+                    backgroundColor: const Color.fromARGB(255, 69, 100, 201),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -483,7 +483,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF0048FF)),
+              borderSide: const BorderSide(color: Color.fromARGB(255, 69, 100, 201)),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -533,7 +533,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF0048FF)),
+              borderSide: const BorderSide(color: Color.fromARGB(255, 69, 100, 201)),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -587,7 +587,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF0048FF)),
+              borderSide: const BorderSide(color: Color.fromARGB(255, 69, 100, 201)),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -639,7 +639,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                   icon: const Icon(Icons.photo_library),
                   label: const Text('Change Image'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0048FF),
+                    backgroundColor: const Color.fromARGB(255, 69, 100, 201),
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -696,7 +696,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                       icon: const Icon(Icons.photo_library),
                       label: const Text('Gallery'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0048FF),
+                        backgroundColor: const Color.fromARGB(255, 69, 100, 201),
                         foregroundColor: Colors.white,
                       ),
                     ),
@@ -706,7 +706,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                       icon: const Icon(Icons.camera_alt),
                       label: const Text('Camera'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0048FF),
+                        backgroundColor: const Color.fromARGB(255, 69, 100, 201),
                         foregroundColor: Colors.white,
                       ),
                     ),

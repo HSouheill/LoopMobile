@@ -183,7 +183,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         title: const Text('Applications'),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color(0xFF0048FF),
+        foregroundColor: const Color.fromARGB(255, 69, 100, 201),
       ),
       body: RefreshIndicator(
         onRefresh: () => _loadApplications(),
@@ -239,7 +239,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         });
         _loadApplications(resetPage: true);
       },
-      selectedColor: const Color(0xFF0048FF),
+      selectedColor: const Color.fromARGB(255, 69, 100, 201),
       checkmarkColor: Colors.white,
     );
   }
@@ -288,7 +288,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF0048FF),
+                color: Color.fromARGB(255, 69, 100, 201),
               ),
             ),
             const SizedBox(height: 8),
@@ -407,7 +407,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: hasPortfolio 
-                ? const Color(0xFF0048FF)
+                ? const Color.fromARGB(255, 69, 100, 201)
                 : Colors.grey.withOpacity(0.3),
             ),
           ),

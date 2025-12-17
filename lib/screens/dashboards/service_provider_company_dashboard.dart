@@ -454,69 +454,110 @@ class UserPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.88;
+    final cardHeight = 140.0;
+
     return Column(
       children: [
+        // Active Plan Card with wavy curve design
         Container(
-          margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 6),
-          width: 250,
-          height: 100,
+          margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          width: cardWidth,
+          height: cardHeight,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    "assets/serverProviderBackground.png",
-                    fit: BoxFit.cover,
+                // Background image on the left with curved edge clipping
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: cardWidth * 0.38,
+                  child: ClipPath(
+                    clipper: ImageCurvedClipper(),
+                    child: Image.asset(
+                      "assets/serverProviderBackground.png",
+                      fit: BoxFit.cover,
+                      width: cardWidth * 0.38,
+                      height: cardHeight,
+                    ),
                   ),
                 ),
-                Positioned.fill(
+                // Wavy green line separator
+                Positioned(
+                  left: cardWidth * 0.38 - 2,
+                  top: 0,
+                  bottom: 0,
+                  width: 6,
+                  child: CustomPaint(
+                    painter: WavyLinePainter(),
+                    child: Container(),
+                  ),
+                ),
+                // Blue gradient overlay on the right
+                Positioned(
+                  left: cardWidth * 0.38,
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
-                          Colors.black.withOpacity(0.4),
-                          Colors.transparent,
+                          Color.fromARGB(255, 103, 155, 218),
+                          Color.fromARGB(255, 69, 100, 201),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 75, top: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 15, right: 10, bottom: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            agentInfo?['subscribedPlan']?['name'] ?? AppLocalizations.of(context)?.noPlan ?? 'No Plan',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            AppLocalizations.of(context)?.validUntil(_formatDate(agentInfo?['user']?['planExpiresAt'])) ?? 'Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        agentInfo?['subscribedPlan']?['name'] ?? AppLocalizations.of(context)?.noPlan ?? 'No Plan',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        AppLocalizations.of(context)?.validUntil(_formatDate(agentInfo?['user']?['planExpiresAt'])) ?? 'Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -544,6 +585,82 @@ class UserPlanSection extends StatelessWidget {
       ],
     );
   }
+}
+
+// Custom clipper for curved edge on the right side of the image
+class ImageCurvedClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    
+    // Start from top-left
+    path.moveTo(0, 0);
+    path.lineTo(size.width, 0);
+    
+    // Create a more organic, flowing wave pattern
+    final waveAmplitude = size.height * 0.15;
+    
+    // First wave (top curve)
+    path.cubicTo(
+      size.width + waveAmplitude, size.height * 0.15,
+      size.width + waveAmplitude * 0.8, size.height * 0.35,
+      size.width, size.height * 0.5,
+    );
+    
+    // Second wave (middle dip)
+    path.cubicTo(
+      size.width - waveAmplitude * 0.6, size.height * 0.65,
+      size.width - waveAmplitude * 0.4, size.height * 0.8,
+      size.width, size.height,
+    );
+    
+    // Complete the path
+    path.lineTo(0, size.height);
+    path.close();
+    
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+}
+
+// Custom painter for wavy green line
+class WavyLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF4CAF50) // Green color
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    
+    final path = Path();
+    
+    // Create a wavy line that follows the same curve pattern
+    final waveHeight = size.height * 0.12;
+    final waveCount = 2;
+    final segmentHeight = size.height / waveCount;
+    
+    path.moveTo(size.width / 2, 0);
+    
+    for (int i = 0; i < waveCount; i++) {
+      final startY = i * segmentHeight;
+      final endY = startY + segmentHeight;
+      
+      // Create a smooth wavy curve
+      path.cubicTo(
+        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.25,
+        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.75,
+        size.width / 2, endY,
+      );
+    }
+    
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// ✅ PDF Uploaded Section (matches individual dashboard)
@@ -945,7 +1062,7 @@ Widget listNewJobsSection(
                 child: Text(
                   AppLocalizations.of(context)?.seeAll ?? "See All",
                   style: const TextStyle(
-                    color: Colors.blue,
+                    color: Color.fromARGB(255, 69, 100, 201),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1069,7 +1186,7 @@ Widget listNewJobsSection(
                                 icon: const Icon(
                                   Icons.edit,
                                   size: 16,
-                                  color: Colors.blue,
+                                  color: Color.fromARGB(255, 69, 100, 201),
                                 ),
                                 onPressed: () {
                                   // Find the corresponding job object
