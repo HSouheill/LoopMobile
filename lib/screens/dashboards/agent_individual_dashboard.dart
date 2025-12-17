@@ -313,7 +313,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF0048FF), width: 1),
+              border: Border.all(color: Colors.blue, width: 1),
             ),
             child: ClipOval(
               child: review.userProfileImage.isNotEmpty
@@ -321,15 +321,15 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       '${Environment.apiUrl}assets/${review.userProfileImage}',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.person,
-                          color: Color(0xFF0048FF),
-                        );
+                      return const Icon(
+                        Icons.person,
+                        color: Colors.blue,
+                      );
                       },
                     )
                   : const Icon(
                       Icons.person,
-                      color: Color(0xFF0048FF),
+                      color: Colors.blue,
                     ),
             ),
           ),
@@ -431,12 +431,12 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
           elevation: 0,
           flexibleSpace: Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
-                  Color(0xFF82A6FF),
-                  Color(0xFF487CFF),
-                  Color(0xFF3770FF),
-                  Color(0xFF0048FF),
+                  Color(0xFF64B5F6), // blue.shade300
+                  Color(0xFF42A5F5), // blue.shade400
+                  Color(0xFF2196F3), // blue.shade500
+                  Color(0xFF1976D2), // blue.shade700
                 ],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
@@ -452,21 +452,66 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 height: 32,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Color(0xFF0048FF), width: 1),
+                  border: Border.all(color: Colors.blue, width: 1),
                   borderRadius: BorderRadius.circular(50.0),
                 ),
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   icon: const Icon(
                     Icons.arrow_back_rounded,
-                    color: Color(0xFF0048FF),
+                    color: Colors.blue,
                     size: 20,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    }
+                  },
                 ),
               ),
             ),
           ),
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(top: 15, right: 16),
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.blue, width: 1),
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/favorites');
+                    },
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.favorites ?? 'Favorites',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.star,
+                          color: Color(0xFFFFBA00),
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
           titleSpacing: 0,
         ),
       ),
@@ -635,7 +680,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF0048FF),
+                          color: Colors.blue,
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -644,7 +689,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF0048FF),
+                          color: Colors.blue,
                         ),
                       ),
                     ],
@@ -874,7 +919,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Color(0XFF0048FF),
+                              color: Colors.blue,
                             ),
                           ),
                           const SizedBox(width: 2),
@@ -883,7 +928,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: Color(0XFF0048FF),
+                              color: Colors.blue,
                             ),
                           ),
                         ],
@@ -902,7 +947,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF0048FF),
+                          color: Colors.blue,
                         ),
                       ),
                     ],

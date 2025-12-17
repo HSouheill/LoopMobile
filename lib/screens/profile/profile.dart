@@ -130,11 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'text': l10n.termsAndConditions,
         'color': Color(0xFF0048FF),
       },
-      {
-        'icon': Icons.star,
-        'text': l10n.favorites,
-        'color': Color(0xFF0048FF),
-      },
       // {
       //   'icon': Icons.extension,
       //   'text': l10n.referrals,
@@ -839,10 +834,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // Added this to update header on profile update
     return PopScope<bool>(
-      canPop: false,
+      canPop: true,
       onPopInvokedWithResult: (bool didPop, bool? result) {
         if (!didPop) {
-          Navigator.pop(context, _didUpdateProfile);
+          Navigator.of(context).pop(_didUpdateProfile);
         }
       },
       child: Scaffold(
@@ -893,7 +888,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   size: 22,
                                 ),
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  if (Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                               ),
                             ),
@@ -1340,12 +1337,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               route = '/terms-and-conditions';
               break;
             case 2:
-              route = '/favorites';
-              break;
-            case 3:
               route = '/referrals';
               break;
-            case 4:
+            case 3:
               route = '/profile-dashboard';
               break;
           }
@@ -1372,8 +1366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Icon(
                       item['icon'],
                       size: 24,
-                      color:
-                          index == 2 ? const Color(0xFFFFBA00) : Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),

@@ -240,7 +240,7 @@ class _ServiceProviderCompanyDashboardPageState
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
-                        color: const Color(0xFF0048FF),
+                        color: Colors.blue,
                         width: 1,
                       ),
                       borderRadius: BorderRadius.circular(50.0),
@@ -250,12 +250,56 @@ class _ServiceProviderCompanyDashboardPageState
                       constraints: const BoxConstraints(),
                       icon: const Icon(
                         Icons.arrow_back_rounded,
-                        color: Color(0xFF0048FF),
+                        color: Colors.blue,
                         size: 16,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
                       },
+                    ),
+                  ),
+                ),
+              ),
+
+              // Favorites button
+              Positioned(
+                top: 30,
+                right: 16,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.blue,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/favorites');
+                    },
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.favorites ?? 'Favorites',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.star,
+                          color: Color(0xFFFFBA00),
+                          size: 14,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -268,11 +312,11 @@ class _ServiceProviderCompanyDashboardPageState
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFF0048FF),
-                      width: 2,
-                    ),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
                   ),
                   child: ClipOval(
                     child: SizedBox(
@@ -336,7 +380,7 @@ class _ServiceProviderCompanyDashboardPageState
                             ? '$district, $governance'
                             : district,
                         style: const TextStyle(
-                            fontSize: 10, color: Color(0xFF0048FF)),
+                            fontSize: 10, color: Colors.blue),
                       ),
                     ],
                   ),
@@ -349,7 +393,7 @@ class _ServiceProviderCompanyDashboardPageState
                       Text(
                         user!.city!,
                         style: const TextStyle(
-                            fontSize: 10, color: Color(0xFF0048FF)),
+                            fontSize: 10, color: Colors.blue),
                       ),
                     ],
                   ),
@@ -758,7 +802,7 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF0048FF)),
+                    border: Border.all(color: Colors.blue),
                   ),
                   child: InkWell(
                     onTap: _viewPortfolioPDF,
@@ -901,7 +945,7 @@ Widget listNewJobsSection(
                 child: Text(
                   AppLocalizations.of(context)?.seeAll ?? "See All",
                   style: const TextStyle(
-                    color: Color(0xFF0048FF),
+                    color: Colors.blue,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1025,7 +1069,7 @@ Widget listNewJobsSection(
                                 icon: const Icon(
                                   Icons.edit,
                                   size: 16,
-                                  color: Color(0xFF0048FF),
+                                  color: Colors.blue,
                                 ),
                                 onPressed: () {
                                   // Find the corresponding job object

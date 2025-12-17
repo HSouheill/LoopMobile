@@ -201,7 +201,7 @@ class _ServiceProviderIndividualDashboardPageState
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
-                      color: Color(0xFF0048FF),
+                      color: Colors.blue,
                       width: 1,
                     ),
                     borderRadius: BorderRadius.circular(50.0),
@@ -211,12 +211,56 @@ class _ServiceProviderIndividualDashboardPageState
                     constraints: const BoxConstraints(),
                     icon: const Icon(
                       Icons.arrow_back_rounded,
-                      color: Color(0xFF0048FF),
+                      color: Colors.blue,
                       size: 16,
                     ),
                     onPressed: () {
-                      Navigator.pop(context);
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
                     },
+                  ),
+                ),
+              ),
+            ),
+
+            // Favorites button
+            Positioned(
+              top: 30,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/favorites');
+                  },
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)?.favorites ?? 'Favorites',
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.star,
+                        color: Color(0xFFFFBA00),
+                        size: 14,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -231,7 +275,7 @@ class _ServiceProviderIndividualDashboardPageState
                   color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF0048FF),
+                    color: Colors.blue,
                     width: 2,
                   ),
                 ),
@@ -305,7 +349,7 @@ class _ServiceProviderIndividualDashboardPageState
                             ? '$district, $governance'
                             : district,
                         style: const TextStyle(
-                            fontSize: 10, color: Color(0xFF0048FF)),
+                            fontSize: 10, color: Colors.blue),
                       ),
                     ],
                   ),
@@ -323,7 +367,7 @@ class _ServiceProviderIndividualDashboardPageState
                       Text(
                         user!.city!,
                         style: const TextStyle(
-                            fontSize: 10, color: Color(0xFF0048FF)),
+                            fontSize: 10, color: Colors.blue),
                       ),
                     ],
                   ),
@@ -734,7 +778,7 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF0048FF)),
+                    border: Border.all(color: Colors.blue),
                   ),
                   child: InkWell(
                     onTap: _viewPortfolioPDF,
