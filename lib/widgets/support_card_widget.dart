@@ -33,7 +33,14 @@ class SupportCardWidget extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
-              color: const Color.fromARGB(255, 75, 132, 167), // subtle background behind image
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 103, 155, 218),
+                  Color.fromARGB(255, 69, 100, 201),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               image: const DecorationImage(
                 image: AssetImage('assets/support.png'),
                 fit: BoxFit.fitHeight, // fill height, keep aspect ratio
@@ -64,7 +71,10 @@ class SupportCardWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF007BFF), Color(0xFF0056b3)],
+                  colors: [
+                    Color.fromARGB(255, 103, 155, 218),
+                    Color.fromARGB(255, 69, 100, 201),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

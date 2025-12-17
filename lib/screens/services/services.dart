@@ -39,7 +39,10 @@ class ServicesPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF0056b3)],
+                      colors: [
+                        Color.fromARGB(255, 103, 155, 218),
+                        Color.fromARGB(255, 69, 100, 201),
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),

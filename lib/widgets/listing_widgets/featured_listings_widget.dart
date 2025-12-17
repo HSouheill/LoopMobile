@@ -362,7 +362,7 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                       child: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade600,
+                          color: const Color.fromARGB(255, 69, 100, 201),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: const Icon(
