@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/job_service.dart';
 import '../../widgets/job_form_widget.dart';
+import '../../widgets/job_status_bubble.dart';
 
 class MyJobsPage extends StatefulWidget {
   const MyJobsPage({super.key});
@@ -307,6 +308,13 @@ class _MyJobsPageState extends State<MyJobsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Status bubble (above featured)
+            if (job.status != null && job.status!.isNotEmpty)
+              JobStatusBubble(
+                status: job.status,
+                isSmall: false,
+              ),
+            
             // Header with image and title
             Row(
               children: [

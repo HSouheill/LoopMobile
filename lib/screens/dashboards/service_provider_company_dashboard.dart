@@ -12,6 +12,7 @@ import '../../services/job_application_service.dart';
 import '../../models/job_application.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/verification_banner.dart';
+import '../../widgets/job_status_bubble.dart';
 import '../../widgets/job_form_widget.dart';
 import './widgets/statistics_card.dart';
 import './widgets/add_social_account_card.dart';
@@ -144,7 +145,8 @@ class _ServiceProviderCompanyDashboardPageState
         "imageUrl": job.imageUrl,
         "title": job.title,
         "contractType": job.jobType,
-        "time": l10n?.experienceYears(minExp, maxExp) ?? "Experience: $minExp-$maxExp years"
+        "time": l10n?.experienceYears(minExp, maxExp) ?? "Experience: $minExp-$maxExp years",
+        "status": job.status,
       };
     }).toList();
 
@@ -1055,7 +1057,7 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
 
 /// ✅ List New Jobs Section
 Widget listNewJobsSection(
-    BuildContext context, double screenWidth, List<Map<String, String>> jobs, bool isLoadingJobs, List<Job> myJobs, VoidCallback onRefresh) {
+    BuildContext context, double screenWidth, List<Map<String, String?>> jobs, bool isLoadingJobs, List<Job> myJobs, VoidCallback onRefresh) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
     child: Column(
@@ -1162,10 +1164,20 @@ Widget listNewJobsSection(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  job['title'] ?? '',
-                                  style: const TextStyle(
-                                      fontSize: 14, fontWeight: FontWeight.w600),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        job['title'] ?? '',
+                                        style: const TextStyle(
+                                            fontSize: 14, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                    JobStatusBubble(
+                                      status: job['status'],
+                                      isSmall: true,
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 0),
                                 Row(

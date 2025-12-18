@@ -404,6 +404,7 @@ class Job {
   final Map<String, int> experienceRange;
   final bool isFeatured;
   final String createdAt;
+  final String? status;
 
   Job({
     required this.id,
@@ -419,6 +420,7 @@ class Job {
     required this.experienceRange,
     required this.isFeatured,
     required this.createdAt,
+    this.status,
   });
 
   factory Job.fromJson(Map<String, dynamic> json) {
@@ -436,6 +438,7 @@ class Job {
       experienceRange: _parseExperienceRange(json['experienceRange']),
       isFeatured: json['isFeatured'] ?? false,
       createdAt: json['createdAt'] ?? '',
+      status: json['status'],
     );
   }
 
