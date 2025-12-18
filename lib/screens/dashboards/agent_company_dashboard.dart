@@ -741,6 +741,19 @@ class UserPlanSection extends StatelessWidget {
     return months[month - 1];
   }
 
+  String _getPlanImagePath() {
+    final planName = agentInfo?['subscribedPlan']?['name']?.toString().toLowerCase() ?? '';
+    if (planName.contains('basic')) {
+      return 'assets/basic.png';
+    } else if (planName.contains('standard')) {
+      return 'assets/standard.png';
+    } else if (planName.contains('premium') || planName.contains('unlimited')) {
+      return 'assets/premium.png';
+    }
+    // Default fallback
+    return 'assets/basic.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -777,7 +790,7 @@ class UserPlanSection extends StatelessWidget {
                   child: ClipPath(
                     clipper: ImageCurvedClipper(),
                     child: Image.asset(
-                      "assets/serverProviderBackground.png",
+                      _getPlanImagePath(),
                       fit: BoxFit.cover,
                       width: cardWidth * 0.38,
                       height: cardHeight,

@@ -1286,6 +1286,19 @@ class AgentPlanSection extends StatelessWidget {
     required this.stats,
   });
 
+  String _getPlanImagePath() {
+    final planName = planTitle.toLowerCase();
+    if (planName.contains('basic')) {
+      return 'assets/basic.png';
+    } else if (planName.contains('standard')) {
+      return 'assets/standard.png';
+    } else if (planName.contains('premium') || planName.contains('unlimited')) {
+      return 'assets/premium.png';
+    }
+    // Default fallback
+    return 'assets/basic.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -1319,7 +1332,7 @@ class AgentPlanSection extends StatelessWidget {
               child: ClipPath(
                 clipper: ImageCurvedClipper(),
                 child: Image.asset(
-                  "assets/serverProviderBackground.png",
+                  _getPlanImagePath(),
                   fit: BoxFit.cover,
                   width: cardWidth * 0.38,
                   height: cardHeight,

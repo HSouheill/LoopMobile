@@ -52,6 +52,9 @@ flutter:
     - assets/BackgroundLogo.png
     - assets/Watermark.png
     - assets/animation.json
+    - assets/basic.png
+    - assets/premium.png
+    - assets/standard.png
   #   - images/a_dot_ham.jpeg
 
 flutter_launcher_icons:
