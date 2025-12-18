@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/verification_banner.dart';
 import './widgets/statistics_card.dart';
 import './widgets/dynamic_service_card.dart';
 import './widgets/add_social_account_card.dart';
@@ -260,6 +261,9 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
 
                 // User info + button
                 userInfoAndEditButton(district, governance, context),
+
+                // Verification status banner
+                VerificationBanner(agentInfo: agentInfo),
 
                 // ✅ New Active Plan section
                 UserPlanSection(

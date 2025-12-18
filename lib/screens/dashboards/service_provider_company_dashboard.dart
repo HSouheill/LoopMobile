@@ -11,6 +11,7 @@ import '../../services/job_service.dart';
 import '../../services/job_application_service.dart';
 import '../../models/job_application.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/verification_banner.dart';
 import '../../widgets/job_form_widget.dart';
 import './widgets/statistics_card.dart';
 import './widgets/add_social_account_card.dart';
@@ -176,6 +177,9 @@ class _ServiceProviderCompanyDashboardPageState
 
                   // User info + button
                   userInfoAndEditButton(district, governance, context),
+
+                  // Verification status banner
+                  VerificationBanner(agentInfo: agentInfo),
 
                   // ✅ Active Plan Section
                   UserPlanSection(agentInfo: agentInfo),

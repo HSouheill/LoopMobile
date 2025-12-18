@@ -8,6 +8,7 @@ import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/verification_banner.dart';
 import 'widgets/my_services_widget.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
@@ -111,6 +112,9 @@ class _ServiceProviderIndividualDashboardPageState
 
                 // User info + button
                 userInfoAndEditButton(district, governance, context),
+
+                // Verification status banner
+                VerificationBanner(agentInfo: agentInfo),
 
                 // ✅ New Active Plan section
                 UserPlanSection(agentInfo: agentInfo),

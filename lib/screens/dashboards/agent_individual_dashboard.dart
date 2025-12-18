@@ -8,6 +8,7 @@ import '../../models/review.dart';
 import '../../environment.dart';
 import './widgets/statistics_card.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
+import '../../widgets/verification_banner.dart';
 import '../../screens/dashboards/widgets/dynamic_service_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/inactive_listing_card_list.dart';
@@ -498,6 +499,9 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
 
                 // User info + button
                 userInfoAndEditButton(district, governance, context),
+
+                // Verification status banner
+                VerificationBanner(agentInfo: agentInfo),
 
                 Container(
                   width: double.infinity,
