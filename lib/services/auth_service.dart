@@ -89,6 +89,7 @@ class User {
   final String? portfolioLink; // Add portfolio link field
   final String? companyName; // Add company name field
   final UserOptions? options; // Add options field
+  final bool hasListing; // Add hasListing field
 
   User({
     required this.id,
@@ -104,6 +105,7 @@ class User {
     this.portfolioLink, // Add portfolio link parameter
     this.companyName, // Add company name parameter
     this.options, // Add options parameter
+    this.hasListing = false, // Default to false
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -137,6 +139,7 @@ class User {
       portfolioLink: json['portfolioLink'],
       companyName: json['companyName'],
       options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
+      hasListing: _parseBool(json['hasListing']) ?? false, // Default to false if not present
     );
   }
 
@@ -165,6 +168,7 @@ class User {
       'portfolioLink': portfolioLink, // Add portfolio link
       'companyName': companyName, // Add company name
       'options': options?.toJson(),
+      'hasListing': hasListing,
     };
   }
 
@@ -183,6 +187,7 @@ class User {
     String? portfolioLink,
     String? companyName,
     UserOptions? options,
+    bool? hasListing,
   }) {
     return User(
       id: id ?? this.id,
@@ -198,6 +203,7 @@ class User {
       portfolioLink: portfolioLink ?? this.portfolioLink,
       companyName: companyName ?? this.companyName,
       options: options ?? this.options,
+      hasListing: hasListing ?? this.hasListing,
     );
   }
 }
@@ -239,7 +245,14 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _token = data['token'];
-        _currentUser = User.fromJson(data['user']);
+        
+        // Merge hasListing from top level if present, otherwise use user object
+        final userData = Map<String, dynamic>.from(data['user']);
+        if (data['hasListing'] != null && userData['hasListing'] == null) {
+          userData['hasListing'] = data['hasListing'];
+        }
+        
+        _currentUser = User.fromJson(userData);
 
         // Store in SharedPreferences for persistent login
         await _storeAuthData();
@@ -407,7 +420,12 @@ class AuthService {
       if (response.statusCode == 200) {
         // Update current user with new data
         if (data['user'] != null) {
-          _currentUser = User.fromJson(data['user']);
+          // Merge hasListing from top level if present, otherwise use user object
+          final userData = Map<String, dynamic>.from(data['user']);
+          if (data['hasListing'] != null && userData['hasListing'] == null) {
+            userData['hasListing'] = data['hasListing'];
+          }
+          _currentUser = User.fromJson(userData);
           await _storeAuthData();
         }
         

@@ -436,7 +436,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 : ""));
     
     final headerSubtitle = _isLoggedIn 
-        ? (user?.role == 'user' ? null : (l10n?.goToDashboard ?? "Go to Dashboard"))
+        ? (user?.role == 'user' && !(user?.hasListing ?? false) 
+            ? null 
+            : (l10n?.goToDashboard ?? "Go to Dashboard"))
         : (l10n?.login ?? "Login");
 
       return Scaffold(
