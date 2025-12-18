@@ -21,6 +21,7 @@ import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
 import 'services/news_service.dart';
+import 'services/banner_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
@@ -531,11 +532,33 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<MarketUpdate> _marketUpdates = [];
   bool _isLoadingNews = true;
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
 
   @override
   void initState() {
     super.initState();
     _fetchNews();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(BannerService.homeScreen);
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
   }
 
   Future<void> _fetchNews() async {
@@ -572,11 +595,6 @@ class _HomePageState extends State<HomePage> {
     // Find the MainScreen to get the navigation callback
     final mainScreenState = context.findAncestorStateOfType<_MainScreenState>();
 
-    final List<String> sliderImages = [
-      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg2OTE4MDAtaW1hZ2UtMDVhLXJtNTA1XzEtbDA5YWp5c3UucG5n.png',
-      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg1NjkzMjEtaW1hZ2VfMS1renAycXhwOC5wbmc.png',
-    ];
-
     // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
 
     return CustomScrollView(
@@ -594,7 +612,14 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              ImageSliderWidget(imageUrls: sliderImages),
+              _isLoadingBanner
+                  ? const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _bannerImages.isNotEmpty
+                      ? ImageSliderWidget(imageUrls: _bannerImages)
+                      : const SizedBox(height: 0), // Temporary space when no banner
               const SizedBox(height: 10),
               _isLoadingNews
                   ? const SizedBox(

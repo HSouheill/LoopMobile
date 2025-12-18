@@ -2,19 +2,46 @@ import 'package:flutter/material.dart';
 import '../../widgets/job_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/dynamic_jobs_widget.dart';
+import '../../services/banner_service.dart';
 
-class JobsPage extends StatelessWidget {
+class JobsPage extends StatefulWidget {
   const JobsPage({super.key});
 
   @override
+  State<JobsPage> createState() => _JobsPageState();
+}
+
+class _JobsPageState extends State<JobsPage> {
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(BannerService.jobsScreen);
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<String> sliderImages = [
-      'https://images.unsplash.com/photo-1486312338219-ce68e2c6b9f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1497032205916-ac775f0649ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    ];
-
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -34,7 +61,14 @@ class JobsPage extends StatelessWidget {
           children: [
             const JobSearchWidget(),
             const SizedBox(height: 10),
-            ImageSliderWidget(imageUrls: sliderImages),
+            _isLoadingBanner
+                ? const SizedBox(
+                    height: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : _bannerImages.isNotEmpty
+                    ? ImageSliderWidget(imageUrls: _bannerImages)
+                    : const SizedBox(height: 0), // Temporary space when no banner
             const SizedBox(height: 20),
 
             // Featured Jobs
