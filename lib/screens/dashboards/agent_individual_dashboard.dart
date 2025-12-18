@@ -80,7 +80,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
   Future<void> _loadInactiveListings() async {
     try {
       final response = await ListingService.getMyListings(
-        status: 'pending',
+        status: 'not-active',
         page: 1,
         limit: 3,
       );

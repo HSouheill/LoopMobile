@@ -37,7 +37,7 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
 
     try {
       final response = await ListingService.getMyListings(
-        status: 'pending',
+        status: 'not-active',
         page: currentPage,
         limit: limit,
       );
