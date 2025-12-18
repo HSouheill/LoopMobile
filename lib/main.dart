@@ -13,6 +13,7 @@ import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
+import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
@@ -619,7 +620,7 @@ class _HomePageState extends State<HomePage> {
                     )
                   : _bannerImages.isNotEmpty
                       ? ImageSliderWidget(imageUrls: _bannerImages)
-                      : const SizedBox(height: 0), // Temporary space when no banner
+                      : const BannerPlaceholderWidget(), // Placeholder when no banner
               const SizedBox(height: 10),
               _isLoadingNews
                   ? const SizedBox(

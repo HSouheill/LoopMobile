@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/job_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
+import '../../widgets/banner_placeholder_widget.dart';
 import '../../widgets/dynamic_jobs_widget.dart';
 import '../../services/banner_service.dart';
 
@@ -68,7 +69,7 @@ class _JobsPageState extends State<JobsPage> {
                   )
                 : _bannerImages.isNotEmpty
                     ? ImageSliderWidget(imageUrls: _bannerImages)
-                    : const SizedBox(height: 0), // Temporary space when no banner
+                    : const BannerPlaceholderWidget(), // Placeholder when no banner
             const SizedBox(height: 20),
 
             // Featured Jobs
