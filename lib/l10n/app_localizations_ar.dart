@@ -660,7 +660,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activateFunctionalityNotImplemented =>
-      'وظيفة التفعيل غير مطبقة بعد';
+      'انتظر موافقة المسؤول على القائمة';
 
   @override
   String get editButton => 'تعديل';

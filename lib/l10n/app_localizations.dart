@@ -1262,7 +1262,7 @@ abstract class AppLocalizations {
   /// No description provided for @activateFunctionalityNotImplemented.
   ///
   /// In en, this message translates to:
-  /// **'Activate functionality not implemented yet'**
+  /// **'Wait for admin to approve listing'**
   String get activateFunctionalityNotImplemented;
 
   /// No description provided for @editButton.
