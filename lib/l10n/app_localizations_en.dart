@@ -666,7 +666,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activateFunctionalityNotImplemented =>
-      'Activate functionality not implemented yet';
+      'Wait for admin to approve listing';
 
   @override
   String get editButton => 'Edit';

@@ -434,7 +434,7 @@
       }
     }
   },
-  "activateFunctionalityNotImplemented": "Activate functionality not implemented yet",
+  "activateFunctionalityNotImplemented": "Wait for admin to approve listing",
   "editButton": "Edit",
   "soldButton": "Sold",
   "boostButton": "Boost",

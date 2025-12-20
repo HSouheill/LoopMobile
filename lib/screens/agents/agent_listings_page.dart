@@ -196,7 +196,7 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                   children: [
                     Text(
                       'Showing ${listings.length} of $totalListings listings',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[600],
                       ),
                     ),
