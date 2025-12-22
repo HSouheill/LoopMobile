@@ -16,6 +16,12 @@
 	<string>We need access to your location to show nearby listings and services.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need access to your location to show nearby listings and services.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>We need permission to send you notifications about new messages, listing updates, and service requests.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>We need access to your documents folder to open and save files, PDFs, and other documents.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone for video recording features.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Loop</string>
 	<key>CFBundleExecutable</key>
