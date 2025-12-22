@@ -13,34 +13,44 @@ class ListingsPage extends StatefulWidget {
 class _ListingsPageState extends State<ListingsPage> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Search Bar Component
-          const SearchAndCategoriesWidget(),
+    return CustomScrollView(
+      slivers: [
+        // Sticky search and categories widget
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: StickySearchHeaderDelegate(
+            child: const SearchAndCategoriesWidget(),
+          ),
+        ),
+        // Rest of the content
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              // Chalets
+              const DynamicListingsWidget(category: ListingCategory.chalets),
 
-          // Chalets
-          const DynamicListingsWidget(category: ListingCategory.chalets),
+              // Villas
+              const DynamicListingsWidget(category: ListingCategory.villas),
 
-          // Villas
-          const DynamicListingsWidget(category: ListingCategory.villas),
+              // Apartments
+              const DynamicListingsWidget(category: ListingCategory.apartments),
 
-          // Apartments
-          const DynamicListingsWidget(category: ListingCategory.apartments),
+              // Land
+              const DynamicListingsWidget(category: ListingCategory.land),
 
-          // Land
-          const DynamicListingsWidget(category: ListingCategory.land),
+              // Commercial Buildings
+              const DynamicListingsWidget(category: ListingCategory.commercial),
 
-          // Commercial Buildings
-          const DynamicListingsWidget(category: ListingCategory.commercial),
+              // Featured Listings (dynamic, fetches from backend)
+              const DynamicListingsWidget(category: ListingCategory.featured),
 
-          // Featured Listings (dynamic, fetches from backend)
-          const DynamicListingsWidget(category: ListingCategory.featured),
-
-          const SizedBox(height: 100),
-        ],
-      ),
+              const SizedBox(height: 100),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

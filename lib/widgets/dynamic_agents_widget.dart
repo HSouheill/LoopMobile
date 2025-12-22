@@ -10,6 +10,8 @@ enum AgentCategory {
   featured,
   topRated,
   forYou,
+  featuredCompanies,
+  topCompanies,
 }
 
 class DynamicAgentsWidget extends StatefulWidget {
@@ -53,6 +55,10 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
         return l10n?.topAgents ?? 'Top Agents';
       case AgentCategory.forYou:
         return l10n?.forYouAgents ?? 'For You';
+      case AgentCategory.featuredCompanies:
+        return l10n?.featuredCompanies ?? 'Featured Companies';
+      case AgentCategory.topCompanies:
+        return l10n?.topCompanies ?? 'Top Companies';
     }
   }
 
@@ -61,13 +67,39 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     final params = <String, String>{'limit': widget.limit.toString()};
     switch (widget.category) {
       case AgentCategory.featured:
-        params.addAll({'isFeatured': 'true', 'sort': 'featured'});
+        params.addAll({
+          'isFeatured': 'true',
+          'sort': 'featured',
+          'agentType': 'individual',
+        });
         break;
       case AgentCategory.topRated:
-        params.addAll({'sort': 'featured', 'minRating': '4.5'});
+        params.addAll({
+          'sort': 'featured',
+          'minRating': '4.5',
+          'agentType': 'individual',
+        });
         break;
       case AgentCategory.forYou:
-        params.addAll({'sort': 'featured', 'personalized': 'true'});
+        params.addAll({
+          'sort': 'featured',
+          'personalized': 'true',
+          'agentType': 'individual',
+        });
+        break;
+      case AgentCategory.featuredCompanies:
+        params.addAll({
+          'isFeatured': 'true',
+          'sort': 'featured',
+          'agentType': 'company',
+        });
+        break;
+      case AgentCategory.topCompanies:
+        params.addAll({
+          'sort': 'featured',
+          'minRating': '4.5',
+          'agentType': 'company',
+        });
         break;
     }
     return params;
@@ -82,6 +114,7 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     });
 
     try {
+      // Use agentType query parameter which backend handles
       final fetchedAgents = await AgentService.getAgents(filterParams);
       if (mounted) {
         setState(() {

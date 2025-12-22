@@ -10,38 +10,58 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 82,
-      padding: const EdgeInsets.symmetric(vertical: 9),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const RadialGradient(
-          center: Alignment(1.018, 1.3934),
-          radius: 2.4344,
+        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
           colors: [
-            Color(0xFF82A6FF),
-            Color(0xFF487CFF),
-            Color(0xFF0048FF),
-            Color(0xFF0048FF),
+            Color.fromARGB(255, 103, 155, 218),
+            Color.fromARGB(255, 69, 100, 201),
           ],
-          stops: [0.0, 0.3221, 0.5212, 0.2],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+          Column(
+            children: [
+              Text(
+                title.split(' ').isNotEmpty ? title.split(' ')[0] : title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (title.split(' ').length > 1)
+                Text(
+                  title.split(' ').sublist(1).join(' '),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+            ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           Text(
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

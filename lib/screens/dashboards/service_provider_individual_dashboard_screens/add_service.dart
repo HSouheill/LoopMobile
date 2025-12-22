@@ -356,20 +356,6 @@ class _AddServiceState extends State<AddService> {
                   });
                 },
               ),
-              const SizedBox(height: 16),
-
-              // Featured Service Checkbox
-              CheckboxListTile(
-                title: const Text('Featured Service'),
-                subtitle: const Text('Make this service stand out'),
-                value: _isFeatured,
-                onChanged: (value) {
-                  setState(() {
-                    _isFeatured = value ?? false;
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
               const SizedBox(height: 30),
 
               // Submit Button

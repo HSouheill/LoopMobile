@@ -123,17 +123,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       {
         'icon': Icons.headset_mic,
         'text': l10n.helpAndSupport,
-        'color': Color(0xFF0048FF),
+        'color': Color.fromARGB(255, 69, 100, 201),
       },
       {
         'icon': Icons.description,
         'text': l10n.termsAndConditions,
-        'color': Color(0xFF0048FF),
-      },
-      {
-        'icon': Icons.star,
-        'text': l10n.favorites,
-        'color': Color(0xFF0048FF),
+        'color': Color.fromARGB(255, 69, 100, 201),
       },
       // {
       //   'icon': Icons.extension,
@@ -839,10 +834,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 // Added this to update header on profile update
     return PopScope<bool>(
-      canPop: false,
+      canPop: true,
       onPopInvokedWithResult: (bool didPop, bool? result) {
         if (!didPop) {
-          Navigator.pop(context, _didUpdateProfile);
+          Navigator.of(context).pop(_didUpdateProfile);
         }
       },
       child: Scaffold(
@@ -879,7 +874,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(
-                                  color: Color(0xFF0048FF),
+                                  color: Color.fromARGB(255, 69, 100, 201),
                                   width: 1,
                                 ),
                                 borderRadius: BorderRadius.circular(50.0),
@@ -889,42 +884,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 constraints: const BoxConstraints(),
                                 icon: const Icon(
                                   Icons.arrow_back_rounded,
-                                  color: Color(0xFF0048FF),
+                                  color: Color.fromARGB(255, 69, 100, 201),
                                   size: 22,
                                 ),
                                 onPressed: () {
-                                  Navigator.pop(context);
+                                  if (Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  }
                                 },
                               ),
                             ),
                           ),
                         ),
 
-                        // Settings icon
-                        Positioned(
-                          top: 75,
-                          right: 16,
-                          child: SizedBox(
-                            width: 23,
-                            height: 23,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFF0048FF),
-                                borderRadius: BorderRadius.circular(50.0),
-                              ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(
-                                  Icons.mode_edit_outline_sharp,
-                                  color: Colors.white,
-                                  size: 14,
-                                ),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -962,7 +934,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: Color(0xFF0048FF), // 👈 divider color
+                                color: Color.fromARGB(255, 69, 100, 201), // 👈 divider color
                                 width: 1.5, // thickness of divider
                               ),
                             ),
@@ -974,7 +946,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               // Phone Icon
                               const Icon(
                                 Icons.phone,
-                                color: Color(0xFF2563FF),
+                                color: Color.fromARGB(255, 69, 100, 201),
                                 size: 20,
                               ),
                               const SizedBox(width: 14.0),
@@ -1018,7 +990,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Container(
                                 height: 20,
                                 width: 1.5,
-                                color: Color(0xFF2563FF),
+                                color: Color.fromARGB(255, 69, 100, 201),
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 10.0),
                               ),
@@ -1194,8 +1166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 backgroundImage: user.profileImage != null
                                     ? NetworkImage(
                                         '${Environment.apiUrl}assets/${user.profileImage}')
-                                    : const NetworkImage(
-                                            'https://i.pravatar.cc/150?img=3')
+                                    : const AssetImage(
+                                            'assets/defaultProfileImage.png')
                                         as ImageProvider,
                                 backgroundColor: Colors.grey[200],
                               ),
@@ -1210,7 +1182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 22,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Color(0xFF0048FF),
+                              color: Color.fromARGB(255, 69, 100, 201),
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: IconButton(
@@ -1340,12 +1312,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               route = '/terms-and-conditions';
               break;
             case 2:
-              route = '/favorites';
-              break;
-            case 3:
               route = '/referrals';
               break;
-            case 4:
+            case 3:
               route = '/profile-dashboard';
               break;
           }
@@ -1372,8 +1341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Icon(
                       item['icon'],
                       size: 24,
-                      color:
-                          index == 2 ? const Color(0xFFFFBA00) : Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1416,7 +1384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Row: icon + input field
           Row(
             children: [
-              Icon(icon, color: Color(0xFF0048FF), size: 22),
+              Icon(icon, color: Color.fromARGB(255, 69, 100, 201), size: 22),
               const SizedBox(width: 42),
               Expanded(
                 child: TextField(
@@ -1440,7 +1408,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           // Divider
           const Divider(
-            color: Color(0xFF0048FF),
+            color: Color.fromARGB(255, 69, 100, 201),
             thickness: 1.5,
             height: 0,
           ),
@@ -1464,7 +1432,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: const Color(0xFF0048FF)),
+              Icon(icon, color: const Color.fromARGB(255, 69, 100, 201)),
               const SizedBox(width: 35),
               Expanded(
                 child: TextField(
@@ -1491,7 +1459,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           const Divider(
-            color: Color(0xFF0048FF),
+            color: Color.fromARGB(255, 69, 100, 201),
             thickness: 1.5,
             height: 0,
           ),

@@ -82,6 +82,11 @@ class ListingCreateService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 201) {
+        // Update hasListing to true locally since backend updates it
+        if (AuthService.currentUser != null && !AuthService.currentUser!.hasListing) {
+          final updatedUser = AuthService.currentUser!.copyWith(hasListing: true);
+          await AuthService.updateCurrentUser(updatedUser);
+        }
         return true;
       } else {
         return false;

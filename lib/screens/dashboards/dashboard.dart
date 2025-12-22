@@ -8,10 +8,12 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthService.currentUser;
-
     // Route to appropriate dashboard based on user role
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Check auth status to ensure we have the latest user data
+      await AuthService.checkAuthStatus();
+      final user = AuthService.currentUser;
+      
       if (user != null) {
         String route;
         switch (user.role) {
@@ -27,8 +29,16 @@ class DashboardPage extends StatelessWidget {
           case 'service-provider-company':
             route = '/service-provider-company-dashboard';
             break;
+          case 'user':
+            // If user role and hasListing is true, allow access to agent-individual-dashboard
+            if (user.hasListing) {
+              route = '/agent-individual-dashboard';
+              break;
+            }
+            // For 'user' role without hasListing, stay on this page
+            return;
           default:
-            // For 'user' role, stay on this page
+            // For other roles, stay on this page
             return;
         }
         Navigator.pushReplacementNamed(context, route);

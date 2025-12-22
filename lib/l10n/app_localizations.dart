@@ -63,7 +63,7 @@ import 'app_localizations_en.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -86,16 +86,16 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('en')
+    Locale('en'),
   ];
 
   /// Text for a page that is under construction.
@@ -109,6 +109,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Agents'**
   String get agents;
+
+  /// No description provided for @realEstate.
+  ///
+  /// In en, this message translates to:
+  /// **'Real Estate'**
+  String get realEstate;
 
   /// No description provided for @listings.
   ///
@@ -223,6 +229,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Featured Companies'**
   String get featuredCompanies;
+
+  /// No description provided for @topCompanies.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Companies'**
+  String get topCompanies;
 
   /// No description provided for @failedToLoadFeaturedServiceProviders.
   ///
@@ -413,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @forYouJobs.
   ///
   /// In en, this message translates to:
-  /// **'For You'**
+  /// **'Job Vacancies'**
   String get forYouJobs;
 
   /// No description provided for @recentJobs.
@@ -457,6 +469,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See all'**
   String get seeAll;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @newestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest First'**
+  String get newestFirst;
+
+  /// No description provided for @oldestFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest First'**
+  String get oldestFirst;
+
+  /// No description provided for @priceLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get priceLowToHigh;
+
+  /// No description provided for @priceHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get priceHighToLow;
 
   /// No description provided for @previous.
   ///
@@ -517,6 +559,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get about;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
 
   /// No description provided for @readMore.
   ///
@@ -631,14 +679,21 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Professional {displayName} providing quality services in {city}, {country}.'**
   String professionalServiceProviderDescription(
-      String displayName, String city, String country);
+    String displayName,
+    String city,
+    String country,
+  );
 
   /// Description for individual service provider
   ///
   /// In en, this message translates to:
   /// **'{firstName} {lastName} is a professional service provider based in {city}, {country}.'**
   String individualServiceProviderDescription(
-      String firstName, String lastName, String city, String country);
+    String firstName,
+    String lastName,
+    String city,
+    String country,
+  );
 
   /// Search results title
   ///
@@ -1207,7 +1262,7 @@ abstract class AppLocalizations {
   /// No description provided for @activateFunctionalityNotImplemented.
   ///
   /// In en, this message translates to:
-  /// **'Activate functionality not implemented yet'**
+  /// **'Wait for admin to approve listing'**
   String get activateFunctionalityNotImplemented;
 
   /// No description provided for @editButton.
@@ -1275,6 +1330,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amenities'**
   String get amenitiesLabel;
+
+  /// No description provided for @relatedListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Related Listings'**
+  String get relatedListings;
 
   /// No description provided for @propertyCodeLabel.
   ///
@@ -1833,12 +1894,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User'**
   String get user;
-
-  /// No description provided for @realEstate.
-  ///
-  /// In en, this message translates to:
-  /// **'Real Estate'**
-  String get realEstate;
 
   /// No description provided for @serviceProvider.
   ///
@@ -3658,12 +3713,6 @@ abstract class AppLocalizations {
   /// **'Title is required'**
   String get titleIsRequired;
 
-  /// No description provided for @description.
-  ///
-  /// In en, this message translates to:
-  /// **'Description'**
-  String get description;
-
   /// No description provided for @describeYourProperty.
   ///
   /// In en, this message translates to:
@@ -4036,6 +4085,30 @@ abstract class AppLocalizations {
   /// **'Land'**
   String get propertyTypeLand;
 
+  /// No description provided for @propertyTypeIndustrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Industrial'**
+  String get propertyTypeIndustrial;
+
+  /// No description provided for @propertyTypeRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Room'**
+  String get propertyTypeRoom;
+
+  /// No description provided for @propertyTypeBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get propertyTypeBuilding;
+
+  /// No description provided for @propertyTypeInternational.
+  ///
+  /// In en, this message translates to:
+  /// **'International'**
+  String get propertyTypeInternational;
+
   /// No description provided for @rentalPeriodDaily.
   ///
   /// In en, this message translates to:
@@ -4268,8 +4341,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

@@ -488,6 +488,7 @@ class ServiceService {
     bool withServices = true,
     bool withReviews = false,
     String? providerType,
+    String? role,
   }) async {
     try {
       final queryParams = <String, String>{
@@ -506,7 +507,8 @@ class ServiceService {
         if (createdFrom != null) 'createdFrom': createdFrom.toIso8601String(),
         if (createdTo != null) 'createdTo': createdTo.toIso8601String(),
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
-        if (providerType != null) 'providerType': providerType,
+        if (role != null) 'role': role,
+        if (role == null && providerType != null) 'providerType': providerType,
       };
       
       final uri = Uri.parse('$baseUrl/search-service-providers').replace(queryParameters: queryParams);

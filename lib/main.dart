@@ -13,6 +13,7 @@ import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
+import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
@@ -20,11 +21,14 @@ import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
+import 'services/news_service.dart';
+import 'services/banner_service.dart';
 import 'screens/listings/listings.dart';
 import 'screens/agents/agents.dart';
 import 'screens/services/services.dart';
 import 'screens/chat/chat.dart';
 import 'screens/add_listing/widgets/add_listing_modal.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -132,7 +136,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale,
       routes: appRoutes(),
-      home: const MainScreen(),
+      home: const SplashScreen(),
     );
   }
 }
@@ -434,7 +438,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                 : ""));
     
     final headerSubtitle = _isLoggedIn 
-        ? (user?.role == 'user' ? null : (l10n?.goToDashboard ?? "Go to Dashboard"))
+        ? (user?.role == 'user' && !(user?.hasListing ?? false) 
+            ? null 
+            : (l10n?.goToDashboard ?? "Go to Dashboard"))
         : (l10n?.login ?? "Login");
 
       return Scaffold(
@@ -498,9 +504,90 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   }
 }
 
+// Helper function to format relative time
+String _formatRelativeTime(DateTime dateTime) {
+  final now = DateTime.now();
+  final difference = now.difference(dateTime);
+
+  if (difference.inDays > 7) {
+    return '${difference.inDays ~/ 7} week${difference.inDays ~/ 7 > 1 ? 's' : ''} ago';
+  } else if (difference.inDays > 0) {
+    return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+  } else {
+    return 'Just now';
+  }
+}
+
 // Updated HomePage class in main.dart
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<MarketUpdate> _marketUpdates = [];
+  bool _isLoadingNews = true;
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNews();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(BannerService.homeScreen);
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchNews() async {
+    try {
+      final newsResponse = await NewsService.getNews();
+      final marketUpdates = newsResponse.data.map((newsItem) {
+        return MarketUpdate(
+          title: newsItem.body,
+          time: _formatRelativeTime(newsItem.createdAt),
+        );
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _marketUpdates = marketUpdates;
+          _isLoadingNews = false;
+        });
+      }
+    } catch (e) {
+      // If news fetch fails, use empty list or show error silently
+      if (mounted) {
+        setState(() {
+          _marketUpdates = [];
+          _isLoadingNews = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -509,104 +596,100 @@ class HomePage extends StatelessWidget {
     // Find the MainScreen to get the navigation callback
     final mainScreenState = context.findAncestorStateOfType<_MainScreenState>();
 
-    final List<String> sliderImages = [
-      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg2OTE4MDAtaW1hZ2UtMDVhLXJtNTA1XzEtbDA5YWp5c3UucG5n.png',
-      'https://images.rawpixel.com/image_png_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvcHg1NjkzMjEtaW1hZ2VfMS1renAycXhwOC5wbmc.png',
-    ];
-
-    final List<MarketUpdate> marketUpdates = [
-      MarketUpdate(
-        title:
-            'Real Estate CEO John Smith Unveils Bold Vision for the Future of Urban...',
-        time: '1 Hour ago',
-      ),
-      MarketUpdate(
-        title:
-            'New report shows rising demand for sustainable housing in urban centers.',
-        time: '3 Hours ago',
-      ),
-      MarketUpdate(
-        title:
-            'Local council approves new zoning laws for mixed-use developments.',
-        time: 'Yesterday',
-      ),
-      MarketUpdate(
-        title:
-            'Property values in the city\'s downtown core see record growth.',
-        time: '2 days ago',
-      ),
-    ];
-
     // Recommended Agents are now fetched dynamically via FeaturedAgentsWidget
 
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SearchAndCategoriesWidget(),
-          const SizedBox(height: 10),
-          ImageSliderWidget(imageUrls: sliderImages),
-          const SizedBox(height: 10),
-          LatestUpdatesWidget(updates: marketUpdates),
-          const SizedBox(height: 10),
-          // Updated to use callback for navigation
-          FeaturedListingsWidget(
-            title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
-            isMainPage: true,
-            onSeeAll: () => mainScreenState
-                ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
+    return CustomScrollView(
+      slivers: [
+        // Sticky search and categories widget
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: StickySearchHeaderDelegate(
+            child: const SearchAndCategoriesWidget(),
           ),
-          const SizedBox(height: 10),
-          const SupportCardWidget(),
-          const SizedBox(height: 10),
-          // Recommended Agents (featured, fetched from API, limited to 3 on main)
-          FeaturedAgentsWidget(
-            title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
-            isMainPage: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(0),
+        ),
+        // Rest of the content
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              _isLoadingBanner
+                  ? const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _bannerImages.isNotEmpty
+                      ? ImageSliderWidget(imageUrls: _bannerImages)
+                      : const BannerPlaceholderWidget(), // Placeholder when no banner
+              const SizedBox(height: 10),
+              _isLoadingNews
+                  ? const SizedBox(
+                      height: 100,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _marketUpdates.isEmpty
+                      ? const SizedBox.shrink()
+                      : LatestUpdatesWidget(updates: _marketUpdates),
+              const SizedBox(height: 10),
+              // Updated to use callback for navigation
+              FeaturedListingsWidget(
+                title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
+                isMainPage: true,
+                onSeeAll: () => mainScreenState
+                    ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
+              ),
+              const SizedBox(height: 10),
+              const SupportCardWidget(),
+              const SizedBox(height: 10),
+              // Recommended Agents (featured, fetched from API, limited to 3 on main)
+              FeaturedAgentsWidget(
+                title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
+                isMainPage: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(0),
+              ),
+              // Featured Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.featured,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Featured Companies section - featured company providers
+              DynamicServicesWidget(
+                category: ServiceCategory.featuredCompanies,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Companies Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.companies,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Individual Services section - now fetched dynamically
+              DynamicServicesWidget(
+                category: ServiceCategory.individual,
+                limit: 3,
+                showSeeAll: true,
+                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+              ),
+              const SizedBox(height: 10),
+              // Featured Jobs section - now fetched dynamically
+              DynamicJobsWidget(
+                category: JobCategory.featured,
+                limit: 3,
+                onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
+              ),
+              const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
+            ],
           ),
-          // Featured Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.featured,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Featured Companies section - featured company providers
-          DynamicServicesWidget(
-            category: ServiceCategory.featuredCompanies,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Companies Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.companies,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Individual Services section - now fetched dynamically
-          DynamicServicesWidget(
-            category: ServiceCategory.individual,
-            limit: 3,
-            showSeeAll: true,
-            onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-          ),
-          const SizedBox(height: 10),
-          // Featured Jobs section - now fetched dynamically
-          DynamicJobsWidget(
-            category: JobCategory.featured,
-            limit: 3,
-            onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
-          ),
-          const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -35,28 +35,35 @@ class DynamicGradientButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(50.0),
           color: useGradient ? null : backgroundColor ?? Colors.blue,
           gradient: useGradient
-              ? const RadialGradient(
-                  center: Alignment(1.0, 1.4),
-                  radius: 1.5,
+              ? const LinearGradient(
                   colors: [
-                    Color(0xFF82A6FF),
-                    Color(0xFF487CFF),
-                    Color(0xFF3770FF),
-                    Color(0xFF0048FF),
+                    Color.fromARGB(255, 103, 155, 218),
+                    Color.fromARGB(255, 69, 100, 201),
                   ],
-                  stops: [0.0, 0.3221, 0.7212, 1.0],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                 )
               : null,
           border: borderColor != null
               ? Border.all(color: borderColor!, width: borderWidth)
               : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.45),
-              offset: const Offset(0, 4),
-              blurRadius: 5.3,
-            ),
-          ],
+          boxShadow: useGradient
+              ? [
+                  BoxShadow(
+                    color: const Color.fromARGB(255, 69, 100, 201).withOpacity(0.3),
+                    offset: const Offset(0, 4),
+                    blurRadius: 8,
+                  ),
+                ]
+              : borderColor != null
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ]
+                  : null,
         ),
         child: Text(
           buttonText,

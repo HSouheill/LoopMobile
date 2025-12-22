@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
+import 'city_selection_page.dart';
 
 class AdvancedFiltersPage extends StatefulWidget {
   final String initialQuery;
@@ -25,12 +27,15 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   String? _selectedSort;
   double? _minPrice;
   double? _maxPrice;
-  int? _minBedrooms;
-  int? _maxBedrooms;
-  int? _minBathrooms;
-  int? _maxBathrooms;
+  int? _bedrooms;
+  int? _bathrooms;
+  double? _minSize;
+  double? _maxSize;
   String? _selectedCondition;
+  String? _selectedFurnishing;
   String? _selectedPaymentFrequency;
+  String? _selectedOwnership;
+  String? _selectedFloor;
   
   // Amenities - using same structure as add_listing_form_page.dart
   Map<String, bool> amenities = {
@@ -51,6 +56,22 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'solarSystem': false,
     'electricity24_7': false,
     'maidRoom': false,
+    'accessible': false,
+    'atticLoft': false,
+    'builtInKitchenAppliances': false,
+    'builtInWardrobes': false,
+    'concierge': false,
+    'coveredParking': false,
+    'fireplace': false,
+    'petsAllowed': false,
+    'playroom': false,
+    'privateGarden': false,
+    'privateGym': false,
+    'privateJacuzzi': false,
+    'sharedSpa': false,
+    'studyRoom': false,
+    'balcony': false,
+    'walkInCloset': false,
   };
 
   final List<String> _propertyTypes = [
@@ -60,18 +81,24 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'commercial',
     'villa',
     'land',
+    'industrial',
+    'room',
+    'building',
+    'international',
   ];
-
-  final List<String> _listingForOptions = ['sale', 'rent'];
   
   final List<String> _paymentFrequencyOptions = ['daily', 'monthly', 'yearly'];
 
   final List<String> _conditionOptions = [
-    'excellent',
-    'good',
+    'under_construction',
+    'ready',
     'needs_renovation',
-    'new',
-    'old',
+  ];
+
+  final List<String> _furnishingOptions = [
+    'unfurnished',
+    'semi_furnished',
+    'fully_furnished',
   ];
 
   @override
@@ -87,12 +114,16 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       _selectedSort = widget.initialFilters!['sort'];
       _minPrice = widget.initialFilters!['minPrice']?.toDouble();
       _maxPrice = widget.initialFilters!['maxPrice']?.toDouble();
-      _minBedrooms = widget.initialFilters!['minBedrooms'];
-      _maxBedrooms = widget.initialFilters!['maxBedrooms'];
-      _minBathrooms = widget.initialFilters!['minBathrooms'];
-      _maxBathrooms = widget.initialFilters!['maxBathrooms'];
+      // Use minBedrooms/maxBedrooms for backward compatibility, prefer min if both exist
+      _bedrooms = widget.initialFilters!['minBedrooms'] ?? widget.initialFilters!['maxBedrooms'];
+      _bathrooms = widget.initialFilters!['minBathrooms'] ?? widget.initialFilters!['maxBathrooms'];
+      _minSize = widget.initialFilters!['minSize']?.toDouble();
+      _maxSize = widget.initialFilters!['maxSize']?.toDouble();
       _selectedCondition = widget.initialFilters!['condition'];
+      _selectedFurnishing = widget.initialFilters!['furnishing'];
       _selectedPaymentFrequency = widget.initialFilters!['paymentFrequency'];
+      _selectedOwnership = widget.initialFilters!['ownership'];
+      _selectedFloor = widget.initialFilters!['floor'];
       
       // Initialize amenities from initial filters
       if (widget.initialFilters!['amenities'] != null) {
@@ -125,7 +156,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     } else {
       // Set default values to null (Any) when no initial filters
       _selectedType = null;
-      _selectedListingFor = null;
+      _selectedListingFor = 'rent'; // Default to rent
       _selectedCondition = null;
       _selectedSort = null;
     }
@@ -140,17 +171,20 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   void _clearAllFilters() {
     setState(() {
       _selectedType = null;
-      _selectedListingFor = null;
+      _selectedListingFor = 'rent'; // Default to rent
       _selectedCity = null;
       _selectedSort = null;
       _minPrice = null;
       _maxPrice = null;
-      _minBedrooms = null;
-      _maxBedrooms = null;
-      _minBathrooms = null;
-      _maxBathrooms = null;
+      _bedrooms = null;
+      _bathrooms = null;
+      _minSize = null;
+      _maxSize = null;
       _selectedCondition = null;
+      _selectedFurnishing = null;
       _selectedPaymentFrequency = null;
+      _selectedOwnership = null;
+      _selectedFloor = null;
       
       // Reset all amenities to false
       for (String key in amenities.keys) {
@@ -168,13 +202,33 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     if (_selectedSort != null) filters['sort'] = _selectedSort;
     if (_minPrice != null) filters['minPrice'] = _minPrice;
     if (_maxPrice != null) filters['maxPrice'] = _maxPrice;
-    if (_minBedrooms != null) filters['minBedrooms'] = _minBedrooms;
-    if (_maxBedrooms != null) filters['maxBedrooms'] = _maxBedrooms;
-    if (_minBathrooms != null) filters['minBathrooms'] = _minBathrooms;
-    if (_maxBathrooms != null) filters['maxBathrooms'] = _maxBathrooms;
+    // Set both min and max to the same value for bedrooms and bathrooms
+    if (_bedrooms != null) {
+      filters['minBedrooms'] = _bedrooms;
+      filters['maxBedrooms'] = _bedrooms;
+    }
+    if (_bathrooms != null) {
+      filters['minBathrooms'] = _bathrooms;
+      filters['maxBathrooms'] = _bathrooms;
+    }
+    if (_minSize != null) filters['minSize'] = _minSize;
+    if (_maxSize != null) filters['maxSize'] = _maxSize;
     if (_selectedCondition != null) filters['condition'] = _selectedCondition;
+    if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
+      // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
+      final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
+      if (_furnishingOptions.contains(furnishingValue)) {
+        filters['furnishing'] = furnishingValue;
+      }
+    }
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
+    }
+    if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
+      filters['ownership'] = _selectedOwnership;
+    }
+    if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
+      filters['floor'] = _selectedFloor;
     }
     
     // Collect selected amenities
@@ -219,71 +273,54 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Search Query
-              TextFormField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Search',
-                  hintText: 'Enter search terms...',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 24.0),
-
-              // Property Type
-              _buildSectionTitle('Property Type'),
-              DropdownButtonFormField<String>(
-                value: _selectedType,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('Any'),
-                  ),
-                  ..._propertyTypes.map((type) {
-                    return DropdownMenuItem(
-                      value: type,
-                      child: Text(type.toUpperCase()),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedType = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+              // TextFormField(
+              //   controller: _searchController,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Search',
+              //     hintText: 'Enter search terms...',
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
+              // const SizedBox(height: 24.0),
 
               // Listing For
               _buildSectionTitle('Listing For'),
-              DropdownButtonFormField<String>(
-                value: _selectedListingFor,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('Any'),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildListingForButton('sale', 'Sale'),
                   ),
-                  ..._listingForOptions.map((option) {
-                    return DropdownMenuItem(
-                      value: option,
-                      child: Text(option.toUpperCase()),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: _buildListingForButton('rent', 'Rent'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+
+              // Property Type
+              _buildSectionTitle('Property Type'),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: [
+                  // Any option
+                  _buildPropertyTypeButton(
+                    context,
+                    type: null,
+                    label: 'Any',
+                    icon: Icons.home,
+                  ),
+                  // Property type buttons
+                  ..._propertyTypes.map((type) {
+                    return _buildPropertyTypeButton(
+                      context,
+                      type: type,
+                      label: _getPropertyTypeLabel(context, type),
+                      icon: _getPropertyTypeIcon(type),
                     );
                   }).toList(),
                 ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedListingFor = value;
-                    // Clear payment frequency when switching to sale or Any (not applicable)
-                    if (value == 'sale' || value == null) {
-                      _selectedPaymentFrequency = null;
-                    }
-                  });
-                },
               ),
               const SizedBox(height: 16.0),
 
@@ -319,27 +356,84 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
               // City
               _buildSectionTitle('City'),
-              TextFormField(
-                initialValue: _selectedCity,
-                decoration: const InputDecoration(
-                  hintText: 'Enter city name',
-                  border: OutlineInputBorder(),
+              GestureDetector(
+                onTap: () async {
+                  final selectedCity = await Navigator.push<String?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CitySelectionPage(
+                        selectedCity: _selectedCity,
+                      ),
+                    ),
+                  );
+                  if (selectedCity != _selectedCity) {
+                    setState(() {
+                      _selectedCity = selectedCity;
+                    });
+                  }
+                },
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select city',
+                    suffixIcon: Icon(Icons.arrow_drop_down),
+                  ),
+                  child: Text(
+                    _selectedCity ?? 'Any',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: _selectedCity != null
+                          ? Colors.black87
+                          : Colors.black87,
+                    ),
+                  ),
                 ),
+              ),
+              const SizedBox(height: 16.0),
+
+              // Ownership
+              _buildSectionTitle('Ownership'),
+              DropdownButtonFormField<String>(
+                value: _selectedOwnership,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Select ownership',
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'user',
+                    child: Text('Owner'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'agent-individual',
+                    child: Text('Agent'),
+                  ),
+                  const DropdownMenuItem<String>(
+                    value: 'agent-company',
+                    child: Text('Company'),
+                  ),
+                ],
                 onChanged: (value) {
-                  _selectedCity = value.trim().isEmpty ? null : value.trim();
+                  setState(() {
+                    _selectedOwnership = value;
+                  });
                 },
               ),
               const SizedBox(height: 16.0),
 
               // Price Range
-              _buildSectionTitle('Price Range'),
+              _buildSectionTitle('Price'),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       initialValue: _minPrice?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Min Price',
+                        labelText: 'Min',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
@@ -353,7 +447,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                     child: TextFormField(
                       initialValue: _maxPrice?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Max Price',
+                        labelText: 'Max',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
@@ -366,34 +460,62 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Bedrooms
-              _buildSectionTitle('Bedrooms'),
+              // Bedrooms & Bathrooms
+              _buildSectionTitle('Bedrooms & Bathrooms'),
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      initialValue: _minBedrooms?.toString(),
+                    child: DropdownButtonFormField<int>(
+                      value: _bedrooms,
                       decoration: const InputDecoration(
-                        labelText: 'Min Bedrooms',
                         border: OutlineInputBorder(),
+                        hintText: 'Bedrooms',
+                        labelText: 'Bedrooms',
                       ),
-                      keyboardType: TextInputType.number,
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
+                        ...List.generate(15, (index) => index + 1).map((count) {
+                          return DropdownMenuItem<int>(
+                            value: count,
+                            child: Text('$count'),
+                          );
+                        }).toList(),
+                      ],
                       onChanged: (value) {
-                        _minBedrooms = int.tryParse(value);
+                        setState(() {
+                          _bedrooms = value;
+                        });
                       },
                     ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    child: TextFormField(
-                      initialValue: _maxBedrooms?.toString(),
+                    child: DropdownButtonFormField<int>(
+                      value: _bathrooms,
                       decoration: const InputDecoration(
-                        labelText: 'Max Bedrooms',
                         border: OutlineInputBorder(),
+                        hintText: 'Bathrooms',
+                        labelText: 'Bathrooms',
                       ),
-                      keyboardType: TextInputType.number,
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Any'),
+                        ),
+                        ...List.generate(15, (index) => index + 1).map((count) {
+                          return DropdownMenuItem<int>(
+                            value: count,
+                            child: Text('$count'),
+                          );
+                        }).toList(),
+                      ],
                       onChanged: (value) {
-                        _maxBedrooms = int.tryParse(value);
+                        setState(() {
+                          _bathrooms = value;
+                        });
                       },
                     ),
                   ),
@@ -401,38 +523,69 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Bathrooms
-              _buildSectionTitle('Bathrooms'),
+              // Size Range
+              _buildSectionTitle('Size (m²)'),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
-                      initialValue: _minBathrooms?.toString(),
+                      initialValue: _minSize?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Min Bathrooms',
+                        labelText: 'Min Size',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
-                        _minBathrooms = int.tryParse(value);
+                        _minSize = double.tryParse(value);
                       },
                     ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
                     child: TextFormField(
-                      initialValue: _maxBathrooms?.toString(),
+                      initialValue: _maxSize?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Max Bathrooms',
+                        labelText: 'Max Size',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
-                        _maxBathrooms = int.tryParse(value);
+                        _maxSize = double.tryParse(value);
                       },
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16.0),
+
+              // Floor
+              _buildSectionTitle('Floor'),
+              DropdownButtonFormField<String>(
+                value: _selectedFloor,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Select floor',
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ...List.generate(16, (index) {
+                    final floorValue = index - 5; // -5 to 10
+                    final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
+                    final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
+                    return DropdownMenuItem<String>(
+                      value: backendValue,
+                      child: Text(displayValue),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFloor = value;
+                  });
+                },
               ),
               const SizedBox(height: 16.0),
 
@@ -451,13 +604,40 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                   ..._conditionOptions.map((condition) {
                     return DropdownMenuItem(
                       value: condition,
-                      child: Text(condition.replaceAll('_', ' ').toUpperCase()),
+                      child: Text(_formatConditionLabel(condition)),
                     );
                   }).toList(),
                 ],
                 onChanged: (value) {
                   setState(() {
                     _selectedCondition = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16.0),
+
+              // Furnishing
+              _buildSectionTitle('Furnishing'),
+              DropdownButtonFormField<String>(
+                value: _selectedFurnishing,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  const DropdownMenuItem<String>(
+                    value: null,
+                    child: Text('Any'),
+                  ),
+                  ..._furnishingOptions.map((furnishing) {
+                    return DropdownMenuItem(
+                      value: furnishing,
+                      child: Text(_formatFurnishingLabel(furnishing)),
+                    );
+                  }).toList(),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFurnishing = value;
                   });
                 },
               ),
@@ -514,16 +694,68 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: _clearAllFilters,
-                      child: const Text('Clear All'),
+                    child: GestureDetector(
+                      onTap: _clearAllFilters,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color.fromARGB(255, 103, 155, 218),
+                              const Color.fromARGB(255, 69, 100, 201),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Clear All',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: _applyFilters,
-                      child: const Text('Search'),
+                    child: GestureDetector(
+                      onTap: _applyFilters,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color.fromARGB(255, 103, 155, 218),
+                              const Color.fromARGB(255, 69, 100, 201),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16.0),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: const Text(
+                          'Search',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -549,6 +781,38 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     );
   }
 
+  String _formatConditionLabel(String condition) {
+    switch (condition) {
+      case 'under_construction':
+        return 'Under Construction';
+      case 'ready':
+        return 'Ready';
+      case 'needs_renovation':
+        return 'Needs Renovation';
+      default:
+        return condition.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
+    }
+  }
+
+  String _formatFurnishingLabel(String furnishing) {
+    switch (furnishing) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
+      default:
+        return furnishing.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
+    }
+  }
+
   String _getAmenityLabel(String key) {
     switch (key) {
       case 'furnished': return 'Furnished';
@@ -568,7 +832,192 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       case 'solarSystem': return 'Solar System';
       case 'electricity24_7': return '24/7 Electricity';
       case 'maidRoom': return 'Maid Room';
+      case 'accessible': return 'Accessible';
+      case 'atticLoft': return 'Attic/Loft';
+      case 'builtInKitchenAppliances': return 'Built-in Kitchen Appliances';
+      case 'builtInWardrobes': return 'Built-in Wardrobes';
+      case 'concierge': return 'Concierge';
+      case 'coveredParking': return 'Covered Parking';
+      case 'fireplace': return 'Fireplace';
+      case 'petsAllowed': return 'Pets Allowed';
+      case 'playroom': return 'Playroom';
+      case 'privateGarden': return 'Private Garden';
+      case 'privateGym': return 'Private Gym';
+      case 'privateJacuzzi': return 'Private Jacuzzi';
+      case 'sharedSpa': return 'Shared Spa';
+      case 'studyRoom': return 'Study Room';
+      case 'balcony': return 'Balcony';
+      case 'walkInCloset': return 'Walk-in Closet';
       default: return key;
     }
+  }
+
+  IconData _getPropertyTypeIcon(String type) {
+    switch (type) {
+      case 'apartment':
+        return Icons.apartment;
+      case 'chalet':
+        return Icons.house_siding;
+      case 'studio':
+        return Icons.home_work;
+      case 'commercial':
+        return Icons.business;
+      case 'villa':
+        return Icons.villa;
+      case 'land':
+        return Icons.landscape;
+      case 'industrial':
+        return Icons.factory;
+      case 'room':
+        return Icons.meeting_room;
+      case 'building':
+        return Icons.business_center;
+      case 'international':
+        return Icons.public;
+      default:
+        return Icons.home;
+    }
+  }
+
+  String _getPropertyTypeLabel(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context);
+    switch (type) {
+      case 'apartment':
+        return l10n?.propertyTypeApartment ?? 'Apartment';
+      case 'chalet':
+        return l10n?.propertyTypeChalet ?? 'Chalet';
+      case 'studio':
+        return l10n?.propertyTypeStudio ?? 'Studio';
+      case 'commercial':
+        return l10n?.propertyTypeCommercial ?? 'Commercial';
+      case 'villa':
+        return l10n?.propertyTypeVilla ?? 'Villa';
+      case 'land':
+        return l10n?.propertyTypeLand ?? 'Land';
+      case 'industrial':
+        return l10n?.propertyTypeIndustrial ?? 'Industrial';
+      case 'room':
+        return l10n?.propertyTypeRoom ?? 'Room';
+      case 'building':
+        return l10n?.propertyTypeBuilding ?? 'Building';
+      case 'international':
+        return l10n?.propertyTypeInternational ?? 'International';
+      default:
+        return type;
+    }
+  }
+
+  Widget _buildPropertyTypeButton(
+    BuildContext context, {
+    required String? type,
+    required String label,
+    required IconData icon,
+  }) {
+    final isSelected = _selectedType == type;
+    // Keep same gradient colors for both selected and unselected
+    final gradientColors = [
+      const Color.fromARGB(255, 103, 155, 218),
+      const Color.fromARGB(255, 69, 100, 201),
+    ];
+    final iconColor = Colors.white;
+    final textColor = isSelected ? Colors.blue[700]! : Colors.black87;
+    final fontWeight = isSelected ? FontWeight.bold : FontWeight.normal;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedType = type;
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color.fromARGB(153, 120, 120, 120),
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Icon(icon, color: iconColor, size: 30),
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.0,
+              color: textColor,
+              fontWeight: fontWeight,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListingForButton(String value, String label) {
+    final isSelected = _selectedListingFor == value;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedListingFor = value;
+          // Clear payment frequency when switching to sale (not applicable)
+          if (value == 'sale') {
+            _selectedPaymentFrequency = null;
+          }
+        });
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color.fromARGB(255, 103, 155, 218),
+              const Color.fromARGB(255, 69, 100, 201),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(16.0),
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color.fromARGB(138, 116, 116, 116),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 16.0,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? Colors.white : Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 }

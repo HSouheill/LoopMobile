@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../screens/services/service_provider_search_results_page.dart';
+import '../screens/services/service_provider_advanced_filters_page.dart';
 
 class ServiceSearchWidget extends StatefulWidget {
   const ServiceSearchWidget({super.key});
@@ -14,11 +15,35 @@ class _ServiceSearchWidgetState extends State<ServiceSearchWidget> {
 
   void _performSearch() {
     final query = _searchController.text.trim();
-    if (query.isNotEmpty) {
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderSearchResultsPage(
+          searchQuery: query,
+        ),
+      ),
+    );
+  }
+
+  void _openAdvancedFilters() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderAdvancedFiltersPage(
+          initialQuery: _searchController.text.trim(),
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ServiceProviderSearchResultsPage(searchQuery: query),
+          builder: (context) => ServiceProviderSearchResultsPage(
+            searchQuery: result['query'],
+            initialFilters: result['filters'],
+          ),
         ),
       );
     }
@@ -46,6 +71,10 @@ class _ServiceSearchWidgetState extends State<ServiceSearchWidget> {
             ),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
+                  onPressed: _performSearch,
+                ),
                 Expanded(
                   child: Builder(
                     builder: (context) {
@@ -73,8 +102,13 @@ class _ServiceSearchWidgetState extends State<ServiceSearchWidget> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
-                  onPressed: _performSearch,
+                  icon: const Icon(
+                    Icons.tune,
+                    color: Color.fromARGB(255, 69, 100, 201),
+                    size: 30,
+                  ),
+                  iconSize: 30,
+                  onPressed: _openAdvancedFilters,
                 ),
               ],
             ),

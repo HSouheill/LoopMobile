@@ -20,6 +20,10 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
     {'value': 'commercial', 'label': 'Commercial'},
     {'value': 'villa', 'label': 'Villa'},
     {'value': 'land', 'label': 'Land'},
+    {'value': 'industrial', 'label': 'Industrial'},
+    {'value': 'room', 'label': 'Room'},
+    {'value': 'building', 'label': 'Building'},
+    {'value': 'international', 'label': 'International'},
   ];
 
   final List<Map<String, String>> rentalPeriods = [
@@ -27,6 +31,21 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
     {'value': 'monthly', 'label': 'Monthly'},
     {'value': 'yearly', 'label': 'Yearly'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final String? preselectedType = args?['preselectedType'];
+      // Only pre-select if it's a valid property type (not 'property' which is just a generic term)
+      if (preselectedType != null && preselectedType != 'property' && mounted) {
+        setState(() {
+          selectedPropertyType = preselectedType;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -322,6 +341,14 @@ String _localizePropertyType(BuildContext context, String value) {
       return l10n?.propertyTypeVilla ?? 'Villa';
     case 'land':
       return l10n?.propertyTypeLand ?? 'Land';
+    case 'industrial':
+      return l10n?.propertyTypeIndustrial ?? 'Industrial';
+    case 'room':
+      return l10n?.propertyTypeRoom ?? 'Room';
+    case 'building':
+      return l10n?.propertyTypeBuilding ?? 'Building';
+    case 'international':
+      return l10n?.propertyTypeInternational ?? 'International';
     default:
       return value;
   }

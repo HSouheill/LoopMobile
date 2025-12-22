@@ -6,6 +6,16 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/report_dialog.dart';
 import 'package:video_player/video_player.dart';
+import '../../environment.dart';
+import '../../services/chat_service.dart';
+import '../../services/auth_service.dart';
+import '../../models/chat.dart';
+import '../chat/chat_conversation_page.dart';
+import '../../services/agent_service.dart';
+import '../../widgets/recommended_agents_widget.dart';
+import '../agents/single_agent_page.dart';
+import 'listing_media_gallery_page.dart';
+import '../../widgets/listing_widgets/featured_listings_widget.dart';
 
 class SingleListingPage extends StatefulWidget {
   final PropertyListing listing;
@@ -23,6 +33,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _videoHasError = false;
+  List<PropertyListing> _relatedListings = [];
+  bool _isLoadingRelated = false;
 
   String get _ownerDisplayName {
     if (widget.listing.ownerFirstName != null && widget.listing.ownerLastName != null) {
@@ -66,6 +78,10 @@ class _SingleListingPageState extends State<SingleListingPage> {
     return mediaItems;
   }
 
+  int get _mediaCount => _allImages.length;
+  int get _videoCount => _allImages.where(_isVideoUrl).length;
+  int get _photoCount => _mediaCount - _videoCount;
+
   String get _formattedPrice {
     if (widget.listing.priceValue != null) {
       final currency = widget.listing.currency ?? 'USD';
@@ -74,6 +90,20 @@ class _SingleListingPageState extends State<SingleListingPage> {
       return formatter.format(price);
     }
     return widget.listing.price;
+  }
+
+  // Build owner profile image URL
+  String? get _ownerProfileImageUrl {
+    if (widget.listing.ownerProfileImage == null || widget.listing.ownerProfileImage!.isEmpty) {
+      return null;
+    }
+    final image = widget.listing.ownerProfileImage!;
+    // If it's already a full URL, return as is
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    // Build full URL
+    return '${Environment.apiUrl}assets/$image';
   }
 
   String _formattedDate(BuildContext context) {
@@ -212,6 +242,129 @@ class _SingleListingPageState extends State<SingleListingPage> {
     );
   }
 
+  Future<void> _startChat() async {
+    try {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final l10n = AppLocalizations.of(context);
+      final token = AuthService.token;
+      if (token == null) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.pleaseLoginToStartChatAgent ?? 'Please log in to start a chat')),
+        );
+        return;
+      }
+
+      // Get owner ID from the listing
+      final ownerId = widget.listing.ownerId;
+      if (ownerId == null || ownerId.isEmpty) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Owner information not available')),
+        );
+        return;
+      }
+
+      // First, try to get existing chat with the owner
+      Chat? existingChat = await ChatService.getChatWithUser(token, ownerId);
+      
+      Chat? chat = existingChat;
+      
+      // If no existing chat, create a new one
+      if (chat == null) {
+        chat = await ChatService.createChat(
+          token: token,
+          otherUserId: ownerId,
+        );
+      }
+
+      Navigator.pop(context); // Close loading dialog
+
+      if (chat != null) {
+        // Navigate to chat conversation page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatConversationPage(
+              chat: chat!,
+              otherParticipantName: _ownerDisplayName,
+              otherParticipantImage: _ownerProfileImageUrl,
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)?.failedToStartChatAgent ?? 'Failed to start chat. Please try again.')),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _viewProfile() async {
+    try {
+      // Get owner ID from the listing
+      final ownerId = widget.listing.ownerId;
+      if (ownerId == null || ownerId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Owner information not available')),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Fetch agent data using the new endpoint
+      final responseData = await AgentService.getAgentById(ownerId);
+      
+      Navigator.pop(context); // Close loading dialog
+
+      // The response has a 'user' key containing the actual user data
+      final userData = responseData['user'];
+      if (userData == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid response format from server')),
+        );
+        return;
+      }
+
+      // Convert the fetched data to Agent object
+      final agent = Agent.fromJson(userData);
+
+      // Navigate to single agent page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SingleAgentPage(agent: agent),
+        ),
+      );
+    } catch (e) {
+      Navigator.pop(context); // Close loading dialog if still open
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading profile: ${e.toString()}')),
+      );
+    }
+  }
+
   void _initializeVideoPlayer(String videoUrl) {
     if (_videoController != null) {
       _videoController!.dispose();
@@ -245,6 +398,30 @@ class _SingleListingPageState extends State<SingleListingPage> {
     if (_allImages.isNotEmpty && _isVideoUrl(_allImages[0])) {
       _initializeVideoPlayer(_allImages[0]);
     }
+    // Load related listings
+    _loadRelatedListings();
+  }
+
+  Future<void> _loadRelatedListings() async {
+    setState(() {
+      _isLoadingRelated = true;
+    });
+
+    try {
+      final response = await ListingService.getSimilarListings(widget.listing.id);
+      if (mounted) {
+        setState(() {
+          _relatedListings = response.listings;
+          _isLoadingRelated = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingRelated = false;
+        });
+      }
+    }
   }
 
   void _onPageChanged(int index) {
@@ -267,6 +444,20 @@ class _SingleListingPageState extends State<SingleListingPage> {
         });
       }
     }
+  }
+
+  void _openGallery(int initialIndex) {
+    if (_allImages.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ListingMediaGalleryPage(
+          mediaUrls: _allImages,
+          initialIndex: initialIndex,
+          title: widget.listing.title,
+        ),
+      ),
+    );
   }
 
   @override
@@ -404,20 +595,61 @@ class _SingleListingPageState extends State<SingleListingPage> {
                         }
                       } else {
                         // Display image
-                        return Image.network(
-                          mediaUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Center(
-                                child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                        return GestureDetector(
+                          onTap: () => _openGallery(index),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.network(
+                                mediaUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    child: const Center(
+                                      child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                              Positioned.fill(
+                                child: Opacity(
+                                  opacity: 0.3,
+                                  child: Image.asset(
+                                    'assets/Watermark.png',
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       }
                     },
+                  ),
+                  
+                  // Media counter
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _videoCount > 0
+                            ? '$_photoCount photos · $_videoCount video${_videoCount > 1 ? 's' : ''}'
+                            : '$_photoCount photos',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                   
                   // Navigation arrows
@@ -594,82 +826,73 @@ class _SingleListingPageState extends State<SingleListingPage> {
                               color: Colors.blue,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.person, size: 18, color: Colors.green),
-                              const SizedBox(width: 6),
-                              Text(
-                                _ownerDisplayName,
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // const SizedBox(height: 8),
+                          // Row(
+                          //   mainAxisSize: MainAxisSize.min,
+                          //   children: [
+                          //     const Icon(Icons.person, size: 18, color: Colors.green),
+                          //     const SizedBox(width: 6),
+                          //     Text(
+                          //       _ownerDisplayName,
+                          //       style: const TextStyle(
+                          //         color: Colors.green,
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w500,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                     ),
                     
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     
-                    // Agent Info
-                    // Row(
-                    //   children: [
-                    //     const Icon(Icons.person, color: Colors.green, size: 20),
-                    //     const SizedBox(width: 8),
-                    //     Text(
-                    //       widget.listing.agentName,
-                    //       style: const TextStyle(
-                    //         color: Colors.green,
-                    //         fontSize: 16,
-                    //         fontWeight: FontWeight.w500,
-                    //         decoration: TextDecoration.underline,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    // Owner Card Section
+                    if (widget.listing.ownerRole != null || 
+                        widget.listing.ownerFirstName != null || 
+                        widget.listing.ownerCompanyName != null)
+                      _buildOwnerCard(),
                     
-                    // const SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     
-                    // Property Details Section
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.search, color: Colors.grey, size: 20),
-                              const SizedBox(width: 8),
-                              Builder(
-                                builder: (context) {
-                                  final l10n = AppLocalizations.of(context);
-                                  return Text(
-                                    l10n?.propertyDetails ?? 'Property Details',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  );
-                                }
-                              ),
-                            ],
+                    // Property Details Section - Table-like design
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header outside the table
+                        Row(
+                          children: [
+                            const Icon(Icons.search, color: Colors.grey, size: 20),
+                            const SizedBox(width: 8),
+                            Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context);
+                                return Text(
+                                  l10n?.propertyDetails ?? 'Property Details',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                );
+                              }
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Property details table with alternating backgrounds
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.blue.withOpacity(0.2)),
                           ),
-                          const SizedBox(height: 16),
-                          
-                          // Dynamic property details
-                          ...(_buildPropertyDetailsList(context)),
-                        ],
-                      ),
+                          child: Column(
+                            children: _buildPropertyDetailsTable(context),
+                          ),
+                        ),
+                      ],
                     ),
                     
                     const SizedBox(height: 32),
@@ -679,7 +902,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: Colors.blue.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -687,20 +910,13 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           children: [
                             Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
-                                ),
+                                const Icon(Icons.info_outline, color: Colors.grey, size: 16),
                                 const SizedBox(width: 8),
                                 Builder(
                                   builder: (context) {
                                     final l10n = AppLocalizations.of(context);
                                     return Text(
-                                      l10n?.about ?? 'Description',
+                                      l10n?.description ?? 'Description',
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -756,7 +972,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: Colors.blue.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -809,6 +1025,77 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       ),
                     
                     const SizedBox(height: 32),
+                    
+                    // Related Listings Section
+                    if (_isLoadingRelated || _relatedListings.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.home_work_outlined, color: Colors.grey, size: 20),
+                                const SizedBox(width: 8),
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context);
+                                    return Text(
+                                      l10n?.relatedListings ?? 'Related Listings',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    );
+                                  }
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            if (_isLoadingRelated)
+                              const SizedBox(
+                                height: 330,
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            else if (_relatedListings.isEmpty)
+                              const SizedBox(
+                                height: 100,
+                                child: Center(
+                                  child: Text(
+                                    'No related listings found',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            else
+                              SizedBox(
+                                height: 330,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _relatedListings.length,
+                                  itemBuilder: (context, index) {
+                                    final listing = _relatedListings[index];
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: PropertyListingCard(listing: listing),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    
+                    if (_isLoadingRelated || _relatedListings.isNotEmpty)
+                      const SizedBox(height: 32),
                     
                     // Property Code and Listed Date
                     Column(
@@ -952,13 +1239,16 @@ class _SingleListingPageState extends State<SingleListingPage> {
     );
   }
   
-  List<Widget> _buildPropertyDetailsList(BuildContext context) {
+  List<Widget> _buildPropertyDetailsTable(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    List<Widget> details = [];
+    List<Map<String, String>> details = [];
     
     // Size
     if (widget.listing.size != null) {
-      details.add(_buildPropertyDetail(l10n?.sizeLabel(widget.listing.size.toString()) ?? 'Size: ${widget.listing.size} sqm'));
+      details.add({
+        'label': 'Size',
+        'value': l10n?.sizeLabel(widget.listing.size.toString()) ?? '${widget.listing.size} sqm',
+      });
     }
     
     // Bedrooms and Bathrooms
@@ -971,32 +1261,58 @@ class _SingleListingPageState extends State<SingleListingPage> {
       roomInfo = l10n?.bathroomsOnly(widget.listing.bathrooms.toString()) ?? '${widget.listing.bathrooms} Bathrooms';
     }
     if (roomInfo.isNotEmpty) {
-      details.add(_buildPropertyDetail(roomInfo));
+      details.add({
+        'label': 'Rooms',
+        'value': roomInfo,
+      });
     }
     
     // Property type
     if (widget.listing.type != null) {
-      details.add(_buildPropertyDetail('${l10n?.typeLabel ?? 'Type:'} ${widget.listing.type!.toUpperCase()}'));
+      details.add({
+        'label': l10n?.typeLabel ?? 'Type',
+        'value': widget.listing.type!.toUpperCase(),
+      });
     }
     
     // Floor
     if (widget.listing.floor != null) {
-      details.add(_buildPropertyDetail('${l10n?.floorLabel ?? 'Floor:'} ${widget.listing.floor}'));
+      details.add({
+        'label': l10n?.floorLabel ?? 'Floor',
+        'value': widget.listing.floor.toString(),
+      });
     }
     
     // Condition
     if (widget.listing.condition != null) {
-      details.add(_buildPropertyDetail('${l10n?.conditionLabel ?? 'Condition:'} ${widget.listing.condition!.toUpperCase()}'));
+      details.add({
+        'label': l10n?.conditionLabel ?? 'Condition',
+        'value': widget.listing.condition!.toUpperCase(),
+      });
     }
     
     // Building age
     if (widget.listing.buildingAge != null) {
-      details.add(_buildPropertyDetail(l10n?.buildingAgeLabel(widget.listing.buildingAge.toString()) ?? 'Building Age: ${widget.listing.buildingAge} years'));
+      details.add({
+        'label': 'Building Age',
+        'value': l10n?.buildingAgeLabel(widget.listing.buildingAge.toString()) ?? '${widget.listing.buildingAge} years',
+      });
     }
     
     // Papers
     if (widget.listing.papers != null) {
-      details.add(_buildPropertyDetail('${l10n?.papersLabel ?? 'Papers:'} ${_formatPapers(widget.listing.papers!)}'));
+      details.add({
+        'label': l10n?.papersLabel ?? 'Papers',
+        'value': _formatPapers(widget.listing.papers!),
+      });
+    }
+    
+    // Furnishing
+    if (widget.listing.furnishing != null) {
+      details.add({
+        'label': 'Furnishing',
+        'value': _formatFurnishing(widget.listing.furnishing!),
+      });
     }
     
     // Listing type
@@ -1011,42 +1327,302 @@ class _SingleListingPageState extends State<SingleListingPage> {
         paymentFreq = paymentFreq[0].toUpperCase() + paymentFreq.substring(1);
         listingForText += ' ($paymentFreq)';
       }
-      details.add(_buildPropertyDetail('${l10n?.availableForLabel ?? 'Available for:'} $listingForText'));
+      details.add({
+        'label': l10n?.availableForLabel ?? 'Available for',
+        'value': listingForText,
+      });
     }
     
     // Available from
     if (widget.listing.availableFrom != null) {
       final availableDate = DateFormat('MMMM yyyy').format(widget.listing.availableFrom!);
-      details.add(_buildPropertyDetail(l10n?.availableFromLabel(availableDate) ?? 'Available from: $availableDate'));
+      details.add({
+        'label': 'Available from',
+        'value': availableDate,
+      });
     }
     
-    return details;
+    // Build rows with alternating backgrounds
+    return details.asMap().entries.map((entry) {
+      int index = entry.key;
+      Map<String, String> detail = entry.value;
+      bool isEven = index % 2 == 0;
+      bool isFirst = index == 0;
+      bool isLast = index == details.length - 1;
+      
+      return _buildPropertyDetailRow(
+        detail['label']!,
+        detail['value']!,
+        isEven: isEven,
+        isFirst: isFirst,
+        isLast: isLast,
+      );
+    }).toList();
   }
   
-  Widget _buildPropertyDetail(String detail) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+  Widget _buildPropertyDetailRow(String label, String value, {bool isEven = false, bool isFirst = false, bool isLast = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: isEven ? Colors.transparent : Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.only(
+          topLeft: isFirst ? const Radius.circular(12) : Radius.zero,
+          topRight: isFirst ? const Radius.circular(12) : Radius.zero,
+          bottomLeft: isLast ? const Radius.circular(12) : Radius.zero,
+          bottomRight: isLast ? const Radius.circular(12) : Radius.zero,
+        ),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 6,
-            height: 6,
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 12),
           Expanded(
+            flex: 2,
             child: Text(
-              detail,
+              label,
               style: TextStyle(
                 color: Colors.grey[700],
-                fontSize: 16,
-                height: 1.5,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
               ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOwnerCard() {
+    final isAgentCompany = widget.listing.ownerRole == 'agent-company';
+    final isAgentIndividual = widget.listing.ownerRole == 'agent-individual';
+    final hasCompanyName = widget.listing.ownerCompanyName != null && 
+                          widget.listing.ownerCompanyName!.isNotEmpty;
+    
+    // Determine the heading text based on role
+    String headingText;
+    if (isAgentCompany) {
+      headingText = 'Listed by agency';
+    } else if (isAgentIndividual) {
+      headingText = 'Listed by agent';
+    } else {
+      headingText = 'Listed by individual';
+    }
+    
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side - Owner information
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // "Listed by agency", "Listed by agent", or "Listed by individual" heading
+                Text(
+                  headingText,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                
+                // Company name (if agent-company) or Agent name
+                if (isAgentCompany && hasCompanyName)
+                  Text(
+                    widget.listing.ownerCompanyName!,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  )
+                else if (widget.listing.ownerFirstName != null || widget.listing.ownerLastName != null)
+                  Text(
+                    _ownerDisplayName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                
+                const SizedBox(height: 8),
+                
+                // Verified Business badge (if agent-company and has companyName)
+                if (isAgentCompany && hasCompanyName)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check,
+                            size: 12,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Verified Business',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Agent name (if agent-company, show below company)
+                if (isAgentCompany && hasCompanyName && 
+                    (widget.listing.ownerFirstName != null || widget.listing.ownerLastName != null)) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _ownerDisplayName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+                
+                const SizedBox(height: 12),
+                
+                // Chat button and See profile link in a row
+                Row(
+                  children: [
+                    // Chat button
+                    GestureDetector(
+                      onTap: _startChat,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.chat,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Chat',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // "See profile" link
+                    GestureDetector(
+                      onTap: _viewProfile,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'See profile',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: Colors.black87,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          // Right side - Profile image
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: _ownerProfileImageUrl != null
+                ? Image.network(
+                    _ownerProfileImageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.person,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    color: Colors.grey[300],
+                    child: const Icon(
+                      Icons.person,
+                      size: 50,
+                      color: Colors.grey,
+                    ),
+                  ),
             ),
           ),
         ],
@@ -1084,6 +1660,22 @@ class _SingleListingPageState extends State<SingleListingPage> {
         return 'Building Permit';
       default:
         return papers.toUpperCase();
+    }
+  }
+  
+  String _formatFurnishing(String furnishing) {
+    switch (furnishing.toLowerCase()) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
+      default:
+        return furnishing.replaceAll('_', ' ').split(' ').map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        }).join(' ');
     }
   }
 }

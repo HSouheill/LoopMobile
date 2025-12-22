@@ -26,11 +26,12 @@ class AddListingModal extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -58,7 +59,7 @@ class AddListingModal extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       '/property-type-selection',
-                      arguments: {'listingType': 'owner'},
+                      arguments: {'listingType': 'owner', 'preselectedType': 'building'},
                     );
                   },
                 ),
@@ -73,7 +74,7 @@ class AddListingModal extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       '/property-type-selection',
-                      arguments: {'listingType': 'owner'},
+                      arguments: {'listingType': 'owner', 'preselectedType': 'land'},
                     );
                   },
                 ),
@@ -88,11 +89,132 @@ class AddListingModal extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       '/property-type-selection',
-                      arguments: {'listingType': 'owner'},
+                      arguments: {'listingType': 'owner', 'preselectedType': 'property'},
                     );
                   },
                 ),
-              ],
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.apartment,
+                  title: AppLocalizations.of(context)?.propertyTypeApartment ?? 'Apartment',
+                  bgColor: Colors.purple[50],
+                  iconColor: Colors.purple,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'apartment'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.cabin,
+                  title: AppLocalizations.of(context)?.propertyTypeChalet ?? 'Chalet',
+                  bgColor: Colors.brown[50],
+                  iconColor: Colors.brown,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'chalet'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.home_work,
+                  title: AppLocalizations.of(context)?.propertyTypeStudio ?? 'Studio',
+                  bgColor: Colors.teal[50],
+                  iconColor: Colors.teal,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'studio'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.store,
+                  title: AppLocalizations.of(context)?.propertyTypeCommercial ?? 'Commercial',
+                  bgColor: Colors.indigo[50],
+                  iconColor: Colors.indigo,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'commercial'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.villa,
+                  title: AppLocalizations.of(context)?.propertyTypeVilla ?? 'Villa',
+                  bgColor: Colors.pink[50],
+                  iconColor: Colors.pink,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'villa'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.factory,
+                  title: AppLocalizations.of(context)?.propertyTypeIndustrial ?? 'Industrial',
+                  bgColor: Colors.grey[300],
+                  iconColor: Colors.grey[700],
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'industrial'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.bed,
+                  title: AppLocalizations.of(context)?.propertyTypeRoom ?? 'Room',
+                  bgColor: Colors.cyan[50],
+                  iconColor: Colors.cyan,
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'room'},
+                    );
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildModalOption(
+                  icon: Icons.public,
+                  title: AppLocalizations.of(context)?.propertyTypeInternational ?? 'International',
+                  bgColor: Colors.amber[50],
+                  iconColor: Colors.amber[700],
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/property-type-selection',
+                      arguments: {'listingType': 'owner', 'preselectedType': 'international'},
+                    );
+                  },
+                ),
+                ],
+              ),
             ),
           ),
         ],

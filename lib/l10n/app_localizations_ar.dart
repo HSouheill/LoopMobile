@@ -17,6 +17,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get agents => 'وكلاء';
 
   @override
+  String get realEstate => 'عقارات';
+
+  @override
   String get listings => 'قوائم';
 
   @override
@@ -73,6 +76,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get featuredCompanies => 'الشركات المميزة';
+
+  @override
+  String get topCompanies => 'أفضل الشركات';
 
   @override
   String get failedToLoadFeaturedServiceProviders =>
@@ -182,7 +188,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get featuredJobs => 'الوظائف المميزة';
 
   @override
-  String get forYouJobs => 'من أجلك';
+  String get forYouJobs => 'الوظائف الشاغرة';
 
   @override
   String get recentJobs => 'الوظائف الأخيرة';
@@ -204,6 +210,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get seeAll => 'عرض الكل';
+
+  @override
+  String get sortBy => 'ترتيب حسب';
+
+  @override
+  String get newestFirst => 'الأحدث أولاً';
+
+  @override
+  String get oldestFirst => 'الأقدم أولاً';
+
+  @override
+  String get priceLowToHigh => 'السعر: من الأقل إلى الأعلى';
+
+  @override
+  String get priceHighToLow => 'السعر: من الأعلى إلى الأقل';
 
   @override
   String get previous => 'السابق';
@@ -236,6 +257,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get about => 'حول';
+
+  @override
+  String get description => 'الوصف';
 
   @override
   String get readMore => 'اقرأ المزيد';
@@ -294,13 +318,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String professionalServiceProviderDescription(
-      String displayName, String city, String country) {
+    String displayName,
+    String city,
+    String country,
+  ) {
     return '$displayName محترف يقدم خدمات عالية الجودة في $city، $country.';
   }
 
   @override
   String individualServiceProviderDescription(
-      String firstName, String lastName, String city, String country) {
+    String firstName,
+    String lastName,
+    String city,
+    String country,
+  ) {
     return '$firstName $lastName هو مقدم خدمات محترف مقيم في $city، $country.';
   }
 
@@ -493,10 +524,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancel => 'إلغاء';
 
   @override
-  String get ok => 'OK';
+  String get ok => 'موافق';
 
   @override
-  String get error => 'Error';
+  String get error => 'خطأ';
 
   @override
   String get delete => 'حذف';
@@ -629,7 +660,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activateFunctionalityNotImplemented =>
-      'وظيفة التفعيل غير مطبقة بعد';
+      'انتظر موافقة المسؤول على القائمة';
 
   @override
   String get editButton => 'تعديل';
@@ -665,6 +696,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get amenitiesLabel => 'وسائل الراحة';
+
+  @override
+  String get relatedListings => 'عقارات مشابهة';
 
   @override
   String get propertyCodeLabel => 'رمز العقار:';
@@ -975,9 +1009,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get user => 'مستخدم';
-
-  @override
-  String get realEstate => 'عقارات';
 
   @override
   String get serviceProvider => 'مقدم خدمة';
@@ -2031,9 +2062,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get titleIsRequired => 'العنوان مطلوب';
 
   @override
-  String get description => 'الوصف';
-
-  @override
   String get describeYourProperty => 'صف عقارك';
 
   @override
@@ -2224,6 +2252,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get propertyTypeLand => 'أرض';
+
+  @override
+  String get propertyTypeIndustrial => 'صناعي';
+
+  @override
+  String get propertyTypeRoom => 'غرفة';
+
+  @override
+  String get propertyTypeBuilding => 'مبنى';
+
+  @override
+  String get propertyTypeInternational => 'دولي';
 
   @override
   String get rentalPeriodDaily => 'يومي';

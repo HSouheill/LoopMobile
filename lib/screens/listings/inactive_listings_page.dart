@@ -37,7 +37,7 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
 
     try {
       final response = await ListingService.getMyListings(
-        status: 'pending',
+        status: 'not-active',
         page: currentPage,
         limit: limit,
       );
@@ -125,7 +125,7 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
                           onActivate: () {
                             // TODO: Implement activate functionality
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n?.activateFunctionalityNotImplemented ?? 'Activate functionality not implemented yet')),
+                              SnackBar(content: Text(l10n?.activateFunctionalityNotImplemented ?? 'Wait for admin to approve listing')),
                             );
                           },
                         ),

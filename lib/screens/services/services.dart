@@ -2,28 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../widgets/service_search_widget.dart';
 import '../../widgets/image_slider_widget.dart';
+import '../../widgets/banner_placeholder_widget.dart';
 import '../../widgets/dynamic_services_widget.dart';
 import '../../services/service_service.dart';
+import '../../services/banner_service.dart';
 
-class ServicesPage extends StatelessWidget {
+class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
 
   @override
+  State<ServicesPage> createState() => _ServicesPageState();
+}
+
+class _ServicesPageState extends State<ServicesPage> {
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(BannerService.servicesScreen);
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<String> sliderImages = [
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-    ];
-
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ServiceSearchWidget(),
           const SizedBox(height: 10),
-          ImageSliderWidget(imageUrls: sliderImages),
+          _isLoadingBanner
+              ? const SizedBox(
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _bannerImages.isNotEmpty
+                  ? ImageSliderWidget(imageUrls: _bannerImages)
+                  : const BannerPlaceholderWidget(), // Placeholder when no banner
           const SizedBox(height: 20),
 
           // Explore Jobs Button
@@ -39,7 +74,10 @@ class ServicesPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF007BFF), Color(0xFF0056b3)],
+                      colors: [
+                        Color.fromARGB(255, 103, 155, 218),
+                        Color.fromARGB(255, 69, 100, 201),
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),

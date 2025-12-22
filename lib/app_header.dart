@@ -56,7 +56,7 @@ class AppHeaderWithRefresh extends StatelessWidget implements PreferredSizeWidge
                 radius: 22,
                 backgroundImage: isLoggedIn && user != null && user.profileImage != null
                     ? NetworkImage('${Environment.apiUrl}assets/${user.profileImage}')
-                    : const NetworkImage('https://i.pravatar.cc/150?img=3') as ImageProvider,
+                    : const AssetImage('assets/defaultProfileImage.png') as ImageProvider,
                 backgroundColor: Colors.grey[200],
               ),
             ),

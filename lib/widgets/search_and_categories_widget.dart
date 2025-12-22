@@ -124,7 +124,12 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.tune, color: Colors.black87),
+                  icon: const Icon(
+                    Icons.tune,
+                    color: Color.fromARGB(255, 69, 100, 201),
+                    size: 30,
+                  ),
+                  iconSize: 30,
                   onPressed: _openAdvancedFilters,
                 ),
               ],
@@ -138,21 +143,44 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
             margin: const EdgeInsets.symmetric(horizontal: 0.0),
           ),
           const SizedBox(height: 16.0),
-          // Categories
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildCategoryIcon(
-                  Icons.house_siding, 'Chalets', Colors.blue, Colors.white, 'chalet'),
-              _buildCategoryIcon(
-                  Icons.villa, 'Villas', Colors.blue, Colors.white, 'villa'),
-              _buildCategoryIcon(
-                  Icons.apartment, 'Apartments', Colors.blue, Colors.white, 'apartment'),
-              _buildCategoryIcon(
-                  Icons.landscape, 'Land', Colors.blue, Colors.white, 'land'),
-              _buildCategoryIcon(
-                  Icons.business, 'Commercial', Colors.blue, Colors.white, 'commercial'),
-            ],
+          // Categories - Horizontally scrollable
+          SizedBox(
+            height: 85.0,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              children: [
+                _buildCategoryIcon(
+                    context, Icons.house_siding, 'chalet', 'chalet'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.villa, 'villa', 'villa'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.apartment, 'apartment', 'apartment'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.landscape, 'land', 'land'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.business, 'commercial', 'commercial'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.home_work, 'studio', 'studio'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.factory, 'industrial', 'industrial'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.meeting_room, 'room', 'room'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.business_center, 'building', 'building'),
+                const SizedBox(width: 16.0),
+                _buildCategoryIcon(
+                    context, Icons.public, 'international', 'international'),
+              ],
+            ),
           ),
         ],
       ),
@@ -160,9 +188,11 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
   }
 
   Widget _buildCategoryIcon(
-      IconData icon, String label, Color backgroundColor, Color iconColor, String category) {
+      BuildContext context, IconData icon, String category, String filterValue) {
+    String label = _getPropertyTypeLabel(context, category);
+    
     return GestureDetector(
-      onTap: () => _navigateToCategory(category),
+      onTap: () => _navigateToCategory(filterValue),
       child: Column(
         children: [
           Container(
@@ -178,7 +208,7 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                 end: Alignment.centerRight,
               ),
             ),
-            child: Icon(icon, color: iconColor, size: 30),
+            child: Icon(icon, color: Colors.white, size: 30),
           ),
           const SizedBox(height: 8.0),
           Text(
@@ -188,5 +218,60 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
         ],
       ),
     );
+  }
+
+  String _getPropertyTypeLabel(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context);
+    switch (type) {
+      case 'apartment':
+        return l10n?.propertyTypeApartment ?? 'Apartment';
+      case 'chalet':
+        return l10n?.propertyTypeChalet ?? 'Chalet';
+      case 'studio':
+        return l10n?.propertyTypeStudio ?? 'Studio';
+      case 'commercial':
+        return l10n?.propertyTypeCommercial ?? 'Commercial';
+      case 'villa':
+        return l10n?.propertyTypeVilla ?? 'Villa';
+      case 'land':
+        return l10n?.propertyTypeLand ?? 'Land';
+      case 'industrial':
+        return l10n?.propertyTypeIndustrial ?? 'Industrial';
+      case 'room':
+        return l10n?.propertyTypeRoom ?? 'Room';
+      case 'building':
+        return l10n?.propertyTypeBuilding ?? 'Building';
+      case 'international':
+        return l10n?.propertyTypeInternational ?? 'International';
+      default:
+        return type;
+    }
+  }
+}
+
+// Sticky header delegate for SearchAndCategoriesWidget
+class StickySearchHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  StickySearchHeaderDelegate({required this.child});
+
+  @override
+  double get minExtent => 170.0; // Approximate height of the widget
+
+  @override
+  double get maxExtent => 170.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white, // Background color to prevent content showing through
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(StickySearchHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child;
   }
 }

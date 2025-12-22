@@ -73,6 +73,79 @@ class AgentService {
     }
   }
 
+  // Get agent by ID using the new endpoint
+  static Future<Map<String, dynamic>> getAgentById(String agentId) async {
+    try {
+      final url = Uri.parse('$baseUrl/get-agent-by-id/$agentId?withReviews=true&withListings=true');
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load agent: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching agent by ID: $e');
+    }
+  }
+
+  // Get agent listings with pagination
+  static Future<Map<String, dynamic>> getAgentListings({
+    required String agentId,
+    int page = 1,
+    int limit = 10,
+    String? sort,
+    String? listingFor,
+    String? city,
+    String? type,
+    double? minPrice,
+    double? maxPrice,
+    int? minBedrooms,
+    int? maxBedrooms,
+    int? minBathrooms,
+    int? maxBathrooms,
+    double? minSize,
+    double? maxSize,
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'page': page.toString(),
+        'limit': limit.toString(),
+        if (sort != null) 'sort': sort,
+        if (listingFor != null) 'listingFor': listingFor,
+        if (city != null) 'city': city,
+        if (type != null) 'type': type,
+        if (minPrice != null) 'minPrice': minPrice.toString(),
+        if (maxPrice != null) 'maxPrice': maxPrice.toString(),
+        if (minBedrooms != null) 'minBedrooms': minBedrooms.toString(),
+        if (maxBedrooms != null) 'maxBedrooms': maxBedrooms.toString(),
+        if (minBathrooms != null) 'minBathrooms': minBathrooms.toString(),
+        if (maxBathrooms != null) 'maxBathrooms': maxBathrooms.toString(),
+        if (minSize != null) 'minSize': minSize.toString(),
+        if (maxSize != null) 'maxSize': maxSize.toString(),
+      };
+      
+      final url = Uri.parse('$baseUrl/agent-listings/$agentId').replace(queryParameters: queryParams);
+      final response = await http.get(
+        url,
+        headers: AuthService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load agent listings: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching agent listings: $e');
+    }
+  }
+
   // New method to fetch my agents
   static Future<Map<String, dynamic>> getMyAgents({int page = 1, int limit = 20}) async {
     try {

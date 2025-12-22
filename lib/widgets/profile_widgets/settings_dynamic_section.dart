@@ -174,7 +174,7 @@ class _DynamicSectionState extends State<DynamicSection> {
                             onChanged: _isUpdating ? null : (value) {
                               _handleSwitchChange(index, value);
                             },
-                            activeTrackColor: const Color(0xFF0048FF),
+                            activeTrackColor: const Color.fromARGB(255, 69, 100, 201),
                             inactiveTrackColor: const Color(0xFFADADAD),
                             activeColor: const Color(0xFFFFFFFF),
                             inactiveThumbColor: const Color(0xFFFFFFFF),

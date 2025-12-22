@@ -2,20 +2,48 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_only_widget.dart';
 import '../../widgets/image_slider_widget.dart';
+import '../../widgets/banner_placeholder_widget.dart';
 import '../../widgets/dynamic_agents_widget.dart';
+import '../../services/banner_service.dart';
 
-class AgentsPage extends StatelessWidget {
+class AgentsPage extends StatefulWidget {
   const AgentsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Slider images for agents page
-    final List<String> agentSliderImages = [
-      'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    ];
+  State<AgentsPage> createState() => _AgentsPageState();
+}
 
+class _AgentsPageState extends State<AgentsPage> {
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(BannerService.agentsScreen);
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,22 +53,34 @@ class AgentsPage extends StatelessWidget {
           const SizedBox(height: 10),
           
           // Image slider
-          ImageSliderWidget(imageUrls: agentSliderImages),
+          _isLoadingBanner
+              ? const SizedBox(
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _bannerImages.isNotEmpty
+                  ? ImageSliderWidget(imageUrls: _bannerImages)
+                  : const BannerPlaceholderWidget(), // Placeholder when no banner
           const SizedBox(height: 10),
           
-          // Featured agents section with dynamic filtering
+          // Featured companies section
+          const DynamicAgentsWidget(
+            category: AgentCategory.featuredCompanies,
+          ),
+          
+          // Top companies section
+          const DynamicAgentsWidget(
+            category: AgentCategory.topCompanies,
+          ),
+          
+          // Featured agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.featured,
           ),
           
-          // Top rated agents section with dynamic filtering
+          // Top rated agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.topRated,
-          ),
-          
-          // For you agents section with dynamic filtering
-          const DynamicAgentsWidget(
-            category: AgentCategory.forYou,
           ),
 
           const SizedBox(height: 110),

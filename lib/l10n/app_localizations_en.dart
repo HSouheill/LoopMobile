@@ -17,6 +17,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agents => 'Agents';
 
   @override
+  String get realEstate => 'Real Estate';
+
+  @override
   String get listings => 'Listings';
 
   @override
@@ -73,6 +76,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get featuredCompanies => 'Featured Companies';
+
+  @override
+  String get topCompanies => 'Top Companies';
 
   @override
   String get failedToLoadFeaturedServiceProviders =>
@@ -185,7 +191,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featuredJobs => 'Featured Jobs';
 
   @override
-  String get forYouJobs => 'For You';
+  String get forYouJobs => 'Job Vacancies';
 
   @override
   String get recentJobs => 'Recent Jobs';
@@ -207,6 +213,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeAll => 'See all';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get newestFirst => 'Newest First';
+
+  @override
+  String get oldestFirst => 'Oldest First';
+
+  @override
+  String get priceLowToHigh => 'Price: Low to High';
+
+  @override
+  String get priceHighToLow => 'Price: High to Low';
 
   @override
   String get previous => 'Previous';
@@ -239,6 +260,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get about => 'About';
+
+  @override
+  String get description => 'Description';
 
   @override
   String get readMore => 'Read More';
@@ -297,13 +321,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String professionalServiceProviderDescription(
-      String displayName, String city, String country) {
+    String displayName,
+    String city,
+    String country,
+  ) {
     return 'Professional $displayName providing quality services in $city, $country.';
   }
 
   @override
   String individualServiceProviderDescription(
-      String firstName, String lastName, String city, String country) {
+    String firstName,
+    String lastName,
+    String city,
+    String country,
+  ) {
     return '$firstName $lastName is a professional service provider based in $city, $country.';
   }
 
@@ -635,7 +666,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activateFunctionalityNotImplemented =>
-      'Activate functionality not implemented yet';
+      'Wait for admin to approve listing';
 
   @override
   String get editButton => 'Edit';
@@ -671,6 +702,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get amenitiesLabel => 'Amenities';
+
+  @override
+  String get relatedListings => 'Related Listings';
 
   @override
   String get propertyCodeLabel => 'Property Code:';
@@ -981,9 +1015,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get user => 'User';
-
-  @override
-  String get realEstate => 'Real Estate';
 
   @override
   String get serviceProvider => 'Service Provider';
@@ -2049,9 +2080,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleIsRequired => 'Title is required';
 
   @override
-  String get description => 'Description';
-
-  @override
   String get describeYourProperty => 'Describe your property';
 
   @override
@@ -2244,6 +2272,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get propertyTypeLand => 'Land';
+
+  @override
+  String get propertyTypeIndustrial => 'Industrial';
+
+  @override
+  String get propertyTypeRoom => 'Room';
+
+  @override
+  String get propertyTypeBuilding => 'Building';
+
+  @override
+  String get propertyTypeInternational => 'International';
 
   @override
   String get rentalPeriodDaily => 'Daily';

@@ -242,6 +242,23 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
     }
   }
 
+  String _formatTimeAgo(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -345,7 +362,7 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                       child: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade600,
+                          color: const Color.fromARGB(255, 69, 100, 201),
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         child: const Icon(
@@ -420,6 +437,18 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                           ),
                         ],
                       ),
+                      // Time ago display below location
+                      if (widget.listing.createdAt != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          _formatTimeAgo(widget.listing.createdAt),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

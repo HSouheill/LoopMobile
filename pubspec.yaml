@@ -5,7 +5,7 @@ publish_to: "none"
 version: 1.0.1+1
 
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.7.0
 
 dependencies:
   flutter:
@@ -29,6 +29,7 @@ dependencies:
   geolocator: ^11.0.0
   geocoding: ^3.0.0
   app_badge_plus: 1.2.3
+  lottie: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +50,11 @@ flutter:
     - assets/chatbg.png
     - assets/support.png
     - assets/BackgroundLogo.png
+    - assets/Watermark.png
+    - assets/animation.json
+    - assets/basic.png
+    - assets/premium.png
+    - assets/standard.png
   #   - images/a_dot_ham.jpeg
 
 flutter_launcher_icons:

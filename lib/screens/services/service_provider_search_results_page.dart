@@ -4,13 +4,16 @@ import '../../services/service_service.dart';
 import '../../models/service_provider.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import 'service_provider_detail_page.dart';
+import 'service_provider_advanced_filters_page.dart';
 
 class ServiceProviderSearchResultsPage extends StatefulWidget {
   final String searchQuery;
+  final Map<String, dynamic>? initialFilters;
 
   const ServiceProviderSearchResultsPage({
     super.key,
     required this.searchQuery,
+    this.initialFilters,
   });
 
   @override
@@ -26,10 +29,14 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
   bool hasMoreData = true;
   bool isLoadingMore = false;
   final ScrollController _scrollController = ScrollController();
+  Map<String, dynamic>? _currentFilters;
+  late String _currentSearchQuery;
 
   @override
   void initState() {
     super.initState();
+    _currentSearchQuery = widget.searchQuery;
+    _currentFilters = widget.initialFilters;
     _loadSearchResults();
     _scrollController.addListener(_onScroll);
   }
@@ -60,11 +67,21 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
       });
 
       final response = await ServiceService.searchServiceProviders(
-        query: widget.searchQuery,
+        query: _currentSearchQuery,
         page: currentPage,
         limit: 20,
         withServices: true,
         withReviews: false,
+        sort: _currentFilters?['sort']?.toString(),
+        city: _currentFilters?['city']?.toString(),
+        district: _currentFilters?['district']?.toString(),
+        isFeatured: _currentFilters?['isFeatured'] == true || _currentFilters?['isFeatured'] == 'true' 
+            ? true 
+            : (_currentFilters?['isFeatured'] == false || _currentFilters?['isFeatured'] == 'false' 
+                ? false 
+                : null),
+        role: _currentFilters?['role']?.toString(),
+        providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
       );
 
       // Convert service providers to agents
@@ -101,11 +118,21 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
     try {
       currentPage++;
       final response = await ServiceService.searchServiceProviders(
-        query: widget.searchQuery,
+        query: _currentSearchQuery,
         page: currentPage,
         limit: 20,
         withServices: true,
         withReviews: false,
+        sort: _currentFilters?['sort']?.toString(),
+        city: _currentFilters?['city']?.toString(),
+        district: _currentFilters?['district']?.toString(),
+        isFeatured: _currentFilters?['isFeatured'] == true || _currentFilters?['isFeatured'] == 'true' 
+            ? true 
+            : (_currentFilters?['isFeatured'] == false || _currentFilters?['isFeatured'] == 'false' 
+                ? false 
+                : null),
+        role: _currentFilters?['role']?.toString(),
+        providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
       );
 
       // Convert service providers to agents
@@ -142,18 +169,46 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
     );
   }
 
+  void _openAdvancedFilters() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceProviderAdvancedFiltersPage(
+          initialQuery: _currentSearchQuery,
+          initialFilters: _currentFilters,
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _currentSearchQuery = result['query'] ?? '';
+        _currentFilters = result['filters'];
+        currentPage = 1;
+        hasMoreData = true;
+      });
+      _loadSearchResults(isRefresh: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)?.searchFor(widget.searchQuery) ?? 'Search: "${widget.searchQuery}"'),
+        title: Text(AppLocalizations.of(context)?.searchFor(_currentSearchQuery) ?? 'Search: "${_currentSearchQuery}"'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         actions: [
           IconButton(
+            icon: const Icon(Icons.tune),
+            onPressed: _openAdvancedFilters,
+            tooltip: 'Filter',
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => _loadSearchResults(isRefresh: true),
+            tooltip: 'Refresh',
           ),
         ],
       ),

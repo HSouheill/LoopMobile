@@ -24,8 +24,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   final _floorController = TextEditingController();
   final _buildingAgeController = TextEditingController();
 
-  String? selectedCondition = 'good';
+  String? selectedCondition = 'ready';
   String? selectedPapers = 'title_deed';
+  String? selectedFurnishing = 'unfurnished';
   List<XFile> _selectedImages = [];
   XFile? _selectedVideo;
   bool _isLoading = false;
@@ -36,17 +37,21 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   final ImagePicker _picker = ImagePicker();
 
   final List<Map<String, String>> conditions = [
-    {'value': 'new', 'label': 'New'},
-    {'value': 'excellent', 'label': 'Excellent'},
-    {'value': 'good', 'label': 'Good'},
+    {'value': 'under_construction', 'label': 'Under Construction'},
+    {'value': 'ready', 'label': 'Ready'},
     {'value': 'needs_renovation', 'label': 'Needs Renovation'},
-    {'value': 'old', 'label': 'Old'},
   ];
 
   final List<Map<String, String>> papers = [
     {'value': 'title_deed', 'label': 'Title Deed'},
     {'value': 'under_construction', 'label': 'Under Construction'},
     {'value': 'other', 'label': 'Other'},
+  ];
+
+  final List<Map<String, String>> furnishingOptions = [
+    {'value': 'unfurnished', 'label': 'Unfurnished'},
+    {'value': 'semi_furnished', 'label': 'Semi-Furnished'},
+    {'value': 'fully_furnished', 'label': 'Fully Furnished'},
   ];
 
   // Amenities
@@ -68,6 +73,22 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     'solarSystem': false,
     'electricity24_7': false,
     'maidRoom': false,
+    'accessible': false,
+    'atticLoft': false,
+    'builtInKitchenAppliances': false,
+    'builtInWardrobes': false,
+    'concierge': false,
+    'coveredParking': false,
+    'fireplace': false,
+    'petsAllowed': false,
+    'playroom': false,
+    'privateGarden': false,
+    'privateGym': false,
+    'privateJacuzzi': false,
+    'sharedSpa': false,
+    'studyRoom': false,
+    'balcony': false,
+    'walkInCloset': false,
   };
 
   @override
@@ -131,6 +152,10 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         
         if (_editingListing!.papers != null) {
           selectedPapers = _editingListing!.papers;
+        }
+        
+        if (_editingListing!.furnishing != null) {
+          selectedFurnishing = _editingListing!.furnishing;
         }
         
         // Set amenities
@@ -235,6 +260,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         'condition': selectedCondition,
         'buildingAge': int.tryParse(_buildingAgeController.text) ?? 0,
         'papers': selectedPapers,
+        if (selectedFurnishing != null) 'furnishing': selectedFurnishing,
         'amenities': amenities,
         'isPublished': false,
         'status': _editingListing?.status ?? 'pending',
@@ -453,6 +479,21 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                         })
                     .toList(),
                 onChanged: (value) => setState(() => selectedPapers = value),
+              ),
+              
+              const SizedBox(height: 15),
+              
+              // Furnishing Dropdown
+              _buildDropdown(
+                value: selectedFurnishing,
+                label: 'Furnishing',
+                items: furnishingOptions
+                    .map((e) => {
+                          'value': e['value']!,
+                          'label': _localizeFurnishingLabel(context, e['value']!)
+                        })
+                    .toList(),
+                onChanged: (value) => setState(() => selectedFurnishing = value),
               ),
               
               const SizedBox(height: 30),
@@ -856,23 +897,34 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       case 'solarSystem': return l10n?.amenitySolarSystem ?? 'Solar System';
       case 'electricity24_7': return l10n?.amenityElectricity247 ?? '24/7 Electricity';
       case 'maidRoom': return l10n?.amenityMaidRoom ?? 'Maid Room';
+      case 'accessible': return 'Accessible';
+      case 'atticLoft': return 'Attic/Loft';
+      case 'builtInKitchenAppliances': return 'Built-in Kitchen Appliances';
+      case 'builtInWardrobes': return 'Built-in Wardrobes';
+      case 'concierge': return 'Concierge';
+      case 'coveredParking': return 'Covered Parking';
+      case 'fireplace': return 'Fireplace';
+      case 'petsAllowed': return 'Pets Allowed';
+      case 'playroom': return 'Playroom';
+      case 'privateGarden': return 'Private Garden';
+      case 'privateGym': return 'Private Gym';
+      case 'privateJacuzzi': return 'Private Jacuzzi';
+      case 'sharedSpa': return 'Shared Spa';
+      case 'studyRoom': return 'Study Room';
+      case 'balcony': return 'Balcony';
+      case 'walkInCloset': return 'Walk-in Closet';
       default: return key;
     }
   }
 
   String _localizeConditionLabel(BuildContext context, String value) {
-    final l10n = AppLocalizations.of(context);
     switch (value) {
-      case 'new':
-        return l10n?.conditionNew ?? 'New';
-      case 'excellent':
-        return l10n?.conditionExcellent ?? 'Excellent';
-      case 'good':
-        return l10n?.conditionGood ?? 'Good';
+      case 'under_construction':
+        return 'Under Construction';
+      case 'ready':
+        return 'Ready';
       case 'needs_renovation':
-        return l10n?.conditionNeedsRenovation ?? 'Needs Renovation';
-      case 'old':
-        return l10n?.conditionOld ?? 'Old';
+        return 'Needs Renovation';
       default:
         return value;
     }
@@ -889,6 +941,19 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         return l10n?.papersUnderConstruction ?? 'Under Construction';
       case 'other':
         return l10n?.papersOther ?? 'Other';
+      default:
+        return value;
+    }
+  }
+
+  String _localizeFurnishingLabel(BuildContext context, String value) {
+    switch (value) {
+      case 'unfurnished':
+        return 'Unfurnished';
+      case 'semi_furnished':
+        return 'Semi-Furnished';
+      case 'fully_furnished':
+        return 'Fully Furnished';
       default:
         return value;
     }

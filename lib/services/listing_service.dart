@@ -148,12 +148,39 @@ class ListingService {
         if (filters['condition'] != null) {
           queryParams['condition'] = filters['condition'].toString();
         }
+        if (filters['furnishing'] != null) {
+          queryParams['furnishing'] = filters['furnishing'].toString();
+        }
+        if (filters['minBedrooms'] != null) {
+          queryParams['minBedrooms'] = filters['minBedrooms'].toString();
+        }
+        if (filters['maxBedrooms'] != null) {
+          queryParams['maxBedrooms'] = filters['maxBedrooms'].toString();
+        }
+        if (filters['minBathrooms'] != null) {
+          queryParams['minBathrooms'] = filters['minBathrooms'].toString();
+        }
+        if (filters['maxBathrooms'] != null) {
+          queryParams['maxBathrooms'] = filters['maxBathrooms'].toString();
+        }
+        if (filters['minSize'] != null) {
+          queryParams['minSize'] = filters['minSize'].toString();
+        }
+        if (filters['maxSize'] != null) {
+          queryParams['maxSize'] = filters['maxSize'].toString();
+        }
         // Only send paymentFrequency if listingFor is 'rent' (payment frequency only applies to rentals)
         final listingFor = filters['listingFor']?.toString().toLowerCase();
         if (filters['paymentFrequency'] != null && 
             filters['paymentFrequency'].toString().isNotEmpty &&
             listingFor == 'rent') {
           queryParams['paymentFrequency'] = filters['paymentFrequency'].toString().toLowerCase().trim();
+        }
+        if (filters['ownership'] != null && filters['ownership'].toString().isNotEmpty) {
+          queryParams['ownership'] = filters['ownership'].toString();
+        }
+        if (filters['floor'] != null && filters['floor'].toString().isNotEmpty) {
+          queryParams['floor'] = filters['floor'].toString();
         }
         // Amenities filter - supports comma-separated string from backend API
         if (filters['amenities'] != null) {
@@ -323,6 +350,23 @@ class ListingService {
       return false;
     }
   }
+
+  // Get similar/related listings
+  static Future<ListingsResponse> getSimilarListings(String listingId) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}listings/get-similar?id=$listingId');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ListingsResponse.fromJson(data);
+      } else {
+        throw Exception('Failed to load similar listings: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching similar listings: $e');
+    }
+  }
 }
 
 // Note: ListingCategory enum with localized support is in lib/screens/listings/listings_category.dart
@@ -464,13 +508,18 @@ class PropertyListing {
   final String? condition;
   final int? buildingAge;
   final String? papers;
+  final String? furnishing;
   final DateTime? availableFrom;
   final String? paymentFrequency;
   // Owner information
+  final String? ownerId;
   final String? ownerFirstName;
   final String? ownerLastName;
   final String? ownerEmail;
   final String? ownerPhone;
+  final String? ownerRole;
+  final String? ownerCompanyName;
+  final String? ownerProfileImage;
   // Contact information
   final String? contactPhone;
   final String? contactEmail;
@@ -500,12 +549,17 @@ class PropertyListing {
     this.condition,
     this.buildingAge,
     this.papers,
+    this.furnishing,
     this.availableFrom,
     this.paymentFrequency,
+    this.ownerId,
     this.ownerFirstName,
     this.ownerLastName,
     this.ownerEmail,
     this.ownerPhone,
+    this.ownerRole,
+    this.ownerCompanyName,
+    this.ownerProfileImage,
     this.contactPhone,
     this.contactEmail,
   });
@@ -589,18 +643,26 @@ class PropertyListing {
 
     // Handle owner/agent name and owner information
     String agentName = 'Unknown Agent';
+    String? ownerId;
     String? ownerFirstName;
     String? ownerLastName;
     String? ownerEmail;
     String? ownerPhone;
+    String? ownerRole;
+    String? ownerCompanyName;
+    String? ownerProfileImage;
 
     if (json['owner'] != null) {
       final owner = json['owner'];
       if (owner is Map<String, dynamic>) {
+        ownerId = owner['_id']?.toString();
         ownerFirstName = owner['firstName']?.toString();
         ownerLastName = owner['lastName']?.toString();
         ownerEmail = owner['email']?.toString();
         ownerPhone = owner['phone']?.toString();
+        ownerRole = owner['role']?.toString();
+        ownerCompanyName = owner['companyName']?.toString();
+        ownerProfileImage = owner['profileImage']?.toString();
 
         // Set agent name to full name if available, otherwise fallback to email
         if (ownerFirstName != null && ownerLastName != null) {
@@ -658,6 +720,7 @@ class PropertyListing {
     if (json['buildingAge'] is num)
       buildingAge = (json['buildingAge'] as num).toInt();
     String? papers = json['papers']?.toString();
+    String? furnishing = json['furnishing']?.toString();
     String? paymentFrequency = json['paymentFrequency']?.toString();
     
     // Handle video - build full URL if present
@@ -691,12 +754,17 @@ class PropertyListing {
       condition: condition,
       buildingAge: buildingAge,
       papers: papers,
+      furnishing: furnishing,
       availableFrom: availableFrom,
       paymentFrequency: paymentFrequency,
+      ownerId: ownerId,
       ownerFirstName: ownerFirstName,
       ownerLastName: ownerLastName,
       ownerEmail: ownerEmail,
       ownerPhone: ownerPhone,
+      ownerRole: ownerRole,
+      ownerCompanyName: ownerCompanyName,
+      ownerProfileImage: ownerProfileImage,
       contactPhone: contactPhone,
       contactEmail: contactEmail,
     );

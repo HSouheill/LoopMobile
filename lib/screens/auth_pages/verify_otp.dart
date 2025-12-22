@@ -61,8 +61,14 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
           if (mounted) {
             // Check if the response contains token and user data for auto sign-in
             if (data['token'] != null && data['user'] != null) {
+              // Merge hasListing from top level if present, otherwise use user object
+              final userData = Map<String, dynamic>.from(data['user']);
+              if (data['hasListing'] != null && userData['hasListing'] == null) {
+                userData['hasListing'] = data['hasListing'];
+              }
+              
               // Auto sign-in the user
-              final success = await AuthService.completeSignup(data['token'], data['user']);
+              final success = await AuthService.completeSignup(data['token'], userData);
               
               if (success) {
                 // Show success message
