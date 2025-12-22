@@ -1166,8 +1166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 backgroundImage: user.profileImage != null
                                     ? NetworkImage(
                                         '${Environment.apiUrl}assets/${user.profileImage}')
-                                    : const NetworkImage(
-                                            'https://i.pravatar.cc/150?img=3')
+                                    : const AssetImage(
+                                            'assets/defaultProfileImage.png')
                                         as ImageProvider,
                                 backgroundColor: Colors.grey[200],
                               ),
