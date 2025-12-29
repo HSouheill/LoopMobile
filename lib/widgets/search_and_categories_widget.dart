@@ -154,7 +154,7 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                     context, Icons.house_siding, 'chalet', 'chalet'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
-                    context, Icons.villa, 'villa', 'villa'),
+                    context, Icons.cottage, 'villa', 'villa'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
                     context, Icons.apartment, 'apartment', 'apartment'),
@@ -166,16 +166,16 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                     context, Icons.business, 'commercial', 'commercial'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
-                    context, Icons.home_work, 'studio', 'studio'),
+                    context, Icons.roofing, 'studio', 'studio'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
                     context, Icons.factory, 'industrial', 'industrial'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
-                    context, Icons.meeting_room, 'room', 'room'),
+                    context, Icons.bed, 'room', 'room'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
-                    context, Icons.business_center, 'building', 'building'),
+                    context, Icons.domain, 'building', 'building'),
                 const SizedBox(width: 16.0),
                 _buildCategoryIcon(
                     context, Icons.public, 'international', 'international'),
