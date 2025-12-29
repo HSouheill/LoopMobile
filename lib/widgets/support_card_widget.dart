@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupportCardWidget extends StatelessWidget {
   const SupportCardWidget({super.key});
@@ -43,12 +44,75 @@ class SupportCardWidget extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Lottie.asset(
-                'assets/call-center.json',
-                fit: BoxFit.contain,
-              ),
+            child: Stack(
+              children: [
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Lottie.asset(
+                      'assets/call-center.json',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 2,
+                  right: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            final Uri url = Uri.parse('https://iconscout.com/lottie-animations/call-center');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                          child: const Text(
+                            'Call Center',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 6,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const Text(
+                          ' by ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 6,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            final Uri url = Uri.parse('https://iconscout.com/contributors/israfil-hossain-anik');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                          child: const Text(
+                            'Israfil Hossain',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 6,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 16),
