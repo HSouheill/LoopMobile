@@ -155,13 +155,14 @@ class _CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
     // Calculate the bottom navigation bar height
     // Your custom navbar height is 80.0
     final double bottomNavBarHeight = 80.0;
-    
+
     // Calculate the FAB position to sit on top of the bottom navigation bar
     // We want the FAB to be positioned so its bottom edge aligns with the top of the bottom nav bar
     final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2;
-    
+
     // Position the FAB so it sits on top of the navbar, accounting for safe area
-    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavBarHeight - bottomSafeArea - scaffoldGeometry.floatingActionButtonSize.height;
+    // Add 10 pixels to lower the button slightly
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavBarHeight - bottomSafeArea - scaffoldGeometry.floatingActionButtonSize.height + 10;
     
     return Offset(fabX, fabY);
   }
