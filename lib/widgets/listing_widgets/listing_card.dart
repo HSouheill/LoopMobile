@@ -110,7 +110,7 @@ class ListingCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.orange,
+                        color: const Color.fromARGB(255, 244, 208, 3),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Builder(

@@ -353,6 +353,31 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                       ),
                     ),
                   ),
+                  if (widget.listing.isFeatured)
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 244, 208, 3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return Text(
+                              l10n?.featuredLabel ?? 'Featured',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }
+                        ),
+                      ),
+                    ),
                 ],
               ),
               Padding(
