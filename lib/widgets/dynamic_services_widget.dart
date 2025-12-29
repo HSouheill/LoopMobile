@@ -80,16 +80,20 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
         return Agent.fromJson(provider.toAgentJson());
       }).toList();
 
-      setState(() {
-        serviceProviders = response.users;
-        agents = agentList;
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          serviceProviders = response.users;
+          agents = agentList;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        error = e.toString();
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          error = e.toString();
+          isLoading = false;
+        });
+      }
     }
   }
 

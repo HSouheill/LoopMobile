@@ -42,16 +42,20 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
       final response = await ListingService.getFeaturedListings(
         limit: widget.isMainPage ? 3 : 10,
       );
-      
-      setState(() {
-        listings = response.listings;
-        isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          listings = response.listings;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        error = e.toString();
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          error = e.toString();
+          isLoading = false;
+        });
+      }
     }
   }
 
