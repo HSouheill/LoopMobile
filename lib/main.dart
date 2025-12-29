@@ -17,7 +17,6 @@ import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
-import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
@@ -614,6 +613,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
+              // Marketing banner (already on top)
               _isLoadingBanner
                   ? const SizedBox(
                       height: 200,
@@ -623,16 +623,7 @@ class _HomePageState extends State<HomePage> {
                       ? ImageSliderWidget(imageUrls: _bannerImages)
                       : const BannerPlaceholderWidget(), // Placeholder when no banner
               const SizedBox(height: 10),
-              _isLoadingNews
-                  ? const SizedBox(
-                      height: 100,
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  : _marketUpdates.isEmpty
-                      ? const SizedBox.shrink()
-                      : LatestUpdatesWidget(updates: _marketUpdates),
-              const SizedBox(height: 10),
-              // Updated to use callback for navigation
+              // Featured Listings
               FeaturedListingsWidget(
                 title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
                 isMainPage: true,
@@ -640,14 +631,6 @@ class _HomePageState extends State<HomePage> {
                     ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
               ),
               const SizedBox(height: 10),
-              const SupportCardWidget(),
-              const SizedBox(height: 10),
-              // Recommended Agents (featured, fetched from API, limited to 3 on main)
-              FeaturedAgentsWidget(
-                title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
-                isMainPage: true,
-                onSeeAll: () => mainScreenState?.navigateToTab(0),
-              ),
               // Featured Services section - now fetched dynamically
               DynamicServicesWidget(
                 category: ServiceCategory.featured,
@@ -664,6 +647,9 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
               const SizedBox(height: 10),
+              // Support section
+              const SupportCardWidget(),
+              const SizedBox(height: 10),
               // Companies Services section - now fetched dynamically
               DynamicServicesWidget(
                 category: ServiceCategory.companies,
@@ -679,6 +665,16 @@ class _HomePageState extends State<HomePage> {
                 showSeeAll: true,
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
+              const SizedBox(height: 10),
+              // Latest market updates
+              _isLoadingNews
+                  ? const SizedBox(
+                      height: 100,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _marketUpdates.isEmpty
+                      ? const SizedBox.shrink()
+                      : LatestUpdatesWidget(updates: _marketUpdates),
               const SizedBox(height: 10),
               // Featured Jobs section - now fetched dynamically
               DynamicJobsWidget(
