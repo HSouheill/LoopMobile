@@ -70,10 +70,8 @@ class _JobSearchWidgetState extends State<JobSearchWidget> {
             ),
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
-                  onPressed: _performSearch,
-                ),
+                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
+                const SizedBox(width: 8.0),
                 Expanded(
                   child: Builder(
                     builder: (context) {
