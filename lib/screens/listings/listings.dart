@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../widgets/search_and_categories_widget.dart';
 import '../../widgets/listing_widgets/dynamic_listings_widget.dart';
+import '../../widgets/image_slider_widget.dart';
+import '../../widgets/banner_placeholder_widget.dart';
+import '../../services/banner_service.dart';
 import 'listings_category.dart'; // import enum with localization support
 
 class ListingsPage extends StatefulWidget {
@@ -11,6 +14,34 @@ class ListingsPage extends StatefulWidget {
 }
 
 class _ListingsPageState extends State<ListingsPage> {
+  List<String> _bannerImages = [];
+  bool _isLoadingBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBanner();
+  }
+
+  Future<void> _fetchBanner() async {
+    try {
+      final banner = await BannerService.getBanner(5); // Using bannerNumber 5
+      if (mounted) {
+        setState(() {
+          _bannerImages = banner?.imageUrls ?? [];
+          _isLoadingBanner = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _bannerImages = [];
+          _isLoadingBanner = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -24,6 +55,16 @@ class _ListingsPageState extends State<ListingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 10),
+              // Banner
+              _isLoadingBanner
+                  ? const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _bannerImages.isNotEmpty
+                      ? ImageSliderWidget(imageUrls: _bannerImages)
+                      : const BannerPlaceholderWidget(),
               const SizedBox(height: 24),
               // Chalets
               const DynamicListingsWidget(category: ListingCategory.chalets),
