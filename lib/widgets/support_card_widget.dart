@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
+import 'package:lottie/lottie.dart';
 
 class SupportCardWidget extends StatelessWidget {
   const SupportCardWidget({super.key});
@@ -41,10 +42,12 @@ class SupportCardWidget extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              image: const DecorationImage(
-                image: AssetImage('assets/support.png'),
-                fit: BoxFit.fitHeight, // fill height, keep aspect ratio
-                alignment: Alignment.center,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Lottie.asset(
+                'assets/call-center.json',
+                fit: BoxFit.contain,
               ),
             ),
           ),

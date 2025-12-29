@@ -48,10 +48,11 @@ flutter:
     - assets/serverProviderBackground.png
     - assets/defaultProfileImage.png
     - assets/chatbg.png
-    - assets/support.png
+    # - assets/support.png
     - assets/BackgroundLogo.png
     - assets/Watermark.png
     - assets/animation.json
+    - assets/call-center.json
     - assets/basic.png
     - assets/premium.png
     - assets/standard.png
