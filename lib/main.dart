@@ -200,6 +200,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     _setupSocketListeners();
     _startUnreadCountTimer();
     _detectCurrentLocation(); // Detect location on app launch
+    _startLocationMonitoring(); // Start monitoring location changes
   }
 
   @override
@@ -209,6 +210,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     _notificationSubscription?.cancel();
     _readSubscription?.cancel();
     _unreadCountTimer?.cancel();
+    LocationService.stopLocationMonitoring(); // Stop location monitoring
     super.dispose();
   }
 
@@ -339,6 +341,22 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       }
     } catch (e) {
       // Silently fail - location is optional
+    }
+  }
+
+  /// Start monitoring location changes
+  /// Updates the header location automatically when the device moves
+  Future<void> _startLocationMonitoring() async {
+    try {
+      await LocationService.startLocationMonitoring((String newCity) {
+        if (mounted) {
+          setState(() {
+            _currentLocation = newCity;
+          });
+        }
+      });
+    } catch (e) {
+      // Silently fail - location monitoring is optional
     }
   }
 
