@@ -249,7 +249,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                 builder: (context) {
                   final l10n = AppLocalizations.of(context);
                   return IconButton(
-                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                     onPressed: _showReportDialog,
                     tooltip: l10n?.reportAgentTooltip ?? 'Report this agent',
                   );
@@ -580,7 +580,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                             height: 50,
                             child: OutlinedButton.icon(
                               onPressed: _showReportDialog,
-                              icon: const Icon(Icons.flag, color: Colors.red),
+                              icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                               label: Text(
                                 AppLocalizations.of(context)?.reportAgent ?? 'Report this agent',
                                 style: const TextStyle(color: Colors.red)

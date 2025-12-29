@@ -46,7 +46,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 builder: (context) {
                   final l10n = AppLocalizations.of(context);
                   return IconButton(
-                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                     onPressed: _showReportDialog,
                     tooltip: l10n?.reportThisJobTooltip ?? 'Report this job',
                   );
@@ -344,7 +344,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                           final l10n = AppLocalizations.of(context)!;
                           return OutlinedButton.icon(
                             onPressed: _showReportDialog,
-                            icon: const Icon(Icons.flag, color: Colors.red),
+                            icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                             label: Text(l10n.reportThisJob, style: const TextStyle(color: Colors.red)),
                             style: OutlinedButton.styleFrom(
                               shape: RoundedRectangleBorder(
