@@ -66,7 +66,8 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
             children: [
               Text(
                 widget.title,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: const TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),

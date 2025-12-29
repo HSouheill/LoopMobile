@@ -100,7 +100,8 @@ class _DynamicListingsWidgetState extends State<DynamicListingsWidget> {
             children: [
               Text(
                 widget.category.getLocalizedDisplayName(l10n),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: const TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
