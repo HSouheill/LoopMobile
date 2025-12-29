@@ -208,7 +208,7 @@ class _SearchAndCategoriesWidgetState extends State<SearchAndCategoriesWidget> {
                 end: Alignment.centerRight,
               ),
             ),
-            child: Icon(icon, color: Colors.white, size: 30),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(height: 8.0),
           Text(
