@@ -404,22 +404,6 @@ class _AgentCardState extends State<AgentCard> {
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 10,
-                right: 10,
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 69, 100, 201),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: const Icon(
-                    Icons.share,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
             ],
           ),
           // Agent details
