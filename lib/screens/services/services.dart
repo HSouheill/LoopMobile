@@ -118,6 +118,12 @@ class _ServicesPageState extends State<ServicesPage> {
             category: ServiceCategory.individual,
             showSeeAll: true,
           ),
+
+          // Featured Services
+          const DynamicServicesWidget(
+            category: ServiceCategory.featured,
+            showSeeAll: true,
+          ),
           const SizedBox(height: 100),
         ],
       ),
