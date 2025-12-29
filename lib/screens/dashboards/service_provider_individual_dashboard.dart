@@ -198,10 +198,15 @@ class _ServiceProviderIndividualDashboardPageState
             Positioned(
               top: 30,
               left: 16,
-              child: SizedBox(
-                width: 30,
-                height: 30,
+              child: GestureDetector(
+                onTap: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                },
                 child: Container(
+                  width: 30,
+                  height: 30,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
@@ -210,19 +215,12 @@ class _ServiceProviderIndividualDashboardPageState
                     ),
                     borderRadius: BorderRadius.circular(50.0),
                   ),
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(
+                  child: const Center(
+                    child: Icon(
                       Icons.arrow_back_rounded,
                       color: Colors.blue,
                       size: 16,
                     ),
-                    onPressed: () {
-                      if (Navigator.of(context).canPop()) {
-                        Navigator.of(context).pop();
-                      }
-                    },
                   ),
                 ),
               ),
