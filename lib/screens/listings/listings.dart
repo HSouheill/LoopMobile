@@ -15,12 +15,9 @@ class _ListingsPageState extends State<ListingsPage> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // Sticky search and categories widget
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: StickySearchHeaderDelegate(
-            child: const SearchAndCategoriesWidget(),
-          ),
+        // Search and categories widget (scrolls with page)
+        const SliverToBoxAdapter(
+          child: SearchAndCategoriesWidget(),
         ),
         // Rest of the content
         SliverToBoxAdapter(

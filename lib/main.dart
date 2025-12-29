@@ -11,7 +11,6 @@ import 'services/badge_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
 import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
@@ -600,13 +599,6 @@ class _HomePageState extends State<HomePage> {
 
     return CustomScrollView(
       slivers: [
-        // Sticky search and categories widget
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: StickySearchHeaderDelegate(
-            child: const SearchAndCategoriesWidget(),
-          ),
-        ),
         // Rest of the content
         SliverToBoxAdapter(
           child: Column(
