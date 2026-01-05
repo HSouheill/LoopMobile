@@ -6,7 +6,13 @@ class LocationService {
         'Akkar': [
           'Halba',
           'Kobayat',
-          'Rahbeh'
+          'Rahbeh',
+          'Fnaidek',
+          'Bebnine',
+          'Berqayel',
+          'Menjez',
+          'Bire Akkar',
+          'Cheikh Taba'
         ]
       },
       'Baalbek-Hermel': {
@@ -47,12 +53,18 @@ class LocationService {
         'Rashaya': [
           'Rashaya',
           'Ain Ata',
-          'Yanta'
+          'Yanta',
+          'Kfar Meshki',
+          'Bakifa'
         ],
         'Western Beqaa': [
           'Joub Jannine',
           'Kefraya',
-          'Machghara'
+          'Machghara',
+          'Sohmor',
+          'Kherbet Rouha',
+          'Lala',
+          'Saghbine'
         ],
         'Zahlé': [
           'Zahlé',
@@ -62,7 +74,15 @@ class LocationService {
           'Saadnay\'el',
           'Hazerta',
           'Ferzol',
-          'Abilh'
+          'Abilh',
+          'Aanjar',
+          'Kab Elias',
+          'Bar Elias',
+          'Riyaq',
+          'Taalabaya',
+          'Niha',
+          'Karak',
+          'Wadi El Delm'
         ]
       },
       'Keserwan-Jbeil': {
@@ -72,7 +92,13 @@ class LocationService {
           'Halat',
           'Nahr Ibrahim',
           'Lassa',
-          'Al Aqoura'
+          'Al Aqoura',
+          'Qartaba',
+          'Ehmej',
+          'Jaj',
+          'Hbaline',
+          'Bejje',
+          'Lehfed'
         ],
         'Keserwan': [
           'Jounieh',
@@ -81,7 +107,18 @@ class LocationService {
           'Blouneh',
           'Zouk Mosbeh',
           'Safra',
-          'Tabarja'
+          'Tabarja',
+          'Ghazir',
+          'Sarba',
+          'Adma',
+          'Hboub',
+          'Kaslik',
+          'Jounieh Bay',
+          'Ghadir',
+          'Sahel Alma',
+          'Harissa',
+          'Kfarhbab',
+          'Fatqa'
         ]
       },
       'Mount Lebanon': {
@@ -93,12 +130,28 @@ class LocationService {
           'Kaifun',
           'Chanehye',
           'Sofar',
-          'Majdlaya'
+          'Majdlaya',
+          'Ain Ksour',
+          'Ain Zhalta',
+          'Bchamoun',
+          'Chartoun',
+          'Kfarmatta',
+          'Beiteddine',
+          'Ras el Metn'
         ],
         'Baabda': [
           'Baabda',
           'Chiyah',
-          'Ghobeiry'
+          'Ghobeiry',
+          'Hadath',
+          'Furn el Chebbak',
+          'Hazmieh',
+          'Sin el Fil',
+          'Ain el Remmaneh',
+          'Jamhour',
+          'Yarze',
+          'Bsaba',
+          'Bsous'
         ],
         'Chouf': [
           'Beiteddine',
@@ -107,7 +160,15 @@ class LocationService {
           'Maasser El Chouf',
           'Al Mukhtara',
           'Btouma',
-          'Jiyeh'
+          'Jiyeh',
+          'Barja',
+          'Damour',
+          'Deir Dourit',
+          'Kfar Nabrakh',
+          'Ain Qeni',
+          'Bchetfine',
+          'Ain Bal',
+          'Kayfoun'
         ],
         'Matn': [
           'Jdeideh',
@@ -115,7 +176,19 @@ class LocationService {
           'Bikfaya',
           'Fanar',
           'Rabieh',
-          'Beit Chabab'
+          'Beit Chabab',
+          'Baouchriyeh',
+          'Sed el Baouchriye',
+          'Ain el Rihaneh',
+          'Beit Meri',
+          'Brummana',
+          'Mtein',
+          'Broumana',
+          'Mazraat Yachouh',
+          'Antelias',
+          'Naccache',
+          'Mansourieh',
+          'Bsalim'
         ]
       },
       'Nabatieh': {
@@ -124,23 +197,50 @@ class LocationService {
           'Aita Al Jabal',
           'Tebnine',
           'Kafr Dounin',
-          'Yater'
+          'Yater',
+          'Rmeich',
+          'Aita al-Shaab',
+          'Yaroun',
+          'Maroun al Ras',
+          'Ainata',
+          'Aitaroun',
+          'Beit Yahoun',
+          'Debel',
+          'Maron el Ras'
         ],
         'Hasbaya': [
           'Hasbaya',
           'Kfarchouba',
-          'Shebaa'
+          'Shebaa',
+          'Hasbaiya',
+          'Kaoukaba',
+          'Shebaa Farms',
+          'Kfar Hamam',
+          'Ain Qinya'
         ],
         'Marjeyoun': [
           'Marjeyoun',
           'Khiam',
-          'Mimas'
+          'Mimas',
+          'Qlaia',
+          'Ebel el Saqi',
+          'Marjayoun',
+          'Deir Mimas',
+          'Kfarkila',
+          'Houla'
         ],
         'Nabatieh': [
           'Nabatieh',
           'Houmine Al-Fawqa',
           'Houmine Al-Tahta',
-          'Jbaa'
+          'Jbaa',
+          'Nabatiye et Tahta',
+          'Nabatiye el Faouka',
+          'Kfar Roummane',
+          'Arnoun',
+          'Zefta',
+          'Kfar Tibnit',
+          'Ansar'
         ]
       },
       'North': {
@@ -151,7 +251,13 @@ class LocationService {
           'Zan',
           'Bqosta',
           'Deir Bela',
-          'Salata'
+          'Salata',
+          'Kfar Abida',
+          'Hardine',
+          'Tannourine',
+          'Edde',
+          'Ras Nhash',
+          'Sghar'
         ],
         'Bsharri': [
           'Bsharri',
@@ -163,7 +269,11 @@ class LocationService {
           'Beqaa Kafra',
           'Abdeen',
           'Bazoun',
-          'Bkrkasha'
+          'Bkrkasha',
+          'Hadchit',
+          'Bane',
+          'Ehden Saydet',
+          'Qadisha Valley'
         ],
         'Koura': [
           'Amioun',
@@ -171,18 +281,32 @@ class LocationService {
           'Kaftoun',
           'Fiyeh',
           'Dar Chmizzine',
-          'Btouratije'
+          'Btouratije',
+          'Barsa',
+          'Kfar Hazir',
+          'Kfar Hata',
+          'Dahr el Ain',
+          'Bdebba',
+          'Btouratige'
         ],
         'Miniyeh-Danniyeh': [
           'Miniyeh',
           'Bakhoun',
-          'Seer'
+          'Seer',
+          'Beit el Faqs',
+          'Sir el Dinnieh',
+          'Kfar Hata',
+          'Aaba'
         ],
         'Tripoli': [
           'Tripoli',
           'Al Mina',
           'Al Badawi',
-          'Al Qalamoun'
+          'Al Qalamoun',
+          'Bab al-Raml',
+          'Zahrieh',
+          'Maarad',
+          'Abu Samra'
         ],
         'Zgharta': [
           'Zgharta',
@@ -190,24 +314,55 @@ class LocationService {
           'Majdalia',
           'Rachiine',
           'Kfarhata',
-          'Ayal'
+          'Ayal',
+          'Ardeh',
+          'Sebaal',
+          'Kfarsgab',
+          'Mazraat Kfar Hazir',
+          'Batroumine'
         ]
       },
       'South': {
         'Sidon': [
           'Sidon',
           'Anqoun',
-          'Maghdouché'
+          'Maghdouché',
+          'Saida',
+          'Ain el Helweh',
+          'Miyeh ou Miyeh',
+          'Darb el Sim',
+          'Haret Saida',
+          'Majdelyoun',
+          'Ghaziyeh',
+          'Zeita',
+          'Bnaafoul'
         ],
         'Jezzine': [
           'Jezzine',
           'Bkassine',
-          'Roum'
+          'Roum',
+          'Ain el Mir',
+          'Sfaray',
+          'Aammatour',
+          'Aazour',
+          'Qallah',
+          'Louaize',
+          'Wadi Jezzine'
         ],
         'Tyre': [
           'Tyre',
           'Ain Baal',
-          'Jwaya'
+          'Jwaya',
+          'Sour',
+          'Qana',
+          'Bourj el Shemali',
+          'El Buss',
+          'Rachidiyeh',
+          'Deir Qanoun',
+          'Hannaouay',
+          'Jebbaain',
+          'Abbassieh',
+          'Borj Rahal'
         ]
       }
     },
