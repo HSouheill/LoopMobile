@@ -325,144 +325,130 @@ class _AgentCardState extends State<AgentCard> {
         ),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Image with overlay icons
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
-                child: widget.agent.imageUrl.trim().isNotEmpty
-                    ? Image.network(
-                        widget.agent.imageUrl,
-                        height: 140, // increased slightly for better visual
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        // Loading and error builders for better UX
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const SizedBox(
-                            height: 140,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 140,
-                            color: Colors.grey.shade200,
-                            child: const Center(
-                              child: Icon(Icons.person, size: 40, color: Colors.grey),
-                            ),
-                          );
-                        },
-                      )
-                    : Container(
-                        height: 140, // placeholder height matches real image height
-                        width: double.infinity,
-                        color: Colors.grey.shade200,
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircleAvatar(
-                                radius: 32,
-                                backgroundColor: Colors.grey.shade300,
-                                child: const Icon(Icons.person, size: 40, color: Colors.grey),
+      child: IntrinsicHeight(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Image with overlay icons
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  ),
+                  child: widget.agent.imageUrl.trim().isNotEmpty
+                      ? Image.network(
+                          widget.agent.imageUrl,
+                          height: 140, // increased slightly for better visual
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          // Loading and error builders for better UX
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const SizedBox(
+                              height: 140,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 140,
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                child: Icon(Icons.person, size: 40, color: Colors.grey),
                               ),
-                             
-                            ],
+                            );
+                          },
+                        )
+                      : Container(
+                          height: 140, // placeholder height matches real image height
+                          width: double.infinity,
+                          color: Colors.grey.shade200,
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  radius: 32,
+                                  backgroundColor: Colors.grey.shade300,
+                                  child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                                ),
+
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-              ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: GestureDetector(
-                  onTap: _toggleFavorite,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white.withOpacity(0.8),
-                    radius: 16,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: _toggleFavorite,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white.withOpacity(0.8),
+                      radius: 16,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Icon(
+                              _isFavorited ? Icons.favorite : Icons.favorite_border,
+                              color: _isFavorited ? Colors.red : Colors.blue,
+                              size: 20,
                             ),
-                          )
-                        : Icon(
-                            _isFavorited ? Icons.favorite : Icons.favorite_border,
-                            color: _isFavorited ? Colors.red : Colors.blue,
-                            size: 20,
-                          ),
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 10,
-                right: 10,
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 69, 100, 201),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: const Icon(
-                    Icons.share,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Agent details
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.agent.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                // Conditional rendering of property count or custom text
-                if (widget.showPropertyCount)
-                  Builder(
-                    builder: (context) {
-                      final l10n = AppLocalizations.of(context);
-                      return _buildInfoRow(Icons.business_center_outlined,
-                          l10n?.properties(widget.agent.propertyCount) ?? '${widget.agent.propertyCount} Properties');
-                    }
-                  )
-                else
-                  Builder(
-                    builder: (context) {
-                      return _buildCustomTextRow(widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available'));
-                    }
-                  ),
-                const SizedBox(height: 4),
-                _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
-                const SizedBox(height: 4),
-                _buildInfoRow(
-                    Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
-                    iconColor: Colors.amber                ),
               ],
             ),
-          ),
-        ],
+            // Agent details
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.agent.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  // Conditional rendering of property count or custom text
+                  if (widget.showPropertyCount)
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context);
+                        return _buildInfoRow(Icons.business_center_outlined,
+                            l10n?.properties(widget.agent.propertyCount) ?? '${widget.agent.propertyCount} Properties');
+                      }
+                    )
+                  else
+                    Builder(
+                      builder: (context) {
+                        return _buildCustomTextRow(widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available'));
+                      }
+                    ),
+                  const SizedBox(height: 4),
+                  _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
+                  const SizedBox(height: 4),
+                  _buildInfoRow(
+                      Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
+                      iconColor: Colors.amber                ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     ),
     );

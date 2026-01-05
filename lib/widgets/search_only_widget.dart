@@ -46,10 +46,13 @@ class _SearchOnlyWidgetState extends State<SearchOnlyWidget> {
             ),
             child: Row(
               children: [
+                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
+                const SizedBox(width: 8.0),
                 Expanded(
                   child: TextField(
                     controller: _searchController,
                     cursorColor: Color.fromARGB(255, 69, 100, 201),
+                    onSubmitted: (_) => _performSearch(),
                     decoration: InputDecoration(
                       hintText: AppLocalizations.of(context)?.searchAgents ?? 'Search agents...',
                       // remove all borders
@@ -64,12 +67,7 @@ class _SearchOnlyWidgetState extends State<SearchOnlyWidget> {
                       // placeholder color same as icon
                       hintStyle: const TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
                     ),
-                    onSubmitted: (_) => _performSearch(),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
-                  onPressed: _performSearch,
                 ),
               ],
             ),

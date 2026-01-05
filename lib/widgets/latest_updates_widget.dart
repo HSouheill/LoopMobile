@@ -160,9 +160,8 @@ class _LatestUpdatesWidgetState extends State<LatestUpdatesWidget>
           child: Text(
             AppLocalizations.of(context)?.latestMarketUpdates ?? 'Latest Market Updates',
             style: const TextStyle(
-              fontSize: 24.0,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
             ),
           ),
         ),

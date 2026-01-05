@@ -42,16 +42,20 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
       final response = await ListingService.getFeaturedListings(
         limit: widget.isMainPage ? 3 : 10,
       );
-      
-      setState(() {
-        listings = response.listings;
-        isLoading = false;
-      });
+
+      if (mounted) {
+        setState(() {
+          listings = response.listings;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        error = e.toString();
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          error = e.toString();
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -66,7 +70,8 @@ class _FeaturedListingsWidgetState extends State<FeaturedListingsWidget> {
             children: [
               Text(
                 widget.title,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: const TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -352,106 +357,113 @@ class _PropertyListingCardState extends State<PropertyListingCard> {
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Share functionality - prevent navigation
-                      },
+                  if (widget.listing.isFeatured)
+                    Positioned(
+                      top: 10,
+                      left: 10,
                       child: Container(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 69, 100, 201),
-                          borderRadius: BorderRadius.circular(10.0),
+                          color: const Color.fromARGB(255, 244, 208, 3),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(
-                          Icons.share,
-                          color: Colors.white,
-                          size: 20,
+                        child: Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context);
+                            return Text(
+                              l10n?.featuredLabel ?? 'Featured',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                      Text(
-                        widget.listing.title,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.listing.price,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.person, size: 16, color: Colors.grey),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              widget.listing.agentName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                              ),
-                            ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                        Text(
+                          widget.listing.title,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on, size: 16, color: Colors.blue),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              widget.listing.location,
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Time ago display below location
-                      if (widget.listing.createdAt != null) ...[
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatTimeAgo(widget.listing.createdAt),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                            fontStyle: FontStyle.italic,
+                          widget.listing.price,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.person, size: 16, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                widget.listing.agentName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 16, color: Colors.blue),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                widget.listing.location,
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Time ago display below location
+                        if (widget.listing.createdAt != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatTimeAgo(widget.listing.createdAt),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
+              ),
             ],
           ),
         ),

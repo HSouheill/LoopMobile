@@ -11,13 +11,11 @@ import 'services/badge_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'widgets/search_and_categories_widget.dart';
 import 'widgets/image_slider_widget.dart';
 import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
-import 'widgets/agent_widgets/featured_agents_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'services/service_service.dart';
@@ -155,13 +153,14 @@ class _CustomFloatingActionButtonLocation extends FloatingActionButtonLocation {
     // Calculate the bottom navigation bar height
     // Your custom navbar height is 80.0
     final double bottomNavBarHeight = 80.0;
-    
+
     // Calculate the FAB position to sit on top of the bottom navigation bar
     // We want the FAB to be positioned so its bottom edge aligns with the top of the bottom nav bar
     final double fabX = (scaffoldGeometry.scaffoldSize.width - scaffoldGeometry.floatingActionButtonSize.width) / 2;
-    
+
     // Position the FAB so it sits on top of the navbar, accounting for safe area
-    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavBarHeight - bottomSafeArea - scaffoldGeometry.floatingActionButtonSize.height;
+    // Add 10 pixels to lower the button slightly
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavBarHeight - bottomSafeArea - scaffoldGeometry.floatingActionButtonSize.height + 10;
     
     return Offset(fabX, fabY);
   }
@@ -201,6 +200,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     _setupSocketListeners();
     _startUnreadCountTimer();
     _detectCurrentLocation(); // Detect location on app launch
+    _startLocationMonitoring(); // Start monitoring location changes
   }
 
   @override
@@ -210,6 +210,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     _notificationSubscription?.cancel();
     _readSubscription?.cancel();
     _unreadCountTimer?.cancel();
+    LocationService.stopLocationMonitoring(); // Stop location monitoring
     super.dispose();
   }
 
@@ -340,6 +341,22 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       }
     } catch (e) {
       // Silently fail - location is optional
+    }
+  }
+
+  /// Start monitoring location changes
+  /// Updates the header location automatically when the device moves
+  Future<void> _startLocationMonitoring() async {
+    try {
+      await LocationService.startLocationMonitoring((String newCity) {
+        if (mounted) {
+          setState(() {
+            _currentLocation = newCity;
+          });
+        }
+      });
+    } catch (e) {
+      // Silently fail - location monitoring is optional
     }
   }
 
@@ -600,19 +617,13 @@ class _HomePageState extends State<HomePage> {
 
     return CustomScrollView(
       slivers: [
-        // Sticky search and categories widget
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: StickySearchHeaderDelegate(
-            child: const SearchAndCategoriesWidget(),
-          ),
-        ),
         // Rest of the content
         SliverToBoxAdapter(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
+              // Marketing banner (already on top)
               _isLoadingBanner
                   ? const SizedBox(
                       height: 200,
@@ -622,16 +633,7 @@ class _HomePageState extends State<HomePage> {
                       ? ImageSliderWidget(imageUrls: _bannerImages)
                       : const BannerPlaceholderWidget(), // Placeholder when no banner
               const SizedBox(height: 10),
-              _isLoadingNews
-                  ? const SizedBox(
-                      height: 100,
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  : _marketUpdates.isEmpty
-                      ? const SizedBox.shrink()
-                      : LatestUpdatesWidget(updates: _marketUpdates),
-              const SizedBox(height: 10),
-              // Updated to use callback for navigation
+              // Featured Listings
               FeaturedListingsWidget(
                 title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
                 isMainPage: true,
@@ -639,14 +641,6 @@ class _HomePageState extends State<HomePage> {
                     ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
               ),
               const SizedBox(height: 10),
-              const SupportCardWidget(),
-              const SizedBox(height: 10),
-              // Recommended Agents (featured, fetched from API, limited to 3 on main)
-              FeaturedAgentsWidget(
-                title: AppLocalizations.of(context)?.recommendedAgents ?? 'Recommended Agents',
-                isMainPage: true,
-                onSeeAll: () => mainScreenState?.navigateToTab(0),
-              ),
               // Featured Services section - now fetched dynamically
               DynamicServicesWidget(
                 category: ServiceCategory.featured,
@@ -663,6 +657,9 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
               const SizedBox(height: 10),
+              // Support section
+              const SupportCardWidget(),
+              const SizedBox(height: 10),
               // Companies Services section - now fetched dynamically
               DynamicServicesWidget(
                 category: ServiceCategory.companies,
@@ -678,6 +675,16 @@ class _HomePageState extends State<HomePage> {
                 showSeeAll: true,
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
+              const SizedBox(height: 10),
+              // Latest market updates
+              _isLoadingNews
+                  ? const SizedBox(
+                      height: 100,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _marketUpdates.isEmpty
+                      ? const SizedBox.shrink()
+                      : LatestUpdatesWidget(updates: _marketUpdates),
               const SizedBox(height: 10),
               // Featured Jobs section - now fetched dynamically
               DynamicJobsWidget(

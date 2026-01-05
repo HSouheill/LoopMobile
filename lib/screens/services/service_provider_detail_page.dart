@@ -370,7 +370,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
             automaticallyImplyLeading: false,
             actions: [
               IconButton(
-                icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                 onPressed: _showReportDialog,
                 tooltip: AppLocalizations.of(context)?.reportServiceProviderTooltip ?? 'Report this service provider',
               ),
@@ -777,7 +777,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                             height: 50,
                             child: OutlinedButton.icon(
                               onPressed: _showReportDialog,
-                              icon: const Icon(Icons.flag, color: Colors.red),
+                              icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                               label: Text(AppLocalizations.of(context)?.reportServiceProvider ?? 'Report this service provider', style: const TextStyle(color: Colors.red)),
                               style: OutlinedButton.styleFrom(
                                 shape: RoundedRectangleBorder(

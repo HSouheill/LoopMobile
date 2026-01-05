@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter/services.dart'; // 1. Import services
+import 'package:video_player/video_player.dart';
 import '../main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,31 +11,57 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> {
+  late VideoPlayerController _controller;
   bool _hasNavigated = false;
-  Timer? _navigationTimer;
-  late AnimationController _animationController;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     
-    // Create animation controller - duration will be set when animation loads
-    _animationController = AnimationController(vsync: this);
+    // 2. Hide Status Bar and Navigation Bar
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     
-    // Navigate after animation completes or after a maximum duration
-    _navigationTimer = Timer(const Duration(seconds: 15), () {
-      _navigateToMain();
-    });
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    _controller = VideoPlayerController.asset('assets/animation.mp4');
+
+    try {
+      await _controller.initialize();
+      await _controller.setLooping(false);
+      
+      setState(() {
+        _isInitialized = true;
+      });
+
+      await _controller.play();
+
+      _controller.addListener(() {
+        final bool isAtEnd = _controller.value.position >= _controller.value.duration;
+        if (_isInitialized && isAtEnd && !_hasNavigated) {
+          _navigateToMain();
+        }
+      });
+    } catch (e) {
+      debugPrint("Video Error: $e");
+      Timer(const Duration(seconds: 2), _navigateToMain);
+    }
   }
 
   void _navigateToMain() {
     if (_hasNavigated || !mounted) return;
     _hasNavigated = true;
 
-    _animationController.stop();
-    _navigationTimer?.cancel();
+    _controller.pause();
+
+    // 3. Restore Status Bar and Navigation Bar before leaving
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual, 
+      overlays: SystemUiOverlay.values // This brings back top and bottom bars
+    );
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const MainScreen()),
@@ -43,51 +70,28 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _navigationTimer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1929), // Dark navy background
-      body: SafeArea(
-  child: Align(
-    alignment: const Alignment(0, -0.2), // ⬆️ raise animation
-    child: Lottie.asset(
-      'assets/animation.json',
-      controller: _animationController,
-      fit: BoxFit.contain, // 👈 IMPORTANT
-      repeat: false,
-      onLoaded: (composition) {
-        _animationController.duration = composition.duration;
-        _animationController.forward();
-
-        _animationController.addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            if (mounted && !_hasNavigated) {
-              _navigateToMain();
-            }
-          }
-        });
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.error_outline, color: Colors.white70, size: 48),
-            SizedBox(height: 16),
-            Text(
-              'Animation loading...',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-          ],
-        );
-      },
-    ),
-  ),
-),
+      backgroundColor: const Color(0xFF0B1929),
+      body: Center(
+        child: _isInitialized
+            ? SizedBox.expand(
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _controller.value.size.width,
+                    height: _controller.value.size.height,
+                    child: VideoPlayer(_controller),
+                  ),
+                ),
+              )
+            : const CircularProgressIndicator(color: Colors.white),
+      ),
     );
   }
 }

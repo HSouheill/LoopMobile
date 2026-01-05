@@ -786,7 +786,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                 builder: (context) {
                   final l10n = AppLocalizations.of(context);
                   return IconButton(
-                    icon: const Icon(Icons.flag, color: Color.fromARGB(255, 254, 0, 0)),
+                    icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                     onPressed: _showReportDialog,
                     tooltip: l10n?.reportListing ?? 'Report this listing',
                   );
@@ -1211,7 +1211,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: _showReportDialog,
-                        icon: const Icon(Icons.flag, color: Colors.red),
+                        icon: const Icon(Icons.flag, color: Colors.transparent, size: 0),
                         label: Builder(
                           builder: (context) {
                             final l10n = AppLocalizations.of(context);

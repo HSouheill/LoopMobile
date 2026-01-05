@@ -10,6 +10,10 @@ class LocationService {
   static const String _locationTimestampKey = 'location_timestamp';
   static const Duration _cacheValidDuration = Duration(hours: 1); // Cache location for 1 hour
 
+  // For continuous location monitoring
+  static StreamSubscription<Position>? _positionStreamSubscription;
+  static String? _lastKnownCityFromStream;
+
   /// Get the current city name from device location
   /// Returns cached city if available and not expired
   /// Otherwise, fetches fresh location
@@ -153,11 +157,89 @@ class LocationService {
   static Future<bool> hasLocationPermission() async {
     try {
       LocationPermission permission = await Geolocator.checkPermission();
-      return permission == LocationPermission.always || 
+      return permission == LocationPermission.always ||
              permission == LocationPermission.whileInUse;
     } catch (e) {
       return false;
     }
+  }
+
+  /// Start listening to location changes
+  /// Calls the callback function whenever the device moves to a new city
+  static Future<void> startLocationMonitoring(Function(String) onLocationChanged) async {
+    try {
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return;
+      }
+
+      // Check location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      // Cancel any existing subscription
+      await stopLocationMonitoring();
+
+      // Set up location settings for continuous monitoring
+      const LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.medium,
+        distanceFilter: 100, // Update when device moves at least 100 meters
+      );
+
+      // Start listening to position updates
+      _positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: locationSettings,
+      ).listen((Position position) async {
+        // Convert position to city name
+        try {
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+            position.latitude,
+            position.longitude,
+          ).timeout(const Duration(seconds: 10));
+
+          if (placemarks.isNotEmpty) {
+            final placemark = placemarks.first;
+
+            // Try to get the most appropriate city name
+            String? cityName = placemark.locality ??
+                              placemark.subAdministrativeArea ??
+                              placemark.administrativeArea;
+
+            // Only notify if the city has changed
+            if (cityName != null && cityName.isNotEmpty && cityName != _lastKnownCityFromStream) {
+              _lastKnownCityFromStream = cityName;
+
+              // Cache the new location
+              await _cacheCity(cityName);
+
+              // Notify the callback
+              onLocationChanged(cityName);
+            }
+          }
+        } catch (e) {
+          // Error converting coordinates to city
+        }
+      });
+    } catch (e) {
+      // Error starting location monitoring
+    }
+  }
+
+  /// Stop listening to location changes
+  static Future<void> stopLocationMonitoring() async {
+    await _positionStreamSubscription?.cancel();
+    _positionStreamSubscription = null;
+    _lastKnownCityFromStream = null;
   }
 }
 

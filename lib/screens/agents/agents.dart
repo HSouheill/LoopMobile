@@ -1,6 +1,7 @@
 // Updated agents_page.dart
 import 'package:flutter/material.dart';
 import '../../widgets/search_only_widget.dart';
+import '../../widgets/categories_only_widget.dart';
 import '../../widgets/image_slider_widget.dart';
 import '../../widgets/banner_placeholder_widget.dart';
 import '../../widgets/dynamic_agents_widget.dart';
@@ -50,8 +51,11 @@ class _AgentsPageState extends State<AgentsPage> {
         children: [
           // Search bar component
           const SearchOnlyWidget(),
+
+          // Categories bubbles
+          const CategoriesOnlyWidget(),
           const SizedBox(height: 10),
-          
+
           // Image slider
           _isLoadingBanner
               ? const SizedBox(
