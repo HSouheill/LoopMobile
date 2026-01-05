@@ -657,6 +657,13 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
               const SizedBox(height: 10),
+              // Featured Jobs section - now fetched dynamically
+              DynamicJobsWidget(
+                category: JobCategory.featured,
+                limit: 3,
+                onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
+              ),
+              const SizedBox(height: 10),
               // Support section
               const SupportCardWidget(),
               const SizedBox(height: 10),
@@ -685,13 +692,6 @@ class _HomePageState extends State<HomePage> {
                   : _marketUpdates.isEmpty
                       ? const SizedBox.shrink()
                       : LatestUpdatesWidget(updates: _marketUpdates),
-              const SizedBox(height: 10),
-              // Featured Jobs section - now fetched dynamically
-              DynamicJobsWidget(
-                category: JobCategory.featured,
-                limit: 3,
-                onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
-              ),
               const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
             ],
           ),
