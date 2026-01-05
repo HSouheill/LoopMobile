@@ -18,7 +18,6 @@ class BottomNavBar extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!; // Access localized strings
 
     return Container(
-      height: 70,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -29,38 +28,45 @@ class BottomNavBar extends StatelessWidget {
           end: Alignment.centerRight,
         ),
       ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onTap,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        showSelectedLabels: false,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color.fromARGB(255, 27, 55, 147),
-        unselectedItemColor: Colors.white,
-        items: [
-          BottomNavigationBarItem(
-            icon: _buildIcon(Icons.people, 0),
-            label: localizations.realEstate,
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon(Icons.apartment, 1),
-            label: localizations.listings,
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon(Icons.home, 2),
-            label: localizations.home,
-          ),
-          BottomNavigationBarItem(
-            icon: _buildIcon(Icons.design_services, 3),
-            label: localizations.services,
-          ),
-          BottomNavigationBarItem(
-            icon: _buildChatIconWithBadge(4),
-            label: localizations.chat,
-          ),
-        ],
+      child: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.symmetric(vertical: 6),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: onTap,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          iconSize: 22,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          selectedItemColor: const Color.fromARGB(255, 27, 55, 147),
+          unselectedItemColor: Colors.white,
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildIcon(Icons.people, 0),
+              label: localizations.realEstate,
+            ),
+            BottomNavigationBarItem(
+              icon: _buildIcon(Icons.apartment, 1),
+              label: localizations.listings,
+            ),
+            BottomNavigationBarItem(
+              icon: _buildIcon(Icons.home, 2),
+              label: localizations.home,
+            ),
+            BottomNavigationBarItem(
+              icon: _buildIcon(Icons.design_services, 3),
+              label: localizations.services,
+            ),
+            BottomNavigationBarItem(
+              icon: _buildChatIconWithBadge(4),
+              label: localizations.chat,
+            ),
+          ],
+        ),
       ),
     );
   }
