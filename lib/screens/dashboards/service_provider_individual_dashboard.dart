@@ -13,6 +13,8 @@ import 'widgets/my_services_widget.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
 import './widgets/statistics_card.dart';
+import '../../widgets/active_plan_widget.dart';
+import '../../widgets/all_plans_section.dart';
 import '../../environment.dart';
 
 class ServiceProviderIndividualDashboardPage extends StatefulWidget {
@@ -116,8 +118,15 @@ class _ServiceProviderIndividualDashboardPageState
                 // Verification status banner
                 VerificationBanner(agentInfo: agentInfo),
 
-                // ✅ New Active Plan section
-                UserPlanSection(agentInfo: agentInfo),
+                // ✅ Active Plan section (uses subscription API)
+                const ActivePlanWidget(),
+
+                const SizedBox(height: 20),
+
+                // All Plans Section with pagination
+                const AllPlansSection(),
+
+                const SizedBox(height: 20),
 
                 // ✅ PDF Uploaded Section
                 PdfUploadedSection(agentInfo: agentInfo),
@@ -394,262 +403,7 @@ class _ServiceProviderIndividualDashboardPageState
   }
 }
 
-/// ✅ Active Plan Section (dynamic)
-class UserPlanSection extends StatelessWidget {
-  final Map<String, dynamic>? agentInfo;
-  
-  const UserPlanSection({super.key, this.agentInfo});
-
-  String _formatDate(String? dateString) {
-    if (dateString == null) return 'N/A';
-    try {
-      final date = DateTime.parse(dateString);
-      return '${date.day} ${_getMonthName(date.month)} ${date.year}';
-    } catch (e) {
-      return 'N/A';
-    }
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return months[month - 1];
-  }
-
-  String _getPlanImagePath() {
-    final planName = agentInfo?['subscribedPlan']?['name']?.toString().toLowerCase() ?? '';
-    if (planName.contains('basic')) {
-      return 'assets/basic.png';
-    } else if (planName.contains('standard')) {
-      return 'assets/standard.png';
-    } else if (planName.contains('premium') || planName.contains('unlimited')) {
-      return 'assets/premium.png';
-    }
-    // Default fallback
-    return 'assets/basic.png';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = screenWidth * 0.88;
-    final cardHeight = 140.0;
-
-    return Column(
-      children: [
-        // Active Plan Card with wavy curve design
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          width: cardWidth,
-          height: cardHeight,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                // Background image on the left with curved edge clipping
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: cardWidth * 0.38,
-                  child: ClipPath(
-                    clipper: ImageCurvedClipper(),
-                    child: Image.asset(
-                      _getPlanImagePath(),
-                      fit: BoxFit.cover,
-                      width: cardWidth * 0.38,
-                      height: cardHeight,
-                    ),
-                  ),
-                ),
-                // Wavy green line separator
-                Positioned(
-                  left: cardWidth * 0.38 - 2,
-                  top: 0,
-                  bottom: 0,
-                  width: 6,
-                  child: CustomPaint(
-                    painter: WavyLinePainter(),
-                    child: Container(),
-                  ),
-                ),
-                // Blue gradient overlay on the right
-                Positioned(
-                  left: cardWidth * 0.38,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 103, 155, 218),
-                          Color.fromARGB(255, 69, 100, 201),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 15, right: 10, bottom: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            agentInfo?['subscribedPlan']?['name'] ?? (AppLocalizations.of(context)?.noPlan ?? 'No Plan'),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            AppLocalizations.of(context)?.validUntil(_formatDate(agentInfo?['user']?['planExpiresAt'])) ?? 'Valid Until: ${_formatDate(agentInfo?['user']?['planExpiresAt'])}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Stats row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            StatCardList(
-              items: [
-                {"title": AppLocalizations.of(context)?.totalChats ?? "Total Chats:", "value": "${agentInfo?['totalChats'] ?? 0}"},
-                {"title": AppLocalizations.of(context)?.profileViews ?? "Profile Views:", "value": "${agentInfo?['user']?['profileViews'] ?? 0}"},
-              ],
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 20),
-
-        // Manage button
-        // Center(
-        //   child: DynamicGradientButton(
-        //     buttonText: 'Manage Service',
-        //     onTap: () {
-        //       Navigator.pushNamed(context, '/edit-my-service');
-        //     },
-        //     padding: const EdgeInsets.symmetric(
-        //         horizontal: 17, vertical: 5.5), // optional
-        //   ),
-        // ),
-      ],
-    );
-  }
-}
-
-// Custom clipper for curved edge on the right side of the image
-class ImageCurvedClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    
-    // Start from top-left
-    path.moveTo(0, 0);
-    path.lineTo(size.width, 0);
-    
-    // Create a more organic, flowing wave pattern
-    final waveAmplitude = size.height * 0.15;
-    
-    // First wave (top curve)
-    path.cubicTo(
-      size.width + waveAmplitude, size.height * 0.15,
-      size.width + waveAmplitude * 0.8, size.height * 0.35,
-      size.width, size.height * 0.5,
-    );
-    
-    // Second wave (middle dip)
-    path.cubicTo(
-      size.width - waveAmplitude * 0.6, size.height * 0.65,
-      size.width - waveAmplitude * 0.4, size.height * 0.8,
-      size.width, size.height,
-    );
-    
-    // Complete the path
-    path.lineTo(0, size.height);
-    path.close();
-    
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-}
-
-// Custom painter for wavy green line
-class WavyLinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4CAF50) // Green color
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    
-    final path = Path();
-    
-    // Create a wavy line that follows the same curve pattern
-    final waveHeight = size.height * 0.12;
-    final waveCount = 2;
-    final segmentHeight = size.height / waveCount;
-    
-    path.moveTo(size.width / 2, 0);
-    
-    for (int i = 0; i < waveCount; i++) {
-      final startY = i * segmentHeight;
-      final endY = startY + segmentHeight;
-      
-      // Create a smooth wavy curve
-      path.cubicTo(
-        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.25,
-        size.width / 2 + waveHeight * 0.5, startY + segmentHeight * 0.75,
-        size.width / 2, endY,
-      );
-    }
-    
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
+// Removed UserPlanSection and related classes - using ActivePlanWidget instead
 
 // ✅ PDF Uploaded Section
 class PdfUploadedSection extends StatefulWidget {
