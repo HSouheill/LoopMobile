@@ -91,7 +91,7 @@ class _HelpAndSupportPageState extends State<HelpAndSupportPage>
     });
 
     try {
-      final result = await TicketService.createTicketForAuthenticatedUser(
+      final result = await TicketService.createLogisticTicketForAuthenticatedUser(
         content: description,
       );
 
