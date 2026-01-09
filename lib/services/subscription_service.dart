@@ -13,7 +13,7 @@ class SubscriptionService {
       }
 
       final response = await http.get(
-        Uri.parse('${Environment.apiUrl}subscription/my-subscription'),
+        Uri.parse('${Environment.apiUrl}subscriptions/my-subscription'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -73,8 +73,12 @@ class SubscriptionService {
         throw Exception('No authentication token found');
       }
 
+      final url = '${Environment.apiUrl}subscriptions/subscribe';
+      print('Subscribing to plan at: $url');
+      print('Plan ID: $planId');
+
       final response = await http.post(
-        Uri.parse('${Environment.apiUrl}subscription/subscribe'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -82,17 +86,33 @@ class SubscriptionService {
         body: json.encode({'planId': planId}),
       );
 
+      print('Subscribe response status: ${response.statusCode}');
+      print('Subscribe response body: ${response.body}');
+
       if (response.statusCode == 201 || response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
+        try {
+          final data = json.decode(response.body);
+          return data;
+        } catch (e) {
+          print('Error parsing success response: $e');
+          throw Exception('Server returned invalid JSON response');
+        }
       } else if (response.statusCode == 409) {
         // Already has active subscription
-        final data = json.decode(response.body);
-        throw Exception(data['message'] ?? 'Already subscribed to a plan');
+        try {
+          final data = json.decode(response.body);
+          throw Exception(data['message'] ?? 'Already subscribed to a plan');
+        } catch (e) {
+          throw Exception('Already subscribed to a plan');
+        }
       } else {
         print('Error subscribing to plan: ${response.statusCode}');
-        final data = json.decode(response.body);
-        throw Exception(data['message'] ?? 'Failed to subscribe to plan');
+        try {
+          final data = json.decode(response.body);
+          throw Exception(data['message'] ?? 'Failed to subscribe to plan');
+        } catch (e) {
+          throw Exception('Server error (${response.statusCode}): Could not subscribe to plan');
+        }
       }
     } catch (e) {
       print('Error in subscribeToPlan: $e');
@@ -108,23 +128,38 @@ class SubscriptionService {
         throw Exception('No authentication token found');
       }
 
+      final url = '${Environment.apiUrl}subscriptions/unsubscribe';
+      print('Unsubscribing at: $url');
+
       final response = await http.post(
-        Uri.parse('${Environment.apiUrl}subscription/unsubscribe'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
 
+      print('Unsubscribe response status: ${response.statusCode}');
+      print('Unsubscribe response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data;
+        try {
+          final data = json.decode(response.body);
+          return data;
+        } catch (e) {
+          print('Error parsing success response: $e');
+          throw Exception('Server returned invalid JSON response');
+        }
       } else if (response.statusCode == 404) {
         throw Exception('No active subscription found');
       } else {
         print('Error unsubscribing: ${response.statusCode}');
-        final data = json.decode(response.body);
-        throw Exception(data['message'] ?? 'Failed to unsubscribe');
+        try {
+          final data = json.decode(response.body);
+          throw Exception(data['message'] ?? 'Failed to unsubscribe');
+        } catch (e) {
+          throw Exception('Server error (${response.statusCode}): Could not unsubscribe');
+        }
       }
     } catch (e) {
       print('Error in unsubscribe: $e');

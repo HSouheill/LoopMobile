@@ -30,6 +30,7 @@ class _ServiceProviderIndividualDashboardPageState
   User? user;
   Map<String, dynamic>? agentInfo;
   bool isLoading = true;
+  Key _activePlanKey = UniqueKey();
 
   @override
   void initState() {
@@ -119,12 +120,18 @@ class _ServiceProviderIndividualDashboardPageState
                 VerificationBanner(agentInfo: agentInfo),
 
                 // ✅ Active Plan section (uses subscription API)
-                const ActivePlanWidget(),
+                ActivePlanWidget(key: _activePlanKey),
 
                 const SizedBox(height: 20),
 
                 // All Plans Section with pagination
-                const AllPlansSection(),
+                AllPlansSection(
+                  onSubscriptionChanged: () {
+                    setState(() {
+                      _activePlanKey = UniqueKey();
+                    });
+                  },
+                ),
 
                 const SizedBox(height: 20),
 

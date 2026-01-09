@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/subscription_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../environment.dart';
+import 'subscription_modal.dart';
+import 'profile_widgets/dynamic_gradient_button.dart';
 
 /// Reusable Active Plan Widget for all dashboards
 /// Fetches subscription data from the backend API and displays it
@@ -350,7 +352,37 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
             ),
           ),
         ),
+
+        // Unsubscribe button
+        const SizedBox(height: 12),
+        Center(
+          child: DynamicGradientButton(
+            buttonText: 'Unsubscribe',
+            onTap: _showUnsubscribeModal,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            textSize: 12.0,
+            backgroundColor: Colors.red,
+            useGradient: false,
+          ),
+        ),
       ],
+    );
+  }
+
+  void _showUnsubscribeModal() {
+    if (_subscriptionData == null) return;
+
+    final subscription = _subscriptionData!['subscription'];
+    final plan = subscription['planId'];
+    final planName = plan?['name'] ?? 'Unknown Plan';
+
+    SubscriptionModal.showUnsubscribeModal(
+      context,
+      planName: planName,
+      onSuccess: () {
+        // Reload subscription data
+        _loadSubscription();
+      },
     );
   }
 }

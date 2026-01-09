@@ -34,6 +34,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
   List<PropertyListing> activeListings = [];
   bool inactiveListingsLoading = true;
   bool activeListingsLoading = true;
+  Key _activePlanKey = UniqueKey();
 
   @override
   void initState() {
@@ -477,12 +478,18 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 const SizedBox(height: 20),
 
                 // Active Plan Widget (uses subscription API)
-                const ActivePlanWidget(),
+                ActivePlanWidget(key: _activePlanKey),
 
                 const SizedBox(height: 20),
 
                 // All Plans Section with pagination
-                const AllPlansSection(),
+                AllPlansSection(
+                  onSubscriptionChanged: () {
+                    setState(() {
+                      _activePlanKey = UniqueKey();
+                    });
+                  },
+                ),
 
                 Container(
                   width: double.infinity,

@@ -3,10 +3,16 @@ import '../services/subscription_service.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../environment.dart';
 import 'profile_widgets/dynamic_gradient_button.dart';
+import 'subscription_modal.dart';
 
 /// All Plans Section with pagination and show/hide functionality
 class AllPlansSection extends StatefulWidget {
-  const AllPlansSection({super.key});
+  final VoidCallback? onSubscriptionChanged;
+
+  const AllPlansSection({
+    super.key,
+    this.onSubscriptionChanged,
+  });
 
   @override
   State<AllPlansSection> createState() => _AllPlansSectionState();
@@ -180,25 +186,29 @@ class _AllPlansSectionState extends State<AllPlansSection> {
     final cardWidth = screenWidth * 0.88;
     final cardHeight = 140.0;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      width: cardWidth,
-      height: cardHeight,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
-          children: [
-            // Background image on the left with curved edge clipping
+    return GestureDetector(
+      onTap: () {
+        _showSubscribeModal(plan);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        width: cardWidth,
+        height: cardHeight,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            children: [
+              // Background image on the left with curved edge clipping
             Positioned(
               left: 0,
               top: 0,
@@ -300,6 +310,27 @@ class _AllPlansSectionState extends State<AllPlansSection> {
           ],
         ),
       ),
+      ),
+    );
+  }
+
+  void _showSubscribeModal(dynamic plan) {
+    final planId = plan['_id'] ?? plan['id'];
+    if (planId == null) return;
+
+    SubscriptionModal.showSubscribeModal(
+      context,
+      planId: planId.toString(),
+      planName: plan['name'] ?? 'Unknown Plan',
+      planPrice: '\$${plan['price'] ?? 0}',
+      onSuccess: () {
+        // Reload plans to reflect changes
+        _loadPlans();
+        // Notify parent to refresh active plan widget
+        if (widget.onSubscriptionChanged != null) {
+          widget.onSubscriptionChanged!();
+        }
+      },
     );
   }
 

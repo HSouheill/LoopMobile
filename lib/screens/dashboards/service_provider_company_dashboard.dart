@@ -38,6 +38,7 @@ class _ServiceProviderCompanyDashboardPageState
   bool isLoadingJobs = false;
   List<JobApplication> applications = [];
   bool isLoadingApplications = false;
+  Key _activePlanKey = UniqueKey();
 
   @override
   void initState() {
@@ -186,12 +187,18 @@ class _ServiceProviderCompanyDashboardPageState
                   VerificationBanner(agentInfo: agentInfo),
 
                   // ✅ Active Plan Section
-                  const ActivePlanWidget(),
+                  ActivePlanWidget(key: _activePlanKey),
 
                   const SizedBox(height: 20),
 
                   // ✅ All Plans Section
-                  const AllPlansSection(),
+                  AllPlansSection(
+                    onSubscriptionChanged: () {
+                      setState(() {
+                        _activePlanKey = UniqueKey();
+                      });
+                    },
+                  ),
 
                   // ✅ PDF Uploaded Section
                   PdfUploadedSection(agentInfo: agentInfo),
