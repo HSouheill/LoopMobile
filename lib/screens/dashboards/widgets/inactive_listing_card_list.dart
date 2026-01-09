@@ -7,12 +7,14 @@ class InactiveListingCardList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final Axis scrollDirection; // new: allows vertical or horizontal
   final Function(String)? onItemTap; // new: callback for item taps
+  final VoidCallback? onActivate; // new: callback for activate button
 
   const InactiveListingCardList({
     super.key,
     required this.items,
     this.scrollDirection = Axis.horizontal, // default horizontal
     this.onItemTap,
+    this.onActivate,
   });
 
   @override
@@ -45,9 +47,7 @@ class InactiveListingCardList extends StatelessWidget {
                   status: item['status'],
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
-                  onActivate: () {
-                    // Listing activated
-                  },
+                  onActivate: onActivate,
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),
@@ -74,9 +74,7 @@ class InactiveListingCardList extends StatelessWidget {
                   status: item['status'],
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
-                  onActivate: () {
-                    // Listing activated
-                  },
+                  onActivate: onActivate,
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),

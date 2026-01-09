@@ -360,6 +360,14 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                             );
                             _showListingDetails(listing);
                           },
+                          onActivate: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please wait for admin to approve your listing'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          },
                           items: inactiveListings.map((listing) {
                             return {
                               "daysLeft": _calculateDaysLeftFromCreated(listing.createdAt),

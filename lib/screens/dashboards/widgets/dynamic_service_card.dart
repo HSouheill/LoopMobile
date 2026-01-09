@@ -137,75 +137,54 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
                           ),
                         ],
                       )
-                    : Row(
+                    : Column(
                         children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
-                                    onTap: widget.onSold,
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 6),
-                                    useGradient: false,
-                                    backgroundColor: Colors.white,
-                                    borderColor: const Color.fromARGB(255, 69, 100, 201),
-                                    borderWidth: 1.5,
-                                    textColor: const Color.fromARGB(255, 69, 100, 201),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
-                                    onTap: widget.onDelete,
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 6),
-                                    useGradient: false,
-                                    backgroundColor: Colors.white,
-                                    borderColor: const Color(0xFFEA4435),
-                                    borderWidth: 1.5,
-                                    textColor: const Color(0xFFEA4435),
-                                  ),
-                                ),
-                              ],
+                          SizedBox(
+                            width: double.infinity,
+                            child: DynamicGradientButton(
+                              buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
+                              onTap: () {
+                                setState(() {
+                                  boostPressed = true;
+                                });
+                                widget.onBoost?.call();
+                              },
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 6),
+                              useGradient: false,
+                              backgroundColor: Colors.white,
+                              borderColor: const Color.fromARGB(255, 69, 100, 201),
+                              borderWidth: 1.5,
+                              textColor: const Color.fromARGB(255, 69, 100, 201),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
-                                    onTap: () {
-                                      setState(() {
-                                        boostPressed = true;
-                                      });
-                                      widget.onBoost?.call();
-                                    },
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    useGradient: true,
-                                  ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
+                                  onTap: widget.onEdit,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  useGradient: true,
                                 ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
-                                    onTap: widget.onEdit,
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    useGradient: true,
-                                  ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
+                                  onTap: widget.onDelete,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  useGradient: false,
+                                  backgroundColor: Colors.white,
+                                  borderColor: const Color(0xFFEA4435),
+                                  borderWidth: 1.5,
+                                  textColor: const Color(0xFFEA4435),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
