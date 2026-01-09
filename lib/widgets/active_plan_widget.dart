@@ -301,7 +301,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 15, right: 10, bottom: 15),
+                      padding: const EdgeInsets.only(left: 16, top: 12, right: 16, bottom: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -310,35 +310,35 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                             AppLocalizations.of(context)?.activePlan ?? "Active Plan:",
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Text(
                             planName,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
+                              fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Text(
                             AppLocalizations.of(context)?.validUntil(_formatDate(expiryDate)) ?? 'Valid Until: ${_formatDate(expiryDate)}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
                           if (daysRemaining > 0) ...[
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 3),
                             Text(
                               '$daysRemaining days remaining',
                               style: const TextStyle(
                                 color: Colors.white70,
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w300,
                               ),
                             ),
