@@ -431,70 +431,49 @@ class _MyServiceCardState extends State<MyServiceCard> {
                           ),
                         ],
                       )
-                    : Row(
+                    : Column(
                         children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
-                                    onTap: () {
-                                      // TODO: Implement sold functionality
-                                    },
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
-                                    useGradient: false,
-                                    backgroundColor: const Color(0xFFF9FBFF),
-                                    borderColor: const Color(0xFF0048FF),
-                                    borderWidth: 1.0,
-                                    textColor: const Color(0xFF1E1E1E),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
-                                    onTap: widget.onDelete,
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
-                                    useGradient: false,
-                                    backgroundColor: const Color(0xFFF9FBFF),
-                                    borderColor: const Color(0xFFEA4435),
-                                    borderWidth: 1.0,
-                                    textColor: const Color(0xFFEA4435),
-                                  ),
-                                ),
-                              ],
+                          SizedBox(
+                            width: double.infinity,
+                            child: DynamicGradientButton(
+                              buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
+                              onTap: () {
+                                setState(() {
+                                  boostPressed = true;
+                                });
+                              },
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              useGradient: false,
+                              backgroundColor: const Color(0xFFF9FBFF),
+                              borderColor: const Color(0xFF0048FF),
+                              borderWidth: 1.0,
+                              textColor: const Color(0xFF1E1E1E),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
-                                    onTap: () {
-                                      setState(() {
-                                        boostPressed = true;
-                                      });
-                                    },
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
-                                  ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
+                                  onTap: widget.onEdit,
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
                                 ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: DynamicGradientButton(
-                                    buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
-                                    onTap: widget.onEdit,
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
-                                  ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: DynamicGradientButton(
+                                  buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
+                                  onTap: widget.onDelete,
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  useGradient: false,
+                                  backgroundColor: const Color(0xFFF9FBFF),
+                                  borderColor: const Color(0xFFEA4435),
+                                  borderWidth: 1.0,
+                                  textColor: const Color(0xFFEA4435),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
