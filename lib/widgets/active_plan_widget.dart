@@ -83,6 +83,19 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     }
   }
 
+  int _getListingsLeft() {
+    // First check if it's in the subscription data at root level
+    if (_subscriptionData?['listingsLeft'] != null) {
+      return _subscriptionData!['listingsLeft'] as int;
+    }
+    // Fallback to checking in planId
+    final listings = _subscriptionData?['subscription']?['planId']?['listings'];
+    if (listings != null) {
+      return listings as int;
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -219,6 +232,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     final planName = plan?['name'] ?? 'Unknown Plan';
     final expiryDate = subscription['expiryDate'];
     final daysRemaining = _getDaysRemaining();
+    final listingsLeft = _getListingsLeft();
 
     return Column(
       children: [
@@ -332,15 +346,40 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          if (daysRemaining > 0) ...[
+                          if (daysRemaining > 0 || listingsLeft > 0) ...[
                             const SizedBox(height: 3),
-                            Text(
-                              '$daysRemaining days remaining',
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w300,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (listingsLeft > 0) ...[
+                                  Text(
+                                    '$listingsLeft listings',
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                  if (daysRemaining > 0) ...[
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      width: 1,
+                                      height: 10,
+                                      color: Colors.white38,
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ],
+                                if (daysRemaining > 0)
+                                  Text(
+                                    '$daysRemaining days remaining',
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ],
                         ],
