@@ -16,6 +16,7 @@ class Agent {
   final double rating;
   final int reviewCount;
   final String? customText;
+  final bool isFeatured;
 
   Agent({
     required this.id,
@@ -26,6 +27,7 @@ class Agent {
     required this.rating,
     required this.reviewCount,
     this.customText,
+    this.isFeatured = false,
   });
 
   // Enhanced factory constructor for JSON parsing
@@ -40,6 +42,7 @@ class Agent {
       rating: _getDoubleValue(json, ['rating', 'averageRating', 'score']) ?? 4.5, // Default rating
       reviewCount: _getIntValue(json, ['reviewCount', 'review_count', 'totalReviews']) ?? 0,
       customText: _getStringValue(json, ['customText', 'custom_text', 'description', 'bio']),
+      isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
     );
   }
 
@@ -136,6 +139,7 @@ class Agent {
       'rating': rating,
       'reviewCount': reviewCount,
       'customText': customText,
+      'isFeatured': isFeatured,
     };
   }
 }
@@ -405,6 +409,31 @@ class _AgentCardState extends State<AgentCard> {
                     ),
                   ),
                 ),
+                if (widget.agent.isFeatured)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 244, 208, 3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context);
+                          return Text(
+                            l10n?.featuredLabel ?? 'Featured',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        }
+                      ),
+                    ),
+                  ),
               ],
             ),
             // Agent details

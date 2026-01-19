@@ -146,6 +146,7 @@ class ServiceProvider {
       'rating': averageRating,
       'reviewCount': reviewCount,
       'customText': subtitle,
+      'isFeatured': isFeatured,
     };
   }
 }
