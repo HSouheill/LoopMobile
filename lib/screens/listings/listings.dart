@@ -66,6 +66,9 @@ class _ListingsPageState extends State<ListingsPage> {
                       ? ImageSliderWidget(imageUrls: _bannerImages)
                       : const BannerPlaceholderWidget(),
               const SizedBox(height: 24),
+              // Featured Listings (dynamic, fetches from backend)
+              const DynamicListingsWidget(category: ListingCategory.featured),
+
               // Chalets
               const DynamicListingsWidget(category: ListingCategory.chalets),
 
@@ -80,9 +83,6 @@ class _ListingsPageState extends State<ListingsPage> {
 
               // Commercial Buildings
               const DynamicListingsWidget(category: ListingCategory.commercial),
-
-              // Featured Listings (dynamic, fetches from backend)
-              const DynamicListingsWidget(category: ListingCategory.featured),
 
               const SizedBox(height: 100),
             ],
