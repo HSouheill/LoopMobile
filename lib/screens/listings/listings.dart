@@ -75,6 +75,18 @@ class _ListingsPageState extends State<ListingsPage> {
               // Villas
               const DynamicListingsWidget(category: ListingCategory.villas),
 
+              // Banner (repeated)
+              const SizedBox(height: 24),
+              _isLoadingBanner
+                  ? const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _bannerImages.isNotEmpty
+                      ? ImageSliderWidget(imageUrls: _bannerImages)
+                      : const BannerPlaceholderWidget(),
+              const SizedBox(height: 24),
+
               // Apartments
               const DynamicListingsWidget(category: ListingCategory.apartments),
 
