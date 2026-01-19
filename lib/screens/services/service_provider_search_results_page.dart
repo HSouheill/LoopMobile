@@ -75,13 +75,9 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
         sort: _currentFilters?['sort']?.toString(),
         city: _currentFilters?['city']?.toString(),
         district: _currentFilters?['district']?.toString(),
-        isFeatured: _currentFilters?['isFeatured'] == true || _currentFilters?['isFeatured'] == 'true' 
-            ? true 
-            : (_currentFilters?['isFeatured'] == false || _currentFilters?['isFeatured'] == 'false' 
-                ? false 
-                : null),
         role: _currentFilters?['role']?.toString(),
         providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
+        sortByFeatured: _currentFilters?['sortByFeatured'] == true,
       );
 
       // Convert service providers to agents
@@ -126,13 +122,9 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
         sort: _currentFilters?['sort']?.toString(),
         city: _currentFilters?['city']?.toString(),
         district: _currentFilters?['district']?.toString(),
-        isFeatured: _currentFilters?['isFeatured'] == true || _currentFilters?['isFeatured'] == 'true' 
-            ? true 
-            : (_currentFilters?['isFeatured'] == false || _currentFilters?['isFeatured'] == 'false' 
-                ? false 
-                : null),
         role: _currentFilters?['role']?.toString(),
         providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
+        sortByFeatured: _currentFilters?['sortByFeatured'] == true,
       );
 
       // Convert service providers to agents

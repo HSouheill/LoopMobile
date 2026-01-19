@@ -489,6 +489,7 @@ class ServiceService {
     bool withReviews = false,
     String? providerType,
     String? role,
+    bool? sortByFeatured,
   }) async {
     try {
       final queryParams = <String, String>{
@@ -509,6 +510,7 @@ class ServiceService {
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (role != null) 'role': role,
         if (role == null && providerType != null) 'providerType': providerType,
+        if (sortByFeatured != null) 'sortByFeatured': sortByFeatured.toString(),
       };
       
       final uri = Uri.parse('$baseUrl/search-service-providers').replace(queryParameters: queryParams);

@@ -24,7 +24,6 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
   String? _selectedCity;
   String? _selectedDistrict;
   String? _selectedSort;
-  bool? _isFeatured;
 
   final List<String> _districts = [
     'Beirut',
@@ -56,10 +55,6 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
       _selectedCity = widget.initialFilters!['city'];
       _selectedDistrict = widget.initialFilters!['district'];
       _selectedSort = widget.initialFilters!['sort'];
-      if (widget.initialFilters!['isFeatured'] != null) {
-        _isFeatured = widget.initialFilters!['isFeatured'] == true || 
-                     widget.initialFilters!['isFeatured'] == 'true';
-      }
     }
   }
 
@@ -75,7 +70,6 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
       _selectedCity = null;
       _selectedDistrict = null;
       _selectedSort = null;
-      _isFeatured = null;
     });
   }
 
@@ -98,7 +92,8 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
     if (_selectedSort == 'date_asc') {
       filters['sort'] = _selectedSort;
     }
-    if (_isFeatured != null) filters['isFeatured'] = _isFeatured;
+    // Always sort by featured
+    filters['sortByFeatured'] = true;
 
     Navigator.pop(context, {
       'query': query,
@@ -222,25 +217,6 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
                     _selectedDistrict = value;
                   });
                 },
-              ),
-              const SizedBox(height: 16.0),
-
-              // Featured
-              _buildSectionTitle('Featured'),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildBooleanButton(null, 'Any'),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: _buildBooleanButton(true, 'Featured'),
-                  ),
-                  const SizedBox(width: 16.0),
-                  Expanded(
-                    child: _buildBooleanButton(false, 'Not Featured'),
-                  ),
-                ],
               ),
               const SizedBox(height: 16.0),
 
@@ -415,53 +391,5 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
     );
   }
 
-  Widget _buildBooleanButton(bool? value, String label) {
-    final isSelected = _isFeatured == value;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isFeatured = value;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(255, 103, 155, 218),
-              const Color.fromARGB(255, 69, 100, 201),
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(16.0),
-          border: Border.all(
-            color: Colors.grey[300]!,
-            width: isSelected ? 2.0 : 1.0,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color.fromARGB(138, 116, 116, 116),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Text(
-          label.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14.0,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
