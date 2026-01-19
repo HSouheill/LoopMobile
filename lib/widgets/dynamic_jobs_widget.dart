@@ -437,6 +437,31 @@ class _JobCardState extends State<JobCard> {
                           ),
                         ),
                       ),
+                      if (widget.job.isFeatured)
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 244, 208, 3),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Builder(
+                              builder: (context) {
+                                final l10n = AppLocalizations.of(context);
+                                return Text(
+                                  l10n?.featuredLabel ?? 'Featured',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                );
+                              }
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

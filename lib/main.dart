@@ -665,7 +665,7 @@ class _HomePageState extends State<HomePage> {
               DynamicJobsWidget(
                 category: JobCategory.featured,
                 limit: 3,
-                onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
+                onSeeAll: () => Navigator.pushNamed(context, '/jobs'),
               ),
               const SizedBox(height: 10),
               // 7. Banner copy (duplicate banner)

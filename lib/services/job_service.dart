@@ -12,7 +12,7 @@ class JobService {
     int page = 1,
     int limit = 3,
     bool? isFeatured,
-    String? sort = 'date_desc',
+    String? sort = 'featured',
   }) async {
     try {
       final queryParams = <String, String>{
@@ -309,7 +309,7 @@ class JobService {
     DateTime? createdFrom,
     DateTime? createdTo,
     bool? isFeatured,
-    String sort = 'score',
+    String sort = 'featured',
   }) async {
     try {
       final queryParams = <String, String>{

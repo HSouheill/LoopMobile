@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loopflutter/l10n/app_localizations.dart';
 import '../screens/services/job_detail_page.dart';
 import '../services/job_service.dart';
 import '../services/favorite_service.dart';
@@ -224,21 +225,47 @@ class _JobCardState extends State<JobCard> {
                 Positioned(
                   top: 8,
                   left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      widget.job.jobType,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                  child: Row(
+                    children: [
+                      if (widget.job.isFeatured)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 244, 208, 3),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Builder(
+                            builder: (context) {
+                              final l10n = AppLocalizations.of(context);
+                              return Text(
+                                l10n?.featuredLabel ?? 'Featured',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            }
+                          ),
+                        ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          widget.job.jobType,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
                 Positioned(

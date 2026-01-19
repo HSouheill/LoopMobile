@@ -614,7 +614,7 @@ class _SingleListingPageState extends State<SingleListingPage> {
                               ),
                               Positioned.fill(
                                 child: Opacity(
-                                  opacity: 0.3,
+                                  opacity: 0.4,
                                   child: Image.asset(
                                     'assets/Watermark.png',
                                     fit: BoxFit.cover,
