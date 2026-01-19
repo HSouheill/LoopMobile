@@ -85,8 +85,8 @@ class _SingleListingPageState extends State<SingleListingPage> {
   String get _formattedPrice {
     if (widget.listing.priceValue != null) {
       final currency = widget.listing.currency ?? 'USD';
-      final price = widget.listing.priceValue;
-      final formatter = NumberFormat.currency(symbol: currency == 'USD' ? '\$' : currency);
+      final price = widget.listing.priceValue!.toInt();
+      final formatter = NumberFormat.currency(symbol: currency == 'USD' ? '\$' : currency, decimalDigits: 0);
       return formatter.format(price);
     }
     return widget.listing.price;

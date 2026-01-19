@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -121,9 +122,9 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         _descriptionController.text = _editingListing!.description ?? '';
         _cityController.text = _editingListing!.location;
         
-        // Extract price value from formatted price string
+        // Extract price value from formatted price string (convert to integer)
         if (_editingListing!.priceValue != null) {
-          _priceController.text = _editingListing!.priceValue.toString();
+          _priceController.text = _editingListing!.priceValue!.toInt().toString();
         }
         
         if (_editingListing!.bedrooms != null) {
@@ -225,7 +226,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final String listingFor = args?['listingFor'] ?? (_editingListing?.listingFor ?? 'rent');
       final String? rentalPeriod = args?['rentalPeriod'];
-      final double priceValue = double.tryParse(_priceController.text) ?? 0;
+      final int priceValue = int.tryParse(_priceController.text) ?? 0;
       
       // Determine payment frequency - only for rent, must be one of: 'daily', 'monthly', 'yearly'
       String? paymentFrequency;
@@ -388,6 +389,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                     : (AppLocalizations.of(context)?.salePrice ?? 'Sale Price'),
                 hint: AppLocalizations.of(context)?.enterPrice ?? 'Enter price',
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) => value?.isEmpty == true ? (AppLocalizations.of(context)?.priceIsRequired ?? 'Price is required') : null,
               ),
               
@@ -792,6 +794,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     int maxLines = 1,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -810,6 +813,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
           maxLines: maxLines,
           keyboardType: keyboardType,
           validator: validator,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hint,
             border: OutlineInputBorder(
