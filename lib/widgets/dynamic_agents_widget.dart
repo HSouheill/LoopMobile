@@ -8,6 +8,7 @@ import '../screens/agents/category_agents_page.dart';
 // Enum for different agent categories/filters
 enum AgentCategory {
   featured,
+  featuredAll, // Featured agents without agentType filter (both individual and company)
   topRated,
   forYou,
   featuredCompanies,
@@ -51,6 +52,8 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     switch (widget.category) {
       case AgentCategory.featured:
         return l10n?.featuredAgents ?? 'Featured Agents';
+      case AgentCategory.featuredAll:
+        return l10n?.featuredAgents ?? 'Featured Agents';
       case AgentCategory.topRated:
         return l10n?.topAgents ?? 'Top Agents';
       case AgentCategory.forYou:
@@ -71,6 +74,13 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
           'isFeatured': 'true',
           'sort': 'featured',
           'agentType': 'individual',
+        });
+        break;
+      case AgentCategory.featuredAll:
+        // Featured without agentType filter - returns both individual and company
+        params.addAll({
+          'isFeatured': 'true',
+          'sort': 'featured',
         });
         break;
       case AgentCategory.topRated:

@@ -46,6 +46,15 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             agentType: 'individual',
           );
           break;
+        case AgentCategory.featuredAll:
+          // Featured without agentType filter - returns both individual and company
+          resp = await AgentService.getAllAgents(
+            page: pageToFetch,
+            limit: limit,
+            isFeatured: true,
+            sort: 'featured',
+          );
+          break;
         case AgentCategory.topRated:
           resp = await AgentService.getAllAgents(
             page: pageToFetch,
@@ -115,6 +124,8 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
     switch (widget.category) {
       case AgentCategory.featured:
         return l10n?.featuredAgents ?? 'Featured Agents';
+      case AgentCategory.featuredAll:
+        return 'Featured Real Estate';
       case AgentCategory.topRated:
         return l10n?.topRatedAgents ?? 'Top Rated Agents';
       case AgentCategory.forYou:

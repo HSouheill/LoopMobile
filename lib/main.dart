@@ -18,6 +18,7 @@ import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
+import 'widgets/dynamic_agents_widget.dart';
 import 'services/service_service.dart';
 import 'services/news_service.dart';
 import 'services/banner_service.dart';
@@ -623,7 +624,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              // Marketing banner (already on top)
+              // 1. Banner
               _isLoadingBanner
                   ? const SizedBox(
                       height: 200,
@@ -631,9 +632,9 @@ class _HomePageState extends State<HomePage> {
                     )
                   : _bannerImages.isNotEmpty
                       ? ImageSliderWidget(imageUrls: _bannerImages)
-                      : const BannerPlaceholderWidget(), // Placeholder when no banner
+                      : const BannerPlaceholderWidget(),
               const SizedBox(height: 10),
-              // Featured Listings
+              // 2. Featured Listings
               FeaturedListingsWidget(
                 title: AppLocalizations.of(context)?.featuredListings ?? 'Featured Listings',
                 isMainPage: true,
@@ -641,7 +642,7 @@ class _HomePageState extends State<HomePage> {
                     ?.navigateToTab(1), // Navigate to ListingsPage (index 1)
               ),
               const SizedBox(height: 10),
-              // Featured Services section - now fetched dynamically
+              // 3. Featured Services
               DynamicServicesWidget(
                 category: ServiceCategory.featured,
                 limit: 3,
@@ -649,41 +650,35 @@ class _HomePageState extends State<HomePage> {
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
               const SizedBox(height: 10),
-              // Featured Companies section - featured company providers
-              DynamicServicesWidget(
-                category: ServiceCategory.featuredCompanies,
+              // 4. Contact Support
+              const SupportCardWidget(),
+              const SizedBox(height: 10),
+              // 5. Featured Real Estate (Agents)
+              DynamicAgentsWidget(
+                category: AgentCategory.featuredAll,
+                customTitle: 'Featured Real Estate',
                 limit: 3,
-                showSeeAll: true,
-                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
+                onSeeAll: () => mainScreenState?.navigateToTab(0), // Navigate to AgentsPage (index 0)
               ),
               const SizedBox(height: 10),
-              // Featured Jobs section - now fetched dynamically
+              // 6. Featured Jobs
               DynamicJobsWidget(
                 category: JobCategory.featured,
                 limit: 3,
                 onSeeAll: () => Navigator.pushNamed(context, '/jobs'), // Navigate to JobsPage
               ),
               const SizedBox(height: 10),
-              // Support section
-              const SupportCardWidget(),
+              // 7. Banner copy (duplicate banner)
+              _isLoadingBanner
+                  ? const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  : _bannerImages.isNotEmpty
+                      ? ImageSliderWidget(imageUrls: _bannerImages)
+                      : const BannerPlaceholderWidget(),
               const SizedBox(height: 10),
-              // Companies Services section - now fetched dynamically
-              DynamicServicesWidget(
-                category: ServiceCategory.companies,
-                limit: 3,
-                showSeeAll: true,
-                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-              ),
-              const SizedBox(height: 10),
-              // Individual Services section - now fetched dynamically
-              DynamicServicesWidget(
-                category: ServiceCategory.individual,
-                limit: 3,
-                showSeeAll: true,
-                onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
-              ),
-              const SizedBox(height: 10),
-              // Latest market updates
+              // 8. Latest Market Updates
               _isLoadingNews
                   ? const SizedBox(
                       height: 100,
@@ -692,7 +687,7 @@ class _HomePageState extends State<HomePage> {
                   : _marketUpdates.isEmpty
                       ? const SizedBox.shrink()
                       : LatestUpdatesWidget(updates: _marketUpdates),
-              const SizedBox(height: 100), // Added extra bottom padding to prevent content from being hidden behind navbar
+              const SizedBox(height: 100), // Bottom padding for navbar
             ],
           ),
         ),
