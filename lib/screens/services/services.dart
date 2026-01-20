@@ -108,23 +108,23 @@ class _ServicesPageState extends State<ServicesPage> {
           ),
 
           // Company Services
-          const DynamicServicesWidget(
+          DynamicServicesWidget(
             category: ServiceCategory.companies,
-            title: 'Companies',
+            title: AppLocalizations.of(context)?.companies ?? 'Companies',
             showSeeAll: true,
           ),
 
           // Individual Services
-          const DynamicServicesWidget(
+          DynamicServicesWidget(
             category: ServiceCategory.individual,
-            title: 'Individuals',
+            title: AppLocalizations.of(context)?.individuals ?? 'Individuals',
             showSeeAll: true,
           ),
 
           // Top Rated Services
-          const DynamicServicesWidget(
+          DynamicServicesWidget(
             category: ServiceCategory.topRated,
-            title: 'Top Rated',
+            title: AppLocalizations.of(context)?.topRated ?? 'Top Rated',
             showSeeAll: true,
           ),
           const SizedBox(height: 100),

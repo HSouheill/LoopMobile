@@ -125,7 +125,7 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
       case AgentCategory.featured:
         return l10n?.featuredAgents ?? 'Featured Agents';
       case AgentCategory.featuredAll:
-        return 'Featured Real Estate';
+        return l10n?.featuredRealEstate ?? 'Featured Real Estate';
       case AgentCategory.topRated:
         return l10n?.topRatedAgents ?? 'Top Rated Agents';
       case AgentCategory.forYou:

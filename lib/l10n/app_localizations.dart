@@ -236,6 +236,30 @@ abstract class AppLocalizations {
   /// **'Top Companies'**
   String get topCompanies;
 
+  /// No description provided for @companies.
+  ///
+  /// In en, this message translates to:
+  /// **'Companies'**
+  String get companies;
+
+  /// No description provided for @individuals.
+  ///
+  /// In en, this message translates to:
+  /// **'Individuals'**
+  String get individuals;
+
+  /// No description provided for @topRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Rated'**
+  String get topRated;
+
+  /// No description provided for @featuredRealEstate.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Real Estate'**
+  String get featuredRealEstate;
+
   /// No description provided for @failedToLoadFeaturedServiceProviders.
   ///
   /// In en, this message translates to:

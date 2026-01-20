@@ -81,6 +81,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get topCompanies => 'Top Companies';
 
   @override
+  String get companies => 'Companies';
+
+  @override
+  String get individuals => 'Individuals';
+
+  @override
+  String get topRated => 'Top Rated';
+
+  @override
+  String get featuredRealEstate => 'Featured Real Estate';
+
+  @override
   String get failedToLoadFeaturedServiceProviders =>
       'Failed to load featured service providers';
 

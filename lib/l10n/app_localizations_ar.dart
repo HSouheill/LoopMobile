@@ -81,6 +81,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get topCompanies => 'أفضل الشركات';
 
   @override
+  String get companies => 'الشركات';
+
+  @override
+  String get individuals => 'الأفراد';
+
+  @override
+  String get topRated => 'الأعلى تقييماً';
+
+  @override
+  String get featuredRealEstate => 'العقارات المميزة';
+
+  @override
   String get failedToLoadFeaturedServiceProviders =>
       'فشل تحميل مقدمي الخدمات المميزين';
 

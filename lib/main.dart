@@ -656,7 +656,7 @@ class _HomePageState extends State<HomePage> {
               // 5. Featured Real Estate (Agents)
               DynamicAgentsWidget(
                 category: AgentCategory.featuredAll,
-                customTitle: 'Featured Real Estate',
+                customTitle: AppLocalizations.of(context)?.featuredRealEstate ?? 'Featured Real Estate',
                 limit: 3,
                 onSeeAll: () => mainScreenState?.navigateToTab(0), // Navigate to AgentsPage (index 0)
               ),
