@@ -131,41 +131,22 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
                               Center(child: Text(l10n?.noJobsFound ?? 'No jobs found')),
                             ],
                           )
-                        : LayoutBuilder(
-                            builder: (context, constraints) {
-                              // Calculate aspect ratio based on screen width
-                              // Image uses AspectRatio 1.78, plus content padding/spacing
-                              // Estimate: image height + content height (~120-140px) / card width
-                              final screenWidth = constraints.maxWidth;
-                              final paddingLeft = 16.0;
-                              final paddingRight = 4.0;
-                              final spacing = 8.0; // spacing between cards
-                              final cardWidth = (screenWidth - paddingLeft - paddingRight - spacing) / 2;
-                              final imageHeight = cardWidth / 1.78; // image aspect ratio
-                              final contentHeight = 140.0; // estimated content height
-                              final cardHeight = imageHeight + contentHeight;
-                              final aspectRatio = cardWidth / cardHeight;
-                              
-                              return GridView.builder(
-                                padding: const EdgeInsets.only(left: 16, right: 4, top: 8, bottom: 8),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: aspectRatio,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 8,
-                                ),
-                                itemCount: jobs.length,
-                                itemBuilder: (context, index) {
-                                  final job = jobs[index];
-                                  return Center(
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      child: JobCard(job: job),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
+                        : SingleChildScrollView(
+                            padding: const EdgeInsets.all(16),
+                            child: Wrap(
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: jobs.map((job) {
+                                return SizedBox(
+                                  width: (MediaQuery.of(context).size.width - 48) / 2,
+                                  child: JobCard(
+                                    job: job,
+                                    width: null,
+                                    margin: EdgeInsets.zero,
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
                   ),
                   // Pagination controls

@@ -220,28 +220,32 @@ class _JobSearchResultsPageState extends State<JobSearchResultsPage> {
                               Center(child: Text(l10n?.noJobsFound ?? 'No jobs found')),
                             ],
                           )
-                        : GridView.builder(
+                        : SingleChildScrollView(
                             controller: _scrollController,
                             padding: const EdgeInsets.all(16),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.84,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                            ),
-                            itemCount: jobs.length + (isLoadingMore ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index == jobs.length) {
-                                return const Center(
-                                  child: Padding(
+                            child: Column(
+                              children: [
+                                Wrap(
+                                  spacing: 16,
+                                  runSpacing: 16,
+                                  children: jobs.map((job) {
+                                    return SizedBox(
+                                      width: (MediaQuery.of(context).size.width - 48) / 2,
+                                      child: JobCard(
+                                        job: job,
+                                        width: null,
+                                        margin: EdgeInsets.zero,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                                if (isLoadingMore)
+                                  const Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: CircularProgressIndicator(),
+                                    child: Center(child: CircularProgressIndicator()),
                                   ),
-                                );
-                              }
-                              final job = jobs[index];
-                              return JobCard(job: job);
-                            },
+                              ],
+                            ),
                           ),
                   ),
                 ],
