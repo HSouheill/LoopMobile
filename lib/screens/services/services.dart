@@ -101,9 +101,9 @@ class _ServicesPageState extends State<ServicesPage> {
 
           const SizedBox(height: 20),
 
-          // Top Rated Services
+          // Featured Services
           const DynamicServicesWidget(
-            category: ServiceCategory.topRated,
+            category: ServiceCategory.featured,
             showSeeAll: true,
           ),
 
@@ -119,9 +119,9 @@ class _ServicesPageState extends State<ServicesPage> {
             showSeeAll: true,
           ),
 
-          // Featured Services
+          // Top Rated Services
           const DynamicServicesWidget(
-            category: ServiceCategory.featured,
+            category: ServiceCategory.topRated,
             showSeeAll: true,
           ),
           const SizedBox(height: 100),
