@@ -497,19 +497,24 @@ class _AgentCardState extends State<AgentCard> {
     );
   }
 
-  // Custom text row without icon, positioned where the property count icon would be
+  // Custom text row without icon - always reserves 2 lines of height for consistent card sizing
   Widget _buildCustomTextRow(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 0), // Align with icon position
+    const textStyle = TextStyle(
+      color: Color(0xFF616161), // Colors.grey.shade700
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+      height: 1.3,
+    );
+    // Calculate height for exactly 2 lines (fontSize * lineHeight * 2)
+    const double twoLineHeight = 13 * 1.3 * 2;
+
+    return SizedBox(
+      height: twoLineHeight,
       child: Text(
         text,
-        style: TextStyle(
-          color: Colors.grey.shade700, 
-          fontSize: 13, // Slightly larger than the regular info text (12)
-          fontWeight: FontWeight.w500, // Make it slightly bolder
-        ),
+        style: textStyle,
         overflow: TextOverflow.ellipsis,
-        maxLines: 2, // Allow up to 2 lines for the custom text
+        maxLines: 2,
       ),
     );
   }
