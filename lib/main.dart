@@ -649,7 +649,7 @@ class _HomePageState extends State<HomePage> {
                 showSeeAll: true,
                 onSeeAll: () => mainScreenState?.navigateToTab(3), // Navigate to ServicesPage (index 3)
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               // 4. Contact Support
               const SupportCardWidget(),
               const SizedBox(height: 10),
