@@ -70,7 +70,7 @@ class _JobSearchWidgetState extends State<JobSearchWidget> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: Color.fromARGB(255, 69, 100, 201)),
+                const Icon(Icons.search, color: Color.fromARGB(255, 38, 118, 216)),
                 const SizedBox(width: 8.0),
                 Expanded(
                   child: Builder(
@@ -91,7 +91,7 @@ class _JobSearchWidgetState extends State<JobSearchWidget> {
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                           // placeholder color same as icon
-                          hintStyle: const TextStyle(color: Color.fromARGB(255, 69, 100, 201)),
+                          hintStyle: const TextStyle(color: Color.fromARGB(255, 38, 118, 216)),
                         ),
                         onSubmitted: (_) => _performSearch(),
                       );
@@ -101,7 +101,7 @@ class _JobSearchWidgetState extends State<JobSearchWidget> {
                 IconButton(
                   icon: const Icon(
                     Icons.tune,
-                    color: Color.fromARGB(255, 69, 100, 201),
+                    color: Color.fromARGB(255, 38, 118, 216),
                     size: 30,
                   ),
                   iconSize: 30,
