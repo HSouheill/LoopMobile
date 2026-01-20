@@ -65,23 +65,26 @@ class _AgentsPageState extends State<AgentsPage> {
               : _bannerImages.isNotEmpty
                   ? ImageSliderWidget(imageUrls: _bannerImages)
                   : const BannerPlaceholderWidget(), // Placeholder when no banner
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
           
           // Featured companies section
           const DynamicAgentsWidget(
             category: AgentCategory.featuredCompanies,
           ),
-          
+          const SizedBox(height: 20),
+
           // Top companies section
           const DynamicAgentsWidget(
             category: AgentCategory.topCompanies,
           ),
-          
+          const SizedBox(height: 20),
+
           // Featured agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.featured,
           ),
-          
+          const SizedBox(height: 20),
+
           // Top rated agents section (individuals only)
           const DynamicAgentsWidget(
             category: AgentCategory.topRated,
