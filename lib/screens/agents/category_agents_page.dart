@@ -172,22 +172,23 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
                               Center(child: Text(l10n?.noAgentsFoundCategory ?? 'No agents found')),
                             ],
                           )
-                        : GridView.builder(
+                        : SingleChildScrollView(
                             padding: const EdgeInsets.all(16),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.7,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
+                            child: Wrap(
+                              spacing: 16,
+                              runSpacing: 16,
+                              children: agents.map((agent) {
+                                return SizedBox(
+                                  width: (MediaQuery.of(context).size.width - 48) / 2,
+                                  child: AgentCard(
+                                    agent: agent,
+                                    showPropertyCount: true,
+                                    width: null,
+                                    margin: EdgeInsets.zero,
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                            itemCount: agents.length,
-                            itemBuilder: (context, index) {
-                              final agent = agents[index];
-                              return AgentCard(
-                                agent: agent,
-                                showPropertyCount: true,
-                              );
-                            },
                           ),
                   ),
                   // Pagination controls

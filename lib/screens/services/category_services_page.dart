@@ -152,25 +152,24 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
                                 Center(child: Text(l10n?.noServicesFound ?? 'No services found')),
                               ],
                             )
-                          : GridView.builder(
+                          : SingleChildScrollView(
                               padding: const EdgeInsets.all(16.0),
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.62, // Lower ratio = taller cards to fit content
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
+                              child: Wrap(
+                                spacing: 16,
+                                runSpacing: 16,
+                                children: agents.map((agent) {
+                                  return SizedBox(
+                                    width: (MediaQuery.of(context).size.width - 48) / 2,
+                                    child: AgentCard(
+                                      agent: agent,
+                                      showPropertyCount: false,
+                                      onTap: _onAgentTap,
+                                      width: null,
+                                      margin: EdgeInsets.zero,
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-                              itemCount: agents.length,
-                              itemBuilder: (context, index) {
-                                final agent = agents[index];
-                                return AgentCard(
-                                  agent: agent,
-                                  showPropertyCount: false,
-                                  onTap: _onAgentTap,
-                                  width: double.infinity, // Let grid determine width by expanding
-                                  margin: EdgeInsets.zero, // Grid spacing handles margins
-                                );
-                              },
                             ),
             ),
             // Pagination controls

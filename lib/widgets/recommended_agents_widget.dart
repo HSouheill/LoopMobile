@@ -305,6 +305,164 @@ class _AgentCardState extends State<AgentCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Build the card content
+    Widget cardContent = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Image with overlay icons
+        Stack(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: widget.agent.imageUrl.trim().isNotEmpty
+                  ? Image.network(
+                      widget.agent.imageUrl,
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const SizedBox(
+                          height: 140,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 140,
+                          color: Colors.grey.shade200,
+                          child: const Center(
+                            child: Icon(Icons.person, size: 40, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      height: 140,
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 32,
+                          backgroundColor: Colors.grey.shade300,
+                          child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: _toggleFavorite,
+                child: CircleAvatar(
+                  backgroundColor: Colors.white.withValues(alpha: 0.8),
+                  radius: 16,
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Icon(
+                          _isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: _isFavorited ? Colors.red : Colors.blue,
+                          size: 20,
+                        ),
+                ),
+              ),
+            ),
+            if (widget.agent.isFeatured)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 244, 208, 3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context);
+                      return Text(
+                        l10n?.featuredLabel ?? 'Featured',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
+                  ),
+                ),
+              ),
+          ],
+        ),
+        // Agent details
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.agent.name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              if (widget.showPropertyCount)
+                Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context);
+                    return _buildInfoRow(Icons.business_center_outlined,
+                        l10n?.properties(widget.agent.propertyCount) ?? '${widget.agent.propertyCount} Properties');
+                  }
+                )
+              else
+                Builder(
+                  builder: (context) {
+                    return _buildCustomTextRow(widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available'));
+                  }
+                ),
+              const SizedBox(height: 4),
+              _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
+              const SizedBox(height: 4),
+              _buildInfoRow(
+                  Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
+                  iconColor: Colors.amber),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    // Wrap content with border using ClipRRect to ensure border hugs content
+    Widget card = Container(
+      width: widget.width ?? 200,
+      margin: widget.margin ?? const EdgeInsets.only(right: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: cardContent,
+    );
+
     return GestureDetector(
       onTap: () {
         if (widget.onTap != null) {
@@ -318,168 +476,7 @@ class _AgentCardState extends State<AgentCard> {
           );
         }
       },
-      child: Container(
-      width: widget.width ?? 200, // Default to 200 for horizontal lists, use provided width or expand in grid
-      margin: widget.margin ?? const EdgeInsets.only(right: 16.0), // Use provided margin or default
-      decoration: BoxDecoration(
-        color: Colors.transparent, // Transparent background
-        border: Border.all(
-          color: Colors.grey.shade300,
-          width: 0.5,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: IntrinsicHeight(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Image with overlay icons
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  ),
-                  child: widget.agent.imageUrl.trim().isNotEmpty
-                      ? Image.network(
-                          widget.agent.imageUrl,
-                          height: 140, // increased slightly for better visual
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          // Loading and error builders for better UX
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const SizedBox(
-                              height: 140,
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 140,
-                              color: Colors.grey.shade200,
-                              child: const Center(
-                                child: Icon(Icons.person, size: 40, color: Colors.grey),
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          height: 140, // placeholder height matches real image height
-                          width: double.infinity,
-                          color: Colors.grey.shade200,
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircleAvatar(
-                                  radius: 32,
-                                  backgroundColor: Colors.grey.shade300,
-                                  child: const Icon(Icons.person, size: 40, color: Colors.grey),
-                                ),
-
-                              ],
-                            ),
-                          ),
-                        ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: GestureDetector(
-                    onTap: _toggleFavorite,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white.withOpacity(0.8),
-                      radius: 16,
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Icon(
-                              _isFavorited ? Icons.favorite : Icons.favorite_border,
-                              color: _isFavorited ? Colors.red : Colors.blue,
-                              size: 20,
-                            ),
-                    ),
-                  ),
-                ),
-                if (widget.agent.isFeatured)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 244, 208, 3),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Builder(
-                        builder: (context) {
-                          final l10n = AppLocalizations.of(context);
-                          return Text(
-                            l10n?.featuredLabel ?? 'Featured',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        }
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            // Agent details
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.agent.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  // Conditional rendering of property count or custom text
-                  if (widget.showPropertyCount)
-                    Builder(
-                      builder: (context) {
-                        final l10n = AppLocalizations.of(context);
-                        return _buildInfoRow(Icons.business_center_outlined,
-                            l10n?.properties(widget.agent.propertyCount) ?? '${widget.agent.propertyCount} Properties');
-                      }
-                    )
-                  else
-                    Builder(
-                      builder: (context) {
-                        return _buildCustomTextRow(widget.agent.customText ?? (AppLocalizations.of(context)?.noDescriptionAvailable ?? 'No description available'));
-                      }
-                    ),
-                  const SizedBox(height: 4),
-                  _buildInfoRow(Icons.location_on_outlined, widget.agent.location),
-                  const SizedBox(height: 4),
-                  _buildInfoRow(
-                      Icons.star, '${widget.agent.rating} (${widget.agent.reviewCount} Reviews)',
-                      iconColor: Colors.amber                ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
+      child: card,
     );
   }
 

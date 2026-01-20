@@ -261,11 +261,13 @@ class _AgentSearchResultsPageState extends State<AgentSearchResultsPage> {
           }
 
           final agent = agents[index];
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16.0),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: AgentCard(
               agent: agent,
               showPropertyCount: true,
+              width: null,
+              margin: EdgeInsets.zero,
               onTap: (selectedAgent) {
                 Navigator.push(
                   context,

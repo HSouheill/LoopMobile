@@ -349,13 +349,16 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
         return Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Left card
               Expanded(
                 child: AgentCard(
                   agent: agents[leftIndex],
-                  showPropertyCount: false, // Show custom text instead of property count
+                  showPropertyCount: false,
                   onTap: _onAgentTap,
+                  width: null,
+                  margin: EdgeInsets.zero,
                 ),
               ),
               const SizedBox(width: 16.0),
@@ -364,10 +367,12 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
                 child: rightIndex < agents.length
                     ? AgentCard(
                         agent: agents[rightIndex],
-                        showPropertyCount: false, // Show custom text instead of property count
+                        showPropertyCount: false,
                         onTap: _onAgentTap,
+                        width: null,
+                        margin: EdgeInsets.zero,
                       )
-                    : const SizedBox(), // Empty space if odd number of items
+                    : const SizedBox(),
               ),
             ],
           ),
