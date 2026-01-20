@@ -11,6 +11,7 @@ class DynamicServicesWidget extends StatefulWidget {
   final int limit;
   final bool showSeeAll;
   final VoidCallback? onSeeAll;
+  final String? title;
 
   const DynamicServicesWidget({
     super.key,
@@ -18,6 +19,7 @@ class DynamicServicesWidget extends StatefulWidget {
     this.limit = 3,
     this.showSeeAll = true,
     this.onSeeAll,
+    this.title,
   });
 
   @override
@@ -146,7 +148,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
 
     final l10n = AppLocalizations.of(context);
     return RecommendedAgentsWidget(
-      title: widget.category.getDisplayNameLocalized(l10n),
+      title: widget.title ?? widget.category.getDisplayNameLocalized(l10n),
       agents: agents,
       showPropertyCount: false, // Services don't have property count
       onSeeAll: widget.showSeeAll ? _handleSeeAll : null,
@@ -162,7 +164,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.category.getDisplayNameLocalized(l10n),
+            widget.title ?? widget.category.getDisplayNameLocalized(l10n),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -180,7 +182,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
 
   Widget _buildErrorState() {
     final l10n = AppLocalizations.of(context);
-    final categoryName = widget.category.getDisplayNameLocalized(l10n);
+    final categoryName = widget.title ?? widget.category.getDisplayNameLocalized(l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
@@ -224,7 +226,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
 
   Widget _buildEmptyState() {
     final l10n = AppLocalizations.of(context);
-    final categoryName = widget.category.getDisplayNameLocalized(l10n);
+    final categoryName = widget.title ?? widget.category.getDisplayNameLocalized(l10n);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(

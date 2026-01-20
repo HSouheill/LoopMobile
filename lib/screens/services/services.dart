@@ -110,18 +110,21 @@ class _ServicesPageState extends State<ServicesPage> {
           // Company Services
           const DynamicServicesWidget(
             category: ServiceCategory.companies,
+            title: 'Companies',
             showSeeAll: true,
           ),
 
           // Individual Services
           const DynamicServicesWidget(
             category: ServiceCategory.individual,
+            title: 'Individuals',
             showSeeAll: true,
           ),
 
           // Top Rated Services
           const DynamicServicesWidget(
             category: ServiceCategory.topRated,
+            title: 'Top Rated',
             showSeeAll: true,
           ),
           const SizedBox(height: 100),
