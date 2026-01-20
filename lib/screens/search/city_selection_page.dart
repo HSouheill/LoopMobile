@@ -104,7 +104,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
               children: [
                 // Any option
                 _buildCityOption(
-                  label: 'Any',
+                  label: 'All',
                   value: null,
                   icon: Icons.location_on_outlined,
                 ),

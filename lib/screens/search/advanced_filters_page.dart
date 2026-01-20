@@ -154,7 +154,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       if (widget.initialFilters!['security'] == true) amenities['security'] = true;
       if (widget.initialFilters!['furnished'] == true) amenities['furnished'] = true;
     } else {
-      // Set default values to null (Any) when no initial filters
+      // Set default values to null (All) when no initial filters
       _selectedType = null;
       _selectedListingFor = 'rent'; // Default to rent
       _selectedCondition = null;
@@ -304,11 +304,11 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 spacing: 8.0,
                 runSpacing: 8.0,
                 children: [
-                  // Any option
+                  // All option
                   _buildPropertyTypeButton(
                     context,
                     type: null,
-                    label: 'Any',
+                    label: 'All',
                     icon: Icons.home,
                   ),
                   // Property type buttons
@@ -336,7 +336,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                   items: [
                     const DropdownMenuItem<String>(
                       value: null,
-                      child: Text('Any'),
+                      child: Text('All'),
                     ),
                     ..._paymentFrequencyOptions.map((frequency) {
                       return DropdownMenuItem(
@@ -379,7 +379,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                     suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                   child: Text(
-                    _selectedCity ?? 'Any',
+                    _selectedCity ?? 'All',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: _selectedCity != null
@@ -402,7 +402,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   const DropdownMenuItem<String>(
                     value: 'user',
@@ -475,7 +475,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                       items: [
                         const DropdownMenuItem<int>(
                           value: null,
-                          child: Text('Any'),
+                          child: Text('All'),
                         ),
                         ...List.generate(15, (index) => index + 1).map((count) {
                           return DropdownMenuItem<int>(
@@ -503,7 +503,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                       items: [
                         const DropdownMenuItem<int>(
                           value: null,
-                          child: Text('Any'),
+                          child: Text('All'),
                         ),
                         ...List.generate(15, (index) => index + 1).map((count) {
                           return DropdownMenuItem<int>(
@@ -569,7 +569,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ...List.generate(16, (index) {
                     final floorValue = index - 5; // -5 to 10
@@ -599,7 +599,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ..._conditionOptions.map((condition) {
                     return DropdownMenuItem(
@@ -626,7 +626,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ..._furnishingOptions.map((furnishing) {
                     return DropdownMenuItem(
@@ -674,7 +674,7 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   DropdownMenuItem(value: 'score', child: Text('Relevance')),
                   DropdownMenuItem(value: 'date_desc', child: Text('Newest First')),

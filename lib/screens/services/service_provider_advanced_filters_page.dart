@@ -176,7 +176,7 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
                     suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                   child: Text(
-                    _selectedCity ?? 'Any',
+                    _selectedCity ?? 'All',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: _selectedCity != null
@@ -199,7 +199,7 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ..._districts.map((district) {
                     return DropdownMenuItem<String>(

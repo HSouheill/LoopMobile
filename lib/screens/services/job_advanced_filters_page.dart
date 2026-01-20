@@ -228,7 +228,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
                     suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                   child: Text(
-                    _selectedLocation ?? 'Any',
+                    _selectedLocation ?? 'All',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: _selectedLocation != null
@@ -251,7 +251,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ..._jobTypes.map((type) {
                     return DropdownMenuItem<String>(
@@ -320,7 +320,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
                 items: [
                   const DropdownMenuItem<String>(
                     value: null,
-                    child: Text('Any'),
+                    child: Text('All'),
                   ),
                   ..._attendanceTypes.map((type) {
                     return DropdownMenuItem<String>(
@@ -366,7 +366,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
                         child: Text(
                           _createdFrom != null
                               ? '${_createdFrom!.day}/${_createdFrom!.month}/${_createdFrom!.year}'
-                              : 'Any',
+                              : 'All',
                           style: const TextStyle(fontSize: 16.0),
                         ),
                       ),
@@ -385,7 +385,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
                         child: Text(
                           _createdTo != null
                               ? '${_createdTo!.day}/${_createdTo!.month}/${_createdTo!.year}'
-                              : 'Any',
+                              : 'All',
                           style: const TextStyle(fontSize: 16.0),
                         ),
                       ),
@@ -400,7 +400,7 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildBooleanButton(null, 'Any'),
+                    child: _buildBooleanButton(null, 'All'),
                   ),
                   const SizedBox(width: 16.0),
                   Expanded(
