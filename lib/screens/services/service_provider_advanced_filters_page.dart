@@ -219,11 +219,15 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
               // Sort Options
               _buildSectionTitle('Sort By'),
               DropdownButtonFormField<String>(
-                value: _selectedSort ?? 'date_desc', // Default to newest first
+                value: _selectedSort ?? 'featured_first', // Default to featured first
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
                 items: [
+                  const DropdownMenuItem<String>(
+                    value: 'featured_first',
+                    child: Text('Featured First'),
+                  ),
                   const DropdownMenuItem<String>(
                     value: 'date_desc',
                     child: Text('Newest First'),
