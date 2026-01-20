@@ -44,7 +44,6 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
           page: pageToFetch,
           limit: limit,
           isFeatured: true,
-          sort: 'date_desc',
         );
       } else if (widget.category == ServiceCategory.featuredCompanies) {
         // featured companies: combine isFeatured with providerType=company
@@ -53,21 +52,20 @@ class _CategoryServicesPageState extends State<CategoryServicesPage> {
           limit: limit,
           isFeatured: true,
           providerType: 'company',
-          sort: 'date_desc',
         );
       } else if (widget.category == ServiceCategory.topRated) {
         resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,
           limit: limit,
-          sort: 'rating_desc',
+          sort: 'featured_first',
         );
       } else {
-        // types (company / individual)
+        // types (company / individual) - use featured_first sort
         resp = await ServiceService.getAllServiceProviders(
           page: pageToFetch,
           limit: limit,
           providerType: widget.category.providerType,
-          sort: 'date_desc',
+          sort: 'featured_first',
         );
       }
 

@@ -20,7 +20,7 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
   String? error;
   List<PropertyListing> listings = [];
   ListingMeta? meta;
-  String selectedSort = 'date_desc'; // Default: newest first
+  String selectedSort = 'featured_first'; // Default: featured first
 
   @override
   void initState() {
@@ -89,6 +89,8 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
 
   String _getSortLabel(String sort, AppLocalizations? l10n) {
     switch (sort) {
+      case 'featured_first':
+        return 'Featured';
       case 'date_desc':
         return l10n?.newestFirst ?? 'Newest';
       case 'date_asc':
@@ -98,7 +100,7 @@ class _CategoryListingsPageState extends State<CategoryListingsPage> {
       case 'price_desc':
         return 'Price ↓';
       default:
-        return l10n?.newestFirst ?? 'Newest';
+        return 'Featured';
     }
   }
 

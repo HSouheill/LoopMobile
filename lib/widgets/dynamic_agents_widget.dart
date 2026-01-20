@@ -70,43 +70,43 @@ class _DynamicAgentsWidgetState extends State<DynamicAgentsWidget> {
     final params = <String, String>{'limit': widget.limit.toString()};
     switch (widget.category) {
       case AgentCategory.featured:
+        // isFeatured=true means all results are featured, no need for featured_first sort
         params.addAll({
           'isFeatured': 'true',
-          'sort': 'featured',
           'agentType': 'individual',
         });
         break;
       case AgentCategory.featuredAll:
         // Featured without agentType filter - returns both individual and company
+        // isFeatured=true means all results are featured, no need for featured_first sort
         params.addAll({
           'isFeatured': 'true',
-          'sort': 'featured',
         });
         break;
       case AgentCategory.topRated:
         params.addAll({
-          'sort': 'featured',
+          'sort': 'featured_first',
           'minRating': '4.5',
           'agentType': 'individual',
         });
         break;
       case AgentCategory.forYou:
         params.addAll({
-          'sort': 'featured',
+          'sort': 'featured_first',
           'personalized': 'true',
           'agentType': 'individual',
         });
         break;
       case AgentCategory.featuredCompanies:
+        // isFeatured=true means all results are featured, no need for featured_first sort
         params.addAll({
           'isFeatured': 'true',
-          'sort': 'featured',
           'agentType': 'company',
         });
         break;
       case AgentCategory.topCompanies:
         params.addAll({
-          'sort': 'featured',
+          'sort': 'featured_first',
           'minRating': '4.5',
           'agentType': 'company',
         });

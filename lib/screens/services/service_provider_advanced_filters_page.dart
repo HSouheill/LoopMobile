@@ -88,12 +88,8 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
     }
     if (_selectedCity != null && _selectedCity!.isNotEmpty) filters['city'] = _selectedCity;
     if (_selectedDistrict != null && _selectedDistrict!.isNotEmpty) filters['district'] = _selectedDistrict;
-    // Only pass sort if it's explicitly set to oldest (newest is the default)
-    if (_selectedSort == 'date_asc') {
-      filters['sort'] = _selectedSort;
-    }
-    // Always sort by featured
-    filters['sortByFeatured'] = true;
+    // Use featured_first as default, or the selected sort option
+    filters['sort'] = _selectedSort ?? 'featured_first';
 
     Navigator.pop(context, {
       'query': query,

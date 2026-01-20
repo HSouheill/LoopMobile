@@ -38,21 +38,21 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
 
       switch (widget.category) {
         case AgentCategory.featured:
+          // isFeatured=true means all results are featured, no need for featured_first sort
           resp = await AgentService.getAllAgents(
             page: pageToFetch,
             limit: limit,
             isFeatured: true,
-            sort: 'featured',
             agentType: 'individual',
           );
           break;
         case AgentCategory.featuredAll:
           // Featured without agentType filter - returns both individual and company
+          // isFeatured=true means all results are featured, no need for featured_first sort
           resp = await AgentService.getAllAgents(
             page: pageToFetch,
             limit: limit,
             isFeatured: true,
-            sort: 'featured',
           );
           break;
         case AgentCategory.topRated:
@@ -60,7 +60,7 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             page: pageToFetch,
             limit: limit,
             minRating: '4.5',
-            sort: 'featured',
+            sort: 'featured_first',
             agentType: 'individual',
           );
           break;
@@ -69,16 +69,16 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             page: pageToFetch,
             limit: limit,
             personalized: true,
-            sort: 'featured',
+            sort: 'featured_first',
             agentType: 'individual',
           );
           break;
         case AgentCategory.featuredCompanies:
+          // isFeatured=true means all results are featured, no need for featured_first sort
           resp = await AgentService.getAllAgents(
             page: pageToFetch,
             limit: limit,
             isFeatured: true,
-            sort: 'featured',
             agentType: 'company',
           );
           break;
@@ -87,7 +87,7 @@ class _CategoryAgentsPageState extends State<CategoryAgentsPage> {
             page: pageToFetch,
             limit: limit,
             minRating: '4.5',
-            sort: 'featured',
+            sort: 'featured_first',
             agentType: 'company',
           );
           break;

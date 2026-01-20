@@ -239,6 +239,7 @@ class AgentService {
         'q': query,
         'page': page.toString(),
         'limit': limit.toString(),
+        'sort': 'featured_first',
       });
 
       final response = await http.get(

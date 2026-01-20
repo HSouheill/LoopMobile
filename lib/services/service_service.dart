@@ -34,7 +34,7 @@ class ServiceService {
   
   static Future<ServiceProvidersResponse> getTopRatedServiceProviders({int limit = 3}) async {
     try {
-      final url = Uri.parse('$baseUrl/get-all-service-providers?withServices=true&limit=$limit&sort=rating_desc');
+      final url = Uri.parse('$baseUrl/get-all-service-providers?withServices=true&limit=$limit&sort=featured_first');
       final response = await http.get(
         url,
         headers: AuthService.getAuthHeaders(),
@@ -54,7 +54,7 @@ class ServiceService {
   static Future<ServiceProvidersResponse> getServiceProvidersByType({
     required String providerType,
     int limit = 3,
-    String sort = 'date_desc',
+    String sort = 'featured_first',
   }) async {
     try {
       final url = Uri.parse('$baseUrl/get-all-service-providers?providerType=$providerType&withServices=true&limit=$limit&sort=$sort');
@@ -80,14 +80,16 @@ class ServiceService {
     bool? isFeatured,
     String? providerType,
     String? city,
-    String? sort = 'date_desc',
+    String? sort,
   }) async {
     try {
+      // Use featured_first sort unless filtering by isFeatured (all would be featured)
+      final effectiveSort = sort ?? (isFeatured == true ? 'date_desc' : 'featured_first');
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
         'withServices': 'true',
-        if (sort != null) 'sort': sort,
+        'sort': effectiveSort,
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (providerType != null) 'providerType': providerType,
         if (city != null) 'city': city,
@@ -489,16 +491,17 @@ class ServiceService {
     bool withReviews = false,
     String? providerType,
     String? role,
-    bool? sortByFeatured,
   }) async {
     try {
+      // Use featured_first sort unless filtering by isFeatured (all would be featured)
+      final effectiveSort = sort ?? (isFeatured == true ? 'date_desc' : 'featured_first');
       final queryParams = <String, String>{
         'q': query,
         'page': page.toString(),
         'limit': limit.toString(),
         'withServices': withServices.toString(),
         'withReviews': withReviews.toString(),
-        if (sort != null) 'sort': sort,
+        'sort': effectiveSort,
         if (city != null) 'city': city,
         if (district != null) 'district': district,
         if (companyName != null) 'companyName': companyName,
@@ -510,7 +513,6 @@ class ServiceService {
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (role != null) 'role': role,
         if (role == null && providerType != null) 'providerType': providerType,
-        if (sortByFeatured != null) 'sortByFeatured': sortByFeatured.toString(),
       };
       
       final uri = Uri.parse('$baseUrl/search-service-providers').replace(queryParameters: queryParams);

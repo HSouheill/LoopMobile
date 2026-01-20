@@ -12,11 +12,17 @@ class AgentService {
   static Future<List<Agent>> getAgents(
       [Map<String, String>? queryParams]) async {
     try {
+      // Default to featured_first sort unless filtering by isFeatured=true or sort is already specified
+      final params = queryParams != null ? Map<String, String>.from(queryParams) : <String, String>{};
+      if (params['sort'] == null && params['isFeatured'] != 'true') {
+        params['sort'] = 'featured_first';
+      }
+
       // Build query string
       String queryString = '';
-      if (queryParams != null && queryParams.isNotEmpty) {
+      if (params.isNotEmpty) {
         queryString = '?' +
-            queryParams.entries
+            params.entries
                 .map((e) =>
                     '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
                 .join('&');
@@ -100,16 +106,18 @@ class AgentService {
     int page = 1,
     int limit = 10,
     bool? isFeatured,
-    String? sort = 'featured',
+    String? sort,
     String? minRating,
     bool? personalized,
     String? agentType,
   }) async {
     try {
+      // Use featured_first sort unless filtering by isFeatured (all would be featured)
+      final effectiveSort = sort ?? (isFeatured == true ? 'date_desc' : 'featured_first');
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
-        if (sort != null) 'sort': sort,
+        'sort': effectiveSort,
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (minRating != null) 'minRating': minRating,
         if (personalized != null) 'personalized': personalized.toString(),

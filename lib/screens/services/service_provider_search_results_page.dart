@@ -77,7 +77,6 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
         district: _currentFilters?['district']?.toString(),
         role: _currentFilters?['role']?.toString(),
         providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
-        sortByFeatured: _currentFilters?['sortByFeatured'] == true,
       );
 
       // Convert service providers to agents
@@ -124,7 +123,6 @@ class _ServiceProviderSearchResultsPageState extends State<ServiceProviderSearch
         district: _currentFilters?['district']?.toString(),
         role: _currentFilters?['role']?.toString(),
         providerType: _currentFilters?['role'] == null ? (_currentFilters?['providerType']?.toString()) : null,
-        sortByFeatured: _currentFilters?['sortByFeatured'] == true,
       );
 
       // Convert service providers to agents

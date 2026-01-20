@@ -47,6 +47,7 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
       
       switch (widget.category) {
         case ServiceCategory.featured:
+          // isFeatured=true means all results are featured, no need for featured_first sort
           response = await ServiceService.getFeaturedServiceProviders(limit: widget.limit);
           break;
         case ServiceCategory.topRated:
@@ -54,23 +55,25 @@ class _DynamicServicesWidgetState extends State<DynamicServicesWidget> {
           break;
         case ServiceCategory.featuredCompanies:
           // Featured companies: filter providerType=company and isFeatured=true
+          // isFeatured=true means all results are featured, no need for featured_first sort
           response = await ServiceService.getAllServiceProviders(
             limit: widget.limit,
             isFeatured: true,
             providerType: 'company',
-            sort: 'date_desc',
           );
           break;
         case ServiceCategory.companies:
           response = await ServiceService.getServiceProvidersByType(
             providerType: 'company',
             limit: widget.limit,
+            sort: 'featured_first',
           );
           break;
         case ServiceCategory.individual:
           response = await ServiceService.getServiceProvidersByType(
             providerType: 'individual',
             limit: widget.limit,
+            sort: 'featured_first',
           );
           break;
       }

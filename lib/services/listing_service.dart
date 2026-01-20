@@ -27,7 +27,7 @@ class ListingService {
 
   static Future<ListingsResponse> getNewListings({int limit = 3}) async {
     try {
-      final url = Uri.parse('$baseUrl/get-all?limit=$limit&sort=date_desc');
+      final url = Uri.parse('$baseUrl/get-all?limit=$limit&sort=featured_first');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -44,7 +44,7 @@ class ListingService {
   static Future<ListingsResponse> getListingsByType({
     required String type,
     int limit = 3,
-    String sort = 'date_desc',
+    String sort = 'featured_first',
   }) async {
     try {
       final url =
@@ -69,14 +69,16 @@ class ListingService {
     bool? isFeatured,
     String? type,
     String? city,
-    String? sort = 'date_desc',
+    String? sort,
     String? listingFor,
   }) async {
     try {
+      // Use featured_first sort unless filtering by isFeatured (all would be featured)
+      final effectiveSort = sort ?? (isFeatured == true ? 'date_desc' : 'featured_first');
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
-        if (sort != null) 'sort': sort,
+        'sort': effectiveSort,
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (type != null) 'type': type,
         if (city != null) 'city': city,
@@ -122,14 +124,13 @@ class ListingService {
         queryParams['type'] = typeValue;
       }
 
-      // Extract sort from filters if not provided directly, or use default
+      // Extract sort from filters if not provided directly, default to featured_first
       String? sortValue = sort;
       if (filters != null && filters['sort'] != null) {
         sortValue = filters['sort'].toString();
       }
-      if (sortValue != null && sortValue.isNotEmpty) {
-        queryParams['sort'] = sortValue;
-      }
+      // Default to featured_first if no sort specified
+      queryParams['sort'] = (sortValue != null && sortValue.isNotEmpty) ? sortValue : 'featured_first';
 
       // Add filter parameters
       if (filters != null) {
