@@ -102,7 +102,7 @@ class _DynamicJobsWidgetState extends State<DynamicJobsWidget> {
         page: 1,
         limit: widget.limit,
         isFeatured: widget.category == JobCategory.featured ? true : null,
-        sort: 'date_desc',
+        sort: 'featured_first',
       );
       if (mounted) {
         setState(() {

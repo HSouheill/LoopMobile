@@ -41,21 +41,21 @@ class _CategoryJobsPageState extends State<CategoryJobsPage> {
             page: pageToFetch,
             limit: limit,
             isFeatured: true,
-            sort: 'date_desc',
+            sort: 'featured_first',
           );
           break;
         case JobCategory.forYou:
           response = await JobService.getJobs(
             page: pageToFetch,
             limit: limit,
-            sort: 'date_desc',
+            sort: 'featured_first',
           );
           break;
         case JobCategory.recent:
           response = await JobService.getJobs(
             page: pageToFetch,
             limit: limit,
-            sort: 'date_desc',
+            sort: 'featured_first',
           );
           break;
       }
