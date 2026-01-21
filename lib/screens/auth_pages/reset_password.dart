@@ -295,10 +295,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           Center(
                             child: GestureDetector(
                               onTap: () {
+                                // Navigate to main screen first, then push login on top
+                                // This preserves the navigation stack so login can pop back properly
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   '/loginEmail',
-                                  (route) => false,
+                                  (route) => route.isFirst,
                                 );
                               },
                               child: Text(
