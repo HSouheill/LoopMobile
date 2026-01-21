@@ -60,9 +60,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       newPassword: _passwordCtrl.text,
     );
 
-    setState(() => _loading = false);
-
     if (!mounted) return;
+    
+    setState(() => _loading = false);
 
     if (result['success'] == true) {
       // Pop back to login page - this keeps the original navigation stack intact

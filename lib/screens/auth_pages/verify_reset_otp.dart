@@ -94,9 +94,9 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
       otp: _otp.trim(),
     );
 
-    setState(() => _loading = false);
-
     if (!mounted) return;
+    
+    setState(() => _loading = false);
 
     if (result['success'] == true) {
       final pendingId = result['pendingId'];
@@ -120,6 +120,8 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
       phone: _phone,
     );
 
+    if (!mounted) return;
+    
     setState(() => _resending = false);
   }
 

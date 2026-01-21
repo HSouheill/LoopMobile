@@ -42,9 +42,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       phone: phone,
     );
 
-    setState(() => _loading = false);
-
     if (!mounted) return;
+    
+    setState(() => _loading = false);
 
     // Show a snackbar message based on the result.
     final l10n = AppLocalizations.of(context)!;
