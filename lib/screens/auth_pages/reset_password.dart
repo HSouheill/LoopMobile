@@ -68,12 +68,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['message'] ?? 'Password changed successfully')),
       );
-      // Navigate back to login
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/loginEmail',
-        (route) => false,
-      );
+      // Pop back to login page - this keeps the original navigation stack intact
+      // so that when user logs in and pops to MainScreen, the .then() callback fires
+      Navigator.of(context).popUntil((route) => route.settings.name == '/loginEmail');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['message'] ?? 'Failed to reset password')),
