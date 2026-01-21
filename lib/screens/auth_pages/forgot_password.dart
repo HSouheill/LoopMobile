@@ -50,9 +50,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final l10n = AppLocalizations.of(context)!;
 
     if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.passwordResetSent)),
-      );
       // Navigate to OTP verification page
       Navigator.pushNamed(
         context,

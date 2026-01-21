@@ -115,25 +115,12 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
   Future<void> _resendOtp() async {
     setState(() => _resending = true);
 
-    final result = await AuthService.forgotPassword(
+    await AuthService.forgotPassword(
       email: _email,
       phone: _phone,
     );
 
     setState(() => _resending = false);
-
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          result['success'] == true
-              ? l10n.otpResentSuccessfully
-              : (result['message'] ?? 'Failed to resend OTP'),
-        ),
-      ),
-    );
   }
 
   String get _displayContact {
@@ -220,7 +207,36 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
                         color: Colors.grey[600],
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
+                    // Warning message about verifying contact info
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.orange.shade700,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Please make sure your ${_isPhone ? 'phone number' : 'email'} is correct before entering the OTP code.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.orange.shade900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
                     // OTP Input Fields
                     Row(
