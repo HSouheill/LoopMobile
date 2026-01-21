@@ -523,6 +523,121 @@ class AuthService {
     }
   }
 
+  // Request forgot password OTP (for unauthenticated users)
+  static Future<Map<String, dynamic>> forgotPassword({
+    String? email,
+    String? phone,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/forgotPassword');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          if (email != null) 'email': email.toLowerCase().trim(),
+          if (phone != null) 'phone': phone.trim(),
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      // Backend returns 202 for both success and "user not found" (to prevent enumeration)
+      if (response.statusCode == 202) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'If an account exists with this contact, an OTP has been sent.',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to send OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Verify reset OTP (for unauthenticated users)
+  static Future<Map<String, dynamic>> verifyResetOtp({
+    String? email,
+    String? phone,
+    required String otp,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/verifyResetOtp');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          if (email != null) 'email': email.toLowerCase().trim(),
+          if (phone != null) 'phone': phone.trim(),
+          'otp': otp,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'OTP verified successfully',
+          'pendingId': data['pendingId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Invalid or expired OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Change password using pendingId (for unauthenticated users after OTP verification)
+  static Future<Map<String, dynamic>> resetPassword({
+    required String pendingId,
+    required String newPassword,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/changePassword');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'pendingId': pendingId,
+          'newPassword': newPassword,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password changed successfully',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to change password',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
   // Delete user account
   static Future<Map<String, dynamic>> deleteAccount() async {
     try {

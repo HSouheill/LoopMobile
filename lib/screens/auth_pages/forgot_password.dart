@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
-// import '../services/auth_service.dart'; // Commented out as this is a new page and auth service functions may differ.
+import '../../services/auth_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -26,32 +26,47 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     super.dispose();
   }
 
-  // This function simulates the password reset logic.
+  // This function handles the password reset request.
   Future<void> _submit() async {
     // Validate the form before proceeding.
     if (!_formKey.currentState!.validate()) return;
-    
+
     // Set loading state to true to show the progress indicator.
     setState(() => _loading = true);
 
-    // Simulate an asynchronous API call for password reset.
-    // In a real app, you would call a function from an authentication service here,
-    // like AuthService.resetPassword(input).
-    await Future.delayed(const Duration(seconds: 2));
+    final String? email = _isPhoneSelected ? null : _inputCtrl.text.trim();
+    final String? phone = _isPhoneSelected ? '+961${_inputCtrl.text.trim()}' : null;
+
+    final result = await AuthService.forgotPassword(
+      email: email,
+      phone: phone,
+    );
 
     setState(() => _loading = false);
 
-    // Check if the simulated operation was successful.
-    final ok = _inputCtrl.text.isNotEmpty; // A simple check to simulate success.
-    
+    if (!mounted) return;
+
     // Show a snackbar message based on the result.
     final l10n = AppLocalizations.of(context)!;
-    if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.passwordResetSent)));
-      // Optionally navigate back to the login page after success.
-      // Navigator.of(context).pop();
+
+    if (result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.passwordResetSent)),
+      );
+      // Navigate to OTP verification page
+      Navigator.pushNamed(
+        context,
+        '/verifyResetOtp',
+        arguments: {
+          'email': email,
+          'phone': phone,
+          'isPhone': _isPhoneSelected,
+        },
+      );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.failedToSendReset)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? l10n.failedToSendReset)),
+      );
     }
   }
 
