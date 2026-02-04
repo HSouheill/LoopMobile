@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/job_service.dart';
 import '../services/image_upload_service.dart';
+import '../screens/search/city_selection_page.dart';
 
 class JobFormWidget extends StatefulWidget {
   final Job? existingJob;
@@ -259,21 +260,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
               const SizedBox(height: 16),
 
               // Location
-              _buildTextField(
-                controller: _locationController,
-                label: 'Location',
-                hint: 'Enter job location',
-                maxLength: 100,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Location is required';
-                  }
-                  if (value.trim().length > 100) {
-                    return 'Location must be 100 characters or less';
-                  }
-                  return null;
-                },
-              ),
+              _buildLocationSelector(),
               const SizedBox(height: 16),
 
               // Job Type
@@ -488,6 +475,78 @@ class _JobFormWidgetState extends State<JobFormWidget> {
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 12,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Location',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E1E1E),
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final selectedCity = await Navigator.push<String?>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CitySelectionPage(
+                  selectedCity: _locationController.text.isNotEmpty ? _locationController.text : null,
+                ),
+              ),
+            );
+            if (selectedCity != null) {
+              setState(() {
+                _locationController.text = selectedCity;
+              });
+            } else if (selectedCity == null && _locationController.text.isNotEmpty) {
+              setState(() {
+                _locationController.text = '';
+              });
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _locationController.text.isEmpty
+                    ? const Color(0xFFE0E0E0)
+                    : const Color.fromARGB(255, 69, 100, 201),
+                width: _locationController.text.isEmpty ? 1 : 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _locationController.text.isNotEmpty
+                        ? _locationController.text
+                        : 'Select job location',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _locationController.text.isNotEmpty
+                          ? Colors.black87
+                          : Colors.grey[600],
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.grey[600],
+                ),
+              ],
             ),
           ),
         ),
