@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/cities_service.dart';
 
@@ -19,6 +20,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
   List<String> _lebanonCities = [];
   final TextEditingController _searchController = TextEditingController();
   List<String> _filteredCities = [];
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -26,7 +28,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
     _selectedCity = widget.selectedCity;
     _loadLebanonCities();
     _filteredCities = _lebanonCities;
-    _searchController.addListener(_filterCities);
+    _searchController.addListener(_onSearchChanged);
     // Expand Lebanon if a city is already selected
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_selectedCity != null && _lebanonCities.contains(_selectedCity)) {
@@ -40,6 +42,13 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
   void _loadLebanonCities() {
     _lebanonCities = LocationService.getAllCitiesInLebanon();
     _filteredCities = _lebanonCities;
+  }
+
+  void _onSearchChanged() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _filterCities();
+    });
   }
 
   void _filterCities() {
@@ -59,6 +68,7 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -99,23 +109,123 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
               ),
             ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                // Any option
-                _buildCityOption(
-                  label: 'All',
-                  value: null,
-                  icon: Icons.location_on_outlined,
-                ),
-                const SizedBox(height: 8.0),
-                
-                // Lebanon option (expandable)
-                _buildExpandableLebanonSection(),
-              ],
-            ),
+            child: _isLebanonExpanded
+                ? _buildVirtualizedCitiesList()
+                : ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      // Any option
+                      _buildCityOption(
+                        label: 'All',
+                        value: null,
+                        icon: Icons.location_on_outlined,
+                      ),
+                      const SizedBox(height: 8.0),
+                      // Lebanon option (expandable)
+                      _buildLebanonHeader(),
+                    ],
+                  ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildVirtualizedCitiesList() {
+    // +2 for "All" option and "Lebanon" header at the top
+    final itemCount = _filteredCities.isEmpty ? 3 : _filteredCities.length + 2;
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildCityOption(
+              label: 'All',
+              value: null,
+              icon: Icons.location_on_outlined,
+            ),
+          );
+        }
+        if (index == 1) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildLebanonHeader(),
+          );
+        }
+        if (_filteredCities.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Center(
+              child: Text(
+                'No cities found',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14.0,
+                ),
+              ),
+            ),
+          );
+        }
+        final cityIndex = index - 2;
+        final city = _filteredCities[cityIndex];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: _buildCityOption(
+            label: city,
+            value: city,
+            icon: Icons.location_city,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLebanonHeader() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isLebanonExpanded = !_isLebanonExpanded;
+          if (!_isLebanonExpanded) {
+            _searchController.clear();
+            _filteredCities = _lebanonCities;
+          }
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.flag,
+              color: Color(0xFF3B82F6),
+            ),
+            const SizedBox(width: 12.0),
+            const Expanded(
+              child: Text(
+                'Lebanon',
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Icon(
+              _isLebanonExpanded ? Icons.expand_less : Icons.expand_more,
+              color: Colors.grey[600],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -175,87 +285,5 @@ class _CitySelectionPageState extends State<CitySelectionPage> {
     );
   }
 
-  Widget _buildExpandableLebanonSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Lebanon header (clickable to expand/collapse)
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isLebanonExpanded = !_isLebanonExpanded;
-              if (!_isLebanonExpanded) {
-                _searchController.clear();
-              }
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(
-                color: Colors.grey[300]!,
-                width: 1.0,
-              ),
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.flag,
-                  color: Color(0xFF3B82F6),
-                ),
-                const SizedBox(width: 12.0),
-                const Expanded(
-                  child: Text(
-                    'Lebanon',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Icon(
-                  _isLebanonExpanded
-                      ? Icons.expand_less
-                      : Icons.expand_more,
-                  color: Colors.grey[600],
-                ),
-              ],
-            ),
-          ),
-        ),
-        
-        // Cities list (shown when expanded)
-        if (_isLebanonExpanded) ...[
-          const SizedBox(height: 8.0),
-          if (_filteredCities.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(
-                child: Text(
-                  'No cities found',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14.0,
-                  ),
-                ),
-              ),
-            )
-          else
-            ..._filteredCities.map((city) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: _buildCityOption(
-                  label: city,
-                  value: city,
-                  icon: Icons.location_city,
-                ),
-              );
-            }).toList(),
-        ],
-      ],
-    );
-  }
 }
 
