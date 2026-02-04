@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/listing_create_service.dart';
 import '../../services/listing_service.dart';
+import '../search/city_selection_page.dart';
 
 class AddListingFormPage extends StatefulWidget {
   const AddListingFormPage({super.key});
@@ -373,12 +374,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               
               const SizedBox(height: 15),
               
-              _buildTextField(
-                controller: _cityController,
-                label: AppLocalizations.of(context)?.city ?? 'City',
-                hint: AppLocalizations.of(context)?.enterCity ?? 'Enter city',
-                validator: (value) => value?.isEmpty == true ? (AppLocalizations.of(context)?.cityIsRequired ?? 'City is required') : null,
-              ),
+              _buildCitySelector(context),
               
               const SizedBox(height: 15),
               
@@ -829,6 +825,77 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCitySelector(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n?.city ?? 'City',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final selectedCity = await Navigator.push<String?>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CitySelectionPage(
+                  selectedCity: _cityController.text.isNotEmpty ? _cityController.text : null,
+                ),
+              ),
+            );
+            if (selectedCity != null) {
+              setState(() {
+                _cityController.text = selectedCity;
+              });
+            } else if (selectedCity == null && _cityController.text.isNotEmpty) {
+              // User selected "All" - clear the city
+              setState(() {
+                _cityController.text = '';
+              });
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _cityController.text.isEmpty ? Colors.grey[300]! : const Color(0xFF3B82F6),
+                width: _cityController.text.isEmpty ? 1 : 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey[50],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _cityController.text.isNotEmpty
+                        ? _cityController.text
+                        : (l10n?.enterCity ?? 'Select city'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _cityController.text.isNotEmpty ? Colors.black87 : Colors.grey[600],
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.grey[600],
+                ),
+              ],
+            ),
           ),
         ),
       ],

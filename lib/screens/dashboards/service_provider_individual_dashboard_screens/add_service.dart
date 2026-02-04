@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../../services/service_service.dart';
+import '../../search/city_selection_page.dart';
 
 class AddService extends StatefulWidget {
   const AddService({super.key});
@@ -304,13 +305,45 @@ class _AddServiceState extends State<AddService> {
               const SizedBox(height: 16),
 
               // Location Field
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: 'Location',
-                  hintText: 'Enter service location',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.location_on),
+              GestureDetector(
+                onTap: () async {
+                  final selectedCity = await Navigator.push<String?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CitySelectionPage(
+                        selectedCity: _locationController.text.isNotEmpty ? _locationController.text : null,
+                      ),
+                    ),
+                  );
+                  if (selectedCity != null) {
+                    setState(() {
+                      _locationController.text = selectedCity;
+                    });
+                  } else if (selectedCity == null && _locationController.text.isNotEmpty) {
+                    setState(() {
+                      _locationController.text = '';
+                    });
+                  }
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Location',
+                    hintText: 'Select service location',
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.location_on),
+                    suffixIcon: const Icon(Icons.arrow_drop_down),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  child: Text(
+                    _locationController.text.isNotEmpty
+                        ? _locationController.text
+                        : 'Select location',
+                    style: TextStyle(
+                      color: _locationController.text.isNotEmpty ? Colors.black87 : Colors.grey[600],
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
