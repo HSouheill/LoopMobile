@@ -41,6 +41,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _pendingEditId;
   String? _newPhoneNumber;
 
+  // Selected country code for phone input
+  String _selectedCountryCode = '+961';
+  String _selectedCountryFlag = '🇱🇧';
+
+  // Country list for dropdown
+  static const List<Map<String, String>> _countries = [
+    {'code': '+961', 'flag': '🇱🇧', 'name': 'Lebanon'},
+    {'code': '+1', 'flag': '🇺🇸', 'name': 'United States'},
+    {'code': '+44', 'flag': '🇬🇧', 'name': 'United Kingdom'},
+    {'code': '+33', 'flag': '🇫🇷', 'name': 'France'},
+    {'code': '+49', 'flag': '🇩🇪', 'name': 'Germany'},
+    {'code': '+39', 'flag': '🇮🇹', 'name': 'Italy'},
+    {'code': '+34', 'flag': '🇪🇸', 'name': 'Spain'},
+    {'code': '+966', 'flag': '🇸🇦', 'name': 'Saudi Arabia'},
+    {'code': '+971', 'flag': '🇦🇪', 'name': 'UAE'},
+    {'code': '+20', 'flag': '🇪🇬', 'name': 'Egypt'},
+    {'code': '+90', 'flag': '🇹🇷', 'name': 'Turkey'},
+    {'code': '+7', 'flag': '🇷🇺', 'name': 'Russia'},
+    {'code': '+86', 'flag': '🇨🇳', 'name': 'China'},
+    {'code': '+81', 'flag': '🇯🇵', 'name': 'Japan'},
+    {'code': '+82', 'flag': '🇰🇷', 'name': 'South Korea'},
+    {'code': '+91', 'flag': '🇮🇳', 'name': 'India'},
+    {'code': '+55', 'flag': '🇧🇷', 'name': 'Brazil'},
+    {'code': '+61', 'flag': '🇦🇺', 'name': 'Australia'},
+  ];
+
   // Helper method to extract country code and phone number
   Map<String, String> _extractPhoneParts(String? phoneNumber) {
     if (phoneNumber == null || phoneNumber.isEmpty) {
@@ -102,6 +128,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     phoneController = TextEditingController(
       text: phoneParts['phoneNumber'] ?? '',
     );
+
+    // Initialize selected country from user's phone
+    _selectedCountryCode = phoneParts['countryCode'] ?? '+961';
+    _selectedCountryFlag = phoneParts['flag'] ?? '🇱🇧';
     
     // Initialize password controllers
     newPasswordController = TextEditingController();
@@ -524,6 +554,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _showCountryPicker() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return ListView(
+          shrinkWrap: true,
+          children: _countries.map((country) {
+            final isSelected = country['code'] == _selectedCountryCode;
+            return ListTile(
+              leading: Text(country['flag']!, style: const TextStyle(fontSize: 24)),
+              title: Text(country['name']!),
+              trailing: Text(
+                country['code']!,
+                style: const TextStyle(color: Colors.grey),
+              ),
+              selected: isSelected,
+              selectedColor: const Color.fromARGB(255, 69, 100, 201),
+              onTap: () {
+                setState(() {
+                  _selectedCountryCode = country['code']!;
+                  _selectedCountryFlag = country['flag']!;
+                });
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
   Future<void> _editContact() async {
     final currentUser = AuthService.currentUser;
     if (currentUser == null) return;
@@ -586,9 +650,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String? phoneToSend;
       
       if (newPhone != currentPhoneNumber && newPhone.isNotEmpty) {
-        // Combine country code with phone number
-        final phoneParts = _extractPhoneParts(currentUser.phone);
-        phoneToSend = '${phoneParts['countryCode']}$newPhone';
+        // Combine selected country code with phone number
+        phoneToSend = '$_selectedCountryCode$newPhone';
         _newPhoneNumber = phoneToSend;
       }
 
@@ -738,8 +801,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String? phoneToSend;
       
       if (newPhone.isNotEmpty) {
-        final phoneParts = _extractPhoneParts(currentUser.phone);
-        phoneToSend = '${phoneParts['countryCode']}$newPhone';
+        phoneToSend = '$_selectedCountryCode$newPhone';
         _newPhoneNumber = phoneToSend;
       }
 
@@ -923,9 +985,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Phone input (below Email)
                   Builder(
                     builder: (context) {
-                      final user = AuthService.currentUser;
-                      final phoneParts = _extractPhoneParts(user?.phone);
-                      
                       return Padding(
                         padding: const EdgeInsets.only(left: 25.0, right: 25.0),
                         child: Container(
@@ -951,39 +1010,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               const SizedBox(width: 14.0),
 
-                              // Country Code and Flag
-                              // This section is now a fixed-width Row
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: const Color.fromARGB(0, 76, 175, 79),
+                              // Country Code and Flag (tappable dropdown)
+                              GestureDetector(
+                                onTap: _showCountryPicker,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      _selectedCountryFlag,
+                                      style: const TextStyle(fontSize: 20),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        phoneParts['flag']!,
-                                        style: TextStyle(fontSize: 16),
+                                    const SizedBox(width: 6.0),
+                                    Text(
+                                      _selectedCountryCode,
+                                      style: const TextStyle(
+                                        color: Color(0XFF1E1E1E),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 6.0),
-                                  Text(
-                                    phoneParts['countryCode']!,
-                                    style: TextStyle(
-                                      color: Color(0XFF1E1E1E),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
+                                    const Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Color(0xFF1E1E1E),
+                                      size: 20,
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Color(0xFF1E1E1E),
-                                    size: 20,
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
 
                               // Vertical Separator
@@ -1004,7 +1055,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     return TextField(
                                       controller: phoneController,
                                       decoration: InputDecoration(
-                                        hintText: phoneParts['phoneNumber']!.isEmpty 
+                                        hintText: phoneController.text.isEmpty
                                             ? l10n.enterYourPhoneNumber
                                             : l10n.phoneNumberPlaceholder,
                                         hintStyle: TextStyle(color: Colors.grey),
