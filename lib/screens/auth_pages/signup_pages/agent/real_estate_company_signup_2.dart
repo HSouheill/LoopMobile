@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
+import '../../../../widgets/country_picker_button.dart';
 
 class RealEstateCompanySignupPage2 extends StatefulWidget {
   const RealEstateCompanySignupPage2({super.key});
@@ -13,6 +14,7 @@ class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPa
   final _companyNameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   String _selectedCountryCode = '+961';
+  String _selectedCountryFlag = '🇱🇧';
 
   @override
   void initState() {
@@ -156,34 +158,15 @@ class _RealEstateCompanySignupPage2State extends State<RealEstateCompanySignupPa
                           // Phone Number
                           Row(
                             children: [
-                              Container(
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey[200]!),
-                                ),
-                                child: DropdownButtonFormField<String>(
-                                  value: _selectedCountryCode,
-                                  decoration: InputDecoration(
-                                    hintText: '+961',
-                                    hintStyle: TextStyle(color: Colors.grey[400]),
-                                    prefixIcon: Icon(Icons.phone, color: Colors.grey[400]),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                                  ),
-                                  items: ['+961', '+1', '+44', '+33', '+49'].map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _selectedCountryCode = newValue ?? '+961';
-                                    });
-                                  },
-                                ),
+                              CountryPickerButton(
+                                selectedCode: _selectedCountryCode,
+                                selectedFlag: _selectedCountryFlag,
+                                onChanged: (country) {
+                                  setState(() {
+                                    _selectedCountryCode = country['code']!;
+                                    _selectedCountryFlag = country['flag']!;
+                                  });
+                                },
                               ),
                               const SizedBox(width: 12),
                               Expanded(
