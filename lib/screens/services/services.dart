@@ -127,7 +127,7 @@ class _ServicesPageState extends State<ServicesPage> {
             title: AppLocalizations.of(context)?.topRated ?? 'Top Rated',
             showSeeAll: true,
           ),
-          const SizedBox(height: 100),
+          const SizedBox(height: 130),
         ],
       ),
     );

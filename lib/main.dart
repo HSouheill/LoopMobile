@@ -687,7 +687,7 @@ class _HomePageState extends State<HomePage> {
                   : _marketUpdates.isEmpty
                       ? const SizedBox.shrink()
                       : LatestUpdatesWidget(updates: _marketUpdates),
-              const SizedBox(height: 100), // Bottom padding for navbar
+              const SizedBox(height: 130), // Bottom padding for navbar
             ],
           ),
         ),
