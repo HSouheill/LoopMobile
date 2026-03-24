@@ -593,9 +593,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final currentPhone = currentUser.phone ?? '';
     final phoneParts = _extractPhoneParts(currentPhone);
     final currentPhoneNumber = phoneParts['phoneNumber'] ?? '';
-    
+    final currentCountryCode = phoneParts['countryCode'] ?? '+961';
+
     final l10n = AppLocalizations.of(context)!;
-    if (newEmail.toLowerCase() == currentEmail && newPhone == currentPhoneNumber) {
+    final phoneChanged = newPhone != currentPhoneNumber || _selectedCountryCode != currentCountryCode;
+    if (newEmail.toLowerCase() == currentEmail && !phoneChanged) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.noChangesDetected),
@@ -613,8 +615,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Prepare data for API call
       String? emailToSend = newEmail.toLowerCase() != currentEmail ? newEmail : null;
       String? phoneToSend;
-      
-      if (newPhone != currentPhoneNumber && newPhone.isNotEmpty) {
+
+      if (phoneChanged && newPhone.isNotEmpty) {
         // Combine selected country code with phone number
         phoneToSend = '$_selectedCountryCode$newPhone';
         _newPhoneNumber = phoneToSend;
