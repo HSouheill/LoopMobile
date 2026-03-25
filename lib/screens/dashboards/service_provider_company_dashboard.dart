@@ -251,13 +251,11 @@ class _ServiceProviderCompanyDashboardPageState
 
               // Back button
               Positioned(
-                top: 30,
+                top: 45,
                 left: 16,
                 child: GestureDetector(
                   onTap: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    }
+                    Navigator.of(context).pop();
                   },
                   child: Container(
                     width: 30,
@@ -283,7 +281,7 @@ class _ServiceProviderCompanyDashboardPageState
 
               // Favorites button
               Positioned(
-                top: 30,
+                top: 45,
                 right: 16,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

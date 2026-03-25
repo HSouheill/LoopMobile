@@ -861,67 +861,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-// Added this to update header on profile update
-    return PopScope<bool>(
-      canPop: true,
-      onPopInvokedWithResult: (bool didPop, bool? result) {
-        if (!didPop) {
-          Navigator.of(context).pop(_didUpdateProfile);
-        }
-      },
-      child: Scaffold(
+  return Scaffold(
+
         body: SingleChildScrollView(
-          child: Stack(
-            clipBehavior: Clip.none,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
             children: [
-              Column(
-                children: [
-                  // AppBar section
-                  SizedBox(
-                    height: 150,
-                    child: Stack(
-                      children: [
-                        // Background image
-                        Container(
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/profileBackgroundImage.png"),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+              // AppBar section
+              SizedBox(
+                height: 150,
+                child: Stack(
+                  children: [
+                    // Background image
+                    Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/profileBackgroundImage.png"),
+                          fit: BoxFit.cover,
                         ),
+                      ),
+                    ),
 
                         // Back arrow
-                        Positioned(
-                          top: 30,
-                          left: 16,
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Color.fromARGB(255, 69, 100, 201),
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(50.0),
-                              ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(
-                                  Icons.arrow_back_rounded,
-                                  color: Color.fromARGB(255, 69, 100, 201),
-                                  size: 22,
-                                ),
-                                onPressed: () {
-                                  if (Navigator.of(context).canPop()) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                              ),
+                         Positioned(
+                      top: 40,
+                      left: 16,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Return the update flag when navigating back
+                          Navigator.of(context).pop(_didUpdateProfile);
+                        },
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Color.fromARGB(255, 69, 100, 201),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(50.0),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.arrow_back_rounded,
+                              color: Color.fromARGB(255, 69, 100, 201),
+                              size: 22,
+                            ),
+                          ),
                             ),
                           ),
                         ),
@@ -1061,7 +1050,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   const SizedBox(height: 30),
 
-// new password and rewrite password section
+                  // new password and rewrite password section
                   Builder(
                     builder: (context) {
                       final l10n = AppLocalizations.of(context)!;
@@ -1222,7 +1211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ),
+      
     );
   }
 
