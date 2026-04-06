@@ -138,7 +138,24 @@ class AgentWithListingsAndReviews {
           .map((review) => Review.fromJson(review))
           .toList(),
       listings: (json['listings'] as List<dynamic>? ?? [])
-          .map((listing) => PropertyListing.fromJson(listing))
+          .map((listing) {
+            // The agent API often returns listings without a populated owner object.
+            // Inject the agent's own data so SingleListingPage can show their picture.
+            final listingMap = Map<String, dynamic>.from(listing as Map<String, dynamic>);
+            final existingOwner = listingMap['owner'] is Map<String, dynamic>
+                ? Map<String, dynamic>.from(listingMap['owner'] as Map<String, dynamic>)
+                : <String, dynamic>{};
+            if (existingOwner['profileImage'] == null) {
+              existingOwner['_id'] ??= json['_id'];
+              existingOwner['firstName'] ??= json['firstName'];
+              existingOwner['lastName'] ??= json['lastName'];
+              existingOwner['email'] ??= json['email'];
+              existingOwner['phone'] ??= json['phone'];
+              existingOwner['profileImage'] = json['profileImage'];
+              listingMap['owner'] = existingOwner;
+            }
+            return PropertyListing.fromJson(listingMap);
+          })
           .toList(),
       socialLinks: (json['socialLinks'] as List<dynamic>? ?? [])
           .map((link) => SocialLink.fromJson(link))
