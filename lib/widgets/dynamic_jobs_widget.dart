@@ -260,6 +260,7 @@ class JobCard extends StatefulWidget {
 class _JobCardState extends State<JobCard> {
   bool _isFavorited = false;
   bool _isLoading = false;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -548,10 +549,12 @@ class _JobCardState extends State<JobCard> {
 
     return GestureDetector(
       onTap: () async {
+        if (_isNavigating) return;
+        _isNavigating = true;
         try {
           final jobDetail = await JobService.getJobDetail(widget.job.id);
           if (context.mounted) {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => JobDetailPage(job: jobDetail),
@@ -568,6 +571,8 @@ class _JobCardState extends State<JobCard> {
               ),
             );
           }
+        } finally {
+          if (mounted) _isNavigating = false;
         }
       },
       child: card,
