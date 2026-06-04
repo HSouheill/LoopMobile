@@ -21,8 +21,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   final _formKey = GlobalKey<FormState>();
   
   // Filter values
-  String? _selectedType;
-  String? _selectedListingFor;
+  final Set<String> _selectedTypes = {};
+  // Empty set means "both" (sale + rent), i.e. no listingFor filter is applied.
+  final Set<String> _selectedListingFors = {};
   String? _selectedCity;
   String? _selectedSort;
   double? _minPrice;
@@ -108,8 +109,26 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     
     // Initialize filters from initial values
     if (widget.initialFilters != null) {
-      _selectedType = widget.initialFilters!['type'];
-      _selectedListingFor = widget.initialFilters!['listingFor'];
+      final initialType = widget.initialFilters!['type'];
+      if (initialType != null) {
+        _selectedTypes.addAll(
+          initialType
+              .toString()
+              .split(',')
+              .map((t) => t.trim())
+              .where((t) => t.isNotEmpty),
+        );
+      }
+      final initialListingFor = widget.initialFilters!['listingFor'];
+      if (initialListingFor != null) {
+        _selectedListingFors.addAll(
+          initialListingFor
+              .toString()
+              .split(',')
+              .map((l) => l.trim())
+              .where((l) => l.isNotEmpty),
+        );
+      }
       _selectedCity = widget.initialFilters!['city'];
       _selectedSort = widget.initialFilters!['sort'];
       _minPrice = widget.initialFilters!['minPrice']?.toDouble();
@@ -154,9 +173,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       if (widget.initialFilters!['security'] == true) amenities['security'] = true;
       if (widget.initialFilters!['furnished'] == true) amenities['furnished'] = true;
     } else {
-      // Set default values to null (All) when no initial filters
-      _selectedType = null;
-      _selectedListingFor = 'rent'; // Default to rent
+      // Set default values to null (All) when no initial filters.
+      // Leaving _selectedListingFors empty means "both" (sale + rent).
       _selectedCondition = null;
       _selectedSort = null;
     }
@@ -170,8 +188,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
   void _clearAllFilters() {
     setState(() {
-      _selectedType = null;
-      _selectedListingFor = 'rent'; // Default to rent
+      _selectedTypes.clear();
+      _selectedListingFors.clear(); // Empty = both sale + rent
       _selectedCity = null;
       _selectedSort = null;
       _minPrice = null;
@@ -196,8 +214,11 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   void _applyFilters() {
     final filters = <String, dynamic>{};
     
-    if (_selectedType != null) filters['type'] = _selectedType;
-    if (_selectedListingFor != null) filters['listingFor'] = _selectedListingFor;
+    if (_selectedTypes.isNotEmpty) filters['type'] = _selectedTypes.join(',');
+    // Only filter listingFor when exactly one is picked; empty or both means "show both".
+    if (_selectedListingFors.length == 1) {
+      filters['listingFor'] = _selectedListingFors.first;
+    }
     if (_selectedCity != null && _selectedCity!.isNotEmpty) filters['city'] = _selectedCity;
     if (_selectedSort != null) filters['sort'] = _selectedSort;
     if (_minPrice != null) filters['minPrice'] = _minPrice;
@@ -324,8 +345,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Payment Frequency - only show for rent
-              if (_selectedListingFor == 'rent') ...[
+              // Payment Frequency - only relevant when rent is included
+              if (_selectedListingFors.isEmpty || _selectedListingFors.contains('rent')) ...[
                 _buildSectionTitle('Payment Frequency'),
                 DropdownButtonFormField<String>(
                   value: _selectedPaymentFrequency,
@@ -913,7 +934,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     required String label,
     required IconData icon,
   }) {
-    final isSelected = _selectedType == type;
+    // `type == null` represents the "All" bubble, selected when nothing is picked.
+    final isSelected =
+        type == null ? _selectedTypes.isEmpty : _selectedTypes.contains(type);
     // Keep same gradient colors for both selected and unselected
     final gradientColors = [
       const Color.fromARGB(255, 103, 155, 218),
@@ -926,7 +949,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedType = type;
+          if (type == null) {
+            // "All" clears every selected type
+            _selectedTypes.clear();
+          } else if (_selectedTypes.contains(type)) {
+            _selectedTypes.remove(type);
+          } else {
+            _selectedTypes.add(type);
+          }
         });
       },
       child: Column(
@@ -968,14 +998,20 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   }
 
   Widget _buildListingForButton(String value, String label) {
-    final isSelected = _selectedListingFor == value;
+    final isSelected = _selectedListingFors.contains(value);
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedListingFor = value;
-          // Clear payment frequency when switching to sale (not applicable)
-          if (value == 'sale') {
+          // Toggle so both sale and rent can be selected together.
+          if (_selectedListingFors.contains(value)) {
+            _selectedListingFors.remove(value);
+          } else {
+            _selectedListingFors.add(value);
+          }
+          // Clear payment frequency if rent is no longer selected
+          if (_selectedListingFors.isNotEmpty &&
+              !_selectedListingFors.contains('rent')) {
             _selectedPaymentFrequency = null;
           }
         });
