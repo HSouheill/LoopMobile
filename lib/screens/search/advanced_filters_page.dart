@@ -102,6 +102,12 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'fully_furnished',
   ];
 
+  // Daily-rent Chalet hides Ownership / Floor / Furnishing / Condition.
+  bool get _isDailyRentChalet =>
+      _selectedPaymentFrequency == 'daily' &&
+      _selectedTypes.length == 1 &&
+      _selectedTypes.contains('chalet');
+
   @override
   void initState() {
     super.initState();
@@ -234,22 +240,25 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     }
     if (_minSize != null) filters['minSize'] = _minSize;
     if (_maxSize != null) filters['maxSize'] = _maxSize;
-    if (_selectedCondition != null) filters['condition'] = _selectedCondition;
-    if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
-      // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
-      final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
-      if (_furnishingOptions.contains(furnishingValue)) {
-        filters['furnishing'] = furnishingValue;
+    // Ownership / Floor / Furnishing / Condition don't apply to daily-rent Chalet.
+    if (!_isDailyRentChalet) {
+      if (_selectedCondition != null) filters['condition'] = _selectedCondition;
+      if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
+        // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
+        final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
+        if (_furnishingOptions.contains(furnishingValue)) {
+          filters['furnishing'] = furnishingValue;
+        }
+      }
+      if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
+        filters['ownership'] = _selectedOwnership;
+      }
+      if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
+        filters['floor'] = _selectedFloor;
       }
     }
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
-    }
-    if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
-      filters['ownership'] = _selectedOwnership;
-    }
-    if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
-      filters['floor'] = _selectedFloor;
     }
     
     // Collect selected amenities
@@ -412,39 +421,41 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Ownership
-              _buildSectionTitle('Ownership'),
-              DropdownButtonFormField<String>(
-                value: _selectedOwnership,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Select ownership',
+              // Ownership - hidden for daily-rent Chalet
+              if (!_isDailyRentChalet) ...[
+                _buildSectionTitle('Ownership'),
+                DropdownButtonFormField<String>(
+                  value: _selectedOwnership,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select ownership',
+                  ),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'user',
+                      child: Text('Owner'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'agent-individual',
+                      child: Text('Agent'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'agent-company',
+                      child: Text('Company'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedOwnership = value;
+                    });
+                  },
                 ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'user',
-                    child: Text('Owner'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'agent-individual',
-                    child: Text('Agent'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'agent-company',
-                    child: Text('Company'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedOwnership = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
+              ],
 
               // Price Range
               _buildSectionTitle('Price'),
@@ -579,90 +590,93 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Floor
-              _buildSectionTitle('Floor'),
-              DropdownButtonFormField<String>(
-                value: _selectedFloor,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Select floor',
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+              // Floor / Condition / Furnishing - hidden for daily-rent Chalet
+              if (!_isDailyRentChalet) ...[
+                // Floor
+                _buildSectionTitle('Floor'),
+                DropdownButtonFormField<String>(
+                  value: _selectedFloor,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select floor',
                   ),
-                  ...List.generate(16, (index) {
-                    final floorValue = index - 5; // -5 to 10
-                    final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
-                    final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
-                    return DropdownMenuItem<String>(
-                      value: backendValue,
-                      child: Text(displayValue),
-                    );
-                  }),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedFloor = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ...List.generate(16, (index) {
+                      final floorValue = index - 5; // -5 to 10
+                      final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
+                      final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
+                      return DropdownMenuItem<String>(
+                        value: backendValue,
+                        child: Text(displayValue),
+                      );
+                    }),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFloor = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
 
-              // Condition
-              _buildSectionTitle('Condition'),
-              DropdownButtonFormField<String>(
-                value: _selectedCondition,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+                // Condition
+                _buildSectionTitle('Condition'),
+                DropdownButtonFormField<String>(
+                  value: _selectedCondition,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                   ),
-                  ..._conditionOptions.map((condition) {
-                    return DropdownMenuItem(
-                      value: condition,
-                      child: Text(_formatConditionLabel(condition)),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCondition = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ..._conditionOptions.map((condition) {
+                      return DropdownMenuItem(
+                        value: condition,
+                        child: Text(_formatConditionLabel(condition)),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCondition = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
 
-              // Furnishing
-              _buildSectionTitle('Furnishing'),
-              DropdownButtonFormField<String>(
-                value: _selectedFurnishing,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+                // Furnishing
+                _buildSectionTitle('Furnishing'),
+                DropdownButtonFormField<String>(
+                  value: _selectedFurnishing,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                   ),
-                  ..._furnishingOptions.map((furnishing) {
-                    return DropdownMenuItem(
-                      value: furnishing,
-                      child: Text(_formatFurnishingLabel(furnishing)),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedFurnishing = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ..._furnishingOptions.map((furnishing) {
+                      return DropdownMenuItem(
+                        value: furnishing,
+                        child: Text(_formatFurnishingLabel(furnishing)),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFurnishing = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+              ],
 
               // Amenities - using FilterChips like add_listing_form_page.dart
               _buildSectionTitle('Amenities'),
