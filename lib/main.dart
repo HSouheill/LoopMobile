@@ -136,6 +136,11 @@ class _MyAppState extends State<MyApp> {
       locale: _locale,
       routes: appRoutes(),
       home: const SplashScreen(),
+      builder: (context, child) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: child,
+      ),
     );
   }
 }
