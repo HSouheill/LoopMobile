@@ -190,8 +190,8 @@ class _JobAdvancedFiltersPageState extends State<JobAdvancedFiltersPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search Query
-              _buildSectionTitle('Search Query'),
+              // Search
+              _buildSectionTitle('Search'),
               TextFormField(
                 controller: _searchController,
                 decoration: const InputDecoration(
