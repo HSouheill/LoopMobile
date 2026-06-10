@@ -36,7 +36,8 @@ class SubscriptionService {
     }
   }
 
-  /// Get all available plans
+  /// Get the plans available to the authenticated user's role.
+  /// Uses /plans/me which is scoped by role and excludes the starter plan.
   static Future<List<dynamic>?> getAllPlans() async {
     try {
       final token = AuthService.token;
@@ -45,7 +46,7 @@ class SubscriptionService {
       }
 
       final response = await http.get(
-        Uri.parse('${Environment.apiUrl}plans/all'),
+        Uri.parse('${Environment.apiUrl}plans/me'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -116,6 +117,38 @@ class SubscriptionService {
       }
     } catch (e) {
       print('Error in subscribeToPlan: $e');
+      rethrow;
+    }
+  }
+
+  /// Recharge the service-provider 30-day plan (+30 days).
+  static Future<Map<String, dynamic>?> rechargeServicePlan() async {
+    try {
+      final token = AuthService.token;
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.post(
+        Uri.parse('${Environment.apiUrl}subscriptions/recharge-service'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        try {
+          final data = json.decode(response.body);
+          throw Exception(data['message'] ?? 'Failed to recharge service plan');
+        } catch (e) {
+          throw Exception('Server error (${response.statusCode}): Could not recharge');
+        }
+      }
+    } catch (e) {
+      print('Error in rechargeServicePlan: $e');
       rethrow;
     }
   }

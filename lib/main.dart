@@ -426,6 +426,28 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
       return;
     }
 
+    // Service providers cannot add listings — that's an agent-only capability.
+    // They manage services from their dashboard instead.
+    final role = AuthService.currentUser?.role;
+    if (role == 'service-provider-individual' || role == 'service-provider-company') {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Listings are for agents'),
+          content: const Text(
+            'Service providers cannot add property listings. To list properties, you need an agent account. As a service provider, you can add and manage your services from your dashboard.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
