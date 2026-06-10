@@ -24,6 +24,7 @@ class DynamicServiceCard extends StatefulWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onSold;
   final VoidCallback? onBoost;
+  final VoidCallback? onArchive;
 
   const DynamicServiceCard({
     super.key,
@@ -47,6 +48,7 @@ class DynamicServiceCard extends StatefulWidget {
     this.onEdit,
     this.onSold,
     this.onBoost,
+    this.onArchive,
   });
 
   @override
@@ -97,97 +99,56 @@ class _DynamicServiceCardState extends State<DynamicServiceCard> {
               ),
               const SizedBox(width: 12),
 
-              // Middle & right columns or Cancel/Promote buttons
+              // Action buttons. Boost/Promote is intentionally hidden (the
+              // boostPressed state + onBoost callback are kept for re-enable).
               Expanded(
-                child: boostPressed
-                    ? Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: DynamicGradientButton(
-                                buttonText: AppLocalizations.of(context)?.cancelButton ?? 'Cancel',
-                                onTap: () {
-                                  setState(() {
-                                    boostPressed = false;
-                                  });
-                                },
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 6),
-                                useGradient: false,
-                                backgroundColor: Colors.white,
-                                borderColor: const Color(0xFFEA4435),
-                                borderWidth: 1.5,
-                                textColor: const Color(0xFFEA4435),
-                              ),
-                            ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DynamicGradientButton(
+                            buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
+                            onTap: widget.onEdit,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 8),
+                            useGradient: true,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: DynamicGradientButton(
-                                buttonText: AppLocalizations.of(context)?.promoteButton ?? 'Promote',
-                                onTap: () {},
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                useGradient: true,
-                              ),
-                            ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DynamicGradientButton(
+                            buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
+                            onTap: widget.onDelete,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 6),
+                            useGradient: false,
+                            backgroundColor: Colors.white,
+                            borderColor: const Color(0xFFEA4435),
+                            borderWidth: 1.5,
+                            textColor: const Color(0xFFEA4435),
                           ),
-                        ],
-                      )
-                    : Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: DynamicGradientButton(
-                              buttonText: AppLocalizations.of(context)?.boostButton ?? 'Boost',
-                              onTap: () {
-                                setState(() {
-                                  boostPressed = true;
-                                });
-                                widget.onBoost?.call();
-                              },
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 6),
-                              useGradient: false,
-                              backgroundColor: Colors.white,
-                              borderColor: const Color.fromARGB(255, 69, 100, 201),
-                              borderWidth: 1.5,
-                              textColor: const Color.fromARGB(255, 69, 100, 201),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DynamicGradientButton(
-                                  buttonText: AppLocalizations.of(context)?.editButton ?? 'Edit',
-                                  onTap: widget.onEdit,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  useGradient: true,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: DynamicGradientButton(
-                                  buttonText: AppLocalizations.of(context)?.deleteButton ?? 'Delete',
-                                  onTap: widget.onDelete,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 6),
-                                  useGradient: false,
-                                  backgroundColor: Colors.white,
-                                  borderColor: const Color(0xFFEA4435),
-                                  borderWidth: 1.5,
-                                  textColor: const Color(0xFFEA4435),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    if (widget.onArchive != null) ...[
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: DynamicGradientButton(
+                          buttonText: 'Archive',
+                          onTap: widget.onArchive,
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          useGradient: false,
+                          backgroundColor: Colors.white,
+                          borderColor: const Color(0xFF6B7280),
+                          borderWidth: 1.0,
+                          textColor: const Color(0xFF1E1E1E),
+                        ),
                       ),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -206,15 +167,17 @@ class DynamicServiceCardList extends StatelessWidget {
   final Function(String)? onEdit;
   final Function(String)? onSold;
   final Function(String)? onBoost;
+  final Function(String)? onArchive;
 
   const DynamicServiceCardList({
-    super.key, 
+    super.key,
     required this.items,
     this.onItemTap,
     this.onDelete,
     this.onEdit,
     this.onSold,
     this.onBoost,
+    this.onArchive,
   });
 
   @override
@@ -242,6 +205,7 @@ class DynamicServiceCardList extends StatelessWidget {
                 onEdit: onEdit != null ? () => onEdit!(item['leftText'] ?? '') : null,
                 onSold: onSold != null ? () => onSold!(item['leftText'] ?? '') : null,
                 onBoost: onBoost != null ? () => onBoost!(item['leftText'] ?? '') : null,
+                onArchive: onArchive != null ? () => onArchive!(item['leftText'] ?? '') : null,
               ))
           .toList(),
     );

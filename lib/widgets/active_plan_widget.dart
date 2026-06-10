@@ -114,6 +114,17 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
   // True when this is a service-provider (service-type) plan.
   bool _isServicePlan() => _subscriptionData?['quota']?['planType'] == 'service';
 
+  // The starter LISTING plan is a permanent floor (far-future expiry), so its
+  // "valid until" / "days remaining" are meaningless and should be hidden.
+  bool _isStarterListing() => _isStarter() && !_isServicePlan();
+
+  // Display name: the starter listing plan shows simply "Starter" (drop the
+  // "(Listings)" qualifier from the stored plan name).
+  String _displayPlanName(String rawName) {
+    if (_isStarterListing()) return 'Starter';
+    return rawName;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -251,6 +262,8 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     final expiryDate = subscription['expiryDate'];
     final daysRemaining = _getDaysRemaining();
     final listingsLeft = _getListingsLeft();
+    // Permanent starter listing plan has no meaningful expiry/days.
+    final showDays = !_isStarterListing();
 
     return Column(
       children: [
@@ -348,7 +361,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            planName,
+                            _displayPlanName(planName),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -375,15 +388,19 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                             ),
                           ],
                           const SizedBox(height: 8),
-                          Text(
-                            AppLocalizations.of(context)?.validUntil(_formatDate(expiryDate)) ?? 'Valid Until: ${_formatDate(expiryDate)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400,
+                          // Starter listing plan is a permanent floor — no expiry shown.
+                          if (!_isStarterListing())
+                            Text(
+                              AppLocalizations.of(context)?.validUntil(_formatDate(expiryDate)) ?? 'Valid Until: ${_formatDate(expiryDate)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                          if (daysRemaining > 0 || listingsLeft > 0 || _isUnlimited()) ...[
+                          // Hide "days remaining" for the permanent starter listing plan,
+                          // but still show its quota (e.g. "1 listings left").
+                          if ((showDays && daysRemaining > 0) || listingsLeft > 0 || _isUnlimited()) ...[
                             const SizedBox(height: 3),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -397,7 +414,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),
-                                  if (daysRemaining > 0) ...[
+                                  if (showDays && daysRemaining > 0) ...[
                                     const SizedBox(width: 8),
                                     Container(width: 1, height: 10, color: Colors.white38),
                                     const SizedBox(width: 8),
@@ -411,7 +428,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),
-                                  if (daysRemaining > 0) ...[
+                                  if (showDays && daysRemaining > 0) ...[
                                     const SizedBox(width: 8),
                                     Container(
                                       width: 1,
@@ -421,7 +438,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                                     const SizedBox(width: 8),
                                   ],
                                 ],
-                                if (daysRemaining > 0)
+                                if (showDays && daysRemaining > 0)
                                   Text(
                                     '$daysRemaining days remaining',
                                     style: const TextStyle(

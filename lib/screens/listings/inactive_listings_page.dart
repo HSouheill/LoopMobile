@@ -14,14 +14,35 @@ class InactiveListingsPage extends StatefulWidget {
 class _InactiveListingsPageState extends State<InactiveListingsPage> {
   List<PropertyListing> listings = [];
   bool isLoading = true;
+  bool isLoadingMore = false;
   bool hasMore = true;
   int currentPage = 1;
   final int limit = 10;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadListings();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  // Load the next page when nearing the bottom.
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 300 &&
+        hasMore &&
+        !isLoadingMore &&
+        !isLoading) {
+      _loadListings();
+    }
   }
 
   Future<void> _loadListings({bool refresh = false}) async {
@@ -33,7 +54,8 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
       });
     }
 
-    if (!hasMore && !refresh) return;
+    if ((!hasMore && !refresh) || isLoadingMore) return;
+    if (!refresh) setState(() => isLoadingMore = true);
 
     try {
       final response = await ListingService.getMyListings(
@@ -51,10 +73,12 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
         hasMore = currentPage < response.meta.pages;
         currentPage++;
         isLoading = false;
+        isLoadingMore = false;
       });
     } catch (e) {
       setState(() {
         isLoading = false;
+        isLoadingMore = false;
       });
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -69,6 +93,19 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
 
   void _showListingDetails(PropertyListing listing) {
     showListingDetailsModal(context, listing);
+  }
+
+  // Unarchive (re-activate) an archived listing. Backend returns 403 if it would
+  // exceed the plan limit — we surface that message.
+  Future<void> _unarchive(PropertyListing listing) async {
+    final result = await ListingService.unarchiveListing(listing.id);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result.message)),
+    );
+    if (result.success) {
+      await _refresh();
+    }
   }
 
 
@@ -101,6 +138,7 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
                     ),
                   )
                 : ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(16),
                     itemCount: listings.length + (hasMore ? 1 : 0),
                     itemBuilder: (context, index) {
@@ -122,12 +160,8 @@ class _InactiveListingsPageState extends State<InactiveListingsPage> {
                           layoutType: 'B',
                           location: listing.location,
                           owner: listing.agentName,
-                          onActivate: () {
-                            // TODO: Implement activate functionality
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n?.activateFunctionalityNotImplemented ?? 'Wait for admin to approve listing')),
-                            );
-                          },
+                          status: listing.status,
+                          onActivate: () => _unarchive(listing),
                         ),
                       );
                     },
