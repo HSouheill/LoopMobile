@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/subscription_service.dart';
+import '../screens/payments/checkout_webview_page.dart';
 import 'profile_widgets/dynamic_gradient_button.dart';
 
 /// Modal dialog for subscribing/unsubscribing to plans
@@ -65,6 +66,18 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  void _success() {
+    widget.onSuccess();
+    if (!mounted) return;
+    Navigator.of(context).pop(true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Successfully subscribed to ${widget.planName}!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
   Future<void> _handleSubscribe() async {
     setState(() {
       _isLoading = true;
@@ -72,26 +85,52 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
     });
 
     try {
-      final result = await SubscriptionService.subscribeToPlan(widget.planId);
+      // Step 1: create the checkout (or get free-plan activation).
+      final checkout = await SubscriptionService.createCheckout(widget.planId);
 
-      if (result != null) {
-        // Success
-        widget.onSuccess();
-        if (mounted) {
-          Navigator.of(context).pop(true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Successfully subscribed to ${widget.planName}!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
+      // Free plan -> already activated by the backend.
+      if (checkout['free'] == true) {
+        _success();
+        return;
+      }
+
+      final captureContext = checkout['captureContext'] as String;
+      final sessionId = checkout['paymentSessionId'] as String;
+      final amount = checkout['amount'] ?? 0;
+      final planName = (checkout['planName'] ?? widget.planName).toString();
+
+      if (!mounted) return;
+
+      // Step 2: open the Unified Checkout WebView, get the transient token.
+      final result = await Navigator.of(context).push<CheckoutResult>(
+        MaterialPageRoute(
+          builder: (_) => CheckoutWebViewPage(
+            captureContext: captureContext,
+            planName: planName,
+            amount: amount is num ? amount : num.tryParse('$amount') ?? 0,
+          ),
+        ),
+      );
+
+      if (result == null || result.cancelled) {
         setState(() {
-          _errorMessage = 'Failed to subscribe. Please try again.';
+          _errorMessage = 'Payment cancelled.';
           _isLoading = false;
         });
+        return;
       }
+      if (!result.isSuccess) {
+        // The payment UI failed to load/run (e.g. origin not allowed, network).
+        setState(() {
+          _errorMessage = result.error ?? 'Payment could not be completed.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Step 3: confirm + capture on the server, which activates the plan.
+      await SubscriptionService.confirmCheckout(sessionId, result.transientToken!);
+      _success();
     } catch (e) {
       setState(() {
         _errorMessage = e.toString().replaceAll('Exception: ', '');
@@ -181,7 +220,7 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
           ),
         ),
         DynamicGradientButton(
-          buttonText: _isLoading ? 'Subscribing...' : 'Subscribe',
+          buttonText: _isLoading ? 'Processing...' : 'Continue to payment',
           onTap: _isLoading ? null : _handleSubscribe,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textSize: 14,

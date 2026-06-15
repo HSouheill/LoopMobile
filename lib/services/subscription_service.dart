@@ -121,6 +121,55 @@ class SubscriptionService {
     }
   }
 
+  /// Step 1 of paid checkout: create a payment session + capture context.
+  /// Returns the parsed response. For a free plan, response['free'] == true and
+  /// the subscription is already activated (no payment needed).
+  static Future<Map<String, dynamic>> createCheckout(String planId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/checkout/create'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'planId': planId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start checkout');
+  }
+
+  /// Step 2 of paid checkout: confirm payment with the transient token from the
+  /// Unified Checkout WebView. On success the subscription is activated.
+  static Future<Map<String, dynamic>> confirmCheckout(
+      String paymentSessionId, String transientToken) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/checkout/confirm'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'paymentSessionId': paymentSessionId,
+        'transientToken': transientToken,
+      }),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
   /// Recharge the service-provider 30-day plan (+30 days).
   static Future<Map<String, dynamic>?> rechargeServicePlan() async {
     try {
