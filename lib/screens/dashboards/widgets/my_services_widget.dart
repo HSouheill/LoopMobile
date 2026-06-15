@@ -363,6 +363,33 @@ class _MyServiceCardState extends State<MyServiceCard> {
                         ),
                       ),
                     ],
+                    // Locked badge — shown when the service is hidden from the
+                    // public because the provider has no active plan.
+                    if (widget.service.locked) ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEE2E2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.lock_outline, size: 12, color: Color(0xFFB91C1C)),
+                            SizedBox(width: 4),
+                            Text(
+                              'Locked — subscribe to show',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFB91C1C),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

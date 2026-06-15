@@ -17,6 +17,7 @@ import '../../widgets/job_form_widget.dart';
 import './widgets/statistics_card.dart';
 import './widgets/add_social_account_card.dart';
 import './widgets/social_links_display_widget.dart';
+import './widgets/my_services_widget.dart';
 import '../../environment.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
@@ -202,6 +203,42 @@ class _ServiceProviderCompanyDashboardPageState
 
                   // ✅ PDF Uploaded Section
                   PdfUploadedSection(agentInfo: agentInfo),
+
+                  const SizedBox(height: 30),
+
+                  // ✅ My Services Section
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            AppLocalizations.of(context)?.myServices ?? "My Services",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: DynamicGradientButton(
+                            buttonText: AppLocalizations.of(context)?.addService ?? "Add Service",
+                            textSize: 11,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            onTap: () {
+                              Navigator.pushNamed(context, '/add-service');
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const MyServicesWidget(),
 
                   const SizedBox(height: 20),
 

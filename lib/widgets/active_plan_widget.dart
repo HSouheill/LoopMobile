@@ -460,20 +460,9 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
           ),
         ),
 
-        // Service providers: recharge their single 30-day plan (+30 days).
-        if (_isServicePlan()) ...[
-          const SizedBox(height: 12),
-          Center(
-            child: DynamicGradientButton(
-              buttonText: _isRecharging ? 'Recharging...' : 'Recharge (+30 days)',
-              onTap: _isRecharging ? () {} : _rechargeServicePlan,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              textSize: 12.0,
-            ),
-          ),
-        ]
-        // Unsubscribe button — only for paid listing plans. The starter floor cannot be cancelled.
-        else if (!_isStarter()) ...[
+        // Unsubscribe button (agent-style) for service plans and paid listing
+        // plans. The permanent starter LISTING floor cannot be cancelled.
+        if (_isServicePlan() || !_isStarter()) ...[
           const SizedBox(height: 12),
           Center(
             child: DynamicGradientButton(
@@ -490,8 +479,11 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     );
   }
 
+  // ignore: unused_field
   bool _isRecharging = false;
 
+  // Kept for potential re-enable; SPs now unsubscribe like agents.
+  // ignore: unused_element
   Future<void> _rechargeServicePlan() async {
     setState(() => _isRecharging = true);
     try {

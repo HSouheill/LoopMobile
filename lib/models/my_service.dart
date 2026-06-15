@@ -17,6 +17,7 @@ class MyService {
   final String userId;
   final double averageRating;
   final int reviewCount;
+  final bool locked;
 
   MyService({
     required this.id,
@@ -35,6 +36,7 @@ class MyService {
     required this.userId,
     required this.averageRating,
     required this.reviewCount,
+    this.locked = false,
   });
 
   factory MyService.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class MyService {
       userId: json['userId']?.toString() ?? '',
       averageRating: (json['averageRating'] ?? 0.0).toDouble(),
       reviewCount: (json['reviewCount'] ?? 0).toInt(),
+      locked: json['locked'] == true || json['locked'] == 'true',
     );
   }
 
