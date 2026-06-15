@@ -194,7 +194,7 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'If you have an active plan, it will be cancelled and replaced by this one.',
+                    'If you have an active plan, it will be cancelled and replaced by the selected plan.',
                     style: TextStyle(
                       color: Colors.orange[700],
                       fontSize: 13,
@@ -354,7 +354,7 @@ class _UnsubscribeDialogState extends State<_UnsubscribeDialog> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'This action will cancel your subscription immediately.',
+                    'This will cancel your plan immediately and forfeit any remaining days on it. This cannot be undone.',
                     style: TextStyle(
                       color: Colors.orange[700],
                       fontSize: 13,
