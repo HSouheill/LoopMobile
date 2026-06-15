@@ -322,29 +322,30 @@ class _MyListingCardState extends State<MyListingCard> {
               ),
               const SizedBox(width: 12),
 
-              // Buttons. Boost/Promote is intentionally hidden (handler kept on
-              // the widget for easy re-enable). Active-listing actions are
-              // Sold/Delete (left) and Edit/Archive (right).
+              // Buttons. Boost/Promote and Sold are intentionally hidden
+              // (handlers kept on the widget for easy re-enable). Active-listing
+              // actions are Delete (left) and Edit/Archive (right).
               Expanded(
                 child: Row(
                   children: [
                     Expanded(
                       child: Column(
                         children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: DynamicGradientButton(
-                              buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
-                              onTap: widget.onSold,
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              useGradient: false,
-                              backgroundColor: const Color(0xFFF9FBFF),
-                              borderColor: const Color(0xFF0048FF),
-                              borderWidth: 1.0,
-                              textColor: const Color(0xFF1E1E1E),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
+                          // Sold button hidden for now (handler retained):
+                          // SizedBox(
+                          //   width: double.infinity,
+                          //   child: DynamicGradientButton(
+                          //     buttonText: AppLocalizations.of(context)?.soldButton ?? 'Sold',
+                          //     onTap: widget.onSold,
+                          //     padding: const EdgeInsets.symmetric(vertical: 6),
+                          //     useGradient: false,
+                          //     backgroundColor: const Color(0xFFF9FBFF),
+                          //     borderColor: const Color(0xFF0048FF),
+                          //     borderWidth: 1.0,
+                          //     textColor: const Color(0xFF1E1E1E),
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 8),
                           SizedBox(
                             width: double.infinity,
                             child: DynamicGradientButton(
