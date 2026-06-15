@@ -180,6 +180,30 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
               fontWeight: FontWeight.w500,
             ),
           ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.orange[200]!),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.orange[700], size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'If you have an active plan, it will be cancelled and replaced by this one.',
+                    style: TextStyle(
+                      color: Colors.orange[700],
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           if (_errorMessage != null) ...[
             const SizedBox(height: 16),
             Container(

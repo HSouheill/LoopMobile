@@ -118,6 +118,12 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
   // "valid until" / "days remaining" are meaningless and should be hidden.
   bool _isStarterListing() => _isStarter() && !_isServicePlan();
 
+  // The plan's listing allowance (e.g. 1 for starter), from the plan doc.
+  int _planListings() {
+    final v = _subscriptionData?['subscription']?['planId']?['listings'];
+    return v is int ? v : (v is num ? v.toInt() : 0);
+  }
+
   // Display name: the starter listing plan shows simply "Starter" (drop the
   // "(Listings)" qualifier from the stored plan name).
   String _displayPlanName(String rawName) {
@@ -398,9 +404,20 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                          // Hide "days remaining" for the permanent starter listing plan,
-                          // but still show its quota (e.g. "1 listings left").
-                          if ((showDays && daysRemaining > 0) || listingsLeft > 0 || _isUnlimited()) ...[
+                          // Starter listing plan: just "1 listing · Free" — no days.
+                          if (_isStarterListing()) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              '${_planListings()} ${_planListings() == 1 ? 'listing' : 'listings'} · Free',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ]
+                          // All other plans keep the existing quota / days display.
+                          else if ((showDays && daysRemaining > 0) || listingsLeft > 0 || _isUnlimited()) ...[
                             const SizedBox(height: 3),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
