@@ -1,4 +1,4 @@
-package com.example.loopflutter
+package com.loop.realestate
 
 import io.flutter.embedding.android.FlutterActivity
 

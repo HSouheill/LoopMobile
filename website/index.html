@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loop — Real Estate & Services Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #4169B7;
+      --navy:       #1B3793;
+      --deep:       #0B1929;
+      --grad-start: #679BDA;
+      --grad-end:   #1B3793;
+      --white:      #ffffff;
+      --light:      #f4f7ff;
+      --muted:      #6b7a99;
+      --border:     #e2e8f8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: #1a2540;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 6vw;
+      background: rgba(11, 25, 41, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .nav-logo span { font-size: 1.25rem; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      color: var(--white); border: none; padding: 10px 22px;
+      border-radius: 100px; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--deep);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 6vw 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(65,105,183,0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(65,105,183,0.2); border: 1px solid rgba(65,105,183,0.4);
+      color: #9db8f0; padding: 6px 16px; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px;
+      text-transform: uppercase; margin-bottom: 28px;
+    }
+    .hero-badge span { width: 6px; height: 6px; background: #679BDA; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900; color: var(--white);
+      line-height: 1.05; letter-spacing: -2px;
+      max-width: 820px; margin-bottom: 24px;
+    }
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, var(--grad-start), #a0c4ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.2rem); color: rgba(255,255,255,0.6);
+      max-width: 560px; line-height: 1.7; margin-bottom: 44px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      color: var(--white); padding: 16px 36px; border-radius: 100px;
+      font-size: 1rem; font-weight: 700; text-decoration: none;
+      box-shadow: 0 8px 32px rgba(65,105,183,0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(65,105,183,0.55); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white); padding: 16px 36px; border-radius: 100px;
+      font-size: 1rem; font-weight: 600; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+    .hero-mockup {
+      margin-top: 70px; position: relative; display: flex; justify-content: center; gap: 20px;
+    }
+    .phone-frame {
+      width: 200px; height: 380px;
+      background: linear-gradient(160deg, #1e3a6e, #0d1f3c);
+      border-radius: 36px; border: 2px solid rgba(103,155,218,0.3);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+    .phone-frame.center { transform: translateY(-24px) scale(1.08); border-color: rgba(103,155,218,0.6); z-index: 2; }
+    .phone-frame.side { opacity: 0.65; }
+    .phone-notch { width: 80px; height: 20px; background: #0B1929; border-radius: 0 0 14px 14px; margin: 0 auto 12px; }
+    .phone-screen { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .phone-bar { height: 8px; border-radius: 4px; background: rgba(103,155,218,0.2); }
+    .phone-bar.accent { background: rgba(103,155,218,0.5); width: 60%; }
+    .phone-card { height: 60px; border-radius: 10px; background: rgba(65,105,183,0.15); border: 1px solid rgba(103,155,218,0.15); }
+    .phone-card.tall { height: 90px; }
+    .phone-card.blue { background: linear-gradient(135deg, rgba(65,105,183,0.4), rgba(27,55,147,0.4)); }
+    .phone-nav { height: 42px; background: rgba(27,55,147,0.5); display: flex; align-items: center; justify-content: space-around; padding: 0 12px; }
+    .phone-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(103,155,218,0.6); }
+    .phone-dot.active { background: #679BDA; width: 20px; border-radius: 3px; }
+    .hero-glow { position: absolute; bottom: -40px; width: 600px; height: 200px; background: radial-gradient(ellipse, rgba(65,105,183,0.2), transparent 70%); pointer-events: none; }
+
+    /* ── STATS ── */
+    .stats {
+      background: var(--light); padding: 60px 6vw;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+    }
+    .stat { flex: 1; min-width: 160px; max-width: 240px; text-align: center; padding: 20px 30px; position: relative; }
+    .stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--border); }
+    .stat-num { font-size: 2.4rem; font-weight: 900; background: linear-gradient(135deg, var(--blue), var(--navy)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 100px 6vw; }
+    .section-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; }
+    .section-title { font-size: clamp(1.9rem, 4vw, 3rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px; }
+    .section-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.7; max-width: 500px; }
+
+    /* ���─ FEATURES ── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 60px; }
+    .feature-card {
+      background: var(--white); border: 1px solid var(--border); border-radius: 20px;
+      padding: 32px; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(65,105,183,0.12); border-color: rgba(65,105,183,0.3); }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(103,155,218,0.15), rgba(27,55,147,0.15));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 20px;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── HOW IT WORKS ── */
+    .how { background: var(--deep); color: var(--white); }
+    .how .section-title { color: var(--white); }
+    .how .section-sub { color: rgba(255,255,255,0.55); }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; margin-top: 60px; }
+    .step { display: flex; flex-direction: column; align-items: flex-start; }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 800; color: var(--white);
+      margin-bottom: 18px; flex-shrink: 0;
+      box-shadow: 0 6px 20px rgba(65,105,183,0.4);
+    }
+    .step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .step p { font-size: 0.875rem; color: rgba(255,255,255,0.55); line-height: 1.65; }
+
+    /* ── USER TYPES ── */
+    .roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 60px; }
+    .role-card {
+      border-radius: 20px; padding: 36px 30px; position: relative; overflow: hidden;
+      transition: transform 0.25s;
+    }
+    .role-card:hover { transform: translateY(-4px); }
+    .role-card.blue   { background: linear-gradient(135deg, #eef3ff, #dce7fb); }
+    .role-card.navy   { background: linear-gradient(135deg, #e8eeff, #d0daff); }
+    .role-card.teal   { background: linear-gradient(135deg, #e4f3ff, #c8e4fc); }
+    .role-card.indigo { background: linear-gradient(135deg, #ece9ff, #d8d0ff); }
+    .role-emoji { font-size: 2.2rem; margin-bottom: 16px; }
+    .role-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
+    .role-card p { font-size: 0.875rem; color: #4a5880; line-height: 1.65; }
+
+    /* ── LISTINGS SHOWCASE ── */
+    .showcase { background: var(--light); }
+    .listing-cards { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 12px; margin-top: 48px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .listing-cards::-webkit-scrollbar { height: 4px; }
+    .listing-cards::-webkit-scrollbar-track { background: var(--border); border-radius: 2px; }
+    .listing-cards::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+    .listing-card {
+      min-width: 280px; border-radius: 20px; overflow: hidden;
+      background: var(--white); border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(65,105,183,0.08);
+      scroll-snap-align: start; flex-shrink: 0;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .listing-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(65,105,183,0.14); }
+    .listing-img {
+      height: 170px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .listing-img.villa   { background: linear-gradient(135deg, #1B3793, #4169B7); }
+    .listing-img.chalet  { background: linear-gradient(135deg, #2d5a27, #4caf50); }
+    .listing-img.apt     { background: linear-gradient(135deg, #7b2d00, #e65100); }
+    .listing-img.service { background: linear-gradient(135deg, #4a0072, #9c27b0); }
+    .listing-tag {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(255,255,255,0.95); color: var(--navy);
+      font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 100px;
+    }
+    .listing-body { padding: 18px 20px; }
+    .listing-body h4 { font-size: 0.975rem; font-weight: 700; margin-bottom: 4px; }
+    .listing-body span { font-size: 0.8rem; color: var(--muted); }
+    .listing-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .listing-price { font-size: 1.05rem; font-weight: 800; color: var(--navy); }
+    .listing-badge { font-size: 0.72rem; font-weight: 600; color: var(--blue); background: rgba(65,105,183,0.1); padding: 4px 10px; border-radius: 100px; }
+
+    /* ── MESSAGING ── */
+    .messaging-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .chat-demo {
+      background: var(--deep); border-radius: 28px; padding: 28px;
+      border: 1px solid rgba(103,155,218,0.2);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+    .chat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .chat-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--grad-start), var(--grad-end)); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .chat-name { font-size: 0.9rem; font-weight: 600; color: var(--white); }
+    .chat-status { font-size: 0.75rem; color: #4ade80; }
+    .chat-messages { display: flex; flex-direction: column; gap: 12px; }
+    .msg { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 0.82rem; line-height: 1.5; }
+    .msg.them { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); border-bottom-left-radius: 4px; align-self: flex-start; }
+    .msg.me { background: linear-gradient(135deg, var(--grad-start), var(--grad-end)); color: var(--white); border-bottom-right-radius: 4px; align-self: flex-end; }
+    .msg-time { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 4px; text-align: right; }
+
+    /* ── TIERS ── */
+    .tiers { background: var(--deep); color: var(--white); }
+    .tiers .section-title { color: var(--white); }
+    .tiers .section-sub { color: rgba(255,255,255,0.55); }
+    .tier-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 60px; }
+    .tier-card {
+      border-radius: 24px; padding: 36px 30px; text-align: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .tier-card:hover { transform: translateY(-4px); }
+    .tier-card.featured { background: linear-gradient(160deg, rgba(65,105,183,0.25), rgba(27,55,147,0.25)); border-color: rgba(103,155,218,0.4); }
+    .tier-icon { font-size: 2.8rem; margin-bottom: 16px; }
+    .tier-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--white); }
+    .tier-card p { font-size: 0.875rem; color: rgba(255,255,255,0.55); line-height: 1.65; }
+    .tier-badge { display: inline-block; margin-top: 16px; padding: 6px 16px; border-radius: 100px; font-size: 0.72rem; font-weight: 700; }
+    .tier-badge.basic    { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+    .tier-badge.standard { background: rgba(65,105,183,0.3); color: #9db8f0; }
+    .tier-badge.premium  { background: linear-gradient(135deg, #f59e0b, #d97706); color: var(--white); }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      text-align: center; padding: 100px 6vw; color: var(--white);
+    }
+    .cta-section h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; }
+    .cta-section p { font-size: 1.1rem; color: rgba(255,255,255,0.75); margin-bottom: 40px; }
+    .store-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .store-btn {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      padding: 14px 28px; border-radius: 14px; color: var(--white); text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .store-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+    .store-btn .store-icon { font-size: 1.8rem; }
+    .store-btn-text { text-align: left; }
+    .store-btn-text small { display: block; font-size: 0.7rem; opacity: 0.75; }
+    .store-btn-text strong { font-size: 1rem; font-weight: 700; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--deep); color: rgba(255,255,255,0.5);
+      padding: 60px 6vw 40px;
+    }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-bottom: 14px; }
+    .footer-brand p { font-size: 0.875rem; line-height: 1.7; max-width: 260px; }
+    .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.5px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; font-size: 0.8rem; }
+    .footer-bottom-links { display: flex; gap: 24px; }
+    .footer-bottom-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .footer-bottom-links a:hover { color: var(--white); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .messaging-split { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .hero-mockup .phone-frame.side:first-child { display: none; }
+    }
+    @media (max-width: 600px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .stat:not(:last-child)::after { display: none; }
+      .hero-mockup .phone-frame.side { display: none; }
+      .phone-frame.center { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="../assets/logo.jpeg" alt="Loop logo" />
+    <span>Loop</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#roles">Who It's For</a></li>
+    <li><a href="#listings">Listings</a></li>
+  </ul>
+  <a class="nav-cta" href="#download">Download App</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-badge"><span></span> Now Available on iOS & Android</div>
+  <h1>The <span class="gradient-text">Smarter Way</span> to Buy, Rent & Hire</h1>
+  <p>Loop connects property seekers, real estate agents, and service providers in one seamless marketplace — browse listings, hire professionals, and close deals faster.</p>
+  <div class="hero-actions">
+    <a href="#download" class="btn-primary">Get the App</a>
+    <a href="#how-it-works" class="btn-secondary">How It Works</a>
+  </div>
+  <div class="hero-mockup">
+    <div class="phone-frame side">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-bar accent"></div>
+        <div class="phone-bar"></div>
+        <div class="phone-card tall"></div>
+        <div class="phone-card"></div>
+        <div class="phone-card"></div>
+      </div>
+      <div class="phone-nav">
+        <div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div>
+      </div>
+    </div>
+    <div class="phone-frame center">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-bar accent"></div>
+        <div class="phone-card blue tall"></div>
+        <div class="phone-card"></div>
+        <div class="phone-card blue"></div>
+        <div class="phone-bar"></div>
+      </div>
+      <div class="phone-nav">
+        <div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot active"></div><div class="phone-dot"></div><div class="phone-dot"></div>
+      </div>
+    </div>
+    <div class="phone-frame side">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-bar"></div>
+        <div class="phone-card"></div>
+        <div class="phone-card blue"></div>
+        <div class="phone-card tall"></div>
+        <div class="phone-bar accent"></div>
+      </div>
+      <div class="phone-nav">
+        <div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div><div class="phone-dot"></div>
+      </div>
+    </div>
+    <div class="hero-glow"></div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">5K+</div>
+    <div class="stat-label">Active Listings</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">1.2K+</div>
+    <div class="stat-label">Verified Agents</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">800+</div>
+    <div class="stat-label">Service Providers</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">30+</div>
+    <div class="stat-label">Cities Covered</div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div class="section-label">Platform Features</div>
+  <div class="section-title">Everything in<br />one platform</div>
+  <div class="section-sub">From property search to hiring specialists, Loop handles the entire real estate journey.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🏠</div>
+      <h3>Property Listings</h3>
+      <p>Browse thousands of verified properties — chalets, villas, apartments and more — with high-res photos, detailed specs, and real-time availability.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👤</div>
+      <h3>Verified Agents</h3>
+      <p>Connect directly with certified individual agents and accredited agencies. View portfolios, reviews, and ratings before you reach out.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔧</div>
+      <h3>Services Marketplace</h3>
+      <p>Find and hire trusted professionals for renovation, maintenance, interior design, and more — all vetted and reviewed by real clients.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Real-Time Chat</h3>
+      <p>Message agents, service providers, and employers directly within the app. Socket-powered delivery means your messages land instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📍</div>
+      <h3>Location-Aware Search</h3>
+      <p>Loop automatically detects your city and surfaces the most relevant listings, agents, and services near you — no manual setup needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⭐</div>
+      <h3>Reviews & Ratings</h3>
+      <p>Transparent, community-driven reviews across listings, agents, and service providers help you make informed decisions every time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💼</div>
+      <h3>Job Board</h3>
+      <p>Real estate companies and service firms can post jobs and receive applications directly — with built-in application tracking for both sides.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">❤️</div>
+      <h3>Favorites & Saved Searches</h3>
+      <p>Bookmark properties, agents, and services you love. Come back anytime and pick up right where you left off.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📰</div>
+      <h3>Market Updates</h3>
+      <p>Stay ahead with a curated feed of local real estate news, market trends, and featured content delivered to your home feed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how-it-works" class="how">
+  <div class="section-label">Getting Started</div>
+  <div class="section-title">Up and running<br />in minutes</div>
+  <div class="section-sub">Whether you're a buyer, agent, or service pro — getting started on Loop is straightforward.</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Create Your Account</h3>
+      <p>Sign up as a buyer, renter, agent, or service provider. Each role gets a tailored onboarding flow and dashboard.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Set Your Location</h3>
+      <p>Allow Loop to detect your city automatically, or browse any of our supported markets. Relevant listings load instantly.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Browse & Filter</h3>
+      <p>Use powerful search filters — price range, property type, agent ratings, service category — to find exactly what you need.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Connect & Close</h3>
+      <p>Message directly, request viewings, apply for jobs, or book services. Everything happens within the app — no back-and-forth needed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHO IT'S FOR ── -->
+<section id="roles">
+  <div class="section-label">User Roles</div>
+  <div class="section-title">Built for everyone<br />in real estate</div>
+  <div class="section-sub">Loop supports four distinct user types, each with purpose-built tools and dashboards.</div>
+  <div class="roles-grid">
+    <div class="role-card blue">
+      <div class="role-emoji">🏡</div>
+      <h3>Buyers & Renters</h3>
+      <p>Discover your next home or investment property. Search verified listings, compare agents, and connect with sellers — all from your phone.</p>
+    </div>
+    <div class="role-card navy">
+      <div class="role-emoji">🧑‍💼</div>
+      <h3>Real Estate Agents</h3>
+      <p>Showcase your portfolio, manage your listings, receive inquiries, and grow your client base with Loop's built-in agent tools.</p>
+    </div>
+    <div class="role-card teal">
+      <div class="role-emoji">🔨</div>
+      <h3>Service Providers</h3>
+      <p>List your services, set your rates, and receive job requests from homeowners and developers actively looking for your expertise.</p>
+    </div>
+    <div class="role-card indigo">
+      <div class="role-emoji">🏢</div>
+      <h3>Companies & Agencies</h3>
+      <p>Manage your team, showcase your brand, post job openings, and centralize all your listings and client communications in one dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── LISTINGS SHOWCASE ── -->
+<section id="listings" class="showcase">
+  <div class="section-label">What's on Loop</div>
+  <div class="section-title">Featured on the platform</div>
+  <div class="section-sub">A sample of the variety of listings and services available on Loop right now.</div>
+  <div class="listing-cards">
+    <div class="listing-card">
+      <div class="listing-img villa"><span>🏰</span><span class="listing-tag">For Sale</span></div>
+      <div class="listing-body">
+        <h4>Luxury Villa — Sea View</h4>
+        <span>4 beds · 3 baths · 320 m²</span>
+        <div class="listing-footer">
+          <span class="listing-price">$480,000</span>
+          <span class="listing-badge">Featured</span>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card">
+      <div class="listing-img chalet"><span>🌲</span><span class="listing-tag">For Rent</span></div>
+      <div class="listing-body">
+        <h4>Mountain Chalet</h4>
+        <span>3 beds · 2 baths · 180 m²</span>
+        <div class="listing-footer">
+          <span class="listing-price">$1,200/mo</span>
+          <span class="listing-badge">New</span>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card">
+      <div class="listing-img apt"><span>🏙️</span><span class="listing-tag">For Sale</span></div>
+      <div class="listing-body">
+        <h4>City Center Apartment</h4>
+        <span>2 beds · 1 bath · 95 m²</span>
+        <div class="listing-footer">
+          <span class="listing-price">$185,000</span>
+          <span class="listing-badge">Hot Deal</span>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card">
+      <div class="listing-img service"><span>🔧</span><span class="listing-tag">Service</span></div>
+      <div class="listing-body">
+        <h4>Interior Design</h4>
+        <span>Premium · Certified · 4.9★</span>
+        <div class="listing-footer">
+          <span class="listing-price">From $800</span>
+          <span class="listing-badge">Top Rated</span>
+        </div>
+      </div>
+    </div>
+    <div class="listing-card">
+      <div class="listing-img villa" style="background:linear-gradient(135deg,#0d3b2e,#1a7a5e)"><span>🌴</span><span class="listing-tag">For Rent</span></div>
+      <div class="listing-body">
+        <h4>Beachfront Villa</h4>
+        <span>5 beds · 4 baths · 420 m²</span>
+        <div class="listing-footer">
+          <span class="listing-price">$3,500/mo</span>
+          <span class="listing-badge">Premium</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MESSAGING ── -->
+<section>
+  <div class="messaging-split">
+    <div>
+      <div class="section-label">Built-In Messaging</div>
+      <div class="section-title">Talk directly,<br />close faster</div>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;margin-top:16px;max-width:440px">
+        Loop's real-time chat keeps buyers, agents, and service providers in direct communication. No third-party tools, no missed messages — just fast, reliable conversations with unread-count tracking, message history, and full block controls.
+      </p>
+      <ul style="list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:12px">
+        <li style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#4a5880">
+          <span style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#679BDA,#1B3793);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;flex-shrink:0">✓</span>
+          Socket-powered real-time delivery
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#4a5880">
+          <span style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#679BDA,#1B3793);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;flex-shrink:0">✓</span>
+          Unread badge count on the app icon
+        </li>
+        <li style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:#4a5880">
+          <span style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#679BDA,#1B3793);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;flex-shrink:0">✓</span>
+          Block and report functionality
+        </li>
+      </ul>
+    </div>
+    <div class="chat-demo">
+      <div class="chat-header">
+        <div class="chat-avatar">🏠</div>
+        <div>
+          <div class="chat-name">Ahmed — Real Estate Agent</div>
+          <div class="chat-status">● Online</div>
+        </div>
+      </div>
+      <div class="chat-messages">
+        <div class="msg them">Hi! I saw your listing for the sea-view villa. Is it still available?<div class="msg-time">10:22 AM</div></div>
+        <div class="msg me">Yes, it's still available! Would you like to schedule a viewing this week?<div class="msg-time">10:23 AM</div></div>
+        <div class="msg them">That would be great. How about Thursday at 2pm?<div class="msg-time">10:24 AM</div></div>
+        <div class="msg me">Thursday 2pm works perfectly. I'll send you the address now 📍<div class="msg-time">10:24 AM</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICE TIERS ── -->
+<section class="tiers">
+  <div class="section-label">Service Tiers</div>
+  <div class="section-title">Quality for every budget</div>
+  <div class="section-sub">Service providers on Loop offer tiered packages so you always know what you're getting before you hire.</div>
+  <div class="tier-cards">
+    <div class="tier-card">
+      <div class="tier-icon">🥉</div>
+      <h3>Basic</h3>
+      <p>Essential services for straightforward needs. Ideal for quick fixes, consultations, and entry-level projects.</p>
+      <span class="tier-badge basic">Basic Tier</span>
+    </div>
+    <div class="tier-card featured">
+      <div class="tier-icon">🥈</div>
+      <h3>Standard</h3>
+      <p>The most popular choice — comprehensive scope, regular check-ins, and a dedicated professional throughout your project.</p>
+      <span class="tier-badge standard">Most Popular</span>
+    </div>
+    <div class="tier-card">
+      <div class="tier-icon">🥇</div>
+      <h3>Premium</h3>
+      <p>Full-service delivery with priority support, extended warranties, and top-tier professionals for large-scale or complex projects.</p>
+      <span class="tier-badge premium">Premium Tier</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOAD CTA ── -->
+<section id="download" class="cta-section">
+  <h2>Start your Loop journey today</h2>
+  <p>Join thousands of buyers, agents, and service providers already using Loop.</p>
+  <div class="store-btns">
+    <a href="#" class="store-btn">
+      <span class="store-icon">🍎</span>
+      <div class="store-btn-text">
+        <small>Download on the</small>
+        <strong>App Store</strong>
+      </div>
+    </a>
+    <a href="#" class="store-btn">
+      <span class="store-icon">▶</span>
+      <div class="store-btn-text">
+        <small>Get it on</small>
+        <strong>Google Play</strong>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="../assets/logo.jpeg" alt="Loop" />
+      <p>Loop Real Estate — the end-to-end marketplace for property and services. Find, connect, and close — all in one app.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#listings">Listings</a></li>
+        <li><a href="#roles">For Agents</a></li>
+        <li><a href="#roles">For Providers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Loop</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Loop Real Estate. All rights reserved.</span>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Support</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Smooth reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .step, .role-card, .listing-card, .tier-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
