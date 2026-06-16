@@ -114,41 +114,31 @@ class ServiceService {
 
   static Future<ServiceProviderWithReviews> getServiceProviderWithReviews(String serviceProviderId) async {
     try {
-      // First try to get all service providers and find the specific one
-      final url = Uri.parse('$baseUrl/get-all-service-providers?withReviews=true&withServices=true&limit=100&page=1');
-     
+      // Fetch the single provider directly by id. The backend returns the
+      // provider with their latest 3 (non-locked) services and latest 3 reviews
+      // (and favorite status), so we don't over-fetch the whole provider list
+      // and filter client-side.
+      final url = Uri.parse(
+          '$baseUrl/get-service-provider-by-id/$serviceProviderId?withReviews=true&withServices=true');
+
       final response = await http.get(
         url,
         headers: AuthService.getAuthHeaders(),
       );
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        if (data['users'] != null && data['users'].isNotEmpty) {
-          
-          // Find the specific service provider by ID
-          try {
-            final serviceProviderData = data['users'].firstWhere(
-              (provider) => provider['_id'] == serviceProviderId,
-            );
-        
-            return ServiceProviderWithReviews.fromJson(serviceProviderData);
-          } catch (e) {
-          
-            // If service provider not found in the list, try a direct API call
-            return await _getServiceProviderDirectly(serviceProviderId);
-          }
-        } else {
-          throw Exception('No service providers found in response');
+        // Endpoint shape: { user: {...} }. Fall back to a bare object just in case.
+        final providerData = (data['user'] ?? data) as Map<String, dynamic>;
+        if (providerData.isEmpty || providerData['_id'] == null) {
+          throw Exception('No service provider data found in response');
         }
+        return ServiceProviderWithReviews.fromJson(providerData);
       } else {
-     
         throw Exception('Failed to load service provider: ${response.statusCode}');
       }
     } catch (e) {
-    
-      // If the general call fails, try direct approach
+      // If the by-id call fails, fall back to the legacy direct approach.
       try {
         return await _getServiceProviderDirectly(serviceProviderId);
       } catch (directError) {

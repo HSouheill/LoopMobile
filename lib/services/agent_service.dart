@@ -9,35 +9,30 @@ class AgentService {
   
   static Future<AgentWithListingsAndReviews> getAgentWithReviewsAndListings(String agentId) async {
     try {
-      // First try to get all agents and find the specific one
-      final url = Uri.parse('$baseUrl/get-all-agents?withReviews=true&withListings=true&limit=100&page=1');
+      // Fetch the single agent directly by id. The backend returns the agent
+      // with their latest 3 active+published listings and latest 3 reviews
+      // (and favorite status), so we don't need to over-fetch the whole agent
+      // list and filter client-side.
+      final url = Uri.parse(
+          '$baseUrl/get-agent-by-id/$agentId?withReviews=true&withListings=true');
       final response = await http.get(
         url,
         headers: AuthService.getAuthHeaders(),
       );
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        if (data['users'] != null && data['users'].isNotEmpty) {
-          // Find the specific agent by ID
-          try {
-            final agentData = data['users'].firstWhere(
-              (agent) => agent['_id'] == agentId,
-            );
-            return AgentWithListingsAndReviews.fromJson(agentData);
-          } catch (e) {
-            // If agent not found in the list, try a direct API call
-            return await _getAgentDirectly(agentId);
-          }
-        } else {
-          throw Exception('No agents found in response');
+        // Endpoint shape: { user: {...} }. Fall back to a bare object just in case.
+        final agentData = (data['user'] ?? data) as Map<String, dynamic>;
+        if (agentData.isEmpty || agentData['_id'] == null) {
+          throw Exception('No agent data found in response');
         }
+        return AgentWithListingsAndReviews.fromJson(agentData);
       } else {
         throw Exception('Failed to load agent: ${response.statusCode}');
       }
     } catch (e) {
-      // If the general call fails, try direct approach
+      // If the by-id call fails, fall back to the legacy direct approach.
       try {
         return await _getAgentDirectly(agentId);
       } catch (directError) {
