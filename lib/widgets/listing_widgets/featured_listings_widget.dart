@@ -174,31 +174,8 @@ class PropertyListingCard extends StatefulWidget {
 }
 
 class _PropertyListingCardState extends State<PropertyListingCard> {
-  bool _isFavorited = false;
+  late bool _isFavorited = widget.listing.isFavorited;
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkFavoriteStatus();
-  }
-
-  Future<void> _checkFavoriteStatus() async {
-    try {
-      final result = await FavoriteService.checkFavorite(
-        favoritedObjectId: widget.listing.id,
-        table: 'listing',
-      );
-      
-      if (mounted) {
-        setState(() {
-          _isFavorited = result['isFavorited'] ?? false;
-        });
-      }
-    } catch (e) {
-      // Error checking favorite status
-    }
-  }
 
   Future<void> _toggleFavorite() async {
     if (_isLoading) return;

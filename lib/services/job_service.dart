@@ -403,6 +403,7 @@ class Job {
   final String attendance;
   final Map<String, int> experienceRange;
   final bool isFeatured;
+  final bool isFavorited;
   final String createdAt;
   final String? status;
 
@@ -419,6 +420,7 @@ class Job {
     required this.attendance,
     required this.experienceRange,
     required this.isFeatured,
+    this.isFavorited = false,
     required this.createdAt,
     this.status,
   });
@@ -437,6 +439,7 @@ class Job {
       attendance: json['attendance'] ?? '',
       experienceRange: _parseExperienceRange(json['experienceRange']),
       isFeatured: json['isFeatured'] ?? false,
+      isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
       createdAt: json['createdAt'] ?? '',
       status: json['status'],
     );

@@ -11,7 +11,7 @@ class ListingService {
     try {
       final url = Uri.parse(
           '$baseUrl/get-all?isFeatured=true&limit=$limit&sort=date_desc');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -28,7 +28,7 @@ class ListingService {
   static Future<ListingsResponse> getNewListings({int limit = 3}) async {
     try {
       final url = Uri.parse('$baseUrl/get-all?limit=$limit&sort=featured_first');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -49,7 +49,7 @@ class ListingService {
     try {
       final url =
           Uri.parse('$baseUrl/get-all?type=$type&limit=$limit&sort=$sort');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -87,7 +87,7 @@ class ListingService {
 
       final uri =
           Uri.parse('$baseUrl/get-all').replace(queryParameters: queryParams);
-      final response = await http.get(uri);
+      final response = await http.get(uri, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -216,8 +216,8 @@ class ListingService {
 
       final uri = Uri.parse('${Environment.apiUrl}listings/search')
           .replace(queryParameters: queryParams);
-      
-      final response = await http.get(uri);
+
+      final response = await http.get(uri, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -390,7 +390,7 @@ class ListingService {
   static Future<ListingsResponse> getSimilarListings(String listingId) async {
     try {
       final url = Uri.parse('${Environment.apiUrl}listings/get-similar?id=$listingId');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -533,6 +533,7 @@ class PropertyListing {
   final String agentName;
   final String location;
   final bool isFeatured;
+  final bool isFavorited;
   final String? type;
   final String? listingFor;
   final String? status;
@@ -575,6 +576,7 @@ class PropertyListing {
     required this.agentName,
     required this.location,
     this.isFeatured = false,
+    this.isFavorited = false,
     this.type,
     this.listingFor,
     this.status,
@@ -780,6 +782,7 @@ class PropertyListing {
       agentName: agentName,
       location: locationStr,
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),
       status: json['status']?.toString(),
