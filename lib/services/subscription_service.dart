@@ -36,7 +36,8 @@ class SubscriptionService {
     }
   }
 
-  /// Get all available plans
+  /// Get the plans available to the authenticated user's role.
+  /// Uses /plans/me which is scoped by role and excludes the starter plan.
   static Future<List<dynamic>?> getAllPlans() async {
     try {
       final token = AuthService.token;
@@ -45,7 +46,7 @@ class SubscriptionService {
       }
 
       final response = await http.get(
-        Uri.parse('${Environment.apiUrl}plans/all'),
+        Uri.parse('${Environment.apiUrl}plans/me'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -116,6 +117,131 @@ class SubscriptionService {
       }
     } catch (e) {
       print('Error in subscribeToPlan: $e');
+      rethrow;
+    }
+  }
+
+  /// Step 1 of paid checkout: create a payment session + capture context.
+  /// Returns the parsed response. For a free plan, response['free'] == true and
+  /// the subscription is already activated (no payment needed).
+  static Future<Map<String, dynamic>> createCheckout(String planId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/checkout/create'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'planId': planId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start checkout');
+  }
+
+  /// Step 2 of paid checkout: confirm payment with the transient token from the
+  /// Unified Checkout WebView. On success the subscription is activated.
+  static Future<Map<String, dynamic>> confirmCheckout(
+      String paymentSessionId, String transientToken) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/checkout/confirm'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'paymentSessionId': paymentSessionId,
+        'transientToken': transientToken,
+      }),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
+  /// Whish step 1: create a Whish payment session. Returns the parsed response;
+  /// for a free plan response['free'] == true (already activated).
+  static Future<Map<String, dynamic>> createWhishCheckout(String planId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/whish/create'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'planId': planId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start Whish checkout');
+  }
+
+  /// Whish step 2: after the Whish WebView returns, verify + activate.
+  /// Returns the parsed response. A 202 (pending) is returned as {pending:true}.
+  static Future<Map<String, dynamic>> confirmWhish(String paymentSessionId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/whish/confirm'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'paymentSessionId': paymentSessionId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
+  /// Recharge the service-provider 30-day plan (+30 days).
+  static Future<Map<String, dynamic>?> rechargeServicePlan() async {
+    try {
+      final token = AuthService.token;
+      if (token == null) {
+        throw Exception('No authentication token found');
+      }
+
+      final response = await http.post(
+        Uri.parse('${Environment.apiUrl}subscriptions/recharge-service'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        try {
+          final data = json.decode(response.body);
+          throw Exception(data['message'] ?? 'Failed to recharge service plan');
+        } catch (e) {
+          throw Exception('Server error (${response.statusCode}): Could not recharge');
+        }
+      }
+    } catch (e) {
+      print('Error in rechargeServicePlan: $e');
       rethrow;
     }
   }

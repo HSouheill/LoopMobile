@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../recommended_agents_widget.dart'; // Updated import path
 import '../../environment.dart';
+import '../../services/auth_service.dart';
 
 class AgentService {
   // Base URL from your Environment file
@@ -33,11 +34,7 @@ class AgentService {
 
       final response = await http.get(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any additional headers like authentication if needed
-          // 'Authorization': 'Bearer $token',
-        },
+        headers: AuthService.getAuthHeaders(),
       );
 
       if (response.statusCode == 200) {
@@ -128,9 +125,7 @@ class AgentService {
 
       final response = await http.get(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: AuthService.getAuthHeaders(),
       );
 
       if (response.statusCode == 200) {

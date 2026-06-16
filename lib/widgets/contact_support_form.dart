@@ -316,7 +316,6 @@ class _ContactSupportFormState extends State<ContactSupportForm> {
                 decoration: InputDecoration(
                   labelText: l10n.describeIssueOrQuestionRequiredLabel,
                   hintText: l10n.describeIssueOrQuestionHint,
-                  prefixIcon: const Icon(Icons.message),
                   border: const OutlineInputBorder(),
                   alignLabelWithHint: true,
                 ),

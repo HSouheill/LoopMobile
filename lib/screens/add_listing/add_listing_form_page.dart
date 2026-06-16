@@ -227,6 +227,7 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
       final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final String listingFor = args?['listingFor'] ?? (_editingListing?.listingFor ?? 'rent');
       final String? rentalPeriod = args?['rentalPeriod'];
+      final bool isDailyRentChalet = _isDailyRentChalet(args);
       final int priceValue = int.tryParse(_priceController.text) ?? 0;
       
       // Determine payment frequency - only for rent, must be one of: 'daily', 'monthly', 'yearly'
@@ -258,11 +259,14 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
         'bedrooms': int.tryParse(_bedroomsController.text) ?? 0,
         'bathrooms': int.tryParse(_bathroomsController.text) ?? 0,
         'size': double.tryParse(_sizeController.text) ?? 0,
-        'floor': _floorController.text.trim(),
-        'condition': selectedCondition,
         'buildingAge': int.tryParse(_buildingAgeController.text) ?? 0,
-        'papers': selectedPapers,
-        if (selectedFurnishing != null) 'furnishing': selectedFurnishing,
+        // Floor / Condition / Papers / Furnishing don't apply to daily-rent Chalet
+        if (!isDailyRentChalet) ...{
+          'floor': _floorController.text.trim(),
+          'condition': selectedCondition,
+          'papers': selectedPapers,
+          if (selectedFurnishing != null) 'furnishing': selectedFurnishing,
+        },
         'amenities': amenities,
         'isPublished': false,
         'status': _editingListing?.status ?? 'pending',
@@ -319,10 +323,18 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
     }
   }
 
+  // Daily-rent Chalet hides Floor / Condition / Papers / Furnishing.
+  bool _isDailyRentChalet(Map<String, dynamic>? args) {
+    final type = args?['propertyType'] ?? _editingListing?.type;
+    final period = args?['rentalPeriod'] ?? _editingListing?.paymentFrequency;
+    return type == 'chalet' && period == 'daily';
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String listingFor = args?['listingFor'] ?? 'rent';
+    final bool isDailyRentChalet = _isDailyRentChalet(args);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -429,14 +441,17 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
                       keyboardType: TextInputType.number,
                     ),
                   ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: _buildTextField(
-                      controller: _floorController,
-                      label: AppLocalizations.of(context)?.floor ?? 'Floor',
-                      hint: AppLocalizations.of(context)?.ground ?? 'Ground',
+                  // Floor hidden for daily-rent Chalet
+                  if (!isDailyRentChalet) ...[
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: _buildTextField(
+                        controller: _floorController,
+                        label: AppLocalizations.of(context)?.floor ?? 'Floor',
+                        hint: AppLocalizations.of(context)?.ground ?? 'Ground',
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
               
@@ -451,50 +466,55 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
               
               const SizedBox(height: 15),
               
-              // Condition Dropdown
-              _buildDropdown(
-                value: selectedCondition,
-                label: AppLocalizations.of(context)?.condition ?? 'Condition',
-                items: conditions
-                    .map((e) => {
-                          'value': e['value']!,
-                          'label': _localizeConditionLabel(context, e['value']!)
-                        })
-                    .toList(),
-                onChanged: (value) => setState(() => selectedCondition = value),
-              ),
-              
+              // Condition / Papers / Furnishing hidden for daily-rent Chalet
+              if (!isDailyRentChalet) ...[
+                // Condition Dropdown
+                _buildDropdown(
+                  value: selectedCondition,
+                  label: AppLocalizations.of(context)?.condition ?? 'Condition',
+                  items: conditions
+                      .map((e) => {
+                            'value': e['value']!,
+                            'label': _localizeConditionLabel(context, e['value']!)
+                          })
+                      .toList(),
+                  onChanged: (value) => setState(() => selectedCondition = value),
+                ),
+
+                const SizedBox(height: 15),
+
+                // Papers Dropdown
+                _buildDropdown(
+                  value: selectedPapers,
+                  label: AppLocalizations.of(context)?.papers ?? 'Papers',
+                  items: papers
+                      .map((e) => {
+                            'value': e['value']!,
+                            'label': _localizePapersLabel(context, e['value']!)
+                          })
+                      .toList(),
+                  onChanged: (value) => setState(() => selectedPapers = value),
+                ),
+
+                const SizedBox(height: 15),
+
+                // Furnishing Dropdown
+                _buildDropdown(
+                  value: selectedFurnishing,
+                  label: 'Furnishing',
+                  items: furnishingOptions
+                      .map((e) => {
+                            'value': e['value']!,
+                            'label': _localizeFurnishingLabel(context, e['value']!)
+                          })
+                      .toList(),
+                  onChanged: (value) => setState(() => selectedFurnishing = value),
+                ),
+
+                const SizedBox(height: 15),
+              ],
+
               const SizedBox(height: 15),
-              
-              // Papers Dropdown
-              _buildDropdown(
-                value: selectedPapers,
-                label: AppLocalizations.of(context)?.papers ?? 'Papers',
-                items: papers
-                    .map((e) => {
-                          'value': e['value']!,
-                          'label': _localizePapersLabel(context, e['value']!)
-                        })
-                    .toList(),
-                onChanged: (value) => setState(() => selectedPapers = value),
-              ),
-              
-              const SizedBox(height: 15),
-              
-              // Furnishing Dropdown
-              _buildDropdown(
-                value: selectedFurnishing,
-                label: 'Furnishing',
-                items: furnishingOptions
-                    .map((e) => {
-                          'value': e['value']!,
-                          'label': _localizeFurnishingLabel(context, e['value']!)
-                        })
-                    .toList(),
-                onChanged: (value) => setState(() => selectedFurnishing = value),
-              ),
-              
-              const SizedBox(height: 30),
               
               // Images - Only show for new listings, hide for edit mode
               if (!_isEditMode) ...[

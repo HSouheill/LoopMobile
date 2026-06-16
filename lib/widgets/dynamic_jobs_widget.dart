@@ -258,15 +258,9 @@ class JobCard extends StatefulWidget {
 }
 
 class _JobCardState extends State<JobCard> {
-  bool _isFavorited = false;
+  late bool _isFavorited = widget.job.isFavorited;
   bool _isLoading = false;
   bool _isNavigating = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkFavoriteStatus();
-  }
 
   // Determine the table based on jobType
   String get _tableType {
@@ -276,23 +270,6 @@ class _JobCardState extends State<JobCard> {
       return 'user';
     }
     return 'job';
-  }
-
-  Future<void> _checkFavoriteStatus() async {
-    try {
-      final result = await FavoriteService.checkFavorite(
-        favoritedObjectId: widget.job.id,
-        table: _tableType,
-      );
-      
-      if (mounted) {
-        setState(() {
-          _isFavorited = result['isFavorited'] ?? false;
-        });
-      }
-    } catch (e) {
-      // Error checking favorite status
-    }
   }
 
   Future<void> _toggleFavorite() async {

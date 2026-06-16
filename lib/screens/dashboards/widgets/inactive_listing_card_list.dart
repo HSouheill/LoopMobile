@@ -7,7 +7,7 @@ class InactiveListingCardList extends StatelessWidget {
   final List<Map<String, dynamic>> items;
   final Axis scrollDirection; // new: allows vertical or horizontal
   final Function(String)? onItemTap; // new: callback for item taps
-  final VoidCallback? onActivate; // new: callback for activate button
+  final Function(String)? onActivate; // per-listing activate (keyed by description)
 
   const InactiveListingCardList({
     super.key,
@@ -47,7 +47,7 @@ class InactiveListingCardList extends StatelessWidget {
                   status: item['status'],
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
-                  onActivate: onActivate,
+                  onActivate: onActivate != null ? () => onActivate!(item['description'] ?? '') : null,
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),
@@ -74,7 +74,7 @@ class InactiveListingCardList extends StatelessWidget {
                   status: item['status'],
                   viewsCount: item['viewsCount'],
                   favoritesCount: item['favoritesCount'],
-                  onActivate: onActivate,
+                  onActivate: onActivate != null ? () => onActivate!(item['description'] ?? '') : null,
                   onTap: onItemTap != null ? () => onItemTap!(item['description'] ?? '') : null,
                 );
               }).toList(),
@@ -130,6 +130,28 @@ class InactiveListingCard extends StatelessWidget {
     this.onActivate,
     this.onTap,
   });
+
+  bool get _isArchived => (status ?? '').toLowerCase() == 'archived';
+
+  // A small badge showing WHY the listing is inactive.
+  Widget _reasonBadge(BuildContext context) {
+    final archived = _isArchived;
+    final label = archived ? 'Archived' : 'Pending admin approval';
+    final color = archived ? const Color(0xFF6B7280) : const Color(0xFFB45309);
+    final bg = archived ? const Color(0xFFF3F4F6) : const Color(0xFFFEF3C7);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(archived ? Icons.archive_outlined : Icons.hourglass_top, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,34 +234,39 @@ class InactiveListingCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Right column: vertically centered button
+                  // Right column: reason badge + (archived only) activate button
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      OutlinedButton(
-                        onPressed: onActivate,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50.0),
+                      _reasonBadge(context),
+                      if (_isArchived) ...[
+                        const SizedBox(height: 8),
+                        OutlinedButton(
+                          onPressed: onActivate,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            side: const BorderSide(
+                              color: Color(0xFF0048FF),
+                              width: 1,
+                            ),
                           ),
-                          side: const BorderSide(
-                            color: Color(0xFF0048FF),
-                            width: 1,
+                          child: Text(
+                            AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF1E1E1E),
+                            ),
                           ),
                         ),
-                        child: Text(
-                          AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF1E1E1E),
-                          ),
-                        ),
-                      ),
+                      ],
                     ],
                   ),
                 ],
@@ -323,35 +350,39 @@ class InactiveListingCard extends StatelessWidget {
 
             const SizedBox(height: 7),
 
-            // Activate Button
-            Center(
-              child: OutlinedButton(
-                onPressed: onActivate,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+            // Reason badge (always) + Activate button (archived only)
+            Center(child: _reasonBadge(context)),
+            if (_isArchived) ...[
+              const SizedBox(height: 6),
+              Center(
+                child: OutlinedButton(
+                  onPressed: onActivate,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    side: const BorderSide(
+                      color: Color(0xFF0048FF),
+                      width: 1,
+                    ),
                   ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50.0),
-                  ),
-                  side: const BorderSide(
-                    color: Color(0xFF0048FF),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF1E1E1E),
+                  child: Text(
+                    AppLocalizations.of(context)?.activateListing ?? 'Activate Listing',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF1E1E1E),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

@@ -83,17 +83,52 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     }
   }
 
+  // Remaining content allowance. Prefer the backend-computed quota object.
   int _getListingsLeft() {
-    // First check if it's in the subscription data at root level
+    final remaining = _subscriptionData?['quota']?['remaining'];
+    if (remaining != null) {
+      return remaining as int;
+    }
+    // Legacy fallbacks
     if (_subscriptionData?['listingsLeft'] != null) {
       return _subscriptionData!['listingsLeft'] as int;
     }
-    // Fallback to checking in planId
     final listings = _subscriptionData?['subscription']?['planId']?['listings'];
     if (listings != null) {
       return listings as int;
     }
     return 0;
+  }
+
+  // Label for the quota chip: "services" for service providers, else "listings".
+  String _quotaLabel() {
+    final planType = _subscriptionData?['quota']?['planType'];
+    return planType == 'service' ? 'services' : 'listings';
+  }
+
+  bool _isStarter() => _subscriptionData?['isStarter'] == true;
+
+  // Service plans are unlimited while active.
+  bool _isUnlimited() => _subscriptionData?['quota']?['unlimited'] == true;
+
+  // True when this is a service-provider (service-type) plan.
+  bool _isServicePlan() => _subscriptionData?['quota']?['planType'] == 'service';
+
+  // The starter LISTING plan is a permanent floor (far-future expiry), so its
+  // "valid until" / "days remaining" are meaningless and should be hidden.
+  bool _isStarterListing() => _isStarter() && !_isServicePlan();
+
+  // The plan's listing allowance (e.g. 1 for starter), from the plan doc.
+  int _planListings() {
+    final v = _subscriptionData?['subscription']?['planId']?['listings'];
+    return v is int ? v : (v is num ? v.toInt() : 0);
+  }
+
+  // Display name: the starter listing plan shows simply "Starter" (drop the
+  // "(Listings)" qualifier from the stored plan name).
+  String _displayPlanName(String rawName) {
+    if (_isStarterListing()) return 'Starter';
+    return rawName;
   }
 
   @override
@@ -233,6 +268,8 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
     final expiryDate = subscription['expiryDate'];
     final daysRemaining = _getDaysRemaining();
     final listingsLeft = _getListingsLeft();
+    // Permanent starter listing plan has no meaningful expiry/days.
+    final showDays = !_isStarterListing();
 
     return Column(
       children: [
@@ -330,37 +367,85 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            planName,
+                            _displayPlanName(planName),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            AppLocalizations.of(context)?.validUntil(_formatDate(expiryDate)) ?? 'Valid Until: ${_formatDate(expiryDate)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400,
+                          if (_isStarter()) ...[
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Text(
+                                'STARTER',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                             ),
-                          ),
-                          if (daysRemaining > 0 || listingsLeft > 0) ...[
+                          ],
+                          const SizedBox(height: 8),
+                          // Starter listing plan is a permanent floor — no expiry shown.
+                          if (!_isStarterListing())
+                            Text(
+                              AppLocalizations.of(context)?.validUntil(_formatDate(expiryDate)) ?? 'Valid Until: ${_formatDate(expiryDate)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          // Starter listing plan: just "1 listing · Free" — no days.
+                          if (_isStarterListing()) ...[
+                            const SizedBox(height: 3),
+                            Text(
+                              '${_planListings()} ${_planListings() == 1 ? 'listing' : 'listings'} · Free',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ]
+                          // All other plans keep the existing quota / days display.
+                          else if ((showDays && daysRemaining > 0) || listingsLeft > 0 || _isUnlimited()) ...[
                             const SizedBox(height: 3),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                if (listingsLeft > 0) ...[
+                                if (_isUnlimited()) ...[
+                                  const Text(
+                                    'Unlimited services',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
+                                  if (showDays && daysRemaining > 0) ...[
+                                    const SizedBox(width: 8),
+                                    Container(width: 1, height: 10, color: Colors.white38),
+                                    const SizedBox(width: 8),
+                                  ],
+                                ] else if (listingsLeft > 0) ...[
                                   Text(
-                                    '$listingsLeft listings',
+                                    '$listingsLeft ${_quotaLabel()} left',
                                     style: const TextStyle(
                                       color: Colors.white70,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),
-                                  if (daysRemaining > 0) ...[
+                                  if (showDays && daysRemaining > 0) ...[
                                     const SizedBox(width: 8),
                                     Container(
                                       width: 1,
@@ -370,7 +455,7 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
                                     const SizedBox(width: 8),
                                   ],
                                 ],
-                                if (daysRemaining > 0)
+                                if (showDays && daysRemaining > 0)
                                   Text(
                                     '$daysRemaining days remaining',
                                     style: const TextStyle(
@@ -392,20 +477,47 @@ class _ActivePlanWidgetState extends State<ActivePlanWidget> {
           ),
         ),
 
-        // Unsubscribe button
-        const SizedBox(height: 12),
-        Center(
-          child: DynamicGradientButton(
-            buttonText: 'Unsubscribe',
-            onTap: _showUnsubscribeModal,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            textSize: 12.0,
-            backgroundColor: Colors.red,
-            useGradient: false,
+        // Unsubscribe button (agent-style) for service plans and paid listing
+        // plans. The permanent starter LISTING floor cannot be cancelled.
+        if (_isServicePlan() || !_isStarter()) ...[
+          const SizedBox(height: 12),
+          Center(
+            child: DynamicGradientButton(
+              buttonText: 'Unsubscribe',
+              onTap: _showUnsubscribeModal,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              textSize: 12.0,
+              backgroundColor: Colors.red,
+              useGradient: false,
+            ),
           ),
-        ),
+        ],
       ],
     );
+  }
+
+  // ignore: unused_field
+  bool _isRecharging = false;
+
+  // Kept for potential re-enable; SPs now unsubscribe like agents.
+  // ignore: unused_element
+  Future<void> _rechargeServicePlan() async {
+    setState(() => _isRecharging = true);
+    try {
+      await SubscriptionService.rechargeServicePlan();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Service plan recharged — +30 days added.')),
+      );
+      await _loadSubscription();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Recharge failed: ${e.toString().replaceFirst('Exception: ', '')}')),
+      );
+    } finally {
+      if (mounted) setState(() => _isRecharging = false);
+    }
   }
 
   void _showUnsubscribeModal() {

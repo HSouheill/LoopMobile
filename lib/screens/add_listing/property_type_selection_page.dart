@@ -9,7 +9,7 @@ class PropertyTypeSelectionPage extends StatefulWidget {
 }
 
 class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
-  String? selectedListingFor = 'rent'; // Default to rent
+  String? selectedListingFor = 'sale'; // Default to sale
   String? selectedPropertyType;
   String? selectedRentalPeriod;
 
@@ -84,27 +84,27 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        selectedListingFor = 'rent';
+                        selectedListingFor = 'sale';
                       });
                     },
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
-                        color: selectedListingFor == 'rent' 
-                            ? const Color(0xFF3B82F6) 
+                        color: selectedListingFor == 'sale'
+                            ? const Color(0xFF3B82F6)
                             : Colors.white,
                         border: Border.all(
-                          color: const Color(0xFF3B82F6), 
+                          color: const Color(0xFF3B82F6),
                           width: 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
                         child: Text(
-                          AppLocalizations.of(context)?.forRent ?? 'For Rent',
+                          AppLocalizations.of(context)?.forSale ?? 'For Sale',
                           style: TextStyle(
-                            color: selectedListingFor == 'rent' 
-                                ? Colors.white 
+                            color: selectedListingFor == 'sale'
+                                ? Colors.white
                                 : const Color(0xFF3B82F6),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -119,27 +119,27 @@ class _PropertyTypeSelectionPageState extends State<PropertyTypeSelectionPage> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        selectedListingFor = 'sale';
+                        selectedListingFor = 'rent';
                       });
                     },
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
-                        color: selectedListingFor == 'sale' 
-                            ? const Color(0xFF3B82F6) 
+                        color: selectedListingFor == 'rent'
+                            ? const Color(0xFF3B82F6)
                             : Colors.white,
                         border: Border.all(
-                          color: const Color(0xFF3B82F6), 
+                          color: const Color(0xFF3B82F6),
                           width: 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
                         child: Text(
-                          AppLocalizations.of(context)?.forSale ?? 'For Sale',
+                          AppLocalizations.of(context)?.forRent ?? 'For Rent',
                           style: TextStyle(
-                            color: selectedListingFor == 'sale' 
-                                ? Colors.white 
+                            color: selectedListingFor == 'rent'
+                                ? Colors.white
                                 : const Color(0xFF3B82F6),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

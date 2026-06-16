@@ -11,7 +11,7 @@ class ListingService {
     try {
       final url = Uri.parse(
           '$baseUrl/get-all?isFeatured=true&limit=$limit&sort=date_desc');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -28,7 +28,7 @@ class ListingService {
   static Future<ListingsResponse> getNewListings({int limit = 3}) async {
     try {
       final url = Uri.parse('$baseUrl/get-all?limit=$limit&sort=featured_first');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -49,7 +49,7 @@ class ListingService {
     try {
       final url =
           Uri.parse('$baseUrl/get-all?type=$type&limit=$limit&sort=$sort');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -87,7 +87,7 @@ class ListingService {
 
       final uri =
           Uri.parse('$baseUrl/get-all').replace(queryParameters: queryParams);
-      final response = await http.get(uri);
+      final response = await http.get(uri, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -216,8 +216,8 @@ class ListingService {
 
       final uri = Uri.parse('${Environment.apiUrl}listings/search')
           .replace(queryParameters: queryParams);
-      
-      final response = await http.get(uri);
+
+      final response = await http.get(uri, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -352,11 +352,45 @@ class ListingService {
     }
   }
 
+  // Archive an active listing (hides it from customers). Returns {success, message}.
+  static Future<ListingActionResult> archiveListing(String listingId) async {
+    return _patchStatus('$listingId/archive');
+  }
+
+  // Unarchive a listing -> active. Blocked with 403 if over plan limit.
+  static Future<ListingActionResult> unarchiveListing(String listingId) async {
+    return _patchStatus('$listingId/unarchive');
+  }
+
+  static Future<ListingActionResult> _patchStatus(String pathSuffix) async {
+    try {
+      if (AuthService.token == null) {
+        return ListingActionResult(false, 'Not authenticated');
+      }
+      final url = Uri.parse('${Environment.apiUrl}listings/$pathSuffix');
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${AuthService.token}',
+        },
+      );
+      String? message;
+      try {
+        message = (json.decode(response.body) as Map)['message'] as String?;
+      } catch (_) {}
+      final ok = response.statusCode == 200;
+      return ListingActionResult(ok, message ?? (ok ? 'Done' : 'Failed'));
+    } catch (e) {
+      return ListingActionResult(false, e.toString());
+    }
+  }
+
   // Get similar/related listings
   static Future<ListingsResponse> getSimilarListings(String listingId) async {
     try {
       final url = Uri.parse('${Environment.apiUrl}listings/get-similar?id=$listingId');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: AuthService.getAuthHeaders());
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -368,6 +402,14 @@ class ListingService {
       throw Exception('Error fetching similar listings: $e');
     }
   }
+}
+
+// Result of an archive/unarchive action — carries the server message so the UI
+// can show the plan-limit reason on a 403.
+class ListingActionResult {
+  final bool success;
+  final String message;
+  const ListingActionResult(this.success, this.message);
 }
 
 // Note: ListingCategory enum with localized support is in lib/screens/listings/listings_category.dart
@@ -491,6 +533,7 @@ class PropertyListing {
   final String agentName;
   final String location;
   final bool isFeatured;
+  final bool isFavorited;
   final String? type;
   final String? listingFor;
   final String? status;
@@ -533,6 +576,7 @@ class PropertyListing {
     required this.agentName,
     required this.location,
     this.isFeatured = false,
+    this.isFavorited = false,
     this.type,
     this.listingFor,
     this.status,
@@ -738,6 +782,7 @@ class PropertyListing {
       agentName: agentName,
       location: locationStr,
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),
       status: json['status']?.toString(),

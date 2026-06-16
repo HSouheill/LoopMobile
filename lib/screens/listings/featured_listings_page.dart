@@ -244,7 +244,7 @@ class _FeaturedListingsPageState extends State<FeaturedListingsPage> {
 
   Widget _buildPaginationControls() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

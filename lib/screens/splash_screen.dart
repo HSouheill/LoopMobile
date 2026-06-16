@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       await _controller.initialize();
       await _controller.setLooping(false);
-      await _controller.setPlaybackSpeed(1.5); // Set playback speed to 1.5x
+      await _controller.setPlaybackSpeed(2.5); // Set playback speed to 2.5x
 
       setState(() {
         _isInitialized = true;
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     } catch (e) {
       debugPrint("Video Error: $e");
-      Timer(const Duration(seconds: 2), _navigateToMain);
+      Timer(const Duration(milliseconds: 1500), _navigateToMain);
     }
   }
 
@@ -91,7 +91,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
               )
-            : const CircularProgressIndicator(color: Colors.white),
+            : const SizedBox.shrink(), // : const CircularProgressIndicator(color: Colors.white),
       ),
     );
   }

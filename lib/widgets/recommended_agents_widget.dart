@@ -17,6 +17,7 @@ class Agent {
   final int reviewCount;
   final String? customText;
   final bool isFeatured;
+  final bool isFavorited;
 
   Agent({
     required this.id,
@@ -28,6 +29,7 @@ class Agent {
     required this.reviewCount,
     this.customText,
     this.isFeatured = false,
+    this.isFavorited = false,
   });
 
   // Enhanced factory constructor for JSON parsing
@@ -43,6 +45,7 @@ class Agent {
       reviewCount: _getIntValue(json, ['reviewCount', 'review_count', 'totalReviews']) ?? 0,
       customText: _getStringValue(json, ['customText', 'custom_text', 'description', 'bio']),
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
     );
   }
 
@@ -230,31 +233,8 @@ class AgentCard extends StatefulWidget {
 }
 
 class _AgentCardState extends State<AgentCard> {
-  bool _isFavorited = false;
+  late bool _isFavorited = widget.agent.isFavorited;
   bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkFavoriteStatus();
-  }
-
-  Future<void> _checkFavoriteStatus() async {
-    try {
-      final result = await FavoriteService.checkFavorite(
-        favoritedObjectId: widget.agent.id,
-        table: 'user',
-      );
-      
-      if (mounted) {
-        setState(() {
-          _isFavorited = result['isFavorited'] ?? false;
-        });
-      }
-    } catch (e) {
-      // Error checking favorite status
-    }
-  }
 
   Future<void> _toggleFavorite() async {
     if (_isLoading) return;

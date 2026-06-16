@@ -1,15 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
+import '../../services/favorite_service.dart';
 import '../../screens/listings/single_listing_page.dart';
 
-class ListingCard extends StatelessWidget {
+class ListingCard extends StatefulWidget {
   final PropertyListing listing;
 
   const ListingCard({
     super.key,
     required this.listing,
   });
+
+  @override
+  State<ListingCard> createState() => _ListingCardState();
+}
+
+class _ListingCardState extends State<ListingCard> {
+  late bool _isFavorited = widget.listing.isFavorited;
+  bool _isLoading = false;
+
+  Future<void> _toggleFavorite() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await FavoriteService.toggleFavorite(
+        favoritedObjectId: widget.listing.id,
+        table: 'listing',
+      );
+
+      if (mounted) {
+        setState(() {
+          _isFavorited = result['isFavorited'] ?? false;
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Favorite status updated'),
+            duration: const Duration(seconds: 2),
+            backgroundColor:
+                result['success'] == true ? Colors.green : Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   String _formatTimeAgo(DateTime? dateTime) {
     if (dateTime == null) return '';
@@ -40,7 +94,7 @@ class ListingCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SingleListingPage(listing: listing),
+              builder: (context) => SingleListingPage(listing: widget.listing),
             ),
           );
         },
@@ -57,7 +111,7 @@ class ListingCard extends StatelessWidget {
                     topRight: Radius.circular(12.0),
                   ),
                   child: Image.network(
-                    listing.imageUrl,
+                    widget.listing.imageUrl,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -90,20 +144,31 @@ class ListingCard extends StatelessWidget {
                 Positioned(
                   top: 12,
                   right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.black,
-                      size: 20,
+                  child: GestureDetector(
+                    onTap: _toggleFavorite,
+                    child: Container(
+                      padding: const EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(
+                              _isFavorited
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: _isFavorited ? Colors.red : Colors.black,
+                              size: 20,
+                            ),
                     ),
                   ),
                 ),
-                if (listing.isFeatured)
+                if (widget.listing.isFeatured)
                   Positioned(
                     top: 12,
                     left: 12,
@@ -137,7 +202,7 @@ class ListingCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    listing.title,
+                    widget.listing.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -146,7 +211,7 @@ class ListingCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    listing.price,
+                    widget.listing.price,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
@@ -159,7 +224,7 @@ class ListingCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          listing.agentName,
+                          widget.listing.agentName,
                           style: const TextStyle(color: Colors.grey),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -174,7 +239,7 @@ class ListingCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          listing.location,
+                          widget.listing.location,
                           style: const TextStyle(color: Colors.blue),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -183,10 +248,10 @@ class ListingCard extends StatelessWidget {
                     ],
                   ),
                   // Time ago display below location
-                  if (listing.createdAt != null) ...[
+                  if (widget.listing.createdAt != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      _formatTimeAgo(listing.createdAt),
+                      _formatTimeAgo(widget.listing.createdAt),
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.grey[600],
@@ -194,28 +259,28 @@ class ListingCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (listing.bedrooms != null || listing.bathrooms != null) ...[
+                  if (widget.listing.bedrooms != null || widget.listing.bathrooms != null) ...[
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        if (listing.bedrooms != null) ...[
+                        if (widget.listing.bedrooms != null) ...[
                           const Icon(Icons.bed, size: 16, color: Colors.grey),
                           const SizedBox(width: 4),
                           Builder(
                             builder: (context) {
                               final l10n = AppLocalizations.of(context);
-                              return Text('${listing.bedrooms} ${l10n?.bedText ?? 'bed'}');
+                              return Text('${widget.listing.bedrooms} ${l10n?.bedText ?? 'bed'}');
                             }
                           ),
                           const SizedBox(width: 16),
                         ],
-                        if (listing.bathrooms != null) ...[
+                        if (widget.listing.bathrooms != null) ...[
                           const Icon(Icons.bathtub, size: 16, color: Colors.grey),
                           const SizedBox(width: 4),
                           Builder(
                             builder: (context) {
                               final l10n = AppLocalizations.of(context);
-                              return Text('${listing.bathrooms} ${l10n?.bathText ?? 'bath'}');
+                              return Text('${widget.listing.bathrooms} ${l10n?.bathText ?? 'bath'}');
                             }
                           ),
                         ],

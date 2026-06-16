@@ -132,12 +132,21 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   }
 
   void _openAdvancedFilters() async {
+    // Seed the filters with the category picked from the main page so it shows
+    // as chosen in the advanced filters page.
+    final initialFilters = Map<String, dynamic>.from(_currentFilters);
+    if (initialFilters['type'] == null &&
+        _currentCategory != null &&
+        _currentCategory!.isNotEmpty) {
+      initialFilters['type'] = _currentCategory;
+    }
+
     final result = await Navigator.push<Map<String, dynamic>>(
       context,
       MaterialPageRoute(
         builder: (context) => AdvancedFiltersPage(
           initialQuery: _currentQuery,
-          initialFilters: _currentFilters,
+          initialFilters: initialFilters,
         ),
       ),
     );
@@ -146,6 +155,9 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
       setState(() {
         _currentQuery = result['query'] ?? '';
         _currentFilters = result['filters'] ?? {};
+        // The filters map is now authoritative; clear the standalone category so
+        // it doesn't override (or re-apply) the type chosen in advanced filters.
+        _currentCategory = null;
         _searchController.text = _currentQuery;
       });
       _performSearch();
@@ -156,48 +168,56 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     final List<String> labels = [];
     final l10n = AppLocalizations.of(context);
 
-    // Listing For
-    if (_currentFilters['listingFor'] != null && _currentFilters['listingFor'] != 'rent') {
-      labels.add(_currentFilters['listingFor'] == 'sale' ? 'Sale' : _currentFilters['listingFor'].toString());
+    // Listing For (only set when exactly one of sale/rent is chosen; both = no chip)
+    if (_currentFilters['listingFor'] != null) {
+      labels.add(_currentFilters['listingFor'] == 'sale' ? 'Sale' : _currentFilters['listingFor'] == 'rent' ? 'Rent' : _currentFilters['listingFor'].toString());
     }
 
-    // Property Type
-    if (_currentFilters['type'] != null) {
-      final type = _currentFilters['type'].toString();
-      String typeLabel = type;
-      switch (type) {
-        case 'apartment':
-          typeLabel = l10n?.propertyTypeApartment ?? 'Apartment';
-          break;
-        case 'chalet':
-          typeLabel = l10n?.propertyTypeChalet ?? 'Chalet';
-          break;
-        case 'studio':
-          typeLabel = l10n?.propertyTypeStudio ?? 'Studio';
-          break;
-        case 'commercial':
-          typeLabel = l10n?.propertyTypeCommercial ?? 'Commercial';
-          break;
-        case 'villa':
-          typeLabel = l10n?.propertyTypeVilla ?? 'Villa';
-          break;
-        case 'land':
-          typeLabel = l10n?.propertyTypeLand ?? 'Land';
-          break;
-        case 'industrial':
-          typeLabel = l10n?.propertyTypeIndustrial ?? 'Industrial';
-          break;
-        case 'room':
-          typeLabel = l10n?.propertyTypeRoom ?? 'Room';
-          break;
-        case 'building':
-          typeLabel = l10n?.propertyTypeBuilding ?? 'Building';
-          break;
-        case 'international':
-          typeLabel = l10n?.propertyTypeInternational ?? 'International';
-          break;
+    // Property Type (may be a comma-separated list of types).
+    // Fall back to the category picked from the main page.
+    final typeFilter = _currentFilters['type'] ?? _currentCategory;
+    if (typeFilter != null) {
+      final types = typeFilter
+          .toString()
+          .split(',')
+          .map((t) => t.trim())
+          .where((t) => t.isNotEmpty);
+      for (final type in types) {
+        String typeLabel = type;
+        switch (type) {
+          case 'apartment':
+            typeLabel = l10n?.propertyTypeApartment ?? 'Apartment';
+            break;
+          case 'chalet':
+            typeLabel = l10n?.propertyTypeChalet ?? 'Chalet';
+            break;
+          case 'studio':
+            typeLabel = l10n?.propertyTypeStudio ?? 'Studio';
+            break;
+          case 'commercial':
+            typeLabel = l10n?.propertyTypeCommercial ?? 'Commercial';
+            break;
+          case 'villa':
+            typeLabel = l10n?.propertyTypeVilla ?? 'Villa';
+            break;
+          case 'land':
+            typeLabel = l10n?.propertyTypeLand ?? 'Land';
+            break;
+          case 'industrial':
+            typeLabel = l10n?.propertyTypeIndustrial ?? 'Industrial';
+            break;
+          case 'room':
+            typeLabel = l10n?.propertyTypeRoom ?? 'Room';
+            break;
+          case 'building':
+            typeLabel = l10n?.propertyTypeBuilding ?? 'Building';
+            break;
+          case 'international':
+            typeLabel = l10n?.propertyTypeInternational ?? 'International';
+            break;
+        }
+        labels.add(typeLabel);
       }
-      labels.add(typeLabel);
     }
 
     // Payment Frequency

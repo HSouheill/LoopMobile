@@ -153,6 +153,37 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     _refreshData();
   }
 
+  // Archive an active listing (from the dashboard preview).
+  Future<void> _archiveByTitle(String title) async {
+    final listing = activeListings.firstWhere(
+      (l) => l.title == title,
+      orElse: () => activeListings.first,
+    );
+    final result = await ListingService.archiveListing(listing.id);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result.message)),
+    );
+    if (result.success) await _refreshData();
+  }
+
+  // Unarchive (re-activate) an archived listing. Blocked by the backend (403)
+  // if it would exceed the plan limit — we surface that message.
+  Future<void> _unarchiveByTitle(String title) async {
+    final listing = inactiveListings.firstWhere(
+      (l) => l.title == title,
+      orElse: () => inactiveListings.first,
+    );
+    final result = await ListingService.unarchiveListing(listing.id);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(result.message)),
+    );
+    if (result.success) {
+      await _refreshData();
+    }
+  }
+
   Future<void> _deleteListingFromDashboard(String listingTitle) async {
     // Find the listing by title
     final listing = activeListings.firstWhere(
@@ -221,14 +252,29 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
     }
   }
 
-  void _editListingFromDashboard(String listingTitle) {
+  Future<void> _editListingFromDashboard(String listingTitle) async {
     // Find the listing by title
     final listing = activeListings.firstWhere(
       (l) => l.title == listingTitle,
       orElse: () => activeListings.first,
     );
 
-    // Navigate to edit listing page with the listing data
+    // Warn that editing sends the listing back for admin re-approval.
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit listing?'),
+        content: const Text(
+          'Editing this listing will send it back for admin approval, so it will be temporarily hidden until re-approved. Continue?',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Continue')),
+        ],
+      ),
+    );
+    if (proceed != true || !mounted) return;
+
     Navigator.pushNamed(
       context,
       '/add-listing-form',
@@ -628,14 +674,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                           );
                           _showListingDetails(listing);
                         },
-                        onActivate: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please wait for admin to approve your listing'),
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                        },
+                        onActivate: (title) => _unarchiveByTitle(title),
                         items: inactiveListings.map((listing) {
                           return {
                             "daysLeft": _calculateDaysLeftFromCreated(listing.createdAt),
@@ -779,6 +818,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       SnackBar(content: Text(AppLocalizations.of(context)?.boostFunctionalityNotImplemented ?? 'Boost functionality not implemented yet')),
                     );
                   },
+                  onArchive: _archiveByTitle,
                 ),
 
               const SizedBox(height: 15),

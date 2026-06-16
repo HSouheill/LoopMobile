@@ -21,8 +21,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   final _formKey = GlobalKey<FormState>();
   
   // Filter values
-  String? _selectedType;
-  String? _selectedListingFor;
+  final Set<String> _selectedTypes = {};
+  // Empty set means "both" (sale + rent), i.e. no listingFor filter is applied.
+  final Set<String> _selectedListingFors = {};
   String? _selectedCity;
   String? _selectedSort;
   double? _minPrice;
@@ -101,6 +102,12 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     'fully_furnished',
   ];
 
+  // Daily-rent Chalet hides Ownership / Floor / Furnishing / Condition.
+  bool get _isDailyRentChalet =>
+      _selectedPaymentFrequency == 'daily' &&
+      _selectedTypes.length == 1 &&
+      _selectedTypes.contains('chalet');
+
   @override
   void initState() {
     super.initState();
@@ -108,8 +115,26 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     
     // Initialize filters from initial values
     if (widget.initialFilters != null) {
-      _selectedType = widget.initialFilters!['type'];
-      _selectedListingFor = widget.initialFilters!['listingFor'];
+      final initialType = widget.initialFilters!['type'];
+      if (initialType != null) {
+        _selectedTypes.addAll(
+          initialType
+              .toString()
+              .split(',')
+              .map((t) => t.trim())
+              .where((t) => t.isNotEmpty),
+        );
+      }
+      final initialListingFor = widget.initialFilters!['listingFor'];
+      if (initialListingFor != null) {
+        _selectedListingFors.addAll(
+          initialListingFor
+              .toString()
+              .split(',')
+              .map((l) => l.trim())
+              .where((l) => l.isNotEmpty),
+        );
+      }
       _selectedCity = widget.initialFilters!['city'];
       _selectedSort = widget.initialFilters!['sort'];
       _minPrice = widget.initialFilters!['minPrice']?.toDouble();
@@ -154,9 +179,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
       if (widget.initialFilters!['security'] == true) amenities['security'] = true;
       if (widget.initialFilters!['furnished'] == true) amenities['furnished'] = true;
     } else {
-      // Set default values to null (All) when no initial filters
-      _selectedType = null;
-      _selectedListingFor = 'rent'; // Default to rent
+      // Set default values to null (All) when no initial filters.
+      // Leaving _selectedListingFors empty means "both" (sale + rent).
       _selectedCondition = null;
       _selectedSort = null;
     }
@@ -170,8 +194,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
 
   void _clearAllFilters() {
     setState(() {
-      _selectedType = null;
-      _selectedListingFor = 'rent'; // Default to rent
+      _selectedTypes.clear();
+      _selectedListingFors.clear(); // Empty = both sale + rent
       _selectedCity = null;
       _selectedSort = null;
       _minPrice = null;
@@ -196,8 +220,11 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   void _applyFilters() {
     final filters = <String, dynamic>{};
     
-    if (_selectedType != null) filters['type'] = _selectedType;
-    if (_selectedListingFor != null) filters['listingFor'] = _selectedListingFor;
+    if (_selectedTypes.isNotEmpty) filters['type'] = _selectedTypes.join(',');
+    // Only filter listingFor when exactly one is picked; empty or both means "show both".
+    if (_selectedListingFors.length == 1) {
+      filters['listingFor'] = _selectedListingFors.first;
+    }
     if (_selectedCity != null && _selectedCity!.isNotEmpty) filters['city'] = _selectedCity;
     if (_selectedSort != null) filters['sort'] = _selectedSort;
     if (_minPrice != null) filters['minPrice'] = _minPrice;
@@ -213,22 +240,25 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     }
     if (_minSize != null) filters['minSize'] = _minSize;
     if (_maxSize != null) filters['maxSize'] = _maxSize;
-    if (_selectedCondition != null) filters['condition'] = _selectedCondition;
-    if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
-      // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
-      final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
-      if (_furnishingOptions.contains(furnishingValue)) {
-        filters['furnishing'] = furnishingValue;
+    // Ownership / Floor / Furnishing / Condition don't apply to daily-rent Chalet.
+    if (!_isDailyRentChalet) {
+      if (_selectedCondition != null) filters['condition'] = _selectedCondition;
+      if (_selectedFurnishing != null && _selectedFurnishing!.isNotEmpty) {
+        // Ensure furnishing is one of the valid values: "unfurnished", "semi_furnished", "fully_furnished"
+        final furnishingValue = _selectedFurnishing!.toLowerCase().trim();
+        if (_furnishingOptions.contains(furnishingValue)) {
+          filters['furnishing'] = furnishingValue;
+        }
+      }
+      if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
+        filters['ownership'] = _selectedOwnership;
+      }
+      if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
+        filters['floor'] = _selectedFloor;
       }
     }
     if (_selectedPaymentFrequency != null && _selectedPaymentFrequency!.isNotEmpty) {
       filters['paymentFrequency'] = _selectedPaymentFrequency!.toLowerCase().trim();
-    }
-    if (_selectedOwnership != null && _selectedOwnership!.isNotEmpty) {
-      filters['ownership'] = _selectedOwnership;
-    }
-    if (_selectedFloor != null && _selectedFloor!.isNotEmpty) {
-      filters['floor'] = _selectedFloor;
     }
     
     // Collect selected amenities
@@ -324,8 +354,8 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Payment Frequency - only show for rent
-              if (_selectedListingFor == 'rent') ...[
+              // Payment Frequency - only relevant when rent is included
+              if (_selectedListingFors.isEmpty || _selectedListingFors.contains('rent')) ...[
                 _buildSectionTitle('Payment Frequency'),
                 DropdownButtonFormField<String>(
                   value: _selectedPaymentFrequency,
@@ -391,39 +421,41 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Ownership
-              _buildSectionTitle('Ownership'),
-              DropdownButtonFormField<String>(
-                value: _selectedOwnership,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Select ownership',
+              // Ownership - hidden for daily-rent Chalet
+              if (!_isDailyRentChalet) ...[
+                _buildSectionTitle('Ownership'),
+                DropdownButtonFormField<String>(
+                  value: _selectedOwnership,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select ownership',
+                  ),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'user',
+                      child: Text('Owner'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'agent-individual',
+                      child: Text('Agent'),
+                    ),
+                    const DropdownMenuItem<String>(
+                      value: 'agent-company',
+                      child: Text('Company'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedOwnership = value;
+                    });
+                  },
                 ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'user',
-                    child: Text('Owner'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'agent-individual',
-                    child: Text('Agent'),
-                  ),
-                  const DropdownMenuItem<String>(
-                    value: 'agent-company',
-                    child: Text('Company'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedOwnership = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
+              ],
 
               // Price Range
               _buildSectionTitle('Price'),
@@ -558,90 +590,93 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
               ),
               const SizedBox(height: 16.0),
 
-              // Floor
-              _buildSectionTitle('Floor'),
-              DropdownButtonFormField<String>(
-                value: _selectedFloor,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Select floor',
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+              // Floor / Condition / Furnishing - hidden for daily-rent Chalet
+              if (!_isDailyRentChalet) ...[
+                // Floor
+                _buildSectionTitle('Floor'),
+                DropdownButtonFormField<String>(
+                  value: _selectedFloor,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Select floor',
                   ),
-                  ...List.generate(16, (index) {
-                    final floorValue = index - 5; // -5 to 10
-                    final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
-                    final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
-                    return DropdownMenuItem<String>(
-                      value: backendValue,
-                      child: Text(displayValue),
-                    );
-                  }),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedFloor = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ...List.generate(16, (index) {
+                      final floorValue = index - 5; // -5 to 10
+                      final displayValue = floorValue == 10 ? '10+' : floorValue.toString();
+                      final backendValue = floorValue == 10 ? '10+' : floorValue.toString();
+                      return DropdownMenuItem<String>(
+                        value: backendValue,
+                        child: Text(displayValue),
+                      );
+                    }),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFloor = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
 
-              // Condition
-              _buildSectionTitle('Condition'),
-              DropdownButtonFormField<String>(
-                value: _selectedCondition,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+                // Condition
+                _buildSectionTitle('Condition'),
+                DropdownButtonFormField<String>(
+                  value: _selectedCondition,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                   ),
-                  ..._conditionOptions.map((condition) {
-                    return DropdownMenuItem(
-                      value: condition,
-                      child: Text(_formatConditionLabel(condition)),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCondition = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ..._conditionOptions.map((condition) {
+                      return DropdownMenuItem(
+                        value: condition,
+                        child: Text(_formatConditionLabel(condition)),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCondition = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
 
-              // Furnishing
-              _buildSectionTitle('Furnishing'),
-              DropdownButtonFormField<String>(
-                value: _selectedFurnishing,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                items: [
-                  const DropdownMenuItem<String>(
-                    value: null,
-                    child: Text('All'),
+                // Furnishing
+                _buildSectionTitle('Furnishing'),
+                DropdownButtonFormField<String>(
+                  value: _selectedFurnishing,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
                   ),
-                  ..._furnishingOptions.map((furnishing) {
-                    return DropdownMenuItem(
-                      value: furnishing,
-                      child: Text(_formatFurnishingLabel(furnishing)),
-                    );
-                  }).toList(),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedFurnishing = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: null,
+                      child: Text('All'),
+                    ),
+                    ..._furnishingOptions.map((furnishing) {
+                      return DropdownMenuItem(
+                        value: furnishing,
+                        child: Text(_formatFurnishingLabel(furnishing)),
+                      );
+                    }).toList(),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFurnishing = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+              ],
 
               // Amenities - using FilterChips like add_listing_form_page.dart
               _buildSectionTitle('Amenities'),
@@ -913,7 +948,9 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     required String label,
     required IconData icon,
   }) {
-    final isSelected = _selectedType == type;
+    // `type == null` represents the "All" bubble, selected when nothing is picked.
+    final isSelected =
+        type == null ? _selectedTypes.isEmpty : _selectedTypes.contains(type);
     // Keep same gradient colors for both selected and unselected
     final gradientColors = [
       const Color.fromARGB(255, 103, 155, 218),
@@ -926,7 +963,14 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedType = type;
+          if (type == null) {
+            // "All" clears every selected type
+            _selectedTypes.clear();
+          } else if (_selectedTypes.contains(type)) {
+            _selectedTypes.remove(type);
+          } else {
+            _selectedTypes.add(type);
+          }
         });
       },
       child: Column(
@@ -968,14 +1012,20 @@ class _AdvancedFiltersPageState extends State<AdvancedFiltersPage> {
   }
 
   Widget _buildListingForButton(String value, String label) {
-    final isSelected = _selectedListingFor == value;
+    final isSelected = _selectedListingFors.contains(value);
 
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedListingFor = value;
-          // Clear payment frequency when switching to sale (not applicable)
-          if (value == 'sale') {
+          // Toggle so both sale and rent can be selected together.
+          if (_selectedListingFors.contains(value)) {
+            _selectedListingFors.remove(value);
+          } else {
+            _selectedListingFors.add(value);
+          }
+          // Clear payment frequency if rent is no longer selected
+          if (_selectedListingFors.isNotEmpty &&
+              !_selectedListingFors.contains('rent')) {
             _selectedPaymentFrequency = null;
           }
         });
