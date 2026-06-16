@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/subscription_service.dart';
 import '../screens/payments/checkout_webview_page.dart';
+import '../screens/payments/whish_webview_page.dart';
 import 'profile_widgets/dynamic_gradient_button.dart';
 
 /// Modal dialog for subscribing/unsubscribing to plans
@@ -78,7 +79,8 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
     );
   }
 
-  Future<void> _handleSubscribe() async {
+  // Pay with a card via CyberSource Unified Checkout.
+  Future<void> _payWithCard() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -130,6 +132,66 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
 
       // Step 3: confirm + capture on the server, which activates the plan.
       await SubscriptionService.confirmCheckout(sessionId, result.transientToken!);
+      _success();
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+        _isLoading = false;
+      });
+    }
+  }
+
+  // Pay with Whish (balance, phone + OTP) via the Whish hosted page.
+  Future<void> _payWithWhish() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final checkout = await SubscriptionService.createWhishCheckout(widget.planId);
+
+      if (checkout['free'] == true) {
+        _success();
+        return;
+      }
+
+      final collectUrl = checkout['collectUrl'] as String;
+      final sessionId = checkout['paymentSessionId'] as String;
+      final amount = checkout['amount'] ?? 0;
+      final planName = (checkout['planName'] ?? widget.planName).toString();
+
+      if (!mounted) return;
+
+      // Open the Whish hosted page; it redirects to our landing URL when done.
+      final result = await Navigator.of(context).push<WhishResult>(
+        MaterialPageRoute(
+          builder: (_) => WhishWebViewPage(
+            collectUrl: collectUrl,
+            planName: planName,
+            amount: amount is num ? amount : num.tryParse('$amount') ?? 0,
+          ),
+        ),
+      );
+
+      if (result == null || result.cancelled) {
+        setState(() {
+          _errorMessage = 'Payment cancelled.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Verify with the backend regardless of redirect flag (backend asks Whish
+      // "Get Status" and activates only on confirmed success).
+      final confirm = await SubscriptionService.confirmWhish(sessionId);
+      if (confirm['pending'] == true) {
+        setState(() {
+          _errorMessage = 'Payment is still processing. Please check again shortly.';
+          _isLoading = false;
+        });
+        return;
+      }
       _success();
     } catch (e) {
       setState(() {
@@ -233,21 +295,36 @@ class _SubscribeDialogState extends State<_SubscribeDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
-          child: Text(
-            'Cancel',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DynamicGradientButton(
+              buttonText: _isLoading ? 'Processing...' : 'Pay with Card',
+              onTap: _isLoading ? null : _payWithCard,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              textSize: 14,
             ),
-          ),
-        ),
-        DynamicGradientButton(
-          buttonText: _isLoading ? 'Processing...' : 'Continue to payment',
-          onTap: _isLoading ? null : _handleSubscribe,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textSize: 14,
+            const SizedBox(height: 8),
+            DynamicGradientButton(
+              buttonText: _isLoading ? 'Processing...' : 'Pay with Whish',
+              onTap: _isLoading ? null : _payWithWhish,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              textSize: 14,
+              useGradient: false,
+              backgroundColor: const Color(0xFFE5006E), // Whish pink
+              textColor: Colors.white,
+            ),
+            const SizedBox(height: 4),
+            Center(
+              child: TextButton(
+                onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

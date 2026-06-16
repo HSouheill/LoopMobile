@@ -170,6 +170,50 @@ class SubscriptionService {
     throw Exception(data['message'] ?? 'Payment could not be confirmed');
   }
 
+  /// Whish step 1: create a Whish payment session. Returns the parsed response;
+  /// for a free plan response['free'] == true (already activated).
+  static Future<Map<String, dynamic>> createWhishCheckout(String planId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/whish/create'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'planId': planId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start Whish checkout');
+  }
+
+  /// Whish step 2: after the Whish WebView returns, verify + activate.
+  /// Returns the parsed response. A 202 (pending) is returned as {pending:true}.
+  static Future<Map<String, dynamic>> confirmWhish(String paymentSessionId) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}subscriptions/whish/confirm'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'paymentSessionId': paymentSessionId}),
+    );
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
   /// Recharge the service-provider 30-day plan (+30 days).
   static Future<Map<String, dynamic>?> rechargeServicePlan() async {
     try {
