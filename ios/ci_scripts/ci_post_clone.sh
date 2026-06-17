@@ -1,8 +1,9 @@
 #!/bin/sh
 set -e
 
-# Install Flutter
-git clone https://github.com/flutter/flutter.git -b stable $HOME/flutter
+# Install Flutter (pinned to the version verified locally to avoid stable-channel regressions)
+git clone https://github.com/flutter/flutter.git $HOME/flutter
+git -C $HOME/flutter checkout 3.41.9
 export PATH="$PATH:$HOME/flutter/bin"
 
 # Pre-cache iOS artifacts
