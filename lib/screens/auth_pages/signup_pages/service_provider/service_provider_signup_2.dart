@@ -4,6 +4,7 @@ import '../../../../widgets/country_picker_button.dart';
 import 'dart:convert';
 import '../../../../environment.dart';
 import '../../../../widgets/terms_privacy_agreement.dart';
+import '../../../../widgets/category_picker_field.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 
 class ServiceProviderSignupPage2 extends StatefulWidget {
@@ -21,6 +22,8 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
   String _selectedCity = '';
   String _selectedCountryCode = '+961';
   String _selectedCountryFlag = '🇱🇧';
+  CategorySelection? _selectedCategory;
+  String? _categoryError;
 
   @override
   void initState() {
@@ -54,6 +57,10 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
   Future<void> _completeSignup() async {
     if (_formKey.currentState!.validate()) {
       final l10n = AppLocalizations.of(context)!;
+      if (_selectedCategory == null) {
+        setState(() => _categoryError = l10n.required);
+        return;
+      }
       if (!_isAgreedToTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -82,6 +89,10 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
             'governance': 'Central Government',
             'district': _selectedDistrict,
             'city': _selectedCity,
+            if (_selectedCategory?.categoryKey != null)
+              'categoryKey': _selectedCategory!.categoryKey,
+            if (_selectedCategory?.customCategory != null)
+              'customCategory': _selectedCategory!.customCategory,
           }),
         );
 
@@ -313,8 +324,22 @@ class _ServiceProviderSignupPage2State extends State<ServiceProviderSignupPage2>
                             ),
                           ),
                           const SizedBox(height: 16),
-                          
-                          
+
+                          // Select Category
+                          CategoryPickerField(
+                            value: _selectedCategory,
+                            isRequired: true,
+                            errorText: _categoryError,
+                            onChanged: (selection) {
+                              setState(() {
+                                _selectedCategory = selection;
+                                _categoryError = null;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+
+
                           // Select City
                           Container(
                             decoration: BoxDecoration(

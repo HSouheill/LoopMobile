@@ -88,6 +88,8 @@ class User {
   final String? profileImage; // Add this field
   final String? portfolioLink; // Add portfolio link field
   final String? companyName; // Add company name field
+  final String? category; // Service-provider category display label
+  final String? categoryKey; // Service-provider category slug
   final UserOptions? options; // Add options field
   final bool hasListing; // Add hasListing field
 
@@ -104,6 +106,8 @@ class User {
     this.profileImage, // Add this parameter
     this.portfolioLink, // Add portfolio link parameter
     this.companyName, // Add company name parameter
+    this.category, // Service-provider category label
+    this.categoryKey, // Service-provider category slug
     this.options, // Add options parameter
     this.hasListing = false, // Default to false
   });
@@ -138,6 +142,8 @@ class User {
       profileImage: json['profileImage'],
       portfolioLink: json['portfolioLink'],
       companyName: json['companyName'],
+      category: json['category'],
+      categoryKey: json['categoryKey'],
       options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
       hasListing: _parseBool(json['hasListing']) ?? false, // Default to false if not present
     );
@@ -167,6 +173,8 @@ class User {
       'profileImage': profileImage, // Add this line
       'portfolioLink': portfolioLink, // Add portfolio link
       'companyName': companyName, // Add company name
+      'category': category,
+      'categoryKey': categoryKey,
       'options': options?.toJson(),
       'hasListing': hasListing,
     };
@@ -186,6 +194,8 @@ class User {
     String? profileImage,
     String? portfolioLink,
     String? companyName,
+    String? category,
+    String? categoryKey,
     UserOptions? options,
     bool? hasListing,
   }) {
@@ -202,6 +212,8 @@ class User {
       profileImage: profileImage ?? this.profileImage,
       portfolioLink: portfolioLink ?? this.portfolioLink,
       companyName: companyName ?? this.companyName,
+      category: category ?? this.category,
+      categoryKey: categoryKey ?? this.categoryKey,
       options: options ?? this.options,
       hasListing: hasListing ?? this.hasListing,
     );
