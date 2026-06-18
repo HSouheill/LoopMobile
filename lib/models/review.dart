@@ -1,6 +1,22 @@
 // Import PropertyListing from listing_service.dart
 import '../services/listing_service.dart';
 
+/// Parses [raw] into a list of [T] using [fromItem]. Anything that isn't a
+/// list yields an empty list, and any single entry that fails to parse is
+/// skipped — so malformed nested data can never throw out of a model's fromJson.
+List<T> _parseList<T>(dynamic raw, T Function(dynamic item) fromItem) {
+  if (raw is! List) return <T>[];
+  final out = <T>[];
+  for (final item in raw) {
+    try {
+      out.add(fromItem(item));
+    } catch (_) {
+      // Skip the bad entry rather than failing the whole parse.
+    }
+  }
+  return out;
+}
+
 class Review {
   final String id;
   final String reviewedObjectId;
@@ -95,6 +111,10 @@ class AgentWithListingsAndReviews {
   final String? profileImage;
   final bool isFeatured;
   final String? description;
+  final String? city;
+  final String? district;
+  final String? governance;
+  final String? country;
   final double averageRating;
   final int reviewCount;
   final int propertyCount;
@@ -112,6 +132,10 @@ class AgentWithListingsAndReviews {
     this.profileImage,
     required this.isFeatured,
     this.description,
+    this.city,
+    this.district,
+    this.governance,
+    this.country,
     required this.averageRating,
     required this.reviewCount,
     required this.propertyCount,
@@ -131,35 +155,45 @@ class AgentWithListingsAndReviews {
       profileImage: json['profileImage']?.toString(),
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
       description: json['description']?.toString(),
+      city: json['city']?.toString(),
+      district: json['district']?.toString(),
+      governance: json['governance']?.toString(),
+      country: json['country']?.toString(),
       averageRating: (json['averageRating'] ?? 0.0).toDouble(),
       reviewCount: (json['reviewCount'] ?? 0).toInt(),
       propertyCount: (json['propertyCount'] ?? 0).toInt(),
-      reviews: (json['reviews'] as List<dynamic>? ?? [])
-          .map((review) => Review.fromJson(review))
-          .toList(),
-      listings: (json['listings'] as List<dynamic>? ?? [])
-          .map((listing) {
-            // The agent API often returns listings without a populated owner object.
-            // Inject the agent's own data so SingleListingPage can show their picture.
-            final listingMap = Map<String, dynamic>.from(listing as Map<String, dynamic>);
-            final existingOwner = listingMap['owner'] is Map<String, dynamic>
-                ? Map<String, dynamic>.from(listingMap['owner'] as Map<String, dynamic>)
-                : <String, dynamic>{};
-            if (existingOwner['profileImage'] == null) {
-              existingOwner['_id'] ??= json['_id'];
-              existingOwner['firstName'] ??= json['firstName'];
-              existingOwner['lastName'] ??= json['lastName'];
-              existingOwner['email'] ??= json['email'];
-              existingOwner['phone'] ??= json['phone'];
-              existingOwner['profileImage'] = json['profileImage'];
-              listingMap['owner'] = existingOwner;
-            }
-            return PropertyListing.fromJson(listingMap);
-          })
-          .toList(),
-      socialLinks: (json['socialLinks'] as List<dynamic>? ?? [])
-          .map((link) => SocialLink.fromJson(link))
-          .toList(),
+      // Each nested list is parsed defensively: a non-list value, or a single
+      // malformed entry, is skipped rather than thrown so it can never take down
+      // the whole agent page.
+      reviews: _parseList<Review>(
+        json['reviews'],
+        (item) => Review.fromJson(item as Map<String, dynamic>),
+      ),
+      listings: _parseList<PropertyListing>(
+        json['listings'],
+        (item) {
+          // The agent API often returns listings without a populated owner object.
+          // Inject the agent's own data so SingleListingPage can show their picture.
+          final listingMap = Map<String, dynamic>.from(item as Map<String, dynamic>);
+          final existingOwner = listingMap['owner'] is Map<String, dynamic>
+              ? Map<String, dynamic>.from(listingMap['owner'] as Map<String, dynamic>)
+              : <String, dynamic>{};
+          if (existingOwner['profileImage'] == null) {
+            existingOwner['_id'] ??= json['_id'];
+            existingOwner['firstName'] ??= json['firstName'];
+            existingOwner['lastName'] ??= json['lastName'];
+            existingOwner['email'] ??= json['email'];
+            existingOwner['phone'] ??= json['phone'];
+            existingOwner['profileImage'] = json['profileImage'];
+            listingMap['owner'] = existingOwner;
+          }
+          return PropertyListing.fromJson(listingMap);
+        },
+      ),
+      socialLinks: _parseList<SocialLink>(
+        json['socialLinks'],
+        (item) => SocialLink.fromJson(item as Map<String, dynamic>),
+      ),
     );
   }
 

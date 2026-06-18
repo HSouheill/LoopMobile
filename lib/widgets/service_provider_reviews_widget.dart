@@ -161,16 +161,29 @@ class _ServiceProviderReviewsWidgetState extends State<ServiceProviderReviewsWid
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Profile Image
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: review.userProfileImage.isNotEmpty
-                    ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
-                    : null,
-                child: review.userProfileImage.isEmpty
-                    ? const Icon(Icons.person, color: Colors.grey, size: 20)
-                    : null,
+              // Profile Image.
+              // CircleAvatar.backgroundImage has no error callback, so a failed
+              // load throws uncaught (harmless red box in debug, but can crash a
+              // release build on Android). Use Image.network with an errorBuilder
+              // inside a ClipOval so a missing avatar falls back to the icon.
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: ClipOval(
+                  child: Container(
+                    color: Colors.grey[300],
+                    child: review.userProfileImage.isNotEmpty
+                        ? Image.network(
+                            '${Environment.apiUrl}assets/${review.userProfileImage}',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.person, color: Colors.grey, size: 20),
+                          )
+                        : const Icon(Icons.person, color: Colors.grey, size: 20),
+                  ),
+                ),
               ),
               
               const SizedBox(width: 12),

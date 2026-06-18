@@ -38,17 +38,30 @@ class ReviewCardWidget extends StatelessWidget {
           // Header with user info and rating
           Row(
             children: [
-              // User profile image
+              // User profile image.
+              // CircleAvatar.backgroundImage has no error callback, so a failed
+              // load throws uncaught (harmless red box in debug, but can crash a
+              // release build on Android). Use Image.network with an errorBuilder
+              // inside a ClipOval so a missing avatar falls back to the icon.
               if (showUserInfo) ...[
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.grey[300],
-                  backgroundImage: review.userProfileImage.isNotEmpty
-                      ? NetworkImage('${Environment.apiUrl}assets/${review.userProfileImage}')
-                      : null,
-                  child: review.userProfileImage.isEmpty
-                      ? const Icon(Icons.person, color: Colors.grey)
-                      : null,
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: ClipOval(
+                    child: Container(
+                      color: Colors.grey[300],
+                      child: review.userProfileImage.isNotEmpty
+                          ? Image.network(
+                              '${Environment.apiUrl}assets/${review.userProfileImage}',
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.person, color: Colors.grey),
+                            )
+                          : const Icon(Icons.person, color: Colors.grey),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
               ],

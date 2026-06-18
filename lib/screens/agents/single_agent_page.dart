@@ -29,6 +29,21 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
   bool _isLoading = true;
   String? _error;
 
+  // Service areas derived from the agent's own location fields (city, district,
+  // governance, country). Falls back to the list-card location string while the
+  // by-id data is still loading. Returns "" when nothing is available so the
+  // caller can hide the row entirely.
+  String get _serviceAreas {
+    final parts = <String?>[
+      _agentData?.city,
+      _agentData?.district,
+      _agentData?.governance,
+      _agentData?.country,
+    ].where((p) => p != null && p.trim().isNotEmpty).map((p) => p!.trim()).toList();
+    if (parts.isNotEmpty) return parts.join(', ');
+    return widget.agent.location.trim();
+  }
+
   // Get all images from the agent (for now just the profile image, but can be extended)
   List<String> get _allImages {
     if (widget.agent.imageUrl.isNotEmpty) {
@@ -525,17 +540,25 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        _buildDetailRow(
-                          icon: Icons.email,
-                          label: AppLocalizations.of(context)?.emailAgent ?? 'Email:',
-                          value: 'johnsmith@email.com',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildDetailRow(
-                          icon: Icons.map,
-                          label: AppLocalizations.of(context)?.serviceAreas ?? 'Service Areas:',
-                          value: 'Beirut, Baabda, Keserwan, Metn',
-                        ),
+                        // Email — pull the real value from the loaded agent data.
+                        // While loading (or if it failed to load) we simply omit
+                        // the row instead of showing a hardcoded placeholder.
+                        if ((_agentData?.email.isNotEmpty ?? false)) ...[
+                          _buildDetailRow(
+                            icon: Icons.email,
+                            label: AppLocalizations.of(context)?.emailAgent ?? 'Email:',
+                            value: _agentData!.email,
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        // Service areas — derive from the agent's own location
+                        // fields rather than a hardcoded list.
+                        if (_serviceAreas.isNotEmpty)
+                          _buildDetailRow(
+                            icon: Icons.map,
+                            label: AppLocalizations.of(context)?.serviceAreas ?? 'Service Areas:',
+                            value: _serviceAreas,
+                          ),
                       ],
                     ),
 

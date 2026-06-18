@@ -20,51 +20,29 @@ class AgentService {
         headers: AuthService.getAuthHeaders(),
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        // Endpoint shape: { user: {...} }. Fall back to a bare object just in case.
-        final agentData = (data['user'] ?? data) as Map<String, dynamic>;
-        if (agentData.isEmpty || agentData['_id'] == null) {
-          throw Exception('No agent data found in response');
-        }
-        return AgentWithListingsAndReviews.fromJson(agentData);
-      } else {
+      if (response.statusCode != 200) {
         throw Exception('Failed to load agent: ${response.statusCode}');
       }
-    } catch (e) {
-      // If the by-id call fails, fall back to the legacy direct approach.
-      try {
-        return await _getAgentDirectly(agentId);
-      } catch (directError) {
-        throw Exception('Error fetching agent: $e');
-      }
-    }
-  }
 
-  static Future<AgentWithListingsAndReviews> _getAgentDirectly(String agentId) async {
-    try {
-      // Try direct agent endpoint if it exists
-      final url = Uri.parse('${Environment.apiUrl}users/$agentId?withReviews=true&withListings=true');
-      final response = await http.get(
-        url,
-        headers: AuthService.getAuthHeaders(),
-      );
-      
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['users'] != null && data['users'].isNotEmpty) {
-          return AgentWithListingsAndReviews.fromJson(data['users'][0]);
-        } else if (data['_id'] != null) {
-          // If it's a single agent object
-          return AgentWithListingsAndReviews.fromJson(data);
-        } else {
-          throw Exception('No agent data found');
-        }
-      } else {
-        throw Exception('Failed to load agent directly: ${response.statusCode}');
+      // The body should be JSON. Behind the prod nginx proxy a misconfig (or an
+      // error page) can return HTML, which would make json.decode throw with a
+      // confusing FormatException — guard against that with a clear message.
+      dynamic data;
+      try {
+        data = json.decode(response.body);
+      } on FormatException {
+        throw Exception(
+            'Server returned a non-JSON response while loading the agent.');
       }
+
+      // Endpoint shape: { user: {...} }. Fall back to a bare object just in case.
+      final raw = (data is Map && data['user'] != null) ? data['user'] : data;
+      if (raw is! Map<String, dynamic> || raw['_id'] == null) {
+        throw Exception('No agent data found in response');
+      }
+      return AgentWithListingsAndReviews.fromJson(raw);
     } catch (e) {
-      throw Exception('Error fetching agent directly: $e');
+      throw Exception('Error fetching agent: $e');
     }
   }
 
