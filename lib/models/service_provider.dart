@@ -14,6 +14,8 @@ class ServiceProvider {
   final String governance;
   final String district;
   final String city;
+  final String? category;
+  final String? categoryKey;
   final bool isFeatured;
   final DateTime createdAt;
   final String referralCode;
@@ -39,6 +41,8 @@ class ServiceProvider {
     required this.governance,
     required this.district,
     required this.city,
+    this.category,
+    this.categoryKey,
     required this.isFeatured,
     required this.createdAt,
     required this.referralCode,
@@ -66,6 +70,8 @@ class ServiceProvider {
       governance: json['governance']?.toString() ?? '',
       district: json['district']?.toString() ?? '',
       city: json['city']?.toString() ?? '',
+      category: json['category']?.toString(),
+      categoryKey: json['categoryKey']?.toString(),
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
       createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
       referralCode: json['referralCode']?.toString() ?? '',
@@ -278,6 +284,8 @@ class ServiceProviderWithReviews {
   final String governance;
   final String district;
   final String city;
+  final String? category;
+  final String? categoryKey;
   final bool isFeatured;
   final DateTime createdAt;
   final String referralCode;
@@ -302,6 +310,8 @@ class ServiceProviderWithReviews {
     required this.governance,
     required this.district,
     required this.city,
+    this.category,
+    this.categoryKey,
     required this.isFeatured,
     required this.createdAt,
     required this.referralCode,
@@ -333,6 +343,8 @@ class ServiceProviderWithReviews {
       governance: json['governance']?.toString() ?? '',
       district: json['district']?.toString() ?? '',
       city: json['city']?.toString() ?? '',
+      category: json['category']?.toString(),
+      categoryKey: json['categoryKey']?.toString(),
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
       createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
       referralCode: json['referralCode']?.toString() ?? '',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../widgets/edit_category_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:loopflutter/l10n/app_localizations.dart';
@@ -118,6 +119,11 @@ class _ServiceProviderIndividualDashboardPageState
 
                 // Verification status banner
                 VerificationBanner(agentInfo: agentInfo),
+
+                // Category (view + edit)
+                EditCategoryTile(
+                  onUpdated: (_) => setState(() {}),
+                ),
 
                 // ✅ Active Plan section (uses subscription API)
                 ActivePlanWidget(key: _activePlanKey),

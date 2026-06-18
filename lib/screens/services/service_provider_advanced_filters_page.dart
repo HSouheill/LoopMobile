@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../search/city_selection_page.dart';
+import '../../widgets/category_picker_field.dart';
 
 class ServiceProviderAdvancedFiltersPage extends StatefulWidget {
   final String initialQuery;
@@ -24,6 +25,7 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
   String? _selectedCity;
   String? _selectedDistrict;
   String? _selectedSort;
+  CategorySelection? _selectedCategory;
 
   final List<String> _districts = [
     'Beirut',
@@ -55,6 +57,14 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
       _selectedCity = widget.initialFilters!['city'];
       _selectedDistrict = widget.initialFilters!['district'];
       _selectedSort = widget.initialFilters!['sort'];
+      final catKey = widget.initialFilters!['categoryKey']?.toString();
+      if (catKey != null && catKey.isNotEmpty) {
+        _selectedCategory = CategorySelection(
+          categoryKey: catKey,
+          displayLabel:
+              widget.initialFilters!['categoryLabel']?.toString() ?? catKey,
+        );
+      }
     }
   }
 
@@ -70,6 +80,7 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
       _selectedCity = null;
       _selectedDistrict = null;
       _selectedSort = null;
+      _selectedCategory = null;
     });
   }
 
@@ -88,6 +99,10 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
     }
     if (_selectedCity != null && _selectedCity!.isNotEmpty) filters['city'] = _selectedCity;
     if (_selectedDistrict != null && _selectedDistrict!.isNotEmpty) filters['district'] = _selectedDistrict;
+    if (_selectedCategory?.categoryKey != null) {
+      filters['categoryKey'] = _selectedCategory!.categoryKey;
+      filters['categoryLabel'] = _selectedCategory!.displayLabel;
+    }
     // Use featured_first as default, or the selected sort option
     filters['sort'] = _selectedSort ?? 'featured_first';
 
@@ -212,6 +227,20 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
                   setState(() {
                     _selectedDistrict = value;
                   });
+                },
+              ),
+              const SizedBox(height: 16.0),
+
+              // Category (single-select; base/approved categories only)
+              _buildSectionTitle('Category'),
+              CategoryPickerField(
+                value: _selectedCategory,
+                hintText: 'All',
+                allowCustom: false,
+                filled: false,
+                onClear: () => setState(() => _selectedCategory = null),
+                onChanged: (selection) {
+                  setState(() => _selectedCategory = selection);
                 },
               ),
               const SizedBox(height: 16.0),

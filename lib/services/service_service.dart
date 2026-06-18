@@ -481,6 +481,7 @@ class ServiceService {
     bool withReviews = false,
     String? providerType,
     String? role,
+    String? categoryKey,
   }) async {
     try {
       // Use featured_first sort unless filtering by isFeatured (all would be featured)
@@ -503,6 +504,7 @@ class ServiceService {
         if (isFeatured != null) 'isFeatured': isFeatured.toString(),
         if (role != null) 'role': role,
         if (role == null && providerType != null) 'providerType': providerType,
+        if (categoryKey != null) 'categoryKey': categoryKey,
       };
       
       final uri = Uri.parse('$baseUrl/search-service-providers').replace(queryParameters: queryParams);

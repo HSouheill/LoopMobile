@@ -475,6 +475,28 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
                                   color: Colors.white,
                                 ),
                               ),
+                              // Category subtitle directly under the title.
+                              Builder(
+                                builder: (_) {
+                                  final category =
+                                      _serviceProviderData?.category ??
+                                          widget.serviceProvider.category;
+                                  if (category == null || category.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      category,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                               const SizedBox(height: 4),
                               Row(
                                 children: [
