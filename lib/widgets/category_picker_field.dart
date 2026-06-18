@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/category_service.dart';
 
@@ -33,6 +34,10 @@ class CategoryPickerField extends StatelessWidget {
   // When true, shows a "clear" affordance — used by the filter page where the
   // category is optional.
   final VoidCallback? onClear;
+  // Visual style. true (default) = grey-filled, matching the signup form fields.
+  // false = white outlined, matching the District/City/Sort dropdowns on the
+  // advanced-filters page.
+  final bool filled;
 
   const CategoryPickerField({
     super.key,
@@ -43,28 +48,35 @@ class CategoryPickerField extends StatelessWidget {
     this.errorText,
     this.allowCustom = true,
     this.onClear,
+    this.filled = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Outlined variant matches the District/City/Sort dropdowns on the filter
+    // page; filled variant matches the grey signup form fields.
+    final Color borderColor = errorText != null
+        ? Colors.red
+        : (filled ? Colors.grey[200]! : Colors.grey.shade400);
+    final Color iconColor = filled ? Colors.grey[400]! : Colors.grey.shade600;
+    final Color hintColor = filled ? Colors.grey[400]! : Colors.grey.shade600;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: errorText != null ? Colors.red : Colors.grey[200]!,
-            ),
+            color: filled ? Colors.grey[50] : Colors.transparent,
+            borderRadius: BorderRadius.circular(filled ? 12 : 4),
+            border: Border.all(color: borderColor),
           ),
           child: ListTile(
-            leading: Icon(Icons.category_outlined, color: Colors.grey[400]),
+            leading: Icon(Icons.category_outlined, color: iconColor),
             title: Text(
               value?.displayLabel ?? hintText,
               style: TextStyle(
                 fontSize: 16,
-                color: value == null ? Colors.grey[400] : Colors.black87,
+                color: value == null ? hintColor : Colors.black87,
               ),
             ),
             trailing: (value != null && onClear != null)
@@ -72,7 +84,7 @@ class CategoryPickerField extends StatelessWidget {
                     icon: Icon(Icons.clear, color: Colors.grey[500]),
                     onPressed: onClear,
                   )
-                : Icon(Icons.arrow_drop_down, color: Colors.grey[400]),
+                : Icon(Icons.arrow_drop_down, color: iconColor),
             onTap: () async {
               final result = await Navigator.push<CategorySelection>(
                 context,
@@ -127,6 +139,12 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   String? _error;
   String _query = '';
 
+  // Debounce typing so we don't fire a request per keystroke, and a request
+  // generation counter so a slow earlier response can't overwrite a newer one.
+  Timer? _debounce;
+  int _requestSeq = 0;
+  static const Duration _debounceDelay = Duration(milliseconds: 350);
+
   @override
   void initState() {
     super.initState();
@@ -136,6 +154,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchCtrl.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -149,6 +168,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   }
 
   Future<void> _load({bool reset = false}) async {
+    final seq = ++_requestSeq;
     setState(() {
       _loading = true;
       _error = null;
@@ -164,12 +184,15 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
         page: _page,
         limit: 20,
       );
+      // Drop the response if a newer request (or a load-more) has started.
+      if (seq != _requestSeq || !mounted) return;
       setState(() {
         _items.addAll(result.categories);
         _hasMore = _page < result.pages;
         _loading = false;
       });
     } catch (e) {
+      if (seq != _requestSeq || !mounted) return;
       setState(() {
         _error = e.toString();
         _loading = false;
@@ -201,9 +224,15 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   }
 
   void _onSearchChanged(String q) {
-    _query = q.trim();
-    // Simple debounce via microtask-free reset; reload from page 1.
-    _load(reset: true);
+    final next = q.trim();
+    // Debounce: only fire after the user pauses typing, and skip if the query
+    // didn't actually change.
+    _debounce?.cancel();
+    _debounce = Timer(_debounceDelay, () {
+      if (next == _query) return;
+      _query = next;
+      _load(reset: true);
+    });
   }
 
   void _pickOption(CategoryOption opt) {

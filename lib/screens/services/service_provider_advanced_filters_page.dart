@@ -237,6 +237,7 @@ class _ServiceProviderAdvancedFiltersPageState extends State<ServiceProviderAdva
                 value: _selectedCategory,
                 hintText: 'All',
                 allowCustom: false,
+                filled: false,
                 onClear: () => setState(() => _selectedCategory = null),
                 onChanged: (selection) {
                   setState(() => _selectedCategory = selection);
