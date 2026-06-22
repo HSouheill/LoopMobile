@@ -25,6 +25,7 @@ dependencies:
   uuid: ^4.4.0
   socket_io_client: ^2.0.3+1
   font_awesome_flutter: ^11.0.0
+  flutter_svg: ^2.0.10+1
   video_player: ^2.8.2
   geolocator: ^11.0.0
   geocoding: ^3.0.0
@@ -59,6 +60,8 @@ flutter:
     - assets/premium.png
     - assets/standard.png
     - assets/animation.mp4
+    # Brand logos for agent/service-provider social links (tinted SVGs).
+    - assets/social_icons/
   #   - images/a_dot_ham.jpeg
 
 dependency_overrides:

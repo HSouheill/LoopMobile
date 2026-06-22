@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../utils/social_icons.dart';
 import '../../widgets/recommended_agents_widget.dart';
 import '../../widgets/agent_listings_reviews_widget.dart';
 import '../../models/review.dart';
@@ -28,6 +28,21 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
   AgentWithListingsAndReviews? _agentData;
   bool _isLoading = true;
   String? _error;
+
+  // Service areas derived from the agent's own location fields (city, district,
+  // governance, country). Falls back to the list-card location string while the
+  // by-id data is still loading. Returns "" when nothing is available so the
+  // caller can hide the row entirely.
+  String get _serviceAreas {
+    final parts = <String?>[
+      _agentData?.city,
+      _agentData?.district,
+      _agentData?.governance,
+      _agentData?.country,
+    ].where((p) => p != null && p.trim().isNotEmpty).map((p) => p!.trim()).toList();
+    if (parts.isNotEmpty) return parts.join(', ');
+    return widget.agent.location.trim();
+  }
 
   // Get all images from the agent (for now just the profile image, but can be extended)
   List<String> get _allImages {
@@ -436,23 +451,22 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                                 // Phone call icon
                                 if (_agentData?.phone.isNotEmpty == true)
                                   _socialIcon(
-                                    icon: Icons.phone,
                                     color: Colors.green,
                                     onTap: () => _makePhoneCall(_agentData!.phone),
+                                    child: const Icon(Icons.phone,
+                                        color: Colors.green, size: 24),
                                   ),
                                 if (_agentData?.phone.isNotEmpty == true)
                                   const SizedBox(width: 8),
                                 // Display all social links with proper icons
                                 ...(_agentData?.socialLinks ?? []).map((socialLink) {
-                                  final platformData = _getPlatformIconAndColor(socialLink.name);
-                                  if (platformData == null) return const SizedBox.shrink();
-                                  
+                                  final platformData = socialIconFor(socialLink.name);
                                   return Padding(
                                     padding: const EdgeInsets.only(right: 8),
                                     child: _socialIcon(
-                                      icon: platformData['icon'] as IconData,
-                                      color: platformData['color'] as Color,
+                                      color: platformData.color,
                                       onTap: () => _openSocialLink(socialLink.link),
+                                      child: socialIconWidget(socialLink.name, size: 22),
                                     ),
                                   );
                                 }),
@@ -525,17 +539,25 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        _buildDetailRow(
-                          icon: Icons.email,
-                          label: AppLocalizations.of(context)?.emailAgent ?? 'Email:',
-                          value: 'johnsmith@email.com',
-                        ),
-                        const SizedBox(height: 12),
-                        _buildDetailRow(
-                          icon: Icons.map,
-                          label: AppLocalizations.of(context)?.serviceAreas ?? 'Service Areas:',
-                          value: 'Beirut, Baabda, Keserwan, Metn',
-                        ),
+                        // Email — pull the real value from the loaded agent data.
+                        // While loading (or if it failed to load) we simply omit
+                        // the row instead of showing a hardcoded placeholder.
+                        if ((_agentData?.email.isNotEmpty ?? false)) ...[
+                          _buildDetailRow(
+                            icon: Icons.email,
+                            label: AppLocalizations.of(context)?.emailAgent ?? 'Email:',
+                            value: _agentData!.email,
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        // Service areas — derive from the agent's own location
+                        // fields rather than a hardcoded list.
+                        if (_serviceAreas.isNotEmpty)
+                          _buildDetailRow(
+                            icon: Icons.map,
+                            label: AppLocalizations.of(context)?.serviceAreas ?? 'Service Areas:',
+                            value: _serviceAreas,
+                          ),
                       ],
                     ),
 
@@ -617,80 +639,8 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
     }
   }
 
-  // Helper function to get icon and color for a platform
-  Map<String, dynamic>? _getPlatformIconAndColor(String platformName) {
-    final platform = platformName.toLowerCase();
-    
-    switch (platform) {
-      case 'facebook':
-        return {
-          'icon': FontAwesomeIcons.facebook,
-          'color': const Color(0xFF1877F2), // Facebook blue
-        };
-      case 'instagram':
-        return {
-          'icon': FontAwesomeIcons.instagram,
-          'color': const Color(0xFFE4405F), // Instagram pink/red
-        };
-      case 'twitter':
-        return {
-          'icon': FontAwesomeIcons.twitter,
-          'color': const Color(0xFF1DA1F2), // Twitter blue
-        };
-      case 'linkedin':
-        return {
-          'icon': FontAwesomeIcons.linkedin,
-          'color': const Color(0xFF0077B5), // LinkedIn blue
-        };
-      case 'youtube':
-        return {
-          'icon': FontAwesomeIcons.youtube,
-          'color': const Color(0xFFFF0000), // YouTube red
-        };
-      case 'tiktok':
-        return {
-          'icon': FontAwesomeIcons.tiktok,
-          'color': const Color(0xFF000000), // TikTok black
-        };
-      case 'snapchat':
-        return {
-          'icon': FontAwesomeIcons.snapchat,
-          'color': const Color(0xFFFFFC00), // Snapchat yellow
-        };
-      case 'pinterest':
-        return {
-          'icon': FontAwesomeIcons.pinterest,
-          'color': const Color(0xFFBD081C), // Pinterest red
-        };
-      case 'reddit':
-        return {
-          'icon': FontAwesomeIcons.reddit,
-          'color': const Color(0xFFFF4500), // Reddit orange
-        };
-      case 'discord':
-        return {
-          'icon': FontAwesomeIcons.discord,
-          'color': const Color(0xFF5865F2), // Discord blurple
-        };
-      case 'telegram':
-        return {
-          'icon': FontAwesomeIcons.telegram,
-          'color': const Color(0xFF0088CC), // Telegram blue
-        };
-      case 'whatsapp':
-        return {
-          'icon': FontAwesomeIcons.whatsapp,
-          'color': const Color(0xFF25D366), // WhatsApp green
-        };
-      default:
-        return {
-          'icon': Icons.link,
-          'color': Colors.grey,
-        };
-    }
-  }
 
-  Widget _socialIcon({required IconData icon, required Color color, VoidCallback? onTap}) {
+  Widget _socialIcon({required Widget child, required Color color, VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -700,13 +650,7 @@ class _SingleAgentPageState extends State<SingleAgentPage> {
           color: color.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
-        child: Center(
-          child: Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-        ),
+        child: Center(child: child),
       ),
     );
   }

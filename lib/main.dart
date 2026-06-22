@@ -31,7 +31,7 @@ import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize authentication first to ensure auth data is loaded
   await AuthService.loadAuthData();
   
