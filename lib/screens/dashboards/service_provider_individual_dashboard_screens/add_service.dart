@@ -160,7 +160,7 @@ class _AddServiceState extends State<AddService> {
               Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("assets/serverProviderBackground.png"),
+                    image: AssetImage("assets/dashboard_background.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),

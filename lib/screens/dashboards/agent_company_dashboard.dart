@@ -298,7 +298,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image:
-                            AssetImage("assets/serverProviderBackground.png"),
+                            AssetImage("assets/dashboard_background.jpg"),
                         fit: BoxFit.cover,
                       ),
                     ),

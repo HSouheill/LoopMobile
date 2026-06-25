@@ -506,7 +506,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image:
-                            AssetImage("assets/serverProviderBackground.png"),
+                            AssetImage("assets/dashboard_background.jpg"),
                         fit: BoxFit.cover,
                       ),
                     ),

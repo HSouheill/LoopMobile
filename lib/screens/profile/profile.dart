@@ -886,7 +886,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           decoration: const BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(
-                                  "assets/profileBackgroundImage.png"),
+                                  "assets/profile_background.jpg"),
                               fit: BoxFit.cover,
                             ),
                           ),

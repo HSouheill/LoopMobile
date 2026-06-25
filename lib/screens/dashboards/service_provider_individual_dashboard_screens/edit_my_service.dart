@@ -132,7 +132,7 @@ class _EditMyServiceState extends State<EditMyService> {
               Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("assets/serverProviderBackground.png"),
+                    image: AssetImage("assets/dashboard_background.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),
