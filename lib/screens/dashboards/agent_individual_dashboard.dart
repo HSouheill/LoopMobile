@@ -507,7 +507,22 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                       image: DecorationImage(
                         image:
                             AssetImage("assets/dashboard_background.jpg"),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fitWidth,
+                        alignment: Alignment.bottomCenter,
+                      ),
+                    ),
+                    // Subtle white shadow along the top edge only
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.35),
+                            Colors.white.withValues(alpha: 0.0),
+                          ],
+                          stops: const [0.0, 0.25],
+                        ),
                       ),
                     ),
                   ),
