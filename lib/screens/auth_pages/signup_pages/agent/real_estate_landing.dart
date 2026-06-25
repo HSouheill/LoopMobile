@@ -17,7 +17,7 @@ class RealEstateLandingPage extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/BackgroundLogo.png',
+                'assets/login_page.jpg',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   // Fallback if image doesn't exist

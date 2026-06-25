@@ -44,13 +44,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    # - assets/Background.png
     - assets/profileBackgroundImage.png
     - assets/serverProviderBackground.png
     - assets/defaultProfileImage.png
     - assets/chatbg.png
     # - assets/support.png
-    - assets/BackgroundLogo.png
     - assets/logo.jpeg
     - assets/Watermark.png
     - assets/animation.json
@@ -59,6 +57,7 @@ flutter:
     - assets/premium.png
     - assets/standard.png
     - assets/animation.mp4
+    - assets/login_page.jpg
     # Brand logos for agent/service-provider social links (tinted SVGs).
     - assets/social_icons/
   #   - images/a_dot_ham.jpeg

@@ -19,7 +19,7 @@ class PreLoginPage extends StatelessWidget {
               width: double.infinity,
               height: MediaQuery.of(context).size.height, // Make the image fill the entire screen height
               child: Image.asset(
-                'assets/BackgroundLogo.png',
+                'assets/login_page.jpg',
                 fit: BoxFit.cover,
                 // The alignment ensures the image is centered, which is good practice.
                 alignment: Alignment.center,
