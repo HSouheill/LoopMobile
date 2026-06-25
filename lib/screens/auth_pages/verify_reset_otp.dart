@@ -148,7 +148,7 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/BackgroundLogo.png',
+                'assets/login_page.jpg',
                 fit: BoxFit.cover,
                 color: Colors.black.withOpacity(0.5),
                 colorBlendMode: BlendMode.darken,

@@ -142,7 +142,7 @@ class _UserSignupPage3State extends State<UserSignupPage3> {
             child: SizedBox(
               width: double.infinity,
               child: Image.asset(
-                'assets/BackgroundLogo.png',
+                'assets/login_page.jpg',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
