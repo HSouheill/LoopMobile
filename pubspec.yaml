@@ -2,7 +2,7 @@ name: loopflutter
 description: "Loop Real Estate - Property Management Platform"
 publish_to: "none"
 
-version: 1.0.2+17
+version: 1.0.2+1
 
 environment:
   sdk: ^3.7.0
