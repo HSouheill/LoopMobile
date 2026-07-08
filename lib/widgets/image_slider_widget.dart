@@ -11,7 +11,7 @@ class ImageSliderWidget extends StatefulWidget {
     super.key,
     required this.imageUrls,
     this.height = 200.0,
-    this.autoSlideDuration = const Duration(seconds: 2),
+    this.autoSlideDuration = const Duration(seconds: 8),
   });
 
   @override
