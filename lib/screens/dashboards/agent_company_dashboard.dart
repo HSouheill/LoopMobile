@@ -617,47 +617,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
               ),
             ),
 
-            // Favorites button
-            Positioned(
-              top: 45,
-              right: 16,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.blue,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/favorites');
-                  },
-                  borderRadius: BorderRadius.circular(20.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)?.favorites ?? 'Favorites',
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.star,
-                        color: Color(0xFFFFBA00),
-                        size: 14,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            // Favorites button moved out of header into userInfoAndEditButton (below Edit Profile)
 
             // Profile avatar overlapping AppBar
             Positioned(
@@ -768,18 +728,66 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
             ),
           ),
 
-          // Right: Edit Profile button
-          Center(
-            child: DynamicGradientButton(
-              buttonText: AppLocalizations.of(context)?.editProfile ?? 'Edit Profile',
-              onTap: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 17, vertical: 5.5), // optional
-            ),
+          // Right: Edit Profile button with Favorites stacked below it
+          IntrinsicWidth(
+            child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DynamicGradientButton(
+                buttonText: AppLocalizations.of(context)?.editProfile ?? 'Edit Profile',
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile');
+                },
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 17, vertical: 5.5), // optional
+              ),
+              const SizedBox(height: 8),
+              _favoritesButton(context),
+            ],
+          ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _favoritesButton(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context, '/favorites');
+      },
+      borderRadius: BorderRadius.circular(20.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5.5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.blue,
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              AppLocalizations.of(context)?.favorites ?? 'Favorites',
+              style: const TextStyle(
+                color: Colors.blue,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(
+              Icons.star,
+              color: Color(0xFFFFBA00),
+              size: 14,
+            ),
+          ],
+        ),
       ),
     );
   }
