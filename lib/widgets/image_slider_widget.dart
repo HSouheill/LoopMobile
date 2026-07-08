@@ -65,6 +65,10 @@ class _ImageSliderWidgetState extends State<ImageSliderWidget> {
               child: CachedNetworkImage(
                 imageUrl: widget.imageUrls[index],
                 fit: BoxFit.cover,
+                memCacheWidth:
+                    (MediaQuery.of(context).size.width *
+                            MediaQuery.of(context).devicePixelRatio)
+                        .round(),
                 fadeInDuration: const Duration(milliseconds: 200),
                 placeholder: (context, url) => Container(
                   color: Colors.grey[200],

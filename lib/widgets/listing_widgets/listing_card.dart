@@ -116,6 +116,13 @@ class _ListingCardState extends State<ListingCard> {
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    // Downsample to display width so full-res photos don't
+                    // blow the in-memory image cache (which caused big images
+                    // to re-fetch on return).
+                    memCacheWidth:
+                        (MediaQuery.of(context).size.width *
+                                MediaQuery.of(context).devicePixelRatio)
+                            .round(),
                     fadeInDuration: const Duration(milliseconds: 200),
                     placeholder: (context, url) => SizedBox(
                       height: 200,
