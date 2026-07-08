@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
@@ -600,10 +601,14 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.network(
-                                mediaUrl,
+                              CachedNetworkImage(
+                                imageUrl: mediaUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
+                                fadeInDuration: const Duration(milliseconds: 200),
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey[200],
+                                ),
+                                errorWidget: (context, url, error) {
                                   return Container(
                                     color: Colors.grey[300],
                                     child: const Center(
@@ -1604,10 +1609,14 @@ class _SingleListingPageState extends State<SingleListingPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: _ownerProfileImageUrl != null
-                ? Image.network(
-                    _ownerProfileImageUrl!,
+                ? CachedNetworkImage(
+                    imageUrl: _ownerProfileImageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    fadeInDuration: const Duration(milliseconds: 200),
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[200],
+                    ),
+                    errorWidget: (context, url, error) {
                       return Container(
                         color: Colors.grey[300],
                         child: const Icon(
