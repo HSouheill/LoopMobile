@@ -78,21 +78,24 @@ class AddListingModal extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 15),
-                _buildModalOption(
-                  icon: Icons.business,
-                  title: AppLocalizations.of(context)?.addNewProperty ?? 'Add New Property',
-                  bgColor: Colors.blue[50],
-                  iconColor: Colors.blue,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(
-                      context,
-                      '/property-type-selection',
-                      arguments: {'listingType': 'owner', 'preselectedType': 'property'},
-                    );
-                  },
-                ),
+                // "Add New Property" removed — it passed preselectedType 'property',
+                // which the type-selection page ignores as a generic term (no preselection),
+                // making it a redundant entry vs. the specific property types below.
+                // const SizedBox(height: 15),
+                // _buildModalOption(
+                //   icon: Icons.business,
+                //   title: AppLocalizations.of(context)?.addNewProperty ?? 'Add New Property',
+                //   bgColor: Colors.blue[50],
+                //   iconColor: Colors.blue,
+                //   onTap: () {
+                //     Navigator.pop(context);
+                //     Navigator.pushNamed(
+                //       context,
+                //       '/property-type-selection',
+                //       arguments: {'listingType': 'owner', 'preselectedType': 'property'},
+                //     );
+                //   },
+                // ),
                 const SizedBox(height: 15),
                 _buildModalOption(
                   icon: Icons.apartment,
