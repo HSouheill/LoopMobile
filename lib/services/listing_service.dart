@@ -543,6 +543,7 @@ class PropertyListing {
   final String agentName;
   final String location;
   final bool isFeatured;
+  final DateTime? featuredUntil;
   final bool isFavorited;
   final String? type;
   final String? listingFor;
@@ -586,6 +587,7 @@ class PropertyListing {
     required this.agentName,
     required this.location,
     this.isFeatured = false,
+    this.featuredUntil,
     this.isFavorited = false,
     this.type,
     this.listingFor,
@@ -792,6 +794,9 @@ class PropertyListing {
       agentName: agentName,
       location: locationStr,
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      featuredUntil: json['featuredUntil'] != null
+          ? DateTime.tryParse(json['featuredUntil'].toString())
+          : null,
       isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),

@@ -156,7 +156,7 @@ class _ServiceProviderIndividualDashboardPageState
                 ),
 
                 // Boost Days Wallet (buy boost-day packages)
-                const BoostWalletWidget(),
+                const BoostWalletWidget(boostableItems: 'profile and jobs'),
 
                 const SizedBox(height: 20),
 

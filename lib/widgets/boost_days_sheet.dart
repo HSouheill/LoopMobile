@@ -8,12 +8,14 @@ class BoostDaysSheet extends StatefulWidget {
   final String targetType; // 'user' | 'listing' | 'job'
   final String targetId;
   final String targetLabel; // e.g. the listing title / "your profile"
+  final DateTime? currentFeaturedUntil; // item's existing feature expiry, if any
 
   const BoostDaysSheet({
     super.key,
     required this.targetType,
     required this.targetId,
     required this.targetLabel,
+    this.currentFeaturedUntil,
   });
 
   /// Opens the sheet. Resolves to the spend response on success, else null.
@@ -22,6 +24,7 @@ class BoostDaysSheet extends StatefulWidget {
     required String targetType,
     required String targetId,
     required String targetLabel,
+    DateTime? currentFeaturedUntil,
   }) {
     return showModalBottomSheet<Map<String, dynamic>>(
       context: context,
@@ -31,6 +34,7 @@ class BoostDaysSheet extends StatefulWidget {
         targetType: targetType,
         targetId: targetId,
         targetLabel: targetLabel,
+        currentFeaturedUntil: currentFeaturedUntil,
       ),
     );
   }
@@ -62,6 +66,14 @@ class _BoostDaysSheetState extends State<BoostDaysSheet> {
   }
 
   bool get _canAfford => _days <= _balance;
+
+  // Days of featuring the item currently has left (0 if none / expired).
+  int get _currentDaysLeft {
+    final until = widget.currentFeaturedUntil;
+    if (until == null) return 0;
+    final diff = until.difference(DateTime.now());
+    return diff.inSeconds > 0 ? diff.inHours ~/ 24 + (diff.inHours % 24 > 0 ? 1 : 0) : 0;
+  }
 
   Future<void> _submit() async {
     if (!_canAfford || _submitting) return;
@@ -155,6 +167,26 @@ class _BoostDaysSheetState extends State<BoostDaysSheet> {
               ],
             ),
           ),
+
+          // Current featured status for this item.
+          if (_currentDaysLeft > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.star, size: 16, color: Colors.amber),
+                const SizedBox(width: 6),
+                Text(
+                  'Currently featured · $_currentDaysLeft day${_currentDaysLeft == 1 ? '' : 's'} left',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'New days stack on top of the remaining time.',
+              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+            ),
+          ],
           const SizedBox(height: 20),
 
           // Day picker

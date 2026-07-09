@@ -411,6 +411,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
       targetType: 'listing',
       targetId: listing.id,
       targetLabel: listing.title.isNotEmpty ? '“${listing.title}”' : 'this listing',
+      currentFeaturedUntil: listing.featuredUntil,
     );
     // On a successful boost, refresh so the featured state is reflected.
     if (result != null && mounted) {

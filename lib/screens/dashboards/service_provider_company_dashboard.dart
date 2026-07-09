@@ -224,7 +224,7 @@ class _ServiceProviderCompanyDashboardPageState
                   ),
 
                   // Boost Days Wallet (buy boost-day packages)
-                  const BoostWalletWidget(),
+                  const BoostWalletWidget(boostableItems: 'profile and jobs'),
 
                   // ✅ PDF Uploaded Section
                   PdfUploadedSection(agentInfo: agentInfo),

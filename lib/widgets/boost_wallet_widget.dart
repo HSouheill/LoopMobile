@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import '../services/boost_service.dart';
+import '../services/auth_service.dart';
+import 'boost_days_sheet.dart';
 
 /// Dashboard section for the boost-days wallet: explains what boost days are,
 /// shows the current balance, and lists purchasable packages (configured from
 /// the admin dashboard). v1 purchases credit the wallet instantly (no payment).
+///
+/// [boostableItems] tailors the explainer to what this dashboard's role can
+/// actually boost (e.g. "profile and listings" vs "profile and jobs"). It should
+/// NOT mention items the role doesn't have (jobs for agents, listings for SPs).
 class BoostWalletWidget extends StatefulWidget {
-  const BoostWalletWidget({super.key});
+  /// Human phrase for what can be boosted here, e.g. "profile and listings".
+  final String boostableItems;
+
+  const BoostWalletWidget({
+    super.key,
+    this.boostableItems = 'profile, listings and jobs',
+  });
 
   @override
   State<BoostWalletWidget> createState() => _BoostWalletWidgetState();
@@ -67,6 +79,24 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
     }
   }
 
+  Future<void> _boostProfile() async {
+    final userId = AuthService.currentUser?.id;
+    if (userId == null || userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not identify your profile. Please re-login.')),
+      );
+      return;
+    }
+    final result = await BoostDaysSheet.show(
+      context,
+      targetType: 'user',
+      targetId: userId,
+      targetLabel: 'your profile',
+    );
+    // Refresh the balance after a successful profile boost.
+    if (result != null) _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -93,7 +123,7 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
-                  'Boost Days Wallet',
+                  'Boost Days',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -115,14 +145,44 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
           ),
           const SizedBox(height: 10),
 
-          // Explainer
+          // Explainer (tailored to what this dashboard can boost)
           Text(
-            'Boost days let you feature your profile, listings or jobs so they '
+            'Boost days let you feature your ${widget.boostableItems} so they '
             'appear first. Buy a package below, then tap “Boost” on any of your '
             'items and choose how many days (1–30) to spend.',
             style: TextStyle(fontSize: 13, color: Colors.grey[700], height: 1.4),
           ),
+          const SizedBox(height: 12),
+
+          // Boost the profile directly from the wallet (this is where profiles
+          // are boosted, since a profile has no card of its own).
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _boostProfile,
+              icon: const Icon(Icons.person, size: 18, color: _primary),
+              label: const Text('Boost my profile',
+                  style: TextStyle(color: _primary, fontWeight: FontWeight.w600)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: _primary),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
+
+          Text(
+            'Buy boost days',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
 
           if (_loading)
             const Padding(

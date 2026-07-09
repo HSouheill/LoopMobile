@@ -554,7 +554,7 @@ class _AgentIndividualDashboardPageState extends State<AgentIndividualDashboardP
                 ),
 
                 // Boost Days Wallet (buy boost-day packages)
-                const BoostWalletWidget(),
+                const BoostWalletWidget(boostableItems: 'profile and listings'),
 
                 Container(
                   width: double.infinity,

@@ -344,7 +344,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 ),
 
                 // Boost Days Wallet (buy boost-day packages)
-                const BoostWalletWidget(),
+                const BoostWalletWidget(boostableItems: 'profile and listings'),
 
                 const SizedBox(height: 40),
 
