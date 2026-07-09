@@ -230,17 +230,27 @@ class ListingService {
     }
   }
 
-  // Get agent's listings with status filter
+  // Get agent's listings with status filter, search and sort/filter.
+  // [search] matches title / description / city / owner name on the backend.
+  // [sort] is one of: date_desc (default), date_asc, price_asc, price_desc.
   static Future<ListingsResponse> getMyListings({
     String? status,
     int page = 1,
     int limit = 10,
+    String? search,
+    String? sort,
+    String? type,
+    String? listingFor,
   }) async {
     try {
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
         if (status != null) 'status': status,
+        if (search != null && search.trim().isNotEmpty) 'q': search.trim(),
+        if (sort != null && sort.isNotEmpty) 'sort': sort,
+        if (type != null && type.isNotEmpty) 'type': type,
+        if (listingFor != null && listingFor.isNotEmpty) 'listingFor': listingFor,
       };
 
       final url = Uri.parse('${Environment.apiUrl}listings/my-listings')
