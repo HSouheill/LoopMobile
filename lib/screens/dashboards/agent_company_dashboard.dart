@@ -14,6 +14,7 @@ import '../../widgets/listing_details_modal.dart';
 import '../../environment.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
+import '../../widgets/boost_wallet_widget.dart';
 
 class AgentCompanyDashboardPage extends StatefulWidget {
   const AgentCompanyDashboardPage({super.key});
@@ -341,6 +342,9 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     });
                   },
                 ),
+
+                // Boost Days Wallet (buy boost-day packages)
+                const BoostWalletWidget(),
 
                 const SizedBox(height: 40),
 

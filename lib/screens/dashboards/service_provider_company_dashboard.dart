@@ -22,6 +22,7 @@ import './widgets/my_services_widget.dart';
 import '../../environment.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
+import '../../widgets/boost_wallet_widget.dart';
 
 class ServiceProviderCompanyDashboardPage extends StatefulWidget {
   const ServiceProviderCompanyDashboardPage({super.key});
@@ -221,6 +222,9 @@ class _ServiceProviderCompanyDashboardPageState
                       });
                     },
                   ),
+
+                  // Boost Days Wallet (buy boost-day packages)
+                  const BoostWalletWidget(),
 
                   // ✅ PDF Uploaded Section
                   PdfUploadedSection(agentInfo: agentInfo),

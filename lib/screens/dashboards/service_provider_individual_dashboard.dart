@@ -16,6 +16,7 @@ import './widgets/social_links_display_widget.dart';
 import './widgets/statistics_card.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
+import '../../widgets/boost_wallet_widget.dart';
 import '../../environment.dart';
 
 class ServiceProviderIndividualDashboardPage extends StatefulWidget {
@@ -153,6 +154,9 @@ class _ServiceProviderIndividualDashboardPageState
                     });
                   },
                 ),
+
+                // Boost Days Wallet (buy boost-day packages)
+                const BoostWalletWidget(),
 
                 const SizedBox(height: 20),
 

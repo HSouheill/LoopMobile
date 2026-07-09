@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
+import '../../widgets/boost_days_sheet.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/listing_image_widget.dart';
 import '../../widgets/listing_details_modal.dart';
@@ -404,6 +405,19 @@ class _MyListingsPageState extends State<MyListingsPage> {
     if (result.success) await _refresh();
   }
 
+  Future<void> _boostListing(PropertyListing listing) async {
+    final result = await BoostDaysSheet.show(
+      context,
+      targetType: 'listing',
+      targetId: listing.id,
+      targetLabel: listing.title.isNotEmpty ? '“${listing.title}”' : 'this listing',
+    );
+    // On a successful boost, refresh so the featured state is reflected.
+    if (result != null && mounted) {
+      await _refresh();
+    }
+  }
+
   Future<void> _editListing(PropertyListing listing) async {
     // Warn that editing sends the listing back to admin for re-approval.
     final proceed = await showDialog<bool>(
@@ -592,11 +606,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
                                 },
                                 onDelete: () => _deleteListing(listing),
                                 onArchive: () => _archiveListing(listing),
-                                onBoost: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n?.boostFunctionalityNotImplemented ?? 'Boost functionality not implemented yet')),
-                                  );
-                                },
+                                onBoost: () => _boostListing(listing),
                                 onEdit: () => _editListing(listing),
                               ),
                             );
@@ -709,15 +719,24 @@ class _MyListingCardState extends State<MyListingCard> {
               ),
               const SizedBox(width: 12),
 
-              // Buttons. Boost/Promote and Sold are intentionally hidden
-              // (handlers kept on the widget for easy re-enable). Active-listing
-              // actions are Delete (left) and Edit/Archive (right).
+              // Buttons. Sold is intentionally hidden (handler kept for easy
+              // re-enable). Active-listing actions are Boost + Delete (left) and
+              // Edit/Archive (right).
               Expanded(
                 child: Row(
                   children: [
                     Expanded(
                       child: Column(
                         children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: DynamicGradientButton(
+                              buttonText: 'Boost',
+                              onTap: widget.onBoost,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           SizedBox(
                             width: double.infinity,
                             child: DynamicGradientButton(
