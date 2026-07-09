@@ -51,8 +51,10 @@ const List<MapEntry<String, String>> _kTypeOptions = [
   MapEntry('international', 'International'),
 ];
 
-// Status sub-filter, since inactive listings mix archived + pending (+ draft).
-enum InactiveStatusFilter { all, archived, pending, draft }
+// Status sub-filter. Inactive listings are either archived or pending admin
+// approval — the schema also has a `draft` status, but nothing in the app ever
+// sets it, so it's intentionally not offered here.
+enum InactiveStatusFilter { all, archived, pending }
 
 extension _InactiveStatusApi on InactiveStatusFilter {
   // null == the page default ('not-active'); otherwise a concrete status the
@@ -65,8 +67,6 @@ extension _InactiveStatusApi on InactiveStatusFilter {
         return 'archived';
       case InactiveStatusFilter.pending:
         return 'pending';
-      case InactiveStatusFilter.draft:
-        return 'draft';
     }
   }
 
@@ -78,8 +78,6 @@ extension _InactiveStatusApi on InactiveStatusFilter {
         return 'Archived';
       case InactiveStatusFilter.pending:
         return 'Pending';
-      case InactiveStatusFilter.draft:
-        return 'Draft';
     }
   }
 }
