@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../services/favorite_service.dart';
@@ -110,27 +111,26 @@ class _ListingCardState extends State<ListingCard> {
                     topLeft: Radius.circular(12.0),
                     topRight: Radius.circular(12.0),
                   ),
-                  child: Image.network(
-                    widget.listing.imageUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.listing.imageUrl,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      }
-                      return SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
+                    // Downsample to display width so full-res photos don't
+                    // blow the in-memory image cache (which caused big images
+                    // to re-fetch on return).
+                    memCacheWidth:
+                        (MediaQuery.of(context).size.width *
+                                MediaQuery.of(context).devicePixelRatio)
+                            .round(),
+                    fadeInDuration: const Duration(milliseconds: 200),
+                    placeholder: (context, url) => SizedBox(
+                      height: 200,
+                      child: Center(
+                        child: Container(color: Colors.grey[200]),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) {
                       return Container(
                         height: 200,
                         color: Colors.grey[300],

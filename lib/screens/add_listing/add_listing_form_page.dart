@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/listing_create_service.dart';
 import '../../services/listing_service.dart';
+import '../../utils/verification_guard.dart';
 import '../search/city_selection_page.dart';
 
 class AddListingFormPage extends StatefulWidget {
@@ -219,12 +220,18 @@ class _AddListingFormPageState extends State<AddListingFormPage> {
   Future<void> _submitListing() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Read route args before any async gap (needs a live BuildContext).
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    // Only admin-approved accounts can create/edit listings (backend enforces
+    // this too). Show a clear message instead of a generic failure.
+    if (!await VerificationGuard.ensureCanManageContent(context)) return;
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final String listingFor = args?['listingFor'] ?? (_editingListing?.listingFor ?? 'rent');
       final String? rentalPeriod = args?['rentalPeriod'];
       final bool isDailyRentChalet = _isDailyRentChalet(args);

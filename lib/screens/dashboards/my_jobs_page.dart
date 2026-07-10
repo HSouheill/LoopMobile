@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/job_service.dart';
 import '../../widgets/job_form_widget.dart';
 import '../../widgets/job_status_bubble.dart';
+import '../../widgets/boost_days_sheet.dart';
 
 class MyJobsPage extends StatefulWidget {
   const MyJobsPage({super.key});
@@ -93,6 +94,18 @@ class _MyJobsPageState extends State<MyJobsPage> {
 
     if (confirmed == true) {
       await _deleteJob(job);
+    }
+  }
+
+  Future<void> _boostJob(Job job) async {
+    final result = await BoostDaysSheet.show(
+      context,
+      targetType: 'job',
+      targetId: job.id,
+      targetLabel: job.title.isNotEmpty ? '“${job.title}”' : 'this job',
+    );
+    if (result != null && mounted) {
+      _loadJobs();
     }
   }
 
@@ -474,6 +487,15 @@ class _MyJobsPageState extends State<MyJobsPage> {
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      onPressed: () => _boostJob(job),
+                      tooltip: 'Boost',
+                      icon: const Icon(
+                        Icons.bolt,
+                        color: Color(0xFF0048FF),
+                        size: 20,
+                      ),
+                    ),
                     IconButton(
                       onPressed: () {
                         Navigator.push(

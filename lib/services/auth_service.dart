@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../environment.dart';
+import 'socket_service.dart';
 
 // UserOptions class to handle user preferences
 class UserOptions {
@@ -92,6 +93,8 @@ class User {
   final String? categoryKey; // Service-provider category slug
   final UserOptions? options; // Add options field
   final bool hasListing; // Add hasListing field
+  final String verificationStatus; // 'pending' | 'approved' | 'rejected'
+  final String? rejectionReason; // Reason set by admin when rejected
 
   User({
     required this.id,
@@ -110,7 +113,14 @@ class User {
     this.categoryKey, // Service-provider category slug
     this.options, // Add options parameter
     this.hasListing = false, // Default to false
+    this.verificationStatus = 'pending',
+    this.rejectionReason,
   });
+
+  // Account must be admin-approved to post/edit listings, jobs, or services.
+  bool get isApproved => verificationStatus == 'approved';
+  bool get isRejected => verificationStatus == 'rejected';
+  bool get isPending => !isApproved && !isRejected;
 
   factory User.fromJson(Map<String, dynamic> json) {
     // Simplified fullName parsing to avoid complex ternary
@@ -146,6 +156,9 @@ class User {
       categoryKey: json['categoryKey'],
       options: json['options'] != null ? UserOptions.fromJson(json['options']) : null,
       hasListing: _parseBool(json['hasListing']) ?? false, // Default to false if not present
+      verificationStatus:
+          (json['verificationStatus']?.toString().toLowerCase()) ?? 'pending',
+      rejectionReason: json['rejectionReason']?.toString(),
     );
   }
 
@@ -177,6 +190,8 @@ class User {
       'categoryKey': categoryKey,
       'options': options?.toJson(),
       'hasListing': hasListing,
+      'verificationStatus': verificationStatus,
+      'rejectionReason': rejectionReason,
     };
   }
 
@@ -198,6 +213,8 @@ class User {
     String? categoryKey,
     UserOptions? options,
     bool? hasListing,
+    String? verificationStatus,
+    String? rejectionReason,
   }) {
     return User(
       id: id ?? this.id,
@@ -216,6 +233,8 @@ class User {
       categoryKey: categoryKey ?? this.categoryKey,
       options: options ?? this.options,
       hasListing: hasListing ?? this.hasListing,
+      verificationStatus: verificationStatus ?? this.verificationStatus,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
     );
   }
 }
@@ -314,8 +333,39 @@ class AuthService {
     await _storeAuthData();
   }
 
+  // Refresh the current user from the server (picks up admin changes such as
+  // verificationStatus going approved/rejected). Returns the updated user, or
+  // null on failure — callers can fall back to the cached _currentUser.
+  static Future<User?> refreshCurrentUser() async {
+    if (_token == null) return null;
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/me');
+      final response = await http.get(url, headers: getAuthHeaders());
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['user'] != null) {
+          final userData = Map<String, dynamic>.from(data['user']);
+          if (data['hasListing'] != null && userData['hasListing'] == null) {
+            userData['hasListing'] = data['hasListing'];
+          }
+          _currentUser = User.fromJson(userData);
+          await _storeAuthData();
+          return _currentUser;
+        }
+      }
+    } catch (_) {
+      // Network error — keep the cached user.
+    }
+    return null;
+  }
+
   // Sign out
   static Future<void> signOut() async {
+    // Tear down the socket so a stale connection can't linger under the old
+    // identity (socket.io auto-reconnects, so simply dropping the token isn't
+    // enough — the live socket keeps emitting under the previous user).
+    SocketService.instance.disconnect();
+
     _currentUser = null;
     _token = null;
 

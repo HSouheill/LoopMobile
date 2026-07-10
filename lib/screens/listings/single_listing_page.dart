@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '/services/listing_service.dart';
 import 'package:intl/intl.dart';
@@ -594,16 +595,32 @@ class _SingleListingPageState extends State<SingleListingPage> {
                           );
                         }
                       } else {
-                        // Display image
-                        return GestureDetector(
+                        // Display image (kept alive so swiping back doesn't
+                        // rebuild and re-run the placeholder/flash).
+                        return _KeepAlivePage(
+                          child: GestureDetector(
                           onTap: () => _openGallery(index),
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.network(
-                                mediaUrl,
+                              CachedNetworkImage(
+                                imageUrl: mediaUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
+                                // Downsample decode to ~screen width so large
+                                // photos don't blow the memory cache and get
+                                // evicted (which looked like a re-fetch).
+                                memCacheWidth:
+                                    (MediaQuery.of(context).size.width *
+                                            MediaQuery.of(context).devicePixelRatio)
+                                        .round(),
+                                // No fade: once bytes are cached, swiping back
+                                // to a page should show it instantly, not flash.
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey[200],
+                                ),
+                                errorWidget: (context, url, error) {
                                   return Container(
                                     color: Colors.grey[300],
                                     child: const Center(
@@ -624,11 +641,12 @@ class _SingleListingPageState extends State<SingleListingPage> {
                               ),
                             ],
                           ),
+                        ),
                         );
                       }
                     },
                   ),
-                  
+
                   // Media counter
                   Positioned(
                     right: 16,
@@ -1604,10 +1622,14 @@ class _SingleListingPageState extends State<SingleListingPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: _ownerProfileImageUrl != null
-                ? Image.network(
-                    _ownerProfileImageUrl!,
+                ? CachedNetworkImage(
+                    imageUrl: _ownerProfileImageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
+                    fadeInDuration: const Duration(milliseconds: 200),
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[200],
+                    ),
+                    errorWidget: (context, url, error) {
                       return Container(
                         color: Colors.grey[300],
                         child: const Icon(
@@ -1680,5 +1702,27 @@ class _SingleListingPageState extends State<SingleListingPage> {
           return word[0].toUpperCase() + word.substring(1).toLowerCase();
         }).join(' ');
     }
+  }
+}
+
+/// Keeps a PageView child alive so already-loaded images are not rebuilt
+/// (and re-run their placeholder/fade) when the user swipes back to them.
+class _KeepAlivePage extends StatefulWidget {
+  final Widget child;
+  const _KeepAlivePage({required this.child});
+
+  @override
+  State<_KeepAlivePage> createState() => _KeepAlivePageState();
+}
+
+class _KeepAlivePageState extends State<_KeepAlivePage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/job_service.dart';
 import '../services/image_upload_service.dart';
 import '../screens/search/city_selection_page.dart';
+import '../utils/verification_guard.dart';
 
 class JobFormWidget extends StatefulWidget {
   final Job? existingJob;
@@ -32,7 +33,6 @@ class _JobFormWidgetState extends State<JobFormWidget> {
   String _selectedAttendance = 'On site';
   int _minExperience = 0;
   int _maxExperience = 1;
-  bool _isFeatured = false;
   bool _isLoading = false;
   File? _selectedImage;
 
@@ -73,9 +73,7 @@ class _JobFormWidgetState extends State<JobFormWidget> {
     // Safely parse experience range values
     _minExperience = _parseIntValue(job.experienceRange['min'], 0);
     _maxExperience = _parseIntValue(job.experienceRange['max'], 1);
-    
-    _isFeatured = job.isFeatured;
-    
+
     // For existing jobs, we don't pre-select an image file
     _selectedImage = null;
   }
@@ -140,6 +138,10 @@ class _JobFormWidgetState extends State<JobFormWidget> {
       return;
     }
 
+    // Only admin-approved accounts can create/edit jobs (backend enforces this
+    // too). Show a clear message instead of a generic failure.
+    if (!await VerificationGuard.ensureCanManageContent(context)) return;
+
     setState(() {
       _isLoading = true;
     });
@@ -168,7 +170,6 @@ class _JobFormWidgetState extends State<JobFormWidget> {
           description: _descriptionController.text.trim(),
           // Don't include imageUrl when editing existing jobs
           skills: skills.isNotEmpty ? skills : null,
-          isFeatured: _isFeatured,
         );
       } else {
         // Create new job
@@ -185,7 +186,6 @@ class _JobFormWidgetState extends State<JobFormWidget> {
           description: _descriptionController.text.trim(),
           imageFile: _selectedImage,
           skills: skills.isNotEmpty ? skills : null,
-          isFeatured: _isFeatured,
         );
       }
 
@@ -381,19 +381,9 @@ class _JobFormWidgetState extends State<JobFormWidget> {
                 const SizedBox(height: 16),
               ],
 
-              // Featured checkbox
-              CheckboxListTile(
-                title: const Text('Featured Job'),
-                subtitle: const Text('Make this job stand out'),
-                value: _isFeatured,
-                onChanged: (value) {
-                  setState(() {
-                    _isFeatured = value ?? false;
-                  });
-                },
-                activeColor: const Color.fromARGB(255, 69, 100, 201),
-              ),
-              const SizedBox(height: 24),
+              // Featured status is granted only via the Boost wallet (1–30 days),
+              // not set at create/edit — no featured checkbox here.
+              const SizedBox(height: 8),
 
               // Submit button
               SizedBox(

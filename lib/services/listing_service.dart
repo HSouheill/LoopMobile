@@ -230,17 +230,27 @@ class ListingService {
     }
   }
 
-  // Get agent's listings with status filter
+  // Get agent's listings with status filter, search and sort/filter.
+  // [search] matches title / description / city / owner name on the backend.
+  // [sort] is one of: date_desc (default), date_asc, price_asc, price_desc.
   static Future<ListingsResponse> getMyListings({
     String? status,
     int page = 1,
     int limit = 10,
+    String? search,
+    String? sort,
+    String? type,
+    String? listingFor,
   }) async {
     try {
       final queryParams = <String, String>{
         'page': page.toString(),
         'limit': limit.toString(),
         if (status != null) 'status': status,
+        if (search != null && search.trim().isNotEmpty) 'q': search.trim(),
+        if (sort != null && sort.isNotEmpty) 'sort': sort,
+        if (type != null && type.isNotEmpty) 'type': type,
+        if (listingFor != null && listingFor.isNotEmpty) 'listingFor': listingFor,
       };
 
       final url = Uri.parse('${Environment.apiUrl}listings/my-listings')
@@ -533,6 +543,7 @@ class PropertyListing {
   final String agentName;
   final String location;
   final bool isFeatured;
+  final DateTime? featuredUntil;
   final bool isFavorited;
   final String? type;
   final String? listingFor;
@@ -576,6 +587,7 @@ class PropertyListing {
     required this.agentName,
     required this.location,
     this.isFeatured = false,
+    this.featuredUntil,
     this.isFavorited = false,
     this.type,
     this.listingFor,
@@ -782,6 +794,9 @@ class PropertyListing {
       agentName: agentName,
       location: locationStr,
       isFeatured: json['isFeatured'] == true || json['isFeatured'] == 'true',
+      featuredUntil: json['featuredUntil'] != null
+          ? DateTime.tryParse(json['featuredUntil'].toString())
+          : null,
       isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
       type: json['type']?.toString(),
       listingFor: json['listingFor']?.toString(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../../models/my_service.dart';
 import '../../../services/service_service.dart';
+import '../../../utils/verification_guard.dart';
 
 class EditMyService extends StatefulWidget {
   const EditMyService({super.key});
@@ -83,6 +84,10 @@ class _EditMyServiceState extends State<EditMyService> {
       );
       return;
     }
+
+    // Only admin-approved accounts can edit services (backend enforces this
+    // too). Show a clear message instead of a generic failure.
+    if (!await VerificationGuard.ensureCanManageContent(context)) return;
 
     setState(() {
       isSaving = true;

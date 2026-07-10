@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ImageSliderWidget extends StatefulWidget {
   final List<String> imageUrls;
@@ -10,7 +11,7 @@ class ImageSliderWidget extends StatefulWidget {
     super.key,
     required this.imageUrls,
     this.height = 200.0,
-    this.autoSlideDuration = const Duration(seconds: 2),
+    this.autoSlideDuration = const Duration(seconds: 8),
   });
 
   @override
@@ -61,24 +62,18 @@ class _ImageSliderWidgetState extends State<ImageSliderWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16.0),
-              child: Image.network(
-                widget.imageUrls[index],
+              child: CachedNetworkImage(
+                imageUrl: widget.imageUrls[index],
                 fit: BoxFit.cover,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
+                memCacheWidth:
+                    (MediaQuery.of(context).size.width *
+                            MediaQuery.of(context).devicePixelRatio)
+                        .round(),
+                fadeInDuration: const Duration(milliseconds: 200),
+                placeholder: (context, url) => Container(
+                  color: Colors.grey[200],
+                ),
+                errorWidget: (context, url, error) {
                   return const Center(
                     child: Icon(Icons.error, color: Colors.red),
                   );

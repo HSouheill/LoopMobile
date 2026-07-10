@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       await _controller.initialize();
       await _controller.setLooping(false);
-      await _controller.setPlaybackSpeed(2.5); // Set playback speed to 2.5x
+      await _controller.setPlaybackSpeed(6.0); // Set playback speed to 5.0x (2x faster than before)
 
       setState(() {
         _isInitialized = true;

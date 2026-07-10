@@ -126,7 +126,6 @@ class JobService {
     File? imageFile,
     String? imageUrl,
     List<String>? skills,
-    bool isFeatured = false,
   }) async {
     try {
       final url = Uri.parse(baseUrl);
@@ -147,8 +146,7 @@ class JobService {
         request.fields['workingHours'] = workingHours;
         request.fields['attendance'] = attendance;
         request.fields['description'] = description;
-        request.fields['isFeatured'] = isFeatured.toString();
-        
+
         if (skills != null && skills.isNotEmpty) {
           request.fields['skills'] = json.encode(skills);
         }
@@ -185,7 +183,6 @@ class JobService {
           'workingHours': workingHours,
           'attendance': attendance,
           'description': description,
-          'isFeatured': isFeatured,
           if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
           if (skills != null && skills.isNotEmpty) 'skills': skills,
         };
@@ -228,7 +225,6 @@ class JobService {
     String? description,
     String? imageUrl,
     List<String>? skills,
-    bool? isFeatured,
   }) async {
     try {
       final url = Uri.parse('$baseUrl/$jobId');
@@ -243,7 +239,6 @@ class JobService {
       if (description != null) body['description'] = description;
       if (imageUrl != null) body['imageUrl'] = imageUrl;
       if (skills != null) body['skills'] = skills;
-      if (isFeatured != null) body['isFeatured'] = isFeatured;
 
       final response = await http.put(
         url,
