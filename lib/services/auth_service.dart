@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../environment.dart';
+import 'socket_service.dart';
 
 // UserOptions class to handle user preferences
 class UserOptions {
@@ -316,6 +317,11 @@ class AuthService {
 
   // Sign out
   static Future<void> signOut() async {
+    // Tear down the socket so a stale connection can't linger under the old
+    // identity (socket.io auto-reconnects, so simply dropping the token isn't
+    // enough — the live socket keeps emitting under the previous user).
+    SocketService.instance.disconnect();
+
     _currentUser = null;
     _token = null;
 
