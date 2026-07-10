@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../../services/service_service.dart';
+import '../../../utils/verification_guard.dart';
 import '../../search/city_selection_page.dart';
 
 class AddService extends StatefulWidget {
@@ -59,6 +60,10 @@ class _AddServiceState extends State<AddService> {
 
   Future<void> _createService() async {
     if (_formKey.currentState!.validate()) {
+      // Only admin-approved accounts can create services (backend enforces this
+      // too). Show a clear message instead of a generic failure.
+      if (!await VerificationGuard.ensureCanManageContent(context)) return;
+
       setState(() {
         _isLoading = true;
       });
@@ -75,22 +80,24 @@ class _AddServiceState extends State<AddService> {
         };
 
         // Show appropriate loading message
-        if (_selectedImage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Uploading image and creating service...'),
-              backgroundColor: Colors.blue,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Creating service...'),
-              backgroundColor: Colors.blue,
-              duration: Duration(seconds: 2),
-            ),
-          );
+        if (mounted) {
+          if (_selectedImage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Uploading image and creating service...'),
+                backgroundColor: Colors.blue,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Creating service...'),
+                backgroundColor: Colors.blue,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
         }
 
         // Create service with image upload

@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/job_service.dart';
 import '../services/image_upload_service.dart';
 import '../screens/search/city_selection_page.dart';
+import '../utils/verification_guard.dart';
 
 class JobFormWidget extends StatefulWidget {
   final Job? existingJob;
@@ -136,6 +137,10 @@ class _JobFormWidgetState extends State<JobFormWidget> {
       );
       return;
     }
+
+    // Only admin-approved accounts can create/edit jobs (backend enforces this
+    // too). Show a clear message instead of a generic failure.
+    if (!await VerificationGuard.ensureCanManageContent(context)) return;
 
     setState(() {
       _isLoading = true;
