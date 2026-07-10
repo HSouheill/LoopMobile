@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/boost_service.dart';
 import '../services/auth_service.dart';
 import 'boost_days_sheet.dart';
+import 'boost_payment_modal.dart';
 
 /// Dashboard section for the boost-days wallet: explains what boost days are,
 /// shows the current balance, and lists purchasable packages (configured from
@@ -29,7 +30,6 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
   int _balance = 0;
   List<dynamic> _packages = [];
   bool _loading = true;
-  String? _purchasingId;
 
   @override
   void initState() {
@@ -55,27 +55,24 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
 
   Future<void> _buy(Map<String, dynamic> pkg) async {
     final id = pkg['_id']?.toString();
-    if (id == null || _purchasingId != null) return;
-    setState(() => _purchasingId = id);
-    try {
-      final res = await BoostService.purchase(id);
-      if (!mounted) return;
-      setState(() {
-        _balance = (res['balanceDays'] as num?)?.toInt() ?? _balance;
-        _purchasingId = null;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(res['message']?.toString() ?? 'Boost days added.')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _purchasingId = null);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (id == null) return;
+
+    final days = (pkg['days'] as num?)?.toInt() ?? 0;
+    final currency = pkg['currency']?.toString() ?? 'USD';
+    final priceLabel = '$currency ${pkg['price']}';
+
+    // Pay with the same two gateways as plans (card / Whish). On success the
+    // wallet is credited server-side after the payment is confirmed.
+    final purchased = await BoostPaymentModal.show(
+      context,
+      packageId: id,
+      packageName: pkg['name']?.toString() ?? 'Package',
+      days: days,
+      priceLabel: priceLabel,
+    );
+
+    if (purchased == true && mounted) {
+      _load(); // refresh the balance
     }
   }
 
@@ -206,13 +203,11 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
 
   Widget _packageTile(dynamic raw) {
     final pkg = raw as Map<String, dynamic>;
-    final id = pkg['_id']?.toString();
     final name = pkg['name']?.toString() ?? 'Package';
     final days = (pkg['days'] as num?)?.toInt() ?? 0;
     final price = pkg['price'];
     final currency = pkg['currency']?.toString() ?? 'USD';
     final description = pkg['description']?.toString() ?? '';
-    final isBuying = _purchasingId == id;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -259,7 +254,7 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
               ),
               const SizedBox(height: 6),
               ElevatedButton(
-                onPressed: (_purchasingId == null) ? () => _buy(pkg) : null,
+                onPressed: () => _buy(pkg),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -269,15 +264,8 @@ class _BoostWalletWidgetState extends State<BoostWalletWidget> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: isBuying
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Buy',
-                        style: TextStyle(color: Colors.white, fontSize: 13)),
+                child: const Text('Buy',
+                    style: TextStyle(color: Colors.white, fontSize: 13)),
               ),
             ],
           ),

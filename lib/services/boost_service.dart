@@ -70,6 +70,69 @@ class BoostService {
     throw Exception(data['message'] ?? 'Failed to purchase boost package');
   }
 
+  // ── Paid checkout (same gateways/flow as plans) ────────────────────────────
+
+  /// CyberSource step 1: create a payment session + capture context for a package.
+  /// For a free (0-price) package, response['free'] == true (already credited).
+  static Future<Map<String, dynamic>> createCheckout(String packageId) async {
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}boosts/checkout/create'),
+      headers: _headers,
+      body: json.encode({'packageId': packageId}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start checkout');
+  }
+
+  /// CyberSource step 2: confirm with the transient token; credits the wallet.
+  static Future<Map<String, dynamic>> confirmCheckout(
+      String paymentSessionId, String transientToken) async {
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}boosts/checkout/confirm'),
+      headers: _headers,
+      body: json.encode({
+        'paymentSessionId': paymentSessionId,
+        'transientToken': transientToken,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
+  /// Whish step 1: create a Whish payment session (returns collectUrl).
+  static Future<Map<String, dynamic>> createWhishCheckout(String packageId) async {
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}boosts/whish/create'),
+      headers: _headers,
+      body: json.encode({'packageId': packageId}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Could not start Whish checkout');
+  }
+
+  /// Whish step 2: verify + credit after the WebView returns. 202 => {pending:true}.
+  static Future<Map<String, dynamic>> confirmWhish(String paymentSessionId) async {
+    final response = await http.post(
+      Uri.parse('${Environment.apiUrl}boosts/whish/confirm'),
+      headers: _headers,
+      body: json.encode({'paymentSessionId': paymentSessionId}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      return data;
+    }
+    throw Exception(data['message'] ?? 'Payment could not be confirmed');
+  }
+
   /// Spend [days] (1–30) to feature an owned target.
   /// [targetType] is one of: 'user', 'listing', 'job'.
   /// Returns { balanceDays, targetType, targetId, featuredUntil }.
