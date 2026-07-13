@@ -26,6 +26,7 @@ class ServiceProvider {
   final List<Review> reviews;
   final List<SocialLink> socialLinks;
   final String portfolioLink;
+  final List<String> portfolioVideos;
   final bool isFavorited;
 
   ServiceProvider({
@@ -53,6 +54,7 @@ class ServiceProvider {
     this.reviews = const [],
     required this.socialLinks,
     required this.portfolioLink,
+    this.portfolioVideos = const [],
     this.isFavorited = false,
   });
 
@@ -88,6 +90,10 @@ class ServiceProvider {
           .map((link) => SocialLink.fromJson(link))
           .toList(),
       portfolioLink: json['portfolioLink']?.toString() ?? '',
+      portfolioVideos: (json['portfolioVideos'] as List<dynamic>? ?? [])
+          .map((v) => v.toString())
+          .where((v) => v.isNotEmpty)
+          .toList(),
       isFavorited: json['isFavorited'] == true || json['isFavorited'] == 'true',
     );
   }

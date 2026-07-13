@@ -1323,6 +1323,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get portfolioUrlNotAvailable => 'Portfolio URL is not available';
 
   @override
+  String get portfolioVideos => 'Portfolio Videos';
+
+  @override
+  String get addVideo => '+ Add Video';
+
+  @override
+  String get video => 'Video';
+
+  @override
+  String get play => 'Play';
+
+  @override
+  String get deleteVideo => 'Delete Video';
+
+  @override
+  String get deleteVideoConfirm =>
+      'Are you sure you want to delete this video?';
+
+  @override
+  String get noVideosAdded => 'No videos added yet';
+
+  @override
+  String get maxVideosReached => 'You can only add up to 2 videos.';
+
+  @override
   String errorUploadingFile(String error) {
     return 'Error uploading file: $error';
   }

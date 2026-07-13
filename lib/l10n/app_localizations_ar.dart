@@ -1316,6 +1316,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get portfolioUrlNotAvailable => 'رابط المحفظة غير متاح';
 
   @override
+  String get portfolioVideos => 'فيديوهات المحفظة';
+
+  @override
+  String get addVideo => '+ إضافة فيديو';
+
+  @override
+  String get video => 'فيديو';
+
+  @override
+  String get play => 'تشغيل';
+
+  @override
+  String get deleteVideo => 'حذف الفيديو';
+
+  @override
+  String get deleteVideoConfirm => 'هل أنت متأكد أنك تريد حذف هذا الفيديو؟';
+
+  @override
+  String get noVideosAdded => 'لم تتم إضافة أي فيديوهات بعد';
+
+  @override
+  String get maxVideosReached => 'يمكنك إضافة ما يصل إلى فيديوهين فقط.';
+
+  @override
   String errorUploadingFile(String error) {
     return 'خطأ في رفع الملف: $error';
   }

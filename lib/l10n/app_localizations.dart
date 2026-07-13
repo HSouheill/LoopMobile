@@ -2399,6 +2399,54 @@ abstract class AppLocalizations {
   /// **'Portfolio URL is not available'**
   String get portfolioUrlNotAvailable;
 
+  /// No description provided for @portfolioVideos.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Videos'**
+  String get portfolioVideos;
+
+  /// No description provided for @addVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add Video'**
+  String get addVideo;
+
+  /// No description provided for @video.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get video;
+
+  /// No description provided for @play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play;
+
+  /// No description provided for @deleteVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Video'**
+  String get deleteVideo;
+
+  /// No description provided for @deleteVideoConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this video?'**
+  String get deleteVideoConfirm;
+
+  /// No description provided for @noVideosAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No videos added yet'**
+  String get noVideosAdded;
+
+  /// No description provided for @maxVideosReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only add up to 2 videos.'**
+  String get maxVideosReached;
+
   /// Error uploading file message
   ///
   /// In en, this message translates to:
