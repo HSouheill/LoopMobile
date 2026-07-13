@@ -63,6 +63,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactSupport => 'Contact Support';
 
   @override
+  String get insuranceCardTitle => 'Insurance';
+
+  @override
+  String get insuranceCardDescription =>
+      'Questions about insurance? Chat with our team on WhatsApp';
+
+  @override
+  String get insuranceCardButton => 'Ask';
+
+  @override
   String get featuredServices => 'Featured Services';
 
   @override

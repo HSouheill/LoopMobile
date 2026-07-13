@@ -63,6 +63,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactSupport => 'اتصل بالدعم';
 
   @override
+  String get insuranceCardTitle => 'التأمين';
+
+  @override
+  String get insuranceCardDescription =>
+      'لديك أسئلة حول التأمين؟ تحدث مع فريقنا على واتساب';
+
+  @override
+  String get insuranceCardButton => 'اسأل';
+
+  @override
   String get featuredServices => 'الخدمات المميزة';
 
   @override

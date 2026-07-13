@@ -200,6 +200,24 @@ abstract class AppLocalizations {
   /// **'Contact Support'**
   String get contactSupport;
 
+  /// No description provided for @insuranceCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance'**
+  String get insuranceCardTitle;
+
+  /// No description provided for @insuranceCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions about insurance? Chat with our team on WhatsApp'**
+  String get insuranceCardDescription;
+
+  /// No description provided for @insuranceCardButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask'**
+  String get insuranceCardButton;
+
   /// No description provided for @featuredServices.
   ///
   /// In en, this message translates to:
