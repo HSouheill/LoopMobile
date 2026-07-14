@@ -18,6 +18,7 @@ import '../../environment.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
 import '../../widgets/boost_wallet_widget.dart';
+import '../../widgets/refresh_wallet_widget.dart';
 import 'service_provider_company_dashboard.dart'
     show listNewJobsSection, applicationsSection;
 
@@ -414,6 +415,9 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 // Boost Days Wallet (buy boost-day packages)
                 const BoostWalletWidget(
                     boostableItems: 'profile, listings and jobs'),
+
+                // Refreshes (bump a listing back to the top of the queue)
+                const RefreshWalletWidget(),
 
                 const SizedBox(height: 40),
 
