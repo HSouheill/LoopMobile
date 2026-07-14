@@ -14,6 +14,7 @@ import '../chat/chat_conversation_page.dart';
 import 'package:loopflutter/screens/services/agent_services_page.dart';
 import '../../widgets/agent_report_dialog.dart';
 import '../../services/portfolio_service.dart';
+import '../../widgets/portfolio_video_player.dart';
 
 class ServiceProviderDetailPage extends StatefulWidget {
   final ServiceProvider serviceProvider;
@@ -955,6 +956,7 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     final portfolioLink = widget.serviceProvider.portfolioLink;
     final hasPortfolio = portfolioLink.isNotEmpty;
+    final videos = widget.serviceProvider.portfolioVideos;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1020,7 +1022,66 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               ),
             ),
           ),
-        ] else ...[
+        ],
+
+        // Portfolio videos — tap a card to play it in a full-screen player.
+        if (videos.isNotEmpty) ...[
+          if (hasPortfolio) const SizedBox(height: 12),
+          ...videos.map((filename) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Center(
+                child: Material(
+                  elevation: 2,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => showPortfolioVideoPlayer(context, filename),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.75,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFF0048FF)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.play_circle_fill,
+                                size: 32,
+                                color: Color(0xFF0048FF),
+                              ),
+                              const SizedBox(width: 14),
+                              Text(
+                                l10n.video,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 10,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+
+        if (!hasPortfolio && videos.isEmpty)
           Text(
             l10n.noPortfolioAvailable,
             style: const TextStyle(
@@ -1028,7 +1089,6 @@ class _ServiceProviderDetailPageState extends State<ServiceProviderDetailPage> {
               fontSize: 15,
             ),
           ),
-        ],
       ],
     );
   }

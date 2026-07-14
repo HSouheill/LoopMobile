@@ -63,6 +63,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactSupport => 'Contact Support';
 
   @override
+  String get insuranceCardTitle => 'Insurance';
+
+  @override
+  String get insuranceCardDescription =>
+      'Questions about insurance? Chat with our team on WhatsApp';
+
+  @override
+  String get insuranceCardButton => 'Ask';
+
+  @override
   String get featuredServices => 'Featured Services';
 
   @override
@@ -1311,6 +1321,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get portfolioUrlNotAvailable => 'Portfolio URL is not available';
+
+  @override
+  String get portfolioVideos => 'Portfolio Videos';
+
+  @override
+  String get addVideo => '+ Add Video';
+
+  @override
+  String get video => 'Video';
+
+  @override
+  String get play => 'Play';
+
+  @override
+  String get deleteVideo => 'Delete Video';
+
+  @override
+  String get deleteVideoConfirm =>
+      'Are you sure you want to delete this video?';
+
+  @override
+  String get noVideosAdded => 'No videos added yet';
+
+  @override
+  String get maxVideosReached => 'You can only add up to 2 videos.';
 
   @override
   String errorUploadingFile(String error) {

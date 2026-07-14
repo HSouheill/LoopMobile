@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/listing_service.dart';
 import '../../widgets/boost_days_sheet.dart';
+import '../../widgets/refresh_listing_sheet.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/listing_image_widget.dart';
 import '../../widgets/listing_details_modal.dart';
@@ -419,6 +420,19 @@ class _MyListingsPageState extends State<MyListingsPage> {
     }
   }
 
+  Future<void> _refreshListing(PropertyListing listing) async {
+    final result = await RefreshListingSheet.show(
+      context,
+      listingId: listing.id,
+      listingLabel:
+          listing.title.isNotEmpty ? '“${listing.title}”' : 'this listing',
+    );
+    // The listing's date changed, so reload to show it in its new queue position.
+    if (result != null && mounted) {
+      await _refresh();
+    }
+  }
+
   Future<void> _editListing(PropertyListing listing) async {
     // Warn that editing sends the listing back to admin for re-approval.
     final proceed = await showDialog<bool>(
@@ -608,6 +622,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
                                 onDelete: () => _deleteListing(listing),
                                 onArchive: () => _archiveListing(listing),
                                 onBoost: () => _boostListing(listing),
+                                onRefresh: () => _refreshListing(listing),
                                 onEdit: () => _editListing(listing),
                               ),
                             );
@@ -661,6 +676,7 @@ class MyListingCard extends StatefulWidget {
   final VoidCallback onSold;
   final VoidCallback onDelete;
   final VoidCallback onBoost;
+  final VoidCallback onRefresh;
   final VoidCallback onEdit;
   final VoidCallback onArchive;
 
@@ -670,6 +686,7 @@ class MyListingCard extends StatefulWidget {
     required this.onSold,
     required this.onDelete,
     required this.onBoost,
+    required this.onRefresh,
     required this.onEdit,
     required this.onArchive,
   });
@@ -787,6 +804,23 @@ class _MyListingCardState extends State<MyListingCard> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+
+          // Refresh: spends 1 refresh to bump this listing back to the top of
+          // the queue. Reusable on the same listing as often as the user likes.
+          SizedBox(
+            width: double.infinity,
+            child: DynamicGradientButton(
+              buttonText: 'Refresh',
+              onTap: widget.onRefresh,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              useGradient: false,
+              backgroundColor: const Color(0xFFF9FBFF),
+              borderColor: const Color(0xFF0048FF),
+              borderWidth: 1.0,
+              textColor: const Color(0xFF0048FF),
+            ),
           ),
         ],
       ),

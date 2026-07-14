@@ -16,6 +16,7 @@ import 'widgets/banner_placeholder_widget.dart';
 import 'widgets/latest_updates_widget.dart';
 import 'widgets/listing_widgets/featured_listings_widget.dart';
 import 'widgets/support_card_widget.dart';
+import 'widgets/insurance_card_widget.dart';
 import 'widgets/dynamic_services_widget.dart';
 import 'widgets/dynamic_jobs_widget.dart';
 import 'widgets/dynamic_agents_widget.dart';
@@ -680,7 +681,10 @@ class _HomePageState extends State<HomePage> {
               // 4. Contact Support
               const SupportCardWidget(),
               const SizedBox(height: 10),
-              // 5. Featured Real Estate (Agents)
+              // 5. Insurance
+              const InsuranceCardWidget(),
+              const SizedBox(height: 10),
+              // 6. Featured Real Estate (Agents)
               DynamicAgentsWidget(
                 category: AgentCategory.featuredAll,
                 customTitle: AppLocalizations.of(context)?.featuredRealEstate ?? 'Featured Real Estate',

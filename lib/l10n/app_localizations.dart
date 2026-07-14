@@ -200,6 +200,24 @@ abstract class AppLocalizations {
   /// **'Contact Support'**
   String get contactSupport;
 
+  /// No description provided for @insuranceCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insurance'**
+  String get insuranceCardTitle;
+
+  /// No description provided for @insuranceCardDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions about insurance? Chat with our team on WhatsApp'**
+  String get insuranceCardDescription;
+
+  /// No description provided for @insuranceCardButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask'**
+  String get insuranceCardButton;
+
   /// No description provided for @featuredServices.
   ///
   /// In en, this message translates to:
@@ -2380,6 +2398,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Portfolio URL is not available'**
   String get portfolioUrlNotAvailable;
+
+  /// No description provided for @portfolioVideos.
+  ///
+  /// In en, this message translates to:
+  /// **'Portfolio Videos'**
+  String get portfolioVideos;
+
+  /// No description provided for @addVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add Video'**
+  String get addVideo;
+
+  /// No description provided for @video.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get video;
+
+  /// No description provided for @play.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get play;
+
+  /// No description provided for @deleteVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Video'**
+  String get deleteVideo;
+
+  /// No description provided for @deleteVideoConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this video?'**
+  String get deleteVideoConfirm;
+
+  /// No description provided for @noVideosAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No videos added yet'**
+  String get noVideosAdded;
+
+  /// No description provided for @maxVideosReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only add up to 2 videos.'**
+  String get maxVideosReached;
 
   /// Error uploading file message
   ///

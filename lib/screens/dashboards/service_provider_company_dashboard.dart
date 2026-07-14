@@ -8,6 +8,7 @@ import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/portfolio_service.dart';
+import '../../widgets/portfolio_video_player.dart';
 import '../../services/job_service.dart';
 import '../../services/job_application_service.dart';
 import '../../models/job_application.dart';
@@ -228,6 +229,9 @@ class _ServiceProviderCompanyDashboardPageState
 
                   // ✅ PDF Uploaded Section
                   PdfUploadedSection(agentInfo: agentInfo),
+
+                  // ✅ Portfolio Videos Section
+                  PortfolioVideosSection(agentInfo: agentInfo),
 
                   const SizedBox(height: 30),
 
@@ -872,6 +876,236 @@ class _PdfUploadedSectionState extends State<PdfUploadedSection> {
               child: Center(
                 child: CircularProgressIndicator(),
               ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ✅ Portfolio Videos Section (company service providers only, max 2 videos)
+class PortfolioVideosSection extends StatefulWidget {
+  final Map<String, dynamic>? agentInfo;
+
+  const PortfolioVideosSection({super.key, this.agentInfo});
+
+  @override
+  State<PortfolioVideosSection> createState() => _PortfolioVideosSectionState();
+}
+
+class _PortfolioVideosSectionState extends State<PortfolioVideosSection> {
+  bool isLoading = false;
+
+  List<String> get _videos {
+    final raw = widget.agentInfo?['user']?['portfolioVideos'];
+    if (raw is List) {
+      return raw.map((v) => v.toString()).where((v) => v.isNotEmpty).toList();
+    }
+    return const [];
+  }
+
+  void _refreshParent() {
+    if (!context.mounted) return;
+    final parentState = context
+        .findAncestorStateOfType<_ServiceProviderCompanyDashboardPageState>();
+    parentState?._refreshData();
+  }
+
+  void _showMessage(String message, {required bool success}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _addVideo() async {
+    if (_videos.length >= PortfolioService.maxPortfolioVideos) {
+      _showMessage(
+        AppLocalizations.of(context)?.maxVideosReached ??
+            'You can only add up to ${PortfolioService.maxPortfolioVideos} videos.',
+        success: false,
+      );
+      return;
+    }
+
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.video,
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.single.path == null) return;
+
+      setState(() => isLoading = true);
+
+      final response = await PortfolioService.uploadPortfolioVideo(
+        File(result.files.single.path!),
+      );
+
+      if (!mounted) return;
+      setState(() => isLoading = false);
+
+      _showMessage(response['message']?.toString() ?? '',
+          success: response['success'] == true);
+
+      if (response['success'] == true) _refreshParent();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => isLoading = false);
+      _showMessage(
+        AppLocalizations.of(context)?.errorSelectingFile(e.toString()) ??
+            'Error selecting file: ${e.toString()}',
+        success: false,
+      );
+    }
+  }
+
+  Future<void> _deleteVideo(String filename) async {
+    final l10n = AppLocalizations.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n?.deleteVideo ?? 'Delete Video'),
+        content: Text(l10n?.deleteVideoConfirm ??
+            'Are you sure you want to delete this video?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n?.cancel ?? 'Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              l10n?.delete ?? 'Delete',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => isLoading = true);
+
+    final response = await PortfolioService.deletePortfolioVideo(filename);
+
+    if (!mounted) return;
+    setState(() => isLoading = false);
+
+    _showMessage(response['message']?.toString() ?? '',
+        success: response['success'] == true);
+
+    if (response['success'] == true) _refreshParent();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final videos = _videos;
+    final canAddMore = videos.length < PortfolioService.maxPortfolioVideos;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n?.portfolioVideos ?? "Portfolio Videos",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                  color: Color(0xFF1E1E1E),
+                ),
+              ),
+              Text(
+                "${videos.length}/${PortfolioService.maxPortfolioVideos}",
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          if (videos.isEmpty)
+            Text(
+              l10n?.noVideosAdded ?? "No videos added yet",
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+
+          // Existing videos: tap to preview, trash icon to remove
+          ...videos.asMap().entries.map((entry) {
+            final index = entry.key;
+            final filename = entry.value;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.videocam,
+                        color: Color(0xFF0048FF), size: 22),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "${l10n?.video ?? 'Video'} ${index + 1}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.play_circle_outline,
+                          color: Color(0xFF0048FF)),
+                      tooltip: l10n?.play ?? 'Play',
+                      onPressed: isLoading
+                          ? null
+                          : () => showPortfolioVideoPlayer(context, filename),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      tooltip: l10n?.delete ?? 'Delete',
+                      onPressed:
+                          isLoading ? null : () => _deleteVideo(filename),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 8),
+
+          if (canAddMore)
+            DynamicGradientButton(
+              buttonText: l10n?.addVideo ?? "+ Add Video",
+              textSize: 12,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              onTap: isLoading ? null : _addVideo,
+            ),
+
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

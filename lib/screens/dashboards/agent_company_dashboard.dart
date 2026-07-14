@@ -3,6 +3,9 @@ import 'package:loopflutter/l10n/app_localizations.dart';
 import '../../services/auth_service.dart';
 import '../../services/agent_info_service.dart';
 import '../../services/listing_service.dart';
+import '../../services/job_service.dart';
+import '../../services/job_application_service.dart';
+import '../../models/job_application.dart';
 import '../../widgets/profile_widgets/dynamic_gradient_button.dart';
 import '../../widgets/verification_banner.dart';
 import './widgets/statistics_card.dart';
@@ -15,6 +18,9 @@ import '../../environment.dart';
 import '../../widgets/active_plan_widget.dart';
 import '../../widgets/all_plans_section.dart';
 import '../../widgets/boost_wallet_widget.dart';
+import '../../widgets/refresh_wallet_widget.dart';
+import 'service_provider_company_dashboard.dart'
+    show listNewJobsSection, applicationsSection;
 
 class AgentCompanyDashboardPage extends StatefulWidget {
   const AgentCompanyDashboardPage({super.key});
@@ -32,6 +38,10 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   List<PropertyListing> activeListings = [];
   bool inactiveListingsLoading = true;
   bool activeListingsLoading = true;
+  List<Job> myJobs = [];
+  bool isLoadingJobs = false;
+  List<JobApplication> applications = [];
+  bool isLoadingApplications = false;
   Key _activePlanKey = UniqueKey();
 
   @override
@@ -41,6 +51,8 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     _loadAgentInfo();
     _loadInactiveListings();
     _loadActiveListings();
+    _loadMyJobs();
+    _loadApplications();
   }
 
   Future<void> _loadUser() async {
@@ -101,6 +113,43 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
   }
 
 
+  Future<void> _loadMyJobs() async {
+    setState(() {
+      isLoadingJobs = true;
+    });
+    try {
+      final response = await JobService.getMyJobs(page: 1, limit: 3);
+      setState(() {
+        myJobs = response.jobs;
+        isLoadingJobs = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingJobs = false;
+      });
+    }
+  }
+
+  Future<void> _loadApplications() async {
+    setState(() {
+      isLoadingApplications = true;
+    });
+    try {
+      final response = await JobApplicationService.getMyJobApplications(
+        page: 1,
+        limit: 3,
+      );
+      setState(() {
+        applications = response.applications;
+        isLoadingApplications = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingApplications = false;
+      });
+    }
+  }
+
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
@@ -110,6 +159,8 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     await _loadAgentInfo();
     await _loadInactiveListings();
     await _loadActiveListings();
+    await _loadMyJobs();
+    await _loadApplications();
   }
 
   // Method to refresh data when returning from edit/delete operations
@@ -270,6 +321,8 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
       );
     }
 
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     // Split location into district and governance if it has a comma
     String district = '';
     String governance = '';
@@ -280,6 +333,22 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
     } else if (user!.location != null) {
       district = user!.location!;
     }
+
+    // Convert myJobs to the format expected by the shared jobs section
+    final jobs = myJobs.map((job) {
+      final minExp = job.experienceRange['min'] ?? 0;
+      final maxExp = job.experienceRange['max'] ?? 1;
+      final l10n = AppLocalizations.of(context);
+
+      return {
+        "imageUrl": job.imageUrl,
+        "title": job.title,
+        "contractType": job.jobType,
+        "time": l10n?.experienceYears(minExp, maxExp) ??
+            "Experience: $minExp-$maxExp years",
+        "status": job.status,
+      };
+    }).toList();
 
     return Scaffold(
       body: RefreshIndicator(
@@ -344,7 +413,11 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                 ),
 
                 // Boost Days Wallet (buy boost-day packages)
-                const BoostWalletWidget(boostableItems: 'profile and listings'),
+                const BoostWalletWidget(
+                    boostableItems: 'profile, listings and jobs'),
+
+                // Refreshes (bump a listing back to the top of the queue)
+                const RefreshWalletWidget(),
 
                 const SizedBox(height: 40),
 
@@ -557,7 +630,17 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     onArchive: _archiveByTitle,
                   ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
+
+                // My Jobs section (post/edit/delete jobs, same as company service providers)
+                listNewJobsSection(
+                    context, screenWidth, jobs, isLoadingJobs, myJobs, _loadMyJobs),
+
+                // Applications received on this company's jobs
+                applicationsSection(
+                    context, screenWidth, applications, isLoadingApplications),
+
+                const SizedBox(height: 20),
 
                 // Links section
                 Align(
