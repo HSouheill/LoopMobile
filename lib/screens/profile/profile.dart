@@ -674,11 +674,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showOtpDialog() {
+    // If the phone is changing we sent the OTP by SMS; otherwise it went to
+    // the new email address. Show the user the destination it was actually
+    // sent to so they know where to look for the code.
+    final bool isEmailOtp = _newPhoneNumber == null;
+    final String destination =
+        isEmailOtp ? emailController.text.trim() : _newPhoneNumber!;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => OtpVerificationDialog(
-        phoneNumber: _newPhoneNumber ?? 'your phone',
+        phoneNumber: destination,
+        isEmail: isEmailOtp,
         onVerify: _verifyOtp,
         onResend: _resendOtp,
         isLoading: _isEditingContact,
