@@ -915,8 +915,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           top: 40,
                           left: 16,
                           child: SizedBox(
-                            width: 30,
-                            height: 30,
+                            width: 36,
+                            height: 36,
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,

@@ -97,8 +97,8 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
             top: 20,
             left: 16,
             child: SizedBox(
-              width: 30,
-              height: 30,
+              width: 36,
+              height: 36,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -114,7 +114,7 @@ class _AddNewAgentScreenState extends State<AddNewAgentScreen>
                   icon: const Icon(
                     Icons.arrow_back_rounded,
                     color: Color(0xFF0048FF),
-                    size: 16,
+                    size: 20,
                   ),
                   onPressed: () {
                     Navigator.pop(context);
