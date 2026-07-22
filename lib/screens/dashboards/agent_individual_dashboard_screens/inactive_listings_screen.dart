@@ -47,8 +47,8 @@ class _InactiveListingsState extends State<InactiveListings> {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                width: 32,
-                height: 32,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: Color(0xFF0048FF), width: 1),

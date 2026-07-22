@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -17,7 +19,44 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
   final _formKey = GlobalKey<FormState>();
   final _otpCtrl = TextEditingController();
   bool _isLoading = false;
+  bool _isResending = false;
   String _phone = '';
+  String _pendingId = '';
+
+  // Resend cooldown. Must not be shorter than the server's
+  // OTP_RESEND_COOLDOWN_MS or the button would re-enable into a 429.
+  static const int _resendCooldownSeconds = 60;
+
+  // Stored as a deadline rather than a tick count so backgrounding the app
+  // can't desync the countdown from real elapsed time.
+  DateTime? _resendAvailableAt;
+  Timer? _cooldownTimer;
+
+  int get _secondsLeft {
+    final until = _resendAvailableAt;
+    if (until == null) return 0;
+    final remaining = until.difference(DateTime.now()).inSeconds;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  bool get _canResend => !_isResending && _secondsLeft == 0;
+
+  void _startCooldown([int seconds = _resendCooldownSeconds]) {
+    _cooldownTimer?.cancel();
+    setState(() {
+      _resendAvailableAt = DateTime.now().add(Duration(seconds: seconds));
+    });
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_secondsLeft == 0) {
+        timer.cancel();
+      }
+      setState(() {});
+    });
+  }
 
   @override
   void initState() {
@@ -28,14 +67,78 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null) {
         _phone = args['phone'] ?? '';
+        _pendingId = args['pendingId']?.toString() ?? '';
       }
+      // An OTP was just sent to get here, so the cooldown is already running
+      // server-side; reflect that instead of offering an instant resend.
+      _startCooldown();
     });
   }
 
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     _otpCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _resendOtp() async {
+    if (!_canResend) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    if (_pendingId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.signupFailed),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isResending = true);
+
+    final result = await AuthService.resendSignupOtp(pendingId: _pendingId);
+
+    if (!mounted) return;
+    setState(() => _isResending = false);
+
+    if (result['success'] == true) {
+      _startCooldown();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? ''),
+          backgroundColor: Colors.green,
+        ),
+      );
+      return;
+    }
+
+    // The pending signup expired or was consumed -- resending can't help, so
+    // send the user back to start signup again.
+    if (result['expired'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? ''),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.of(context).pop();
+      return;
+    }
+
+    // Server says we're still cooling down: honour its remaining time.
+    final retryAfterMs = result['retryAfterMs'];
+    if (retryAfterMs is num) {
+      _startCooldown((retryAfterMs / 1000).ceil());
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? ''),
+        backgroundColor: Colors.orange,
+      ),
+    );
   }
 
   Future<void> _verifyOtp() async {
@@ -305,21 +408,28 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                 style: const TextStyle(color: Colors.grey),
                               ),
                               GestureDetector(
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.otpResendFunctionalityComingSoon),
-                                      backgroundColor: Colors.orange,
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  l10n.resend,
-                                  style: const TextStyle(
-                                    color: Colors.blue,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
+                                onTap: _canResend ? _resendOtp : null,
+                                child: _isResending
+                                    ? const SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        _secondsLeft > 0
+                                            ? '${l10n.resend} (${_secondsLeft}s)'
+                                            : l10n.resend,
+                                        style: TextStyle(
+                                          color: _canResend
+                                              ? Colors.blue
+                                              : Colors.grey,
+                                          decoration: _canResend
+                                              ? TextDecoration.underline
+                                              : TextDecoration.none,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),

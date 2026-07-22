@@ -148,8 +148,8 @@ class _EditMyServiceState extends State<EditMyService> {
                 top: 20,
                 left: 16,
                 child: SizedBox(
-                  width: 30,
-                  height: 30,
+                  width: 36,
+                  height: 36,
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -165,7 +165,7 @@ class _EditMyServiceState extends State<EditMyService> {
                       icon: const Icon(
                         Icons.arrow_back_rounded,
                         color: Color(0xFF0048FF),
-                        size: 14,
+                        size: 20,
                       ),
                       onPressed: () {
                         Navigator.pop(context);

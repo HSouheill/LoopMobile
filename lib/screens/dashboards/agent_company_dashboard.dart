@@ -683,8 +683,8 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                   Navigator.of(context).pop();
                 },
                 child: Container(
-                  width: 30,
-                  height: 30,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
@@ -697,7 +697,7 @@ class _AgentCompanyDashboardPageState extends State<AgentCompanyDashboardPage> {
                     child: Icon(
                       Icons.arrow_back_rounded,
                       color: Colors.blue,
-                      size: 16,
+                      size: 20,
                     ),
                   ),
                 ),

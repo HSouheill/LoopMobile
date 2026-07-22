@@ -461,6 +461,45 @@ class AuthService {
     }
   }
 
+  // Re-send the contact-change OTP for an existing pending edit. Keyed by
+  // pendingEditId so the server updates that record in place -- exactly one
+  // OTP is ever live, and the previous code stops working.
+  static Future<Map<String, dynamic>> resendEditOtp({
+    required String pendingEditId,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/resend-edit-otp');
+      final response = await http.post(
+        url,
+        headers: getAuthHeaders(),
+        body: jsonEncode({'pendingEditId': pendingEditId}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 202) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'A new OTP has been sent',
+          'pendingEditId': data['pendingEditId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to resend OTP',
+          // Present on 429 so the UI can start its cooldown from the server's
+          // remaining time rather than assuming a full window.
+          'retryAfterMs': data['retryAfterMs'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
   // Verify OTP for edit contact
   static Future<Map<String, dynamic>> verifyEditOtp({
     required String pendingEditId,
@@ -613,6 +652,90 @@ class AuthService {
         return {
           'success': false,
           'message': data['message'] ?? 'Failed to send OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Re-send the password-reset OTP.
+  //
+  // Like forgotPassword, this always returns 202 with the same generic message
+  // whether or not an account exists and whether or not the cooldown allowed a
+  // send -- deliberately, so responses can't be used to probe for accounts.
+  // The UI therefore runs its own local cooldown rather than trusting the reply.
+  static Future<Map<String, dynamic>> resendResetOtp({
+    String? email,
+    String? phone,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/resendResetOtp');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          if (email != null) 'email': email.toLowerCase().trim(),
+          if (phone != null) 'phone': phone.trim(),
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 202) {
+        return {
+          'success': true,
+          'message': data['message'] ??
+              'If an account exists with this contact, an OTP has been sent.',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to resend OTP',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Network error occurred',
+      };
+    }
+  }
+
+  // Re-send the signup OTP for a pending signup.
+  //
+  // Keyed by pendingId so the signup payload (which for agent/company roles
+  // includes ID document uploads) never has to be re-submitted.
+  static Future<Map<String, dynamic>> resendSignupOtp({
+    required String pendingId,
+  }) async {
+    try {
+      final url = Uri.parse('${Environment.apiUrl}users/resendOtp');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'pendingId': pendingId}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 202) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'A new OTP has been sent',
+          'pendingId': data['pendingId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to resend OTP',
+          'retryAfterMs': data['retryAfterMs'],
+          // 410 means the pending signup is gone/expired -- the user must
+          // restart signup, so the UI routes them back rather than retrying.
+          'expired': response.statusCode == 410,
         };
       }
     } catch (e) {

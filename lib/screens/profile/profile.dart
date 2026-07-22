@@ -674,11 +674,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showOtpDialog() {
+    // If the phone is changing we sent the OTP by SMS; otherwise it went to
+    // the new email address. Show the user the destination it was actually
+    // sent to so they know where to look for the code.
+    final bool isEmailOtp = _newPhoneNumber == null;
+    final String destination =
+        isEmailOtp ? emailController.text.trim() : _newPhoneNumber!;
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => OtpVerificationDialog(
-        phoneNumber: _newPhoneNumber ?? 'your phone',
+        phoneNumber: destination,
+        isEmail: isEmailOtp,
         onVerify: _verifyOtp,
         onResend: _resendOtp,
         isLoading: _isEditingContact,
@@ -755,32 +762,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final currentUser = AuthService.currentUser;
     if (currentUser == null) return;
 
-    final newEmail = emailController.text.trim();
-    final newPhone = phoneController.text.trim();
-    
+    // Resend is keyed by the existing pending edit, so the contact fields are
+    // not re-sent. Re-calling request-edit-contact here would instead be
+    // rejected by that endpoint's own 60s cooldown.
+    final pendingEditId = _pendingEditId;
+    if (pendingEditId == null) return;
+
     setState(() {
       _isEditingContact = true;
     });
 
     try {
-      // Prepare data for API call
-      String? emailToSend = newEmail.toLowerCase() != currentUser.email.toLowerCase() ? newEmail : null;
-      String? phoneToSend;
-      
-      if (newPhone.isNotEmpty) {
-        phoneToSend = '$_selectedCountryCode$newPhone';
-        _newPhoneNumber = phoneToSend;
-      }
-
-      final result = await AuthService.requestEditContact(
-        newEmail: emailToSend,
-        newPhone: phoneToSend,
+      final result = await AuthService.resendEditOtp(
+        pendingEditId: pendingEditId,
       );
 
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         if (result['success']) {
-          _pendingEditId = result['pendingEditId'];
+          _pendingEditId = result['pendingEditId'] ?? pendingEditId;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.otpResentSuccessfully),
@@ -915,8 +915,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           top: 40,
                           left: 16,
                           child: SizedBox(
-                            width: 30,
-                            height: 30,
+                            width: 36,
+                            height: 36,
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,

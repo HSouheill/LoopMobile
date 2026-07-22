@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
@@ -24,6 +26,42 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
   String? _phone;
   bool _isPhone = true;
 
+  // Resend cooldown. Must not be shorter than the server's
+  // OTP_RESEND_COOLDOWN_MS or the button would re-enable into a silent no-op.
+  static const int _resendCooldownSeconds = 60;
+
+  // Stored as a deadline rather than a tick count so backgrounding the app
+  // can't desync the countdown from real elapsed time.
+  DateTime? _resendAvailableAt;
+  Timer? _cooldownTimer;
+  bool _argsLoaded = false;
+
+  int get _secondsLeft {
+    final until = _resendAvailableAt;
+    if (until == null) return 0;
+    final remaining = until.difference(DateTime.now()).inSeconds;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  bool get _canResend => !_resending && _secondsLeft == 0;
+
+  void _startCooldown([int seconds = _resendCooldownSeconds]) {
+    _cooldownTimer?.cancel();
+    setState(() {
+      _resendAvailableAt = DateTime.now().add(Duration(seconds: seconds));
+    });
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_secondsLeft == 0) {
+        timer.cancel();
+      }
+      setState(() {});
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +79,9 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // Guarded: didChangeDependencies can fire again (e.g. locale change) and
+    // must not restart the cooldown that's already running.
+    if (_argsLoaded) return;
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null) {
@@ -48,10 +89,15 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
       _phone = args['phone'];
       _isPhone = args['isPhone'] ?? (_phone != null);
     }
+    _argsLoaded = true;
+    // An OTP was just sent to get here, so the server-side cooldown is already
+    // running; reflect that instead of offering an instant resend.
+    _startCooldown();
   }
 
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     for (var controller in _controllers) {
       controller.dispose();
     }
@@ -113,16 +159,31 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
   }
 
   Future<void> _resendOtp() async {
+    if (!_canResend) return;
+
     setState(() => _resending = true);
 
-    await AuthService.forgotPassword(
+    final result = await AuthService.resendResetOtp(
       email: _email,
       phone: _phone,
     );
 
     if (!mounted) return;
-    
+
     setState(() => _resending = false);
+
+    // This endpoint always answers with the same generic 202 (it must not
+    // reveal whether an account exists, or whether the cooldown blocked the
+    // send), so the cooldown here is driven locally rather than by the reply.
+    _startCooldown();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message'] ?? ''),
+        backgroundColor:
+            result['success'] == true ? Colors.green : Colors.orange,
+      ),
+    );
   }
 
   String get _displayContact {
@@ -289,7 +350,7 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
                     // Resend Code Button
                     Center(
                       child: TextButton(
-                        onPressed: _resending ? null : _resendOtp,
+                        onPressed: _canResend ? _resendOtp : null,
                         child: _resending
                             ? const SizedBox(
                                 width: 20,
@@ -297,9 +358,13 @@ class _VerifyResetOtpPageState extends State<VerifyResetOtpPage> {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
                             : Text(
-                                l10n.resendCode,
-                                style: const TextStyle(
-                                  color: Color(0xFF0048FF),
+                                _secondsLeft > 0
+                                    ? '${l10n.resendCode} (${_secondsLeft}s)'
+                                    : l10n.resendCode,
+                                style: TextStyle(
+                                  color: _canResend
+                                      ? const Color(0xFF0048FF)
+                                      : Colors.grey,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

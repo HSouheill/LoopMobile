@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
 
 class OtpVerificationDialog extends StatefulWidget {
   final String phoneNumber;
+  final bool isEmail;
   final Function(String) onVerify;
   final VoidCallback onResend;
   final bool isLoading;
@@ -11,6 +14,7 @@ class OtpVerificationDialog extends StatefulWidget {
   const OtpVerificationDialog({
     super.key,
     required this.phoneNumber,
+    this.isEmail = false,
     required this.onVerify,
     required this.onResend,
     this.isLoading = false,
@@ -21,78 +25,126 @@ class OtpVerificationDialog extends StatefulWidget {
 }
 
 class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
-  final List<TextEditingController> _controllers = List.generate(6, (index) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  String _otp = '      '; // Initialize with 6 spaces
+  static const int _length = 6;
+  static const Color _brandBlue = Color(0xFF0048FF);
+
+  final List<TextEditingController> _controllers =
+      List.generate(_length, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(_length, (_) => FocusNode());
+
+  // Resend cooldown. Must not be shorter than the server's
+  // OTP_RESEND_COOLDOWN_MS or the button would re-enable into a 429.
+  static const int _resendCooldownSeconds = 60;
+
+  // Stored as a deadline rather than a tick count so backgrounding the app
+  // can't desync the countdown from real elapsed time.
+  DateTime? _resendAvailableAt;
+  Timer? _cooldownTimer;
+
+  int get _secondsLeft {
+    final until = _resendAvailableAt;
+    if (until == null) return 0;
+    final remaining = until.difference(DateTime.now()).inSeconds;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  bool get _canResend => !widget.isLoading && _secondsLeft == 0;
+
+  void _startCooldown() {
+    _cooldownTimer?.cancel();
+    setState(() {
+      _resendAvailableAt =
+          DateTime.now().add(const Duration(seconds: _resendCooldownSeconds));
+    });
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_secondsLeft == 0) {
+        timer.cancel();
+      }
+      setState(() {});
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    // Set up focus node listeners
-    for (int i = 0; i < _focusNodes.length; i++) {
-      _focusNodes[i].addListener(() {
-        if (_focusNodes[i].hasFocus) {
-          _controllers[i].selection = TextSelection.fromPosition(
-            TextPosition(offset: _controllers[i].text.length),
-          );
-        }
-      });
-    }
+    // The dialog only opens after an OTP was just sent, so the server-side
+    // cooldown is already running; reflect it rather than offering an
+    // instant resend.
+    _startCooldown();
+  }
+
+  void _handleResend() {
+    if (!_canResend) return;
+    _startCooldown();
+    widget.onResend();
   }
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    _cooldownTimer?.cancel();
+    for (final controller in _controllers) {
       controller.dispose();
     }
-    for (var focusNode in _focusNodes) {
+    for (final focusNode in _focusNodes) {
       focusNode.dispose();
     }
     super.dispose();
   }
 
-  void _onDigitChanged(String value, int index) {
-    setState(() {
-      if (value.length == 1) {
-        // Update the OTP string
-        _otp = _otp.substring(0, index) + value + _otp.substring(index + 1);
-        
-        // Move to next field
-        if (index < 5) {
-          _focusNodes[index + 1].requestFocus();
-        } else {
-          _focusNodes[index].unfocus();
-        }
-      } else if (value.isEmpty) {
-        // Clear the current position and move to previous field
-        _otp = _otp.substring(0, index) + ' ' + _otp.substring(index + 1);
-        if (index > 0) {
-          _focusNodes[index - 1].requestFocus();
-        }
+  String get _otp => _controllers.map((c) => c.text).join();
+
+  bool get _isOtpComplete => _otp.length == _length;
+
+  void _onChanged(String value, int index) {
+    // Handle a full-code paste landing in a single box.
+    if (value.length > 1) {
+      final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+      for (int i = 0; i < _length; i++) {
+        _controllers[i].text = i < digits.length ? digits[i] : '';
       }
-    });
+      final next =
+          digits.length >= _length ? _length - 1 : digits.length;
+      _focusNodes[next].requestFocus();
+      setState(() {});
+      return;
+    }
+
+    if (value.isNotEmpty && index < _length - 1) {
+      _focusNodes[index + 1].requestFocus();
+    } else if (value.isNotEmpty && index == _length - 1) {
+      _focusNodes[index].unfocus();
+    }
+    setState(() {});
   }
 
-
-  bool _isOtpComplete() {
-    // Check if all 6 digits are filled (no spaces)
-    return _otp.replaceAll(' ', '').length == 6;
+  KeyEventResult _onKey(FocusNode node, KeyEvent event, int index) {
+    // Backspace on an empty box moves focus to the previous box and clears it.
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.backspace &&
+        _controllers[index].text.isEmpty &&
+        index > 0) {
+      _controllers[index - 1].clear();
+      _focusNodes[index - 1].requestFocus();
+      setState(() {});
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
-
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Container(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
         padding: const EdgeInsets.all(24),
-        child: Stack(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
             // Header
             Row(
               children: [
@@ -100,42 +152,39 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0048FF).withOpacity(0.1),
+                    color: _brandBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.sms,
-                    color: Color(0xFF0048FF),
+                  child: Icon(
+                    widget.isEmail ? Icons.email_outlined : Icons.sms,
+                    color: _brandBlue,
                     size: 20,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Builder(
-                    builder: (context) {
-                      final l10n = AppLocalizations.of(context)!;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.verifyPhoneNumber,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E1E1E),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.enter6DigitCode(widget.phoneNumber),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.isEmail
+                            ? l10n.verifyOtpTitle
+                            : l10n.verifyPhoneNumber,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E1E1E),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.enter6DigitCode(widget.phoneNumber),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -143,91 +192,57 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
 
             const SizedBox(height: 32),
 
-            // Hidden TextField for capturing full OTP input
-            Positioned(
-              left: -1000, // Hide it off-screen
-              child: TextField(
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                style: const TextStyle(color: Colors.transparent),
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  counterText: '',
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(6),
-                ],
-                onChanged: (value) {
-                  if (value.length <= 6) {
-                    setState(() {
-                      // Update all controllers and OTP string
-                      for (int i = 0; i < 6; i++) {
-                        if (i < value.length) {
-                          _controllers[i].text = value[i];
-                          _otp = _otp.substring(0, i) + value[i] + _otp.substring(i + 1);
-                        } else {
-                          _controllers[i].text = '';
-                          _otp = _otp.substring(0, i) + ' ' + _otp.substring(i + 1);
-                        }
-                      }
-                    });
-                  }
-                },
-              ),
-            ),
-
-            // OTP Input Fields
+            // OTP input boxes (these are the real input fields).
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) {
-                return Container(
+              children: List.generate(_length, (index) {
+                final filled = _controllers[index].text.isNotEmpty;
+                return SizedBox(
                   width: 45,
                   height: 55,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _controllers[index].text.isNotEmpty 
-                          ? const Color(0xFF0048FF) 
-                          : Colors.grey.shade300,
-                      width: 2,
+                  child: Focus(
+                    onKeyEvent: (node, event) => _onKey(node, event, index),
+                    child: TextField(
+                      controller: _controllers[index],
+                      focusNode: _focusNodes[index],
+                      autofocus: index == 0,
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      maxLength: 1,
+                      cursorColor: _brandBlue,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E1E1E),
+                      ),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        contentPadding: EdgeInsets.zero,
+                        filled: true,
+                        fillColor: filled
+                            ? _brandBlue.withValues(alpha: 0.05)
+                            : Colors.grey.shade50,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Colors.grey.shade300, width: 2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              const BorderSide(color: _brandBlue, width: 2),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              BorderSide(color: Colors.grey.shade300, width: 2),
+                        ),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      onChanged: (value) => _onChanged(value, index),
                     ),
-                    borderRadius: BorderRadius.circular(12),
-                    color: _controllers[index].text.isNotEmpty 
-                        ? const Color(0xFF0048FF).withOpacity(0.05)
-                        : Colors.grey.shade50,
-                  ),
-                  child: TextField(
-                    controller: _controllers[index],
-                    focusNode: _focusNodes[index],
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    maxLength: 1,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E1E1E),
-                    ),
-                    decoration: const InputDecoration(
-                      counterText: '',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(1),
-                    ],
-                    onChanged: (value) => _onDigitChanged(value, index),
-                    onSubmitted: (value) {
-                      if (value.isNotEmpty && index < 5) {
-                        _focusNodes[index + 1].requestFocus();
-                      }
-                    },
-                    onTap: () {
-                      _controllers[index].selection = TextSelection.fromPosition(
-                        TextPosition(offset: _controllers[index].text.length),
-                      );
-                    },
                   ),
                 );
               }),
@@ -235,84 +250,71 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
 
             const SizedBox(height: 24),
 
-            // Resend Code Button
-            Builder(
-              builder: (context) {
-                final l10n = AppLocalizations.of(context)!;
-                return TextButton(
-                  onPressed: widget.isLoading ? null : widget.onResend,
-                  child: Text(
-                    l10n.resendCode,
-                    style: TextStyle(
-                      color: widget.isLoading ? Colors.grey : const Color(0xFF0048FF),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 16),
-
-            // Verify Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isOtpComplete() && !widget.isLoading
-                    ? () => widget.onVerify(_otp.trim())
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0048FF),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Builder(
-                  builder: (context) {
-                    final l10n = AppLocalizations.of(context)!;
-                    return widget.isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            l10n.verify,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                  },
+            // Resend
+            TextButton(
+              onPressed: _canResend ? _handleResend : null,
+              child: Text(
+                _secondsLeft > 0
+                    ? '${l10n.resendCode} (${_secondsLeft}s)'
+                    : l10n.resendCode,
+                style: TextStyle(
+                  color: _canResend ? _brandBlue : Colors.grey,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // Cancel Button
-            Builder(
-              builder: (context) {
-                final l10n = AppLocalizations.of(context)!;
-                return TextButton(
-                  onPressed: widget.isLoading ? null : () => Navigator.of(context).pop(),
-                  child: Text(
-                    l10n.cancel,
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                    ),
+            // Verify
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isOtpComplete && !widget.isLoading
+                    ? () => widget.onVerify(_otp)
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _brandBlue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                );
-              },
+                  elevation: 0,
+                ),
+                child: widget.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(
+                        l10n.verify,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
             ),
-              ],
+
+            const SizedBox(height: 16),
+
+            // Cancel
+            TextButton(
+              onPressed:
+                  widget.isLoading ? null : () => Navigator.of(context).pop(),
+              child: Text(
+                l10n.cancel,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),
