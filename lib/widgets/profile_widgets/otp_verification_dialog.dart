@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:loopflutter/l10n/app_localizations.dart';
@@ -30,8 +32,60 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
       List.generate(_length, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(_length, (_) => FocusNode());
 
+  // Resend cooldown. Must not be shorter than the server's
+  // OTP_RESEND_COOLDOWN_MS or the button would re-enable into a 429.
+  static const int _resendCooldownSeconds = 60;
+
+  // Stored as a deadline rather than a tick count so backgrounding the app
+  // can't desync the countdown from real elapsed time.
+  DateTime? _resendAvailableAt;
+  Timer? _cooldownTimer;
+
+  int get _secondsLeft {
+    final until = _resendAvailableAt;
+    if (until == null) return 0;
+    final remaining = until.difference(DateTime.now()).inSeconds;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  bool get _canResend => !widget.isLoading && _secondsLeft == 0;
+
+  void _startCooldown() {
+    _cooldownTimer?.cancel();
+    setState(() {
+      _resendAvailableAt =
+          DateTime.now().add(const Duration(seconds: _resendCooldownSeconds));
+    });
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_secondsLeft == 0) {
+        timer.cancel();
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // The dialog only opens after an OTP was just sent, so the server-side
+    // cooldown is already running; reflect it rather than offering an
+    // instant resend.
+    _startCooldown();
+  }
+
+  void _handleResend() {
+    if (!_canResend) return;
+    _startCooldown();
+    widget.onResend();
+  }
+
   @override
   void dispose() {
+    _cooldownTimer?.cancel();
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -198,11 +252,13 @@ class _OtpVerificationDialogState extends State<OtpVerificationDialog> {
 
             // Resend
             TextButton(
-              onPressed: widget.isLoading ? null : widget.onResend,
+              onPressed: _canResend ? _handleResend : null,
               child: Text(
-                l10n.resendCode,
+                _secondsLeft > 0
+                    ? '${l10n.resendCode} (${_secondsLeft}s)'
+                    : l10n.resendCode,
                 style: TextStyle(
-                  color: widget.isLoading ? Colors.grey : _brandBlue,
+                  color: _canResend ? _brandBlue : Colors.grey,
                   fontWeight: FontWeight.w600,
                 ),
               ),
